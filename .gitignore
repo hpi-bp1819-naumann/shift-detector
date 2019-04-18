@@ -112,3 +112,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+# Analyzers
+tmp/
+
+# Config
+config.py

@@ -1,0 +1,4 @@
+DATASET_FILE_PATHS = {
+    'train': 'data_train.csv',
+    'production': 'data_production.csv',
+}
