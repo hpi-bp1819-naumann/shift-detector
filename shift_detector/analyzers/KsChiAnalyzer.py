@@ -4,6 +4,7 @@ from scipy import stats
 from datawig.utils import random_split
 from shift_detector.analyzers.analyzer import Analyzer, AnalyzerResult
 
+
 class KsChiResult(AnalyzerResult):
 
     def __init__(self, data, significance=0.01):
@@ -23,6 +24,7 @@ class KsChiResult(AnalyzerResult):
 
     def failing_feature_ratio(self):
         return len(self.data.loc[2][self.data.loc[2] < self.significance]) / len(self.data.columns)
+
 
 class KsChiAnalyzer(Analyzer):
 

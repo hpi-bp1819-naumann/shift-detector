@@ -9,7 +9,6 @@ class AnalyzerResult():
     def __init__(self, result={}):
         self.result = result
 
-
     @abstractmethod
     def print_report(self):
         """
@@ -18,7 +17,6 @@ class AnalyzerResult():
 
         """
         pass
-
 
 
 class Analyzer():
@@ -37,7 +35,6 @@ class Analyzer():
         self.second_df = second_df
 
         datawig_logger.setLevel('ERROR')
-
 
     @abstractmethod
     def run(self, columns=[]) -> AnalyzerResult:
