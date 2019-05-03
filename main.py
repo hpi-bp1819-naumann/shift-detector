@@ -15,9 +15,8 @@ if __name__ == "__main__":
     separator = args["sep"]
 
     Detector(train_path, audits_path, separator=separator) \
-    .add_analyzer(KsChiAnalyzer) \
-    .run()
+        .add_analyzer(KsChiAnalyzer) \
+        .run()
     
-    #modules=[])
-    #.add_analyzer(KsChiAnalyzer) \
-    
+    # modules=[])
+    # .add_analyzer(KsChiAnalyzer) \

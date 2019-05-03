@@ -1,6 +1,7 @@
 import pandas as pd
 from typing import List
 import logging as logger
+import os
 from shift_detector.analyzers.analyzer import Analyzer
 
 
@@ -46,18 +47,18 @@ class Detector:
         first_df_columns = list(self.first_df.head(0))
         second_df_columns = list(self.second_df.head(0))
 
-        if (first_df_columns != second_df_columns):
-            logger.error('The columns of the provided dataset \
-                should be the same, but are {} and {}'.format(first_df_columns, second_df_columns))
+        if first_df_columns != second_df_columns:
+            logger.error('The columns of the provided dataset '
+                         'should be the same, but are {} and {}'.format(first_df_columns, second_df_columns))
 
             self.columns = self.get_common_column_names()
             logger.info('Using columns {} instead.'.format(self.columns))
         else:
             self.columns = first_df_columns
 
-        if (self.analyzers_to_run == []):
-            raise Exception('Please use the method add_test to \
-                add tests that should be executed, before calling run()')
+        if not self.analyzers_to_run:
+            raise Exception('Please use the method add_test to '
+                            'add tests that should be executed, before calling run()')
 
         for analyzer in self.analyzers_to_run:
             analyzer(self.first_df, self.second_df)\
