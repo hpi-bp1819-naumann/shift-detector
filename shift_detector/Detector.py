@@ -6,18 +6,18 @@ from shift_detector.analyzers.analyzer import Analyzer
 
 class Detector:
 
-    def __init__(self, first_path: str, second_path: str, seperator=','):
+    def __init__(self, first_path: str, second_path: str, separator=','):
 
-        self.first_df = self.read_from_csv(first_path, seperator)
-        self.second_df = self.read_from_csv(second_path, seperator)
+        self.first_df = self.read_from_csv(first_path, separator)
+        self.second_df = self.read_from_csv(second_path, separator)
 
         self.analyzers_to_run = []
         self.columns = []
 
-    def read_from_csv(self, file_path: str, seperator) -> pd.DataFrame:
+    def read_from_csv(self, file_path: str, separator) -> pd.DataFrame:
         # TODO: give user feedback about how many lines were dropped
         logger.info('Reading in CSV file. This may take a while ...')
-        return pd.read_csv(file_path, sep=seperator, error_bad_lines=False).dropna()
+        return pd.read_csv(file_path, sep=separator, error_bad_lines=False).dropna()
 
     def get_common_column_names(self) -> List[str]:
 
