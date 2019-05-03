@@ -2,7 +2,8 @@ import pandas as pd
 from abc import ABCMeta, abstractmethod
 from datawig.utils import logger as datawig_logger
 
-class AnalyzerResult():
+
+class AnalyzerResult:
 
     __metaclass__ = ABCMeta
 
@@ -16,10 +17,9 @@ class AnalyzerResult():
         Print report for analyzed columns
 
         """
-        pass
 
 
-class Analyzer():
+class Analyzer:
 
     __metaclass__ = ABCMeta
 
