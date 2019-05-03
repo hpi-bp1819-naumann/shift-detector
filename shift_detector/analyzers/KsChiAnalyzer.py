@@ -25,6 +25,13 @@ class KsChiResult(AnalyzerResult):
     def failing_feature_ratio(self):
         return len(self.data.loc[2][self.data.loc[2] < self.significance]) / len(self.data.columns)
 
+    def print_report(self):
+        """
+
+        Print report for analyzed columns
+
+        """
+        print('Report')
 
 class KsChiAnalyzer(Analyzer):
 
