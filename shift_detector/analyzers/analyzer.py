@@ -2,9 +2,7 @@ import pandas as pd
 from abc import ABCMeta, abstractmethod
 from datawig.utils import logger as datawig_logger
 
-class AnalyzerResult():
-
-    __metaclass__ = ABCMeta
+class AnalyzerResult(metaclass=ABCMeta):
 
     def __init__(self, result={}):
         self.result = result
@@ -19,9 +17,7 @@ class AnalyzerResult():
         pass
 
 
-class Analyzer():
-
-    __metaclass__ = ABCMeta
+class Analyzer(metaclass=ABCMeta):
 
     def __init__(self, first_df: pd.DataFrame, second_df: pd.DataFrame):
 

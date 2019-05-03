@@ -7,9 +7,9 @@ from shift_detector.analyzers.analyzer import Analyzer
 class Detector:
 
     def __init__(self, first_path: str, second_path: str, separator=','):
-
-        self.first_df = self.read_from_csv(first_path, separator)
-        self.second_df = self.read_from_csv(second_path, separator)
+        # TODO: remove sample
+        self.first_df = self.read_from_csv(first_path, separator).sample(100)
+        self.second_df = self.read_from_csv(second_path, separator).sample(100)
 
         self.analyzers_to_run = []
         self.columns = []
