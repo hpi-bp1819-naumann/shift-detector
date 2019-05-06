@@ -20,8 +20,9 @@ if __name__ == "__main__":
 
     Detector(train_path, audits_path, separator=separator) \
     .add_analyzer(Chi2Analyzer) \
-    .add_analyzer(TestAnalyzer) \
     .run()
+    #.add_analyzer(TestAnalyzer) \
+    
     
     #modules=[])
     #.add_analyzer(KsChiAnalyzer) \

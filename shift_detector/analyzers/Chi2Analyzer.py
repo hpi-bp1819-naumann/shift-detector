@@ -35,9 +35,13 @@ class Chi2Result(AnalyzerResult):
     
 
 class Chi2Analyzer(Analyzer):
-
+    # TODO: remove first and second df
     def __init__(self, first_df, second_df):
         Analyzer.__init__(self, first_df, second_df)
+        self.data = dict()
+
+    def set_data(self, data):
+        self.data = data
 
     @staticmethod
     def needed_preprocessing():
@@ -71,9 +75,11 @@ class Chi2Analyzer(Analyzer):
         return c_stats
 
     def run(self, columns=[]):
+        print("CHI2")
+        print(self.data["category"])
         results = pd.DataFrame()
-        for df in [self.first_df, self.second_df]:
+        for df in self.data["category"]:
             p1, p2 = random_split(df)
-            results = results.append(self.column_statistics(p1, p2, columns), ignore_index=True)
-        results = results.append(self.column_statistics(self.first_df, self.second_df, columns), ignore_index=True)
+            results = results.append(self.column_statistics(p1, p2), ignore_index=True)
+        results = results.append(self.column_statistics(self.data["category"][0], self.data["category"][1]), ignore_index=True)
         return Chi2Result(results)
