@@ -56,7 +56,7 @@ class TestAnalyzer(Analyzer):
             if value not in a_counts:
                 a_counts = a_counts.append(pd.Series(0, index=[value]))
         observed = pd.DataFrame.from_dict({'a':a_counts, 'b':b_counts})
-        chi2, p, dof, expected = stats.chi2_contingency(observed)
+        _, p, _, _ = stats.chi2_contingency(observed)
         return p
 
     def column_statistics(self, first_df, second_df, columns=[], categorical_threshold=100):
