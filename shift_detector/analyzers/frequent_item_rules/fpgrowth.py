@@ -1,34 +1,23 @@
 import csv
 from collections import namedtuple
-from shift_detector.analyzers.conditional_probabilities import pyfpgrowth_core
+from shift_detector.analyzers.frequent_item_rules import pyfpgrowth_core
 
-relative_min_support = 0.01
-min_confidence = 0.01
+relative_min_support = 0.02
+min_confidence = 0.1
 
 
-def main():
+def calculate_frequent_rules(df1, df2):
+
     transactions = ([], [])
-
-    columns = [
-        'marketplace_id',
-        'asin',
-        'attribute',
-        'refinement_id',
-        'item_name',
-        'bullet_points',
-        'value'
-    ]
-
+    columns = df1.columns
     column_to_index = {c: i for i, c in enumerate(columns)}
 
-    for i, path in enumerate(['/Users/pzimme/Desktop/Datasets/audits_leonard.csv',
-                              '/Users/pzimme/Desktop/Datasets/train_leonard.csv']):
+    # TODO rewrite whole method for pandas-DataFrame instead of [0] and [1] etc
+    for index, row in df1.iterrows():
+        transactions[0].append([(c, row[c]) for c in columns])
 
-        with open(path, newline='') as csvfile:
-            reader = csv.DictReader(csvfile, columns, delimiter=',', quotechar='"')
-            next(reader)  # skip header line
-            for row in reader:
-                transactions[i].append([(c, row[c]) for c in columns])
+    for index, row in df2.iterrows():
+        transactions[1].append([(c, row[c]) for c in columns])
 
     absolute_min_supports = (round(relative_min_support * len(transactions[0])),
                              round(relative_min_support * len(transactions[1])))
@@ -122,4 +111,4 @@ def main():
 
 
 if __name__ == '__main__':
-    result = main()
+    result = calculate_frequent_rules()

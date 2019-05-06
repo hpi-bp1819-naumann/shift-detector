@@ -2,6 +2,7 @@ import pandas as pd
 from abc import ABCMeta, abstractmethod
 from datawig.utils import logger as datawig_logger
 
+
 class AnalyzerResult(metaclass=ABCMeta):
 
     def __init__(self, result={}):

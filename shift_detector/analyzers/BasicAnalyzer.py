@@ -37,7 +37,7 @@ class BasicAnalyzer(Analyzer):
         self.train_df = None
         self.test_df = None
 
-        self.imputer = None\
+        self.imputer = None
 
     def label_datasets(self, first_df: pd.DataFrame, second_df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
@@ -148,7 +148,7 @@ class BasicAnalyzer(Analyzer):
         imputed = self.imputer.predict(self.test_df)
         y_true, y_pred = imputed[self.output_column], imputed[self.output_column + '_imputed']
 
-        result = {}
+        result = dict()
         result['classification_report'] = classification_report(y_true, y_pred)
         result['relevant_columns'] = self.relevant_columns(columns)
 
