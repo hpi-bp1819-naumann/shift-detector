@@ -60,15 +60,34 @@ class Detector:
             raise Exception('Please use the method add_test to '
                             'add tests that should be executed, before calling run()')
 
+        if (self.analyzers_to_run == []):
+            raise Exception('Please use the method add_test to \
+                add tests that should be executed, before calling run()')
+
+        ## Find column types
+        column_type_to_columns = {
+            "int": [self.first_df["marketplace_id"]],
+            "category": [self.first_df["value"]],
+            "text": [self.first_df["bullet_points"]]
+        }
+
         def update_preprocessings(groups, analyzer):
             for key, value in analyzer.needed_preprocessing().items():
                 groups[key].add(value)
             return groups
 
-        needed_preprocessings = reduce(update_preprocessings, self.analyzers_to_run, defaultdict(set))
-        logger.info(f"Needed Preprocessing: {dict(needed_preprocessings)}")
+        type_to_needed_preprocessings = reduce(update_preprocessings, self.analyzers_to_run, defaultdict(set))
+        type_to_needed_preprocessings = dict(type_to_needed_preprocessings)
+        logger.info(f"Needed Preprocessing: {type_to_needed_preprocessings}")
 
+        preprocessings = dict()
         ## Do the preprocessing
+        for column_type, needed_preprocessings in type_to_needed_preprocessings.items():
+            columns = column_type_to_columns[column_type]
+            for needed_preprocessing in needed_preprocessings:
+                if type(needed_preprocessing) is str:
+                    logger.warn(f"Unprocessed: {needed_preprocessing}")
+
 
         ## Link the preprocessing and pass them to the checks
 
