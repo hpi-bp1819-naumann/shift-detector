@@ -2,7 +2,8 @@ import pandas as pd
 from typing import List
 import logging as logger
 from shift_detector.analyzers.analyzer import Analyzer
-
+from collections import defaultdict
+from functools import reduce
 
 class Detector:
 
@@ -58,6 +59,20 @@ class Detector:
         if (self.analyzers_to_run == []):
             raise Exception('Please use the method add_test to \
                 add tests that should be executed, before calling run()')
+    
+        def update_preprocessings(groups, analyzer):
+            for key, value in analyzer.needed_preprocessing().items():
+                groups[key].add(value)
+            return groups
+
+        needed_preprocessings = reduce(update_preprocessings, self.analyzers_to_run, defaultdict(set))
+        logger.info(f"Needed Preprocessing: {dict(needed_preprocessings)}")
+
+        ## Do the preprocessing
+
+        ## Link the preprocessing and pass them to the checks
+
+        ## Run the checks
 
         for analyzer in self.analyzers_to_run:
             analyzer(self.first_df, self.second_df)\
