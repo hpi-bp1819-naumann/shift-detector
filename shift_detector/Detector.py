@@ -47,8 +47,8 @@ class Detector:
         second_df_columns = list(self.second_df.head(0))
 
         if first_df_columns != second_df_columns:
-            logger.error('The columns of the provided dataset '
-                         'should be the same, but are {} and {}'.format(first_df_columns, second_df_columns))
+            logger.warning('The columns of the provided dataset '
+                           'should be the same, but are {} and {}'.format(first_df_columns, second_df_columns))
 
             self.columns = self.get_common_column_names()
             logger.info('Using columns {} instead.'.format(self.columns))
