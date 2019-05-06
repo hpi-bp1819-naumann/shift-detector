@@ -1,5 +1,5 @@
-from shift_detector.analyzers.conditional_probabilities.extendedrule_and_cluster import ExtendedRule, RuleCluster
-from shift_detector.analyzers.conditional_probabilities import fpgrowth
+from shift_detector.analyzers.frequent_item_rules.extendedrule_and_cluster import ExtendedRule, RuleCluster
+# from shift_detector.analyzers.frequent_item_rules import fpgrowth
 
 
 def printrule(rule):
@@ -133,8 +133,7 @@ def cluster_rules_hierarchically(length_groups):
     return hierarchical_clusters
 
 
-def main():
-    rules = fpgrowth.main()
+def compress_rules(rules):
     rules = add_side_attributes_to_rules(rules)
     rules = remove_duplicate_rules(rules)
     rules = filter_non_values(rules)
@@ -152,7 +151,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    compress_rules()
 
 
 
