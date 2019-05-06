@@ -30,7 +30,7 @@ class Analyzer(metaclass=ABCMeta):
         self.second_df = second_df
 
         datawig_logger.setLevel('ERROR')
-
+        
     @abstractmethod
     def run(self, columns=[]) -> AnalyzerResult:
         """
