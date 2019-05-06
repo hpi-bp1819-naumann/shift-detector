@@ -14,7 +14,6 @@ class AnalyzerResult(metaclass=ABCMeta):
         Print report for analyzed columns
 
         """
-        pass
 
 
 class Analyzer(metaclass=ABCMeta):

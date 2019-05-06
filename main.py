@@ -5,6 +5,8 @@ from shift_detector.analyzers.KsChiAnalyzer import KsChiAnalyzer
 from shift_detector.analyzers.Chi2Analyzer import Chi2Analyzer
 from shift_detector.analyzers.TestAnalyzer import TestAnalyzer
 
+# Starting via console:
+# python3 main.py --train ./train_ascii.csv --test ./audits_ascii.csv --sep  ";"
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("-train", "--train", required=True, help="path of train dataset")
