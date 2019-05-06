@@ -3,6 +3,7 @@ import numpy as np
 from scipy import stats
 from datawig.utils import random_split
 from shift_detector.analyzers.analyzer import Analyzer, AnalyzerResult
+from shift_detector.preprocessors.Default import Default
 
 class Chi2Result(AnalyzerResult):
 
@@ -41,7 +42,7 @@ class Chi2Analyzer(Analyzer):
     @staticmethod
     def needed_preprocessing():
         return {
-            "category": "default",
+            "category": Default.process,
             "text": "word2vec"
         }
 

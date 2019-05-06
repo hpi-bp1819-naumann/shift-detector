@@ -1,4 +1,5 @@
 class Default():
 
-    def process(self, column):
+    @staticmethod
+    def process(column):
         return column

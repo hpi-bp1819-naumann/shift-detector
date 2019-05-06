@@ -80,15 +80,26 @@ class Detector:
         type_to_needed_preprocessings = dict(type_to_needed_preprocessings)
         logger.info(f"Needed Preprocessing: {type_to_needed_preprocessings}")
 
-        preprocessings = dict()
+        preprocessings = defaultdict(dict)
+        '''
+        preprocessings: {
+            "int": {
+                "default": pd.Serial
+            }
+        }
+        '''
         ## Do the preprocessing
         for column_type, needed_preprocessings in type_to_needed_preprocessings.items():
             columns = column_type_to_columns[column_type]
             for needed_preprocessing in needed_preprocessings:
                 if type(needed_preprocessing) is str:
                     logger.warn(f"Unprocessed: {needed_preprocessing}")
+                    continue
+                for column in columns:
+                    preprocessed = needed_preprocessing(column)
+                    preprocessings[column_type][needed_preprocessing] = preprocessed
 
-
+        print(dict(preprocessings))
         ## Link the preprocessing and pass them to the checks
 
         ## Run the checks
