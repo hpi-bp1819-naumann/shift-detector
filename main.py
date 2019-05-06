@@ -2,6 +2,8 @@ import argparse
 from shift_detector.Detector import Detector
 from shift_detector.analyzers.BasicAnalyzer import BasicAnalyzer
 from shift_detector.analyzers.KsChiAnalyzer import KsChiAnalyzer
+from shift_detector.analyzers.Chi2Analyzer import Chi2Analyzer
+from shift_detector.analyzers.TestAnalyzer import TestAnalyzer
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
@@ -15,7 +17,8 @@ if __name__ == "__main__":
     separator = args["sep"]
 
     Detector(train_path, audits_path, separator=separator) \
-    .add_analyzer(KsChiAnalyzer) \
+    .add_analyzer(Chi2Analyzer) \
+    .add_analyzer(TestAnalyzer) \
     .run()
     
     #modules=[])
