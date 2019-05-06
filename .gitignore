@@ -119,3 +119,6 @@ tmp/
 
 # Config
 config.py
+
+# IntelliJ
+.idea/

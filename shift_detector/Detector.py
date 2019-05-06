@@ -1,7 +1,6 @@
 import pandas as pd
 from typing import List
 import logging as logger
-import os
 from shift_detector.analyzers.analyzer import Analyzer
 
 
