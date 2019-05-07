@@ -25,16 +25,16 @@ class Analyzer():
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, first_df: pd.DataFrame, second_df: pd.DataFrame):
+    def __init__(self, data1: pd.DataFrame, data2: pd.DataFrame):
 
-        if first_df is None:
+        if data1 is None:
             raise Exception('No dataframe provided for argument first_df')
 
-        if second_df is None:
+        if data2 is None:
             raise Exception('No dataframe provided for argument second_df')
 
-        self.first_df = first_df
-        self.second_df = second_df
+        self.data1 = data1
+        self.data2 = data2
 
         datawig_logger.setLevel('ERROR')
 

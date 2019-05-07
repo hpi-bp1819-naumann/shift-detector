@@ -26,8 +26,8 @@ class KsChiResult(AnalyzerResult):
 
 class KsChiAnalyzer(Analyzer):
 
-    def __init__(self, first_df, second_df):
-        Analyzer.__init__(self, first_df, second_df)
+    def __init__(self, data1, data2):
+        Analyzer.__init__(self, data1, data2)
         
     # chi-squared
     def chi_test(self, a_series, b_series):
@@ -66,8 +66,8 @@ class KsChiAnalyzer(Analyzer):
 
     def run(self, columns=[]):
         results = pd.DataFrame()
-        for df in [self.first_df, self.second_df]:
+        for df in [self.data1, self.data2]:
             p1, p2 = random_split(df)
             results = results.append(self.column_statistics(p1, p2, columns), ignore_index=True)
-        results = results.append(self.column_statistics(self.first_df, self.second_df, columns), ignore_index=True)
+        results = results.append(self.column_statistics(self.data1, self.data2, columns), ignore_index=True)
         return KsChiResult(results)

@@ -30,9 +30,9 @@ class BasicAnalyzerResult(AnalyzerResult):
 
 class BasicAnalyzer(Analyzer):
 
-    def __init__(self, first_df: pd.DataFrame, second_df: pd.DataFrame):
+    def __init__(self, data1: pd.DataFrame, data2: pd.DataFrame):
 
-        Analyzer.__init__(self, first_df, second_df)
+        Analyzer.__init__(self, data1, data2)
 
         self.output_column = '__shiftDetecor__dataset'
         self.output_path = 'tmp/basicAnalyzer_params'
@@ -152,7 +152,7 @@ class BasicAnalyzer(Analyzer):
             output_column=self.output_column,
             output_path=self.output_path)
 
-        self.train_df, self.test_df = self.prepare_datasets(self.first_df, self.second_df)
+        self.train_df, self.test_df = self.prepare_datasets(self.data1, self.data2)
         self.imputer.fit(self.train_df, self.test_df)
 
         imputed = self.imputer.predict(self.test_df)
