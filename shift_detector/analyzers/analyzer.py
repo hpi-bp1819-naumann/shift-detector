@@ -2,13 +2,10 @@ import pandas as pd
 from abc import ABCMeta, abstractmethod
 from datawig.utils import logger as datawig_logger
 
-class AnalyzerResult():
-
-    __metaclass__ = ABCMeta
+class AnalyzerResult(metaclass=ABCMeta):
 
     def __init__(self, result={}):
         self.result = result
-
 
     @abstractmethod
     def print_report(self):
@@ -17,13 +14,9 @@ class AnalyzerResult():
         Print report for analyzed columns
 
         """
-        pass
 
 
-
-class Analyzer():
-
-    __metaclass__ = ABCMeta
+class Analyzer(metaclass=ABCMeta):
 
     def __init__(self, data1: pd.DataFrame, data2: pd.DataFrame):
 
@@ -37,7 +30,6 @@ class Analyzer():
         self.data2 = data2
 
         datawig_logger.setLevel('ERROR')
-
 
     @abstractmethod
     def run(self, columns=[]) -> AnalyzerResult:

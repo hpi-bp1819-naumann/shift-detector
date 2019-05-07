@@ -15,14 +15,11 @@ class BasicAnalyzerResult(AnalyzerResult):
     def __init__(self, result={}):
         AnalyzerResult.__init__(self, result)
 
-    
     def get_columns_with_shift(self):
         return self.result['relevant_columns']
 
-
     def get_classification_report(self):
         return self.result['classification_report']
-
 
     def get_f1_score(self, className: str):
         return self.result['classification_report'][className]['f1-score']
@@ -40,8 +37,7 @@ class BasicAnalyzer(Analyzer):
         self.train_df = None
         self.test_df = None
 
-        self.imputer = None
-
+        self.imputer = None\
 
     def label_datasets(self, first_df: pd.DataFrame, second_df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
@@ -58,7 +54,6 @@ class BasicAnalyzer(Analyzer):
 
         return first_df, second_df
 
-
     def sample_datasets(self, first_df: pd.DataFrame, second_df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
 
@@ -71,7 +66,6 @@ class BasicAnalyzer(Analyzer):
         """
         min_len = min(len(first_df), len(second_df))
         return first_df.sample(n=min_len), second_df.sample(n=min_len)
-
 
     def prepare_datasets(self, first_df: pd.DataFrame, second_df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
@@ -95,7 +89,6 @@ class BasicAnalyzer(Analyzer):
 
         return train_df, test_df
 
-
     def get_loss(self, df):
         iterator = ImputerIterDf(
             data_frame=df,
@@ -104,7 +97,6 @@ class BasicAnalyzer(Analyzer):
             batch_size=self.imputer.imputer.batch_size
         )
         return self.imputer.imputer.module.predict(iterator)[0].asnumpy().mean()
-
 
     def loss_with_random_permutation(self, df, column):
 
@@ -122,7 +114,6 @@ class BasicAnalyzer(Analyzer):
             losses += [self.get_loss(df_permutation)]
         return np.asarray(losses).mean()
 
-
     def relevant_columns(self, columns, thresh_percentage=.01):
 
         base_loss = self.get_loss(self.test_df)
@@ -135,7 +126,6 @@ class BasicAnalyzer(Analyzer):
 
         logger.info('The shifted columns are the following: {}'.format(relevant_columns))
         return relevant_columns
-        
 
     def run(self, columns=[]) -> BasicAnalyzerResult:
         """
