@@ -3,7 +3,11 @@ python:
   - "3.5"
   - "3.6"
 install:
-  - pip install coveralls
-script: python -m unittest discover
+  - pip install python-coveralls
+  - pip install coverage
+  - pip install nose
+script:
+  - python -m unittest discover
+  - nosetests --with-coverage
 after_success:
   - coveralls
