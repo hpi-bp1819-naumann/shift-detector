@@ -1,7 +1,7 @@
 import pandas as pd
 from typing import List
 import logging as logger
-from shift_detector.analyzers.analyzer import Analyzer
+from shift_detector.checks.Check import Check
 from collections import defaultdict
 from functools import reduce
 
@@ -12,7 +12,7 @@ class Detector:
         self.first_df = self.read_from_csv(first_path, separator).head(100)
         self.second_df = self.read_from_csv(second_path, separator).head(100)
 
-        self.analyzers_to_run = []
+        self.checks_to_run = []
         self.columns = []
 
     def read_from_csv(self, file_path: str, separator) -> pd.DataFrame:
@@ -33,12 +33,12 @@ class Detector:
 
         return list(common_columns)
     
-    def add_analyzer(self, analyzer: Analyzer):
-        self.analyzers_to_run += [analyzer]
+    def add_check(self, check: Check):
+        self.checks_to_run += [check]
         return self
 
-    def add_analyzers(self, analyzers: List[Analyzer]):
-        self.analyzers_to_run += analyzers
+    def add_checks(self, checks: List[Check]):
+        self.checks_to_run += checks
         return self
 
     def run(self):
@@ -54,11 +54,11 @@ class Detector:
         else:
             self.columns = first_df_columns
 
-        if not self.analyzers_to_run:
+        if not self.checks_to_run:
             raise Exception('Please use the method add_test to '
                             'add tests that should be executed, before calling run()')
 
-        if not self.analyzers_to_run:
+        if not self.checks_to_run:
             raise Exception('Please use the method add_test to \
                 add tests that should be executed, before calling run()')
 
@@ -69,12 +69,12 @@ class Detector:
             "text": (self.first_df[["bullet_points"]], self.second_df[["bullet_points"]])
         }
 
-        def update_preprocessings(groups, analyzer):
-            for key, value in analyzer.needed_preprocessing().items():
+        def update_preprocessings(groups, checks):
+            for key, value in checks.needed_preprocessing().items():
                 groups[key].add(value)
             return groups
 
-        type_to_needed_preprocessings = reduce(update_preprocessings, self.analyzers_to_run, defaultdict(set))
+        type_to_needed_preprocessings = reduce(update_preprocessings, self.checks_to_run, defaultdict(set))
         type_to_needed_preprocessings = dict(type_to_needed_preprocessings)
         logger.info(f"Needed Preprocessing: {type_to_needed_preprocessings}")
 
@@ -103,16 +103,16 @@ class Detector:
             return specific_preprocessings
 
         ## Link the preprocessing and pass them to the checks
-        analyzers = []
-        for analyzer_class in self.analyzers_to_run:
-            chosen_preprocessing = reduce(choose_preprocessings, analyzer_class.needed_preprocessing().items(), dict())
+        checks = []
+        for check_class in self.checks_to_run:
+            chosen_preprocessing = reduce(choose_preprocessings, check_class.needed_preprocessing().items(), dict())
             # TODO: remove this after changing method call
-            analyzer = analyzer_class(self.first_df, self.second_df)
-            analyzer.set_data(chosen_preprocessing)
-            analyzers.append(analyzer)
+            check = check_class(self.first_df, self.second_df)
+            check.set_data(chosen_preprocessing)
+            checks.append(check)
 
         ## Run the checks
-        for analyzer in analyzers:
-            analyzer\
+        for check in checks:
+            check\
                 .run(self.columns)\
                 .print_report()

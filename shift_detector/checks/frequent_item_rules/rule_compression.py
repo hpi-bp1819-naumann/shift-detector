@@ -1,5 +1,5 @@
-from shift_detector.analyzers.frequent_item_rules.extendedrule_and_cluster import ExtendedRule, RuleCluster
-# from shift_detector.analyzers.frequent_item_rules import fpgrowth
+from shift_detector.checks.frequent_item_rules.extendedrule_and_cluster import ExtendedRule, RuleCluster
+# from shift_detector.checks.frequent_item_rules import fpgrowth
 
 
 def printrule(rule):
