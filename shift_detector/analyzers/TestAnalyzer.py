@@ -38,6 +38,9 @@ class TestAnalyzer(Analyzer):
     def __init__(self, first_df, second_df):
         Analyzer.__init__(self, first_df, second_df)
 
+    def set_data(self, dataframes):
+        return
+
     @staticmethod
     def needed_preprocessing():
         return {

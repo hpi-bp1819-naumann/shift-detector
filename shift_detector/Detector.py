@@ -82,7 +82,7 @@ class Detector:
         '''
         preprocessings: {
             "int": {
-                "default": pd.Dataframe
+                "default": (pd.Dataframe1, pd.Dataframe2)
             }
         }
         '''
