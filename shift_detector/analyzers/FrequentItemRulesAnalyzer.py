@@ -16,10 +16,10 @@ class FrequentItemsetResult(AnalyzerResult):
         """
         limit = 4
         count = 0
-        print(str(limit+1), 'MOST IMPORTANT RULES \n')
+        # print(str(limit+1), 'MOST IMPORTANT RULES \n')
 
         for rule in self.data:
-            rule.print()
+            # rule.print()
             count += 1
             if count == limit:
                 break
