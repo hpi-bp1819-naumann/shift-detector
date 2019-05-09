@@ -8,7 +8,7 @@ from functools import reduce
 class Detector:
 
     def __init__(self, first_path: str, second_path: str, separator=','):
-        # TODO: remove sample
+        # TODO: remove sampling
         self.first_df = self.read_from_csv(first_path, separator).head(100)
         self.second_df = self.read_from_csv(second_path, separator).head(100)
 
@@ -34,12 +34,10 @@ class Detector:
         return list(common_columns)
     
     def add_analyzer(self, analyzer: Analyzer):
-        
         self.analyzers_to_run += [analyzer]
         return self
 
     def add_analyzers(self, analyzers: List[Analyzer]):
-        
         self.analyzers_to_run += analyzers
         return self
 
@@ -60,7 +58,7 @@ class Detector:
             raise Exception('Please use the method add_test to '
                             'add tests that should be executed, before calling run()')
 
-        if (self.analyzers_to_run == []):
+        if not self.analyzers_to_run:
             raise Exception('Please use the method add_test to \
                 add tests that should be executed, before calling run()')
 

@@ -271,7 +271,7 @@ def generate_association_rules(patterns, confidence_threshold, size):
     for itemset in patterns.keys():
         upper_support = patterns[itemset]
 
-        for i in range(1, len(itemset)):
+        for i in range(1, len(itemset) + 1):
             for antecedent in itertools.combinations(itemset, i):
                 antecedent = tuple(sorted(antecedent))
                 consequent = tuple(sorted(set(itemset) - set(antecedent)))
@@ -286,7 +286,3 @@ def generate_association_rules(patterns, confidence_threshold, size):
                         rules[data] = meta_data
 
     return rules
-
-
-def get_rules(transactions, keys):
-    pass
