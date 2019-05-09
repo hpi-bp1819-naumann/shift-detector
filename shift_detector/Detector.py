@@ -69,7 +69,6 @@ class Detector:
             "text": (self.first_df[["bullet_points"]], self.second_df[["bullet_points"]])
         }
 
-        print(column_type_to_columns["int"][0].head(5))
         def update_preprocessings(groups, analyzer):
             for key, value in analyzer.needed_preprocessing().items():
                 groups[key].add(value)
@@ -97,8 +96,6 @@ class Detector:
                     continue
                 preprocessed = needed_preprocessing(first_df, second_df)
                 preprocessings[column_type][needed_preprocessing] = preprocessed
-
-        print(preprocessings)
 
         def choose_preprocessings(specific_preprocessings, pair):
             column_type, preprocessings_method = pair
