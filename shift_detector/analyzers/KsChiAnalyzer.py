@@ -67,7 +67,7 @@ class KsChiAnalyzer(Analyzer):
             b_series = second_df[column]
             if a_series.dtype in [np.float64, np.int64]:
                 c_stats[column] = [self.ks_test(a_series, b_series)]
-            else:#elif len(a_series.unique()) <= categorical_threshold:
+            else: #elif len(a_series.unique()) <= categorical_threshold:
                 c_stats[column] = [self.chi_test(a_series, b_series)]
             #else:
                 # treat as text
