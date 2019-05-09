@@ -42,15 +42,6 @@ class RuleCluster:
         # print(own_attributes.issubset(other_attributes))
         return other_attributes.issubset(own_attributes)
 
-    def compare_to_cluster(self, other_cluster):
-        own_attributes = set(self.attributes)
-        other_attributes = set(other_cluster.attributes)
-
-        if other_attributes.issubset(own_attributes):
-            print()
-
-        return other_attributes.issubset(own_attributes)
-
     def compare_to_new_rule(self, new_rule):
         own_attributes = set(self.attributes)
         new_rule_attributes = set(new_rule.left_side + new_rule.right_side)
