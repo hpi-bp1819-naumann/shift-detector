@@ -2,6 +2,8 @@ import argparse
 from shift_detector.Detector import Detector
 from shift_detector.analyzers.BasicAnalyzer import BasicAnalyzer
 from shift_detector.analyzers.KsChiAnalyzer import KsChiAnalyzer
+from shift_detector.analyzers.Chi2Analyzer import Chi2Analyzer
+from shift_detector.analyzers.TestAnalyzer import TestAnalyzer
 
 # Starting via console:
 # python3 main.py --train ./train_ascii.csv --test ./audits_ascii.csv --sep  ";"
@@ -17,8 +19,11 @@ if __name__ == "__main__":
     separator = args["sep"]
 
     Detector(train_path, audits_path, separator=separator) \
-        .add_analyzer(KsChiAnalyzer) \
-        .run()
+    .add_analyzer(Chi2Analyzer) \
+    .run()
+    #.add_analyzer(TestAnalyzer) \
     
-    # modules=[])
-    # .add_analyzer(KsChiAnalyzer) \
+    
+    #modules=[])
+    #.add_analyzer(KsChiAnalyzer) \
+    
