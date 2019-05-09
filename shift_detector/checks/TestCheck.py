@@ -2,9 +2,9 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 from datawig.utils import random_split
-from shift_detector.analyzers.analyzer import Analyzer, AnalyzerResult
+from shift_detector.checks.Check import Check, CheckResult
 
-class TestResult(AnalyzerResult):
+class TestResult(CheckResult):
 
     def __init__(self, data, significance=0.01):
         self.data = data
@@ -33,10 +33,10 @@ class TestResult(AnalyzerResult):
         print('Columns with a Shift:', self.remarkable_columns())
     
 
-class TestAnalyzer(Analyzer):
+class TestCheck(Check):
 
     def __init__(self, first_df, second_df):
-        Analyzer.__init__(self, first_df, second_df)
+        Check.__init__(self, first_df, second_df)
 
     def set_data(self, dataframes):
         return

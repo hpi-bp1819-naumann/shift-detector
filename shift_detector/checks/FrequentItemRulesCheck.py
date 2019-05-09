@@ -1,9 +1,9 @@
-from shift_detector.analyzers.analyzer import Analyzer, AnalyzerResult
-from shift_detector.analyzers.frequent_item_rules import fpgrowth, rule_compression
+from shift_detector.checks.Check import Check, CheckResult
+from shift_detector.checks.frequent_item_rules import fpgrowth, rule_compression
 import pandas as pd
 
 
-class FrequentItemsetResult(AnalyzerResult):
+class FrequentItemsetResult(CheckResult):
 
     def __init__(self, data):
         self.data = data
@@ -11,7 +11,7 @@ class FrequentItemsetResult(AnalyzerResult):
     def print_report(self):
         """
 
-        Print report for analyzed columns
+        Print report for checked columns
 
         """
         limit = 4
@@ -25,10 +25,10 @@ class FrequentItemsetResult(AnalyzerResult):
                 break
 
 
-class FrequentItemsetAnalyzer(Analyzer):
+class FrequentItemsetCheck(Check):
 
     def __init__(self, first_df: pd.DataFrame, second_df: pd.DataFrame):
-        Analyzer.__init__(self, first_df, second_df)
+        Check.__init__(self, first_df, second_df)
 
     @staticmethod
     def needed_preprocessing():
@@ -40,12 +40,12 @@ class FrequentItemsetAnalyzer(Analyzer):
     def set_data(self, dataframes):
         return
 
-    def run(self, columns=[]) -> AnalyzerResult:
+    def run(self, columns=[]) -> CheckResult:
         """
-        Runs analyzer on provided columns
+        Runs check on provided columns
 
         :param columns:
-        :return: AnalyzerResult
+        :return: CheckResult
 
         """
         df1 = self.first_df[columns]

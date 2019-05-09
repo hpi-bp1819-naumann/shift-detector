@@ -1,10 +1,10 @@
 import argparse
 from shift_detector.Detector import Detector
-from shift_detector.analyzers.BasicAnalyzer import BasicAnalyzer
-from shift_detector.analyzers.KsChiAnalyzer import KsChiAnalyzer
-from shift_detector.analyzers.Chi2Analyzer import Chi2Analyzer
-from shift_detector.analyzers.FrequentItemRulesAnalyzer import FrequentItemsetAnalyzer
-from shift_detector.analyzers.TestAnalyzer import TestAnalyzer
+from shift_detector.checks.BasicCheck import BasicCheck
+from shift_detector.checks.KsChiCheck import KsChiCheck
+from shift_detector.checks.Chi2Check import Chi2Check
+from shift_detector.checks.FrequentItemRulesCheck import FrequentItemsetCheck
+from shift_detector.checks.TestCheck import TestCheck
 
 # Starting via console:
 # python3 main.py --train ./train_ascii.csv --test ./audits_ascii.csv --sep  ";"
@@ -22,9 +22,9 @@ if __name__ == "__main__":
     separator = args["sep"]
 
     Detector(train_path, audits_path, separator=separator) \
-        .add_analyzer(TestAnalyzer) \
-        .add_analyzer(FrequentItemsetAnalyzer) \
+        .add_check(TestCheck) \
+        .add_check(FrequentItemsetCheck) \
         .run()
 
     # modules=[])
-    # .add_analyzer(KsChiAnalyzer) \
+    # .add_check(KsChiCheck) \

@@ -1,6 +1,6 @@
 import csv
 from collections import namedtuple
-from shift_detector.analyzers.frequent_item_rules import pyfpgrowth_core
+from shift_detector.checks.frequent_item_rules import pyfpgrowth_core
 
 relative_min_support = 0.02
 min_confidence = 0.1

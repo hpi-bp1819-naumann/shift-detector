@@ -3,7 +3,7 @@ from abc import ABCMeta, abstractmethod
 from datawig.utils import logger as datawig_logger
 
 
-class AnalyzerResult(metaclass=ABCMeta):
+class CheckResult(metaclass=ABCMeta):
 
     def __init__(self, result={}):
         self.result = result
@@ -12,12 +12,12 @@ class AnalyzerResult(metaclass=ABCMeta):
     def print_report(self):
         """
 
-        Print report for analyzed columns
+        Print report for checked columns
 
         """
 
 
-class Analyzer(metaclass=ABCMeta):
+class Check(metaclass=ABCMeta):
 
     def __init__(self, first_df: pd.DataFrame, second_df: pd.DataFrame):
 
@@ -33,13 +33,13 @@ class Analyzer(metaclass=ABCMeta):
         datawig_logger.setLevel('ERROR')
         
     @abstractmethod
-    def run(self, columns=[]) -> AnalyzerResult:
+    def run(self, columns=[]) -> CheckResult:
         """
 
-        Runs analyzer on provided columns
+        Runs check on provided columns
 
         :param columns:
-        :return: AnalyzerResult
+        :return: CheckResult
 
         """
         pass
