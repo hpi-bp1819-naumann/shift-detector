@@ -6,5 +6,5 @@
 See [unittest-Documentation](https://docs.python.org/3/library/unittest.html) for information of test framework.
 ```
 # Run unittests
-python -m unittest discover
+python3 -m unittest discover
 ```
