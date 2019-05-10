@@ -5,6 +5,7 @@ from shift_detector.checks.Check import Check
 from collections import defaultdict
 from functools import reduce
 
+
 class Detector:
 
     def __init__(self, first_path: str, second_path: str, separator=','):
@@ -64,7 +65,8 @@ class Detector:
 
         ## Find column types
         column_type_to_columns = {
-            "int": (self.first_df[["marketplace_id", "refinement_id"]], self.second_df[["marketplace_id", "refinement_id"]]),
+            "int": (self.first_df[["marketplace_id", "refinement_id"]],
+                    self.second_df[["marketplace_id", "refinement_id"]]),
             "category": (self.first_df[["value", "attribute"]], self.second_df[["value", "attribute"]]),
             "text": (self.first_df[["bullet_points"]], self.second_df[["bullet_points"]])
         }
@@ -91,7 +93,7 @@ class Detector:
             (first_df, second_df) = column_type_to_columns[column_type]
             for needed_preprocessing in needed_preprocessings:
                 if type(needed_preprocessing) is str:
-                    logger.warn(f"Unprocessed: {needed_preprocessing}")
+                    logger.warning(f"Unprocessed: {needed_preprocessing}")
                     preprocessings[column_type][needed_preprocessing] = (first_df, second_df)
                     continue
                 preprocessed = needed_preprocessing(first_df, second_df)
@@ -113,6 +115,6 @@ class Detector:
 
         ## Run the checks
         for check in checks:
-            check\
-                .run(self.columns)\
+            check \
+                .run(self.columns) \
                 .print_report()
