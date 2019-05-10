@@ -18,19 +18,6 @@ class CheckResult(metaclass=ABCMeta):
 
 
 class Check(metaclass=ABCMeta):
-
-    def __init__(self, first_df: pd.DataFrame, second_df: pd.DataFrame):
-
-        if first_df is None:
-            raise Exception('No dataframe provided for argument first_df')
-
-        if second_df is None:
-            raise Exception('No dataframe provided for argument second_df')
-
-        self.first_df = first_df
-        self.second_df = second_df
-
-        datawig_logger.setLevel('ERROR')
         
     @abstractmethod
     def run(self, columns=[]) -> CheckResult:

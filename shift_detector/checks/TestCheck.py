@@ -38,17 +38,17 @@ class TestResult(CheckResult):
 
 class TestCheck(Check):
 
-    def __init__(self, first_df, second_df):
-        Check.__init__(self, first_df, second_df)
+    def __init__(self):
+        self.data = dict()
+        self.text_embedding = WordEmbedding(model=FastText(size=300, window=5, min_count=1, workers=4))
 
-    def set_data(self, dataframes):
-        return
+    def set_data(self, data):
+        self.data = data
 
-    @staticmethod
-    def needed_preprocessing():
+    def needed_preprocessing(self):
         return {
             "category": Default(),
-            "text": WordEmbedding(model=FastText(size=200, window=5, min_count=1, workers=4))
+            "text": self.text_embedding
         }
 
     # chi-squared
@@ -77,8 +77,8 @@ class TestCheck(Check):
 
     def run(self, columns=[]):
         results = pd.DataFrame()
-        for df in [self.first_df, self.second_df]:
+        for df in self.data["category"]:
             p1, p2 = random_split(df)
-            results = results.append(self.column_statistics(p1, p2, columns), ignore_index=True)
-        results = results.append(self.column_statistics(self.first_df, self.second_df, columns), ignore_index=True)
+            results = results.append(self.column_statistics(p1, p2), ignore_index=True)
+        results = results.append(self.column_statistics(self.data["category"][0], self.data["category"][1]), ignore_index=True)
         return TestResult(results)
