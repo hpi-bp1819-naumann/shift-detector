@@ -66,7 +66,7 @@ class Detector:
         column_type_to_columns = {
             "int": (self.first_df[["marketplace_id", "refinement_id"]], self.second_df[["marketplace_id", "refinement_id"]]),
             "category": (self.first_df[["value", "attribute"]], self.second_df[["value", "attribute"]]),
-            "text": (self.first_df[["bullet_points"]], self.second_df[["bullet_points"]])
+            "text": (self.first_df["bullet_points"], self.second_df["bullet_points"])
         }
 
         def update_preprocessings(groups, checks):
@@ -94,7 +94,7 @@ class Detector:
                     logger.warn(f"Unprocessed: {needed_preprocessing}")
                     preprocessings[column_type][needed_preprocessing] = (first_df, second_df)
                     continue
-                preprocessed = needed_preprocessing(first_df, second_df)
+                preprocessed = needed_preprocessing.process(first_df, second_df)
                 preprocessings[column_type][needed_preprocessing] = preprocessed
 
         def choose_preprocessings(specific_preprocessings, pair):

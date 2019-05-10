@@ -3,6 +3,8 @@ import numpy as np
 from scipy import stats
 from datawig.utils import random_split
 from shift_detector.checks.Check import Check, CheckResult
+from shift_detector.preprocessors.Default import Default
+from shift_detector.preprocessors.WordEmbeddings import WordEmbedding, EmbeddingType
 
 class TestResult(CheckResult):
 
@@ -44,8 +46,8 @@ class TestCheck(Check):
     @staticmethod
     def needed_preprocessing():
         return {
-            "category": "default",
-            "text": "fasttext"
+            "category": Default(),
+            "text": WordEmbedding(embedding=EmbeddingType.FastText)
         }
 
     # chi-squared
