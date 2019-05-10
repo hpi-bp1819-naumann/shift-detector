@@ -92,10 +92,6 @@ class Detector:
         for column_type, needed_preprocessings in type_to_needed_preprocessings.items():
             (first_df, second_df) = column_type_to_columns[column_type]
             for needed_preprocessing in needed_preprocessings:
-                if type(needed_preprocessing) is str:
-                    logger.warning(f"Unprocessed: {needed_preprocessing}")
-                    preprocessings[column_type][needed_preprocessing] = (first_df, second_df)
-                    continue
                 preprocessed = needed_preprocessing.process(first_df, second_df)
                 preprocessings[column_type][needed_preprocessing] = preprocessed
 
@@ -105,16 +101,12 @@ class Detector:
             return specific_preprocessings
 
         ## Link the preprocessing and pass them to the checks
-        checks = []
-        for check_class in self.checks_to_run:
-            chosen_preprocessing = reduce(choose_preprocessings, check_class.needed_preprocessing().items(), dict())
-            # TODO: remove this after changing method call
-            check = check_class(self.first_df, self.second_df)
+        for check in self.checks_to_run:
+            chosen_preprocessing = reduce(choose_preprocessings, check.needed_preprocessing().items(), dict())
             check.set_data(chosen_preprocessing)
-            checks.append(check)
 
         ## Run the checks
-        for check in checks:
-            check \
-                .run(self.columns) \
+        for check in self.checks_to_run:
+            check\
+                .run(self.columns)\
                 .print_report()
