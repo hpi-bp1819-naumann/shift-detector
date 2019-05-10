@@ -5,6 +5,7 @@ from shift_detector.checks.Check import Check
 from collections import defaultdict
 from functools import reduce
 
+
 class Detector:
 
     def __init__(self, first_path: str, second_path: str, separator=','):
@@ -64,7 +65,8 @@ class Detector:
 
         ## Find column types
         column_type_to_columns = {
-            "int": (self.first_df[["marketplace_id", "refinement_id"]], self.second_df[["marketplace_id", "refinement_id"]]),
+            "int": (self.first_df[["marketplace_id", "refinement_id"]],
+                    self.second_df[["marketplace_id", "refinement_id"]]),
             "category": (self.first_df[["value", "attribute"]], self.second_df[["value", "attribute"]]),
             "text": (self.first_df["bullet_points"], self.second_df["bullet_points"])
         }

@@ -1,7 +1,7 @@
 class ExtendedRule:
 
     def __init__(self, left_side, right_side, supports_of_left_side, delta_supports_of_left_side, supports,
-                 delta_supports, confidences, delta_confidences, length, all_sides, groupkey):
+                 delta_supports, confidences, delta_confidences, all_sides, groupkey):
 
         self.left_side = left_side
         self.right_side = right_side
@@ -11,7 +11,6 @@ class ExtendedRule:
         self.delta_supports = delta_supports
         self.confidences = confidences
         self.delta_confidences = delta_confidences
-        self.length = length
         self.all_sides = all_sides
         self.groupkey = groupkey
 
@@ -42,15 +41,15 @@ class RuleCluster:
         # print(own_attributes.issubset(other_attributes))
         return other_attributes.issubset(own_attributes)
 
-    def compare_to_new_rule(self, new_rule):
+    def is_supercluster(self, new_rule):
         own_attributes = set(self.attributes)
         new_rule_attributes = set(new_rule.left_side + new_rule.right_side)
 
         if own_attributes.issubset(new_rule_attributes):
             if abs(new_rule.delta_supports_of_left_side) <= abs(self.max_abs_delta_support_left):
-                return 'supercluster'
+                return True
         else:
-            return 'not together'
+            return False
 
     def print(self):
         attribute_string = ''
@@ -74,10 +73,4 @@ class RuleCluster:
         for attribute in self.attributes:
             result += str(attribute)
         return result
-
-
-
-
-
-
 
