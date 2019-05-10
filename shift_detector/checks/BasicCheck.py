@@ -7,13 +7,13 @@ from typing import Tuple
 from sklearn.metrics import classification_report
 import numpy as np
 import logging as logger
-from shift_detector.analyzers.analyzer import Analyzer, AnalyzerResult
+from shift_detector.checks.Check import Check, CheckResult
 
 
-class BasicAnalyzerResult(AnalyzerResult):
+class BasicCheckResult(CheckResult):
 
     def __init__(self, result={}):
-        AnalyzerResult.__init__(self, result)
+        CheckResult.__init__(self, result)
 
     def get_columns_with_shift(self):
         return self.result['relevant_columns']
@@ -25,19 +25,19 @@ class BasicAnalyzerResult(AnalyzerResult):
         return self.result['classification_report'][className]['f1-score']
 
 
-class BasicAnalyzer(Analyzer):
+class BasicCheck(Check):
 
-    def __init__(self, data1: pd.DataFrame, data2: pd.DataFrame):
+    def __init__(self, first_df: pd.DataFrame, second_df: pd.DataFrame):
 
-        Analyzer.__init__(self, data1, data2)
+        Check.__init__(self, first_df, second_df)
 
         self.output_column = '__shiftDetecor__dataset'
-        self.output_path = 'tmp/basicAnalyzer_params'
+        self.output_path = 'tmp/basicChecks_params'
 
         self.train_df = None
         self.test_df = None
 
-        self.imputer = None\
+        self.imputer = None
 
     def label_datasets(self, first_df: pd.DataFrame, second_df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
@@ -127,13 +127,13 @@ class BasicAnalyzer(Analyzer):
         logger.info('The shifted columns are the following: {}'.format(relevant_columns))
         return relevant_columns
 
-    def run(self, columns=[]) -> BasicAnalyzerResult:
+    def run(self, columns=[]) -> BasicCheckResult:
         """
 
-        Runs analyzer on provided columns
+        Runs check on provided columns
 
         :param columns:
-        :return: AnalyzerResult
+        :return: CheckResult
 
         """
 
@@ -142,15 +142,15 @@ class BasicAnalyzer(Analyzer):
             output_column=self.output_column,
             output_path=self.output_path)
 
-        self.train_df, self.test_df = self.prepare_datasets(self.data1, self.data2)
+        self.train_df, self.test_df = self.prepare_datasets(self.first_df, self.second_df)
         self.imputer.fit(self.train_df, self.test_df)
 
         imputed = self.imputer.predict(self.test_df)
         y_true, y_pred = imputed[self.output_column], imputed[self.output_column + '_imputed']
 
-        result = {}
+        result = dict()
         result['classification_report'] = classification_report(y_true, y_pred)
         result['relevant_columns'] = self.relevant_columns(columns)
 
-        return BasicAnalyzerResult(result=result)
+        return BasicCheckResult(result=result)
 

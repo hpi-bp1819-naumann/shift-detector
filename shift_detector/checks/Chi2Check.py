@@ -2,15 +2,17 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 from datawig.utils import random_split
-from shift_detector.analyzers.analyzer import Analyzer, AnalyzerResult
+from shift_detector.checks.Check import Check, CheckResult
+from shift_detector.preprocessors.Default import Default
+from shift_detector.preprocessors.WordEmbeddings import WordEmbedding, EmbeddingType
+from gensim.models import FastText
 
-
-class KsChiResult(AnalyzerResult):
+class Chi2Result(CheckResult):
 
     def __init__(self, data, significance=0.01):
         self.data = data
         self.significance = significance
-
+    
     def remarkable_columns(self):
         # return names of columns for which inner set test didn't fail, but cross set test failed
         return list(self.data[self.data.columns[
@@ -34,11 +36,22 @@ class KsChiResult(AnalyzerResult):
         print('Columns with a Shift:', self.remarkable_columns())
     
 
-class KsChiAnalyzer(Analyzer):
+class Chi2Check(Check):
+    # TODO: remove first and second df
+    def __init__(self, first_df, second_df):
+        Check.__init__(self, first_df, second_df)
+        self.data = dict()
 
-    def __init__(self, data1, data2):
-        Analyzer.__init__(self, data1, data2)
-        
+    def set_data(self, data):
+        self.data = data
+
+    @staticmethod
+    def needed_preprocessing():
+        return {
+            "category": Default(),
+            "text": WordEmbedding(model=FastText(size=200, window=5, min_count=1, workers=4))
+        }
+
     # chi-squared
     def chi_test(self, a_series, b_series):
         a_counts = a_series.value_counts()
@@ -50,13 +63,8 @@ class KsChiAnalyzer(Analyzer):
             if value not in a_counts:
                 a_counts = a_counts.append(pd.Series(0, index=[value]))
         observed = pd.DataFrame.from_dict({'a':a_counts, 'b':b_counts})
-        chi2, p, dof, expected = stats.chi2_contingency(observed)
+        _, p, _, _ = stats.chi2_contingency(observed)
         return p
-
-    # kolmogorov-smirnov
-    def ks_test(self, a_series, b_series):
-        ks_test_result = stats.ks_2samp(a_series, b_series)
-        return ks_test_result.pvalue
 
     def column_statistics(self, first_df, second_df, columns=[], categorical_threshold=100):
         c_stats = pd.DataFrame()
@@ -65,19 +73,14 @@ class KsChiAnalyzer(Analyzer):
         for column in columns:
             a_series = first_df[column]
             b_series = second_df[column]
-            if a_series.dtype in [np.float64, np.int64]:
-                c_stats[column] = [self.ks_test(a_series, b_series)]
-            else:#elif len(a_series.unique()) <= categorical_threshold:
-                c_stats[column] = [self.chi_test(a_series, b_series)]
-            #else:
-                # treat as text
-                #c_stats
+            c_stats[column] = [self.chi_test(a_series, b_series)]
         return c_stats
 
     def run(self, columns=[]):
         results = pd.DataFrame()
-        for df in [self.data1, self.data2]:
+        for df in self.data["category"]:
             p1, p2 = random_split(df)
-            results = results.append(self.column_statistics(p1, p2, columns), ignore_index=True)
-        results = results.append(self.column_statistics(self.data1, self.data2, columns), ignore_index=True)
-        return KsChiResult(results)
+            results = results.append(self.column_statistics(p1, p2), ignore_index=True)
+
+        results = results.append(self.column_statistics(self.data["category"][0], self.data["category"][1]), ignore_index=True)
+        return Chi2Result(results)

@@ -42,15 +42,6 @@ class RuleCluster:
         # print(own_attributes.issubset(other_attributes))
         return other_attributes.issubset(own_attributes)
 
-    def compare_to_cluster(self, other_cluster):
-        own_attributes = set(self.attributes)
-        other_attributes = set(other_cluster.attributes)
-
-        if other_attributes.issubset(own_attributes):
-            print()
-
-        return other_attributes.issubset(own_attributes)
-
     def compare_to_new_rule(self, new_rule):
         own_attributes = set(self.attributes)
         new_rule_attributes = set(new_rule.left_side + new_rule.right_side)
@@ -70,11 +61,11 @@ class RuleCluster:
         print('max_delta_support: ', self.max_abs_delta_support_left, '\t max_delta_confidence:',
               self.max_abs_delta_confidence, '\t number of subrules:', len(self.subcluster))
 
-        subrules_string = ''
-        for subrule in self.subcluster:
-            subrules_string += str(subrule.all_sides) + '  '
-        if len(self.subcluster) > 0:
-            print('-->', subrules_string)
+        # subrules_string = ''
+        # for subrule in self.subcluster:
+        #     subrules_string += str(subrule.all_sides) + '  '
+        # if len(self.subcluster) > 0:
+        #     print('-->', subrules_string)
 
         print('\n')
 

@@ -1,17 +1,18 @@
 import pandas as pd
 from typing import List
 import logging as logger
-from shift_detector.analyzers.analyzer import Analyzer
-
+from shift_detector.checks.Check import Check
+from collections import defaultdict
+from functools import reduce
 
 class Detector:
 
     def __init__(self, first_path: str, second_path: str, separator=','):
-        # TODO: remove sample
-        self.first_df = self.read_from_csv(first_path, separator).sample(100)
-        self.second_df = self.read_from_csv(second_path, separator).sample(100)
+        # TODO: remove sampling
+        self.first_df = self.read_from_csv(first_path, separator).head(100)
+        self.second_df = self.read_from_csv(second_path, separator).head(100)
 
-        self.analyzers_to_run = []
+        self.checks_to_run = []
         self.columns = []
 
     def read_from_csv(self, file_path: str, separator) -> pd.DataFrame:
@@ -32,14 +33,12 @@ class Detector:
 
         return list(common_columns)
     
-    def add_analyzer(self, analyzer: Analyzer):
-        
-        self.analyzers_to_run += [analyzer]
+    def add_check(self, check: Check):
+        self.checks_to_run += [check]
         return self
 
-    def add_analyzers(self, analyzers: List[Analyzer]):
-        
-        self.analyzers_to_run += analyzers
+    def add_checks(self, checks: List[Check]):
+        self.checks_to_run += checks
         return self
 
     def run(self):
@@ -55,11 +54,65 @@ class Detector:
         else:
             self.columns = first_df_columns
 
-        if not self.analyzers_to_run:
+        if not self.checks_to_run:
             raise Exception('Please use the method add_test to '
                             'add tests that should be executed, before calling run()')
 
-        for analyzer in self.analyzers_to_run:
-            analyzer(self.first_df, self.second_df)\
+        if not self.checks_to_run:
+            raise Exception('Please use the method add_test to \
+                add tests that should be executed, before calling run()')
+
+        ## Find column types
+        column_type_to_columns = {
+            "int": (self.first_df[["marketplace_id", "refinement_id"]], self.second_df[["marketplace_id", "refinement_id"]]),
+            "category": (self.first_df[["value", "attribute"]], self.second_df[["value", "attribute"]]),
+            "text": (self.first_df["bullet_points"], self.second_df["bullet_points"])
+        }
+
+        def update_preprocessings(groups, checks):
+            for key, value in checks.needed_preprocessing().items():
+                groups[key].add(value)
+            return groups
+
+        type_to_needed_preprocessings = reduce(update_preprocessings, self.checks_to_run, defaultdict(set))
+        type_to_needed_preprocessings = dict(type_to_needed_preprocessings)
+        logger.info(f"Needed Preprocessing: {type_to_needed_preprocessings}")
+
+        preprocessings = defaultdict(dict)
+        '''
+        preprocessings: {
+            "int": {
+                "default": (pd.Dataframe1, pd.Dataframe2)
+            }
+        }
+        '''
+        ## Do the preprocessing
+        for column_type, needed_preprocessings in type_to_needed_preprocessings.items():
+            (first_df, second_df) = column_type_to_columns[column_type]
+            for needed_preprocessing in needed_preprocessings:
+                if type(needed_preprocessing) is str:
+                    logger.warn(f"Unprocessed: {needed_preprocessing}")
+                    preprocessings[column_type][needed_preprocessing] = (first_df, second_df)
+                    continue
+                preprocessed = needed_preprocessing.process(first_df, second_df)
+                preprocessings[column_type][needed_preprocessing] = preprocessed
+
+        def choose_preprocessings(specific_preprocessings, pair):
+            column_type, preprocessings_method = pair
+            specific_preprocessings[column_type] = preprocessings[column_type][preprocessings_method]
+            return specific_preprocessings
+
+        ## Link the preprocessing and pass them to the checks
+        checks = []
+        for check_class in self.checks_to_run:
+            chosen_preprocessing = reduce(choose_preprocessings, check_class.needed_preprocessing().items(), dict())
+            # TODO: remove this after changing method call
+            check = check_class(self.first_df, self.second_df)
+            check.set_data(chosen_preprocessing)
+            checks.append(check)
+
+        ## Run the checks
+        for check in checks:
+            check\
                 .run(self.columns)\
                 .print_report()
