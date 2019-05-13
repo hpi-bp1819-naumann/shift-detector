@@ -122,3 +122,6 @@ config.py
 
 # IntelliJ
 .idea/
+
+# iOS Stuff
+.DS_Store
