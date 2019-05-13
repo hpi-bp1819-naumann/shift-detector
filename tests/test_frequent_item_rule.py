@@ -5,6 +5,23 @@ from collections import namedtuple
 import copy
 
 
+class TestRuleCluster(unittest.TestCase):
+
+    def test_supercluster(self):
+        cluster_a = RuleCluster(['a'], [])
+        cluster_b = RuleCluster(['a', 'b'], [])
+        cluster_c = RuleCluster(['b'], [])
+
+        rule = ExtendedRule(left_side=(('value', 'A'),), right_side=(), supports_of_left_side=(),
+                            delta_supports_of_left_side=-0.16, supports=(0.65, 0.81), delta_supports=-0.16,
+                            confidences=(1.0, 1.0), delta_confidences=0.1)
+
+        self.assertFalse(cluster_a.is_supercluster(cluster_b))
+        self.assertFalse(cluster_a.is_supercluster(cluster_c))
+        self.assertTrue(cluster_b.is_supercluster(cluster_a))
+        self.assertTrue(cluster_b.is_supercluster(cluster_c))
+
+
 class TestFrequentItemRule(unittest.TestCase):
 
     def setUp(self):
@@ -20,9 +37,6 @@ class TestFrequentItemRule(unittest.TestCase):
         self.rule_b = copy.copy(self.extended_rule)
         self.rule_c = copy.copy(self.extended_rule)
 
-    def test_true(self):
-        self.assertTrue(True)
-
     def test_side_attributes(self):
         self.assertEqual(rule_compression.add_side_attributes_to_rules([]), [])
         self.assertTrue(isinstance(self.extended_rule, ExtendedRule), msg='{0}'.format(self.extended_rule))
@@ -32,6 +46,8 @@ class TestFrequentItemRule(unittest.TestCase):
         self.assertEqual(len(multiple_rules), len(multiple_rules_extended))
 
     def test_remove_duplicates(self):
+        self.assertEqual(rule_compression.remove_allsame_attributes([]), [])
+
         self.rule_a.left_side = (('value', 'A'), ('value', 'B'), ('value', 'C'))
         self.rule_b.left_side = (('value', 'D'), ('value', 'B'), ('value', 'F'))
         self.rule_c.left_side = (('value', 'X'), ('value', 'B'), ('value', 'Z'))
@@ -130,6 +146,26 @@ class TestFrequentItemRule(unittest.TestCase):
         length_groups = rule_compression.group_rules_by_length(rules)
         hierarchical_clusters = rule_compression.cluster_rules_hierarchically(length_groups)
         self.assertEqual(len(hierarchical_clusters), 2)
+
+    def test_printrule(self):
+        self.assertEqual(rule_compression.printrule(self.extended_rule), None)
+        self.rule_a.left_side = []
+        self.assertEqual(rule_compression.printrule(self.rule_a), None)
+
+    def test_complete_rule_compression(self):
+        specialized_rule = copy.copy(self.extended_rule)
+        specialized_rule.left_side = (('value', 'A'), ('color', 'green'),)
+        specialized_rule.right_side = (('isCreative', False),)
+        specialized_rule.delta_supports_of_left_side = 0.5
+        specialized_rule.delta_supports = 0.5
+
+        rules = [self.rule_a, self.rule_b, self.rule_c, specialized_rule]
+        compressed_rules = rule_compression.compress_rules(rules)
+        self.assertEqual(len(compressed_rules), 2)
+        self.assertEqual(len(compressed_rules[0].subcluster), 0)
+        self.assertEqual(len(compressed_rules[1].subcluster), 2)
+
+
 
 
 

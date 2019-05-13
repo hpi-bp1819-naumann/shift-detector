@@ -11,6 +11,7 @@ def printrule(rule):
         print('//rule has no left side')
         print('() -->', rule.right_side)
     print()
+    return
 
 
 def remove_allsame_attributes(rules):
@@ -137,8 +138,8 @@ def compress_rules(rules):
     return hierarchical_clusters
 
 
-if __name__ == '__main__':
-    compress_rules()
+# if __name__ == '__main__':
+#     compress_rules()
 
 
 
