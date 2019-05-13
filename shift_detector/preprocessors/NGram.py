@@ -1,10 +1,3 @@
-from enum import Enum
-import numpy as np
-from gensim.models import FastText, Word2Vec
-from numbers import Number
-from copy import copy
-
-
 class NGram:
 
     def __init__(self, n=5):
