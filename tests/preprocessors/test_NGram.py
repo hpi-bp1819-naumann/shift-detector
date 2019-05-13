@@ -3,7 +3,7 @@ import pandas as pd
 from shift_detector.preprocessors.NGram import NGram
 
 
-class TestFrequentItemRule(unittest.TestCase):
+class TestNGramPreprocessor(unittest.TestCase):
 
     def setUp(self):
         self.ser1 = pd.Series(['Hello World', 'Foo Bar Baz'])
