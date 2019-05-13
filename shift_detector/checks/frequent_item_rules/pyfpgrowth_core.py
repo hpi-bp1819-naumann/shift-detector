@@ -1,5 +1,53 @@
 """
-Adapted from https://github.com/evandempsey/fp-growth
+An implementation of the FP-growth algorithm as proposed in [Han2000]_.
+The code is largely copied from fp-growth_.
+The function ``generate_association_rules(...)`` is revised in the following ways:
+
+1. A parameter called ``size`` is added to the *parameter list*.
+   It expects the total number of transactions used to construct the *FP-tree* and
+   is needed to compute relative support values.
+2. The return value is changed to a *dictionary* of the form
+   ``{(left_side, right_side): (support_of_left_side, support, confidence)}``.
+   ``support_of_left_side`` and ``support`` give the
+   percentage of tuples containing all attribute-value pairs from ``left_side`` and
+   ``right_side`` combined.
+
+   * This additionally fixes a `bug
+     <https://github.com/evandempsey/fp-growth/issues/11>`_ present in fp-growth_:
+     if several rules have the same left side, fp-growth_ erroneously overwrites
+     those rules and returns only one rule. The revised function present in this
+     module does not contain this bug anymore.
+3. fp-growth_ does not `generate rules having an empty right side
+   <https://github.com/evandempsey/fp-growth/issues/6>`_. Those should
+   however be part of a correct result and are vital for our purposes. We therefore
+   adapted the function to include those rules too.
+
+We feel very confident that the code is correct and reasonably fast:
+
+1. We included unit tests to verify that our implementation produces the correct
+   result for an example taken from [Agrawal1994]_.
+2. We compared the result produced by this implementation on a large production
+   data set with the result produced by an implementation of the Apriori algorithm
+   [Agrawal1994]_ we used previously. Both results were identical. This is a strong
+   indicator that (a) both results are false but in exactly the same way or (b) both
+   results are correct. We opt for (b).
+
+   * During this comparison we could confirm that FP-growth is both faster and
+     requires less memory than the Apriori algorithm as is also shown in [Han2000]_.
+     This is why we feel confident, that FP-growth is the better algorithm for our
+     use case.
+
+As a last aside: we will issue a Pull Request for fp-growth_ containing our bug fixes.
+
+.. [Han2000] Jiawei Han, Jian Pei, and Yiwen Yin. 2000. Mining frequent patterns
+   without candidate generation. In Proceedings of the 2000 ACM SIGMOD international
+   conference on Management of data (SIGMOD '00). ACM, New York, NY, USA, 1-12
+.. [Agrawal1994] Rakesh Agrawal and Ramakrishnan Srikant. 1994. Fast Algorithms for
+   Mining Association Rules in Large Databases. In Proceedings of the 20th
+   International Conference on Very Large Data Bases (VLDB '94), Jorge B. Bocca,
+   Matthias Jarke, and Carlo Zaniolo (Eds.). Morgan Kaufmann Publishers Inc., San
+   Francisco, CA, USA, 487-499.
+.. _fp-growth: https://github.com/evandempsey/fp-growth
 """
 
 import itertools
