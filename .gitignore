@@ -122,3 +122,8 @@ config.py
 
 # IntelliJ
 .idea/
+
+audits_ascii.csv
+train_ascii.csv
+_trial_temp/
+tests/_trial_temp-1/
