@@ -56,10 +56,6 @@ class Detector:
             self.columns = first_df_columns
 
         if not self.checks_to_run:
-            raise Exception('Please use the method add_test to '
-                            'add tests that should be executed, before calling run()')
-
-        if not self.checks_to_run:
             raise Exception('Please use the method add_test to \
                 add tests that should be executed, before calling run()')
 
