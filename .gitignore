@@ -125,3 +125,8 @@ config.py
 
 # iOS Stuff
 .DS_Store
+
+# Other Stuff
+.csv
+_trial_temp/
+tests/_trial_temp-1/
