@@ -4,7 +4,10 @@ import logging as logger
 from shift_detector.checks.Check import Check
 from collections import defaultdict
 from functools import reduce
+from collections import namedtuple
+from shift_detector.checks.Check import Reports
 
+CheckReports = namedtuple("CheckReports", "check reports")
 
 class Detector:
 
@@ -15,6 +18,8 @@ class Detector:
 
         self.checks_to_run = []
         self.columns = []
+
+        self.checks_reports = []
 
     def read_from_csv(self, file_path: str, separator) -> pd.DataFrame:
         # TODO: give user feedback about how many lines were dropped
@@ -42,6 +47,10 @@ class Detector:
         self.checks_to_run += checks
         return self
 
+    def get_result(self, index):
+        """ Return the last calculated result for the check with the index """
+        return self.checks_to_run[index].results[-1]
+
     def run(self):
         first_df_columns = list(self.first_df.head(0))
         second_df_columns = list(self.second_df.head(0))
@@ -60,9 +69,9 @@ class Detector:
                 add tests that should be executed, before calling run()')
 
         ## Find column types
+        # TODO: replace this provisional
         column_type_to_columns = {
-            "int": (self.first_df[["marketplace_id", "refinement_id"]],
-                    self.second_df[["marketplace_id", "refinement_id"]]),
+            "int": (self.first_df[["marketplace_id", "refinement_id"]], self.second_df[["marketplace_id", "refinement_id"]]),
             "category": (self.first_df[["value", "attribute"]], self.second_df[["value", "attribute"]]),
             "text": (self.first_df["bullet_points"], self.second_df["bullet_points"])
         }
@@ -80,7 +89,7 @@ class Detector:
         '''
         preprocessings: {
             "int": {
-                "default": (pd.Dataframe1, pd.Dataframe2)
+                Default.Default: (pd.Dataframe1, pd.Dataframe2)
             }
         }
         '''
@@ -103,6 +112,15 @@ class Detector:
 
         ## Run the checks
         for check in self.checks_to_run:
-            check\
-                .run(self.columns)\
-                .print_report()
+            check_result = check.run()
+            reports = Reports(check_result=check_result, report_class=check.report_class())
+            check_reports = CheckReports(check=check, reports=reports)
+            self.checks_reports.append(check_reports)
+
+    ## Evaluate the results
+    def evaluate(self):
+        for check_report in self.checks_reports:
+            check, reports = check_report
+            print(check.name())
+            for report in reports.reports:
+                report.print_report()
