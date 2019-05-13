@@ -123,7 +123,13 @@ config.py
 # IntelliJ
 .idea/
 
-audits_ascii.csv
+# iOS Stuff
+.DS_Store
+
+# CSV File
+.csv
+
+# Other Stuff
 train_ascii.csv
 _trial_temp/
 tests/_trial_temp-1/

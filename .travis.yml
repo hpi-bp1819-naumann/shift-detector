@@ -6,6 +6,7 @@ install:
   - pip install python-coveralls
   - pip install coverage
   - pip install nose
+  - pip install pandas
 script:
   - python3 -m unittest discover
   - nosetests --with-coverage
