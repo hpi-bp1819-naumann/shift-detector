@@ -33,14 +33,6 @@ class RuleCluster:
             if abs(rule.delta_confidences) > abs(self.max_abs_delta_confidence):
                 self.max_abs_delta_confidence = abs(rule.delta_confidences)
 
-    def is_more_specific_cluster_of(self, other_cluster):
-        own_attributes = set(self.attributes)
-        other_attributes = set(other_cluster.attributes)
-        # print('own_attributes', own_attributes)
-        # print('other_attributes', other_attributes)
-        # print(own_attributes.issubset(other_attributes))
-        return other_attributes.issubset(own_attributes)
-
     def is_supercluster(self, new_rule):
         own_attributes = set(self.attributes)
         new_rule_attributes = set(new_rule.left_side + new_rule.right_side)
