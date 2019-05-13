@@ -40,7 +40,7 @@ def remove_allsame_attributes(rules):
 
         rules[i] = ExtendedRule(left_side, right_side, rules[i].supports_of_left_side,
                                 rules[i].delta_supports_of_left_side, rules[i].supports, rules[i].delta_supports,
-                                rules[i].confidences, rules[i].delta_confidences, all_sides, rules[i].groupkey)
+                                rules[i].confidences, rules[i].delta_confidences, all_sides)
 
     return rules
 
@@ -64,11 +64,10 @@ def add_side_attributes_to_rules(rules):
         length = len(rule.right_side) + len(rule.left_side)
         all_sides = rule.right_side + rule.left_side
         all_sides_stringified = [str(x) for x in all_sides]
-        groupkey = str(sorted(all_sides_stringified, key=lambda x: x[0]))
 
         rule_ext = ExtendedRule(rule.left_side, rule.right_side, rule.supports_of_left_side,
                                 rule.delta_supports_of_left_side, rule.supports, rule.delta_supports,
-                                rule.confidences, rule.delta_confidences, all_sides, groupkey)
+                                rule.confidences, rule.delta_confidences, all_sides)
         rules_extended.append(rule_ext)
 
     return rules_extended

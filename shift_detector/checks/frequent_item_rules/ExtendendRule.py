@@ -1,7 +1,7 @@
 class ExtendedRule:
 
     def __init__(self, left_side, right_side, supports_of_left_side, delta_supports_of_left_side, supports,
-                 delta_supports, confidences, delta_confidences, all_sides, groupkey):
+                 delta_supports, confidences, delta_confidences, all_sides):
 
         self.left_side = left_side
         self.right_side = right_side
@@ -12,7 +12,6 @@ class ExtendedRule:
         self.confidences = confidences
         self.delta_confidences = delta_confidences
         self.all_sides = all_sides
-        self.groupkey = groupkey
 
 
 class RuleCluster:
