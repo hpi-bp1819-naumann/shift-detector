@@ -2,17 +2,20 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 from datawig.utils import random_split
-from shift_detector.checks.Check import Check, CheckResult
+from shift_detector.checks.Check import Check, Report
 from shift_detector.preprocessors.Default import Default
 from shift_detector.preprocessors.WordEmbeddings import WordEmbedding, EmbeddingType
 from gensim.models import FastText
 
-class Chi2Result(CheckResult):
+## TODO: think about whether the specific result should store the data at all or will always be
+##       passed in the print report header or the result will be only calculated once when
+##       created
+class Chi2Report(Report):
 
     def __init__(self, data, significance=0.01):
         self.data = data
         self.significance = significance
-    
+
     def remarkable_columns(self):
         # return names of columns for which inner set test didn't fail, but cross set test failed
         return list(self.data[self.data.columns[
@@ -33,40 +36,60 @@ class Chi2Result(CheckResult):
         Print report for analyzed columns
 
         """
-        print('Columns with a Shift:', self.remarkable_columns())
-    
+        print(f"Columns with a Shift (significance: {self.significance}):", self.remarkable_columns())
 
 class Chi2Check(Check):
     
-    def __init__(self, text_embedding=EmbeddingType.FastText, trained_text_embedding=None):
+    def __init__(self, text_embedding=EmbeddingType.FastText, trained_text_embedding=None, \
+                categorical_threshold=100):
         """
         
         :param text_embedding:  Either a EmbeddingType or model class that has the methods
                                 'build_vocab' and 'train'
         :param trained_text_embedding: Pretrained Model
+        :param categorical_threshold: #TODO
+        :param significance:    The chi2 value that needs to be exceeded in order to have to
+                                similiar data sets.
 
         """
-        self.data = dict()
+        super().__init__()
+        '''
         self.text_embedding = WordEmbedding(model=text_embedding, \
                                             trained_model=trained_text_embedding)
+        '''
+        self.categorical_threshold = categorical_threshold
 
-    def set_data(self, data: pd.DataFrame):
-        self.data = data
+    @staticmethod
+    def name() -> str:
+        return "Chi Squared"
+
+    @staticmethod
+    def report_class():
+        return Chi2Report
 
     def needed_preprocessing(self) -> dict:
+        '''
         return {
             "category": Default(),
             "text": self.text_embedding
         }
+        '''
+        return {
+            "category": Default()
+        }
 
-    def run(self, columns=[]) -> Chi2Result:
-        results = pd.DataFrame()
+    def run(self, columns=[]):
+        result = pd.DataFrame()
         for df in self.data["category"]:
             p1, p2 = random_split(df)
-            results = results.append(self.column_statistics(p1, p2), ignore_index=True)
+            column_statistics = self.column_statistics(p1, p2, \
+                                categorical_threshold=self.categorical_threshold)
+            result = result.append(column_statistics, ignore_index=True)
 
-        results = results.append(self.column_statistics(self.data["category"][0], self.data["category"][1]), ignore_index=True)
-        return Chi2Result(results)
+        column_statistics = self.column_statistics(self.data["category"][0], \
+                            self.data["category"][1], categorical_threshold=self.categorical_threshold)
+        result = result.append(column_statistics, ignore_index=True)
+        return result
 
     ### Internal calculations
 
