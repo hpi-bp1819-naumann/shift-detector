@@ -37,7 +37,8 @@ We feel very confident that the code is correct and reasonably fast:
      This is why we feel confident, that FP-growth is the better algorithm for our
      use case.
 
-As a last aside: we will issue a Pull Request for fp-growth_ containing our bug fixes.
+As a last aside: we will issue a `Pull Request <https://github.com/evandempsey/fp-growth/pull/17>`_
+for fp-growth_ containing our bug fixes.
 
 .. [Han2000] Jiawei Han, Jian Pei, and Yiwen Yin. 2000. Mining frequent patterns
    without candidate generation. In Proceedings of the 2000 ACM SIGMOD international
