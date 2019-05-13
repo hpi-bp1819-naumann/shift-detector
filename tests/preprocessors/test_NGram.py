@@ -28,3 +28,7 @@ class TestNGramPreprocessor(unittest.TestCase):
         ng3 = NGram(6)
         self.assertTrue(ng2 == ng3)
         self.assertFalse(self.ng == ng2)
+
+    def test_exception_on_small_n(self):
+        self.assertRaises(Exception, lambda: NGram(0))
+        self.assertRaises(Exception, lambda: NGram(-1))
