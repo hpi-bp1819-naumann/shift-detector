@@ -117,7 +117,7 @@ class Detector:
         ## Run the checks
         for check in self.checks_to_run:
             check_result = check.run()
-            reports = Reports(check_result=check_result, report_class=check.result_class())
+            reports = Reports(check_result=check_result, report_class=check.report_class())
             check_reports = CheckReports(check=check, reports=reports)
             self.checks_reports.append(check_reports)
 

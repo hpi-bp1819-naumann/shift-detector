@@ -52,7 +52,7 @@ class Chi2Check(Check):
                                 similiar data sets.
 
         """
-        self.data = dict()
+        super().__init__()
         '''
         self.text_embedding = WordEmbedding(model=text_embedding, \
                                             trained_model=trained_text_embedding)
@@ -66,9 +66,6 @@ class Chi2Check(Check):
     @staticmethod
     def report_class():
         return Chi2Report
-
-    def set_data(self, data: pd.DataFrame):
-        self.data = data
 
     def needed_preprocessing(self) -> dict:
         '''

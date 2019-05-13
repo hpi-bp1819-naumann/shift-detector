@@ -3,7 +3,30 @@ from abc import ABCMeta, abstractmethod
 from datawig.utils import logger as datawig_logger
 
 class Check(metaclass=ABCMeta):
-        
+
+    def __init__(self):
+        self.data = dict()
+
+    @staticmethod
+    @abstractmethod
+    def name() -> str:
+        """
+
+        :return: Name of the Check
+
+        """
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def report_class():
+        """
+
+        :return: The class that will be used for reports
+
+        """
+        pass
+
     @abstractmethod
     def run(self, columns=[]) -> pd.DataFrame:
         """
@@ -16,25 +39,24 @@ class Check(metaclass=ABCMeta):
         """
         pass
 
-    @abstractmethod
-    @staticmethod
-    def name() -> str:
+    def needed_preprocessing(self) -> dict:
         """
 
         :return: Name of the Check
 
         """
-        pass
+        return dict()
 
-    @abstractmethod
-    @staticmethod
-    def report_class():
+    def set_data(self, data: pd.DataFrame):
         """
 
-        :return: The class that will be used for reports
+        Set the data the check will run on
+
+        :param data: pd.DataFrame
 
         """
-        pass
+        self.data = data
+
 
 class Report(metaclass=ABCMeta):
 
