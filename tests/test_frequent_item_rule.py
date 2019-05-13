@@ -8,18 +8,22 @@ import copy
 class TestRuleCluster(unittest.TestCase):
 
     def test_supercluster(self):
-        cluster_a = RuleCluster(['a'], [])
-        cluster_b = RuleCluster(['a', 'b'], [])
-        cluster_c = RuleCluster(['b'], [])
+        cluster_a = RuleCluster([('value', 'A')], [])
+        cluster_a.max_abs_delta_support_left = 0.2
+
+        cluster_b = RuleCluster([('value', 'A')], [])
+        cluster_b.max_abs_delta_support_left = -0.1
+
+        cluster_c = RuleCluster([('value', 'B')], [])
+        cluster_c.max_abs_delta_support_left = -0.4
 
         rule = ExtendedRule(left_side=(('value', 'A'),), right_side=(), supports_of_left_side=(),
                             delta_supports_of_left_side=-0.16, supports=(0.65, 0.81), delta_supports=-0.16,
-                            confidences=(1.0, 1.0), delta_confidences=0.1)
+                            confidences=(1.0, 1.0), delta_confidences=0.1, all_sides=(('value', 'A'),))
 
-        self.assertFalse(cluster_a.is_supercluster(cluster_b))
-        self.assertFalse(cluster_a.is_supercluster(cluster_c))
-        self.assertTrue(cluster_b.is_supercluster(cluster_a))
-        self.assertTrue(cluster_b.is_supercluster(cluster_c))
+        self.assertTrue(cluster_a.is_supercluster(rule))
+        self.assertFalse(cluster_b.is_supercluster(rule))
+        self.assertFalse(cluster_c.is_supercluster(rule))
 
 
 class TestFrequentItemRule(unittest.TestCase):
