@@ -36,18 +36,16 @@ def remove_allsame_attributes(rules):
     for i, value in enumerate(rules):
         left_side = [t for t in rules[i].left_side if t not in duplicate_candidates]
         right_side = [t for t in rules[i].right_side if t not in duplicate_candidates]
-        all_sides = left_side + right_side
 
         rules[i] = ExtendedRule(left_side, right_side, rules[i].supports_of_left_side,
                                 rules[i].delta_supports_of_left_side, rules[i].supports, rules[i].delta_supports,
-                                rules[i].confidences, rules[i].delta_confidences, all_sides)
+                                rules[i].confidences, rules[i].delta_confidences)
 
     return rules
 
 
 def true_if_no_attribute_none(rule):
-    all_sides = rule.right_side + rule.left_side
-    for attribute in all_sides:
+    for attribute in rule.all_sides():
         if attribute[1] is None:
             return False
     return True
@@ -61,13 +59,9 @@ def filter_non_values(rules):
 def add_side_attributes_to_rules(rules):
     rules_extended = []
     for rule in rules:
-        length = len(rule.right_side) + len(rule.left_side)
-        all_sides = rule.right_side + rule.left_side
-        all_sides_stringified = [str(x) for x in all_sides]
-
         rule_ext = ExtendedRule(rule.left_side, rule.right_side, rule.supports_of_left_side,
                                 rule.delta_supports_of_left_side, rule.supports, rule.delta_supports,
-                                rule.confidences, rule.delta_confidences, all_sides)
+                                rule.confidences, rule.delta_confidences)
         rules_extended.append(rule_ext)
 
     return rules_extended
@@ -79,7 +73,7 @@ def group_rules_by_length(rules):
         groupings.append([])
 
     for rule in rules:
-        groupings[len(rule.all_sides)].append(rule)
+        groupings[len(rule.all_sides())].append(rule)
 
     groupings_cleaned = [x for x in groupings if x != []]
     return groupings_cleaned

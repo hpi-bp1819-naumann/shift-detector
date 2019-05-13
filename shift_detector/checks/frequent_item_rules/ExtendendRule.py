@@ -1,7 +1,7 @@
 class ExtendedRule:
 
     def __init__(self, left_side, right_side, supports_of_left_side, delta_supports_of_left_side, supports,
-                 delta_supports, confidences, delta_confidences, all_sides):
+                 delta_supports, confidences, delta_confidences):
 
         self.left_side = left_side
         self.right_side = right_side
@@ -11,7 +11,9 @@ class ExtendedRule:
         self.delta_supports = delta_supports
         self.confidences = confidences
         self.delta_confidences = delta_confidences
-        self.all_sides = all_sides
+
+    def all_sides(self):
+        return self.left_side + self.right_side
 
 
 class RuleCluster:
@@ -50,18 +52,5 @@ class RuleCluster:
 
         print('max_delta_support: ', self.max_abs_delta_support_left, '\t max_delta_confidence:',
               self.max_abs_delta_confidence, '\t number of subrules:', len(self.subcluster))
-
-        # subrules_string = ''
-        # for subrule in self.subcluster:
-        #     subrules_string += str(subrule.all_sides) + '  '
-        # if len(self.subcluster) > 0:
-        #     print('-->', subrules_string)
-
         print('\n')
-
-    def attributes_as_string(self):
-        result = ''
-        for attribute in self.attributes:
-            result += str(attribute)
-        return result
 

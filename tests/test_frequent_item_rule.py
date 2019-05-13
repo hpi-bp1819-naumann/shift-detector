@@ -3,9 +3,16 @@ from shift_detector.checks.frequent_item_rules import rule_compression
 from shift_detector.checks.frequent_item_rules.ExtendendRule import ExtendedRule, RuleCluster
 from collections import namedtuple
 import copy
+import io
+import sys
 
 
 class TestRuleCluster(unittest.TestCase):
+
+    def setUp(self):
+        self.rule = rule = ExtendedRule(left_side=(('value', 'A'),), right_side=(), supports_of_left_side=(),
+                                        delta_supports_of_left_side=-0.16, supports=(0.65, 0.81), delta_supports=-0.16,
+                                        confidences=(1.0, 1.0), delta_confidences=0.1)
 
     def test_supercluster(self):
         cluster_a = RuleCluster([('value', 'A')], [])
@@ -17,13 +24,19 @@ class TestRuleCluster(unittest.TestCase):
         cluster_c = RuleCluster([('value', 'B')], [])
         cluster_c.max_abs_delta_support_left = -0.4
 
-        rule = ExtendedRule(left_side=(('value', 'A'),), right_side=(), supports_of_left_side=(),
-                            delta_supports_of_left_side=-0.16, supports=(0.65, 0.81), delta_supports=-0.16,
-                            confidences=(1.0, 1.0), delta_confidences=0.1, all_sides=(('value', 'A'),))
+        self.assertTrue(cluster_a.is_supercluster(self.rule))
+        self.assertFalse(cluster_b.is_supercluster(self.rule))
+        self.assertFalse(cluster_c.is_supercluster(self.rule))
 
-        self.assertTrue(cluster_a.is_supercluster(rule))
-        self.assertFalse(cluster_b.is_supercluster(rule))
-        self.assertFalse(cluster_c.is_supercluster(rule))
+    def test_print(self):
+        cluster_a = RuleCluster([('value', 'A')], [])
+
+        captured_output = io.StringIO()
+        sys.stdout = captured_output
+        cluster_a.print()
+        sys.stdout = sys.__stdout__
+        self.assertTrue('[  value:A  ]\nmax_delta_support:  None \t max_delta_confidence: None \t '
+                        'number of subrules: 0\n\n\n' == captured_output.getvalue())
 
 
 class TestFrequentItemRule(unittest.TestCase):
@@ -88,13 +101,14 @@ class TestFrequentItemRule(unittest.TestCase):
         rule_g = copy.copy(self.extended_rule)
 
         # 1x1, 3x2, 2x3, 1x4
-        self.rule_a.all_sides = (('value', 'A'),)
-        rule_e.all_sides = (('value', 'X'), ('value', 'B'))
-        rule_f.all_sides = (('value', 'X'), ('value', 'B'))
-        self.rule_c.all_sides = (('value', 'X'), ('value', 'B'))
-        rule_d.all_sides = (('value', 'X'), ('value', 'U'), ('value', 'I'))
-        self.rule_b.all_sides = (('value', 'D'), ('value', 'B'), ('value', 'F'))
-        rule_g.all_sides = (('value', 'X'), ('value', 'B'), ('value', 'U'), ('value', 'Y'))
+        self.rule_a.right_side = (('value', 'A'),)
+        self.rule_b.right_side = (('value', 'D'), ('value', 'B'), ('value', 'F'))
+        self.rule_c.right_side = (('value', 'X'), ('value', 'B'))
+        rule_e.right_side = (('value', 'X'), ('value', 'B'))
+        rule_f.right_side = (('value', 'X'), ('value', 'B'))
+        rule_d.right_side = (('value', 'X'), ('value', 'U'), ('value', 'I'))
+        rule_g.right_side = (('value', 'X'), ('value', 'B'), ('value', 'U'), ('value', 'Y'))
+
         rules = [self.rule_a, self.rule_b, self.rule_c, rule_d, rule_e, rule_f, rule_g]
         length_groups = rule_compression.group_rules_by_length(rules)
 
@@ -112,9 +126,7 @@ class TestFrequentItemRule(unittest.TestCase):
     def test_cluster_rules_hierarchically(self):
         # equal left side value
         self.rule_a.left_side = (('age', 'grandfather'),)
-        self.rule_a.all_sides = (('age', 'grandfather'),)
         self.rule_b.left_side = (('age', 'grandfather'), ('haircolor', 'gray'),)
-        self.rule_b.all_sides = (('age', 'grandfather'), ('haircolor', 'gray'),)
 
         self.rule_a.delta_supports_of_left_side = 0.7
         self.rule_a.delta_supports = 0.7
