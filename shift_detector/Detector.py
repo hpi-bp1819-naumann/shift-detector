@@ -4,6 +4,10 @@ import logging as logger
 from shift_detector.checks.Check import Check
 from collections import defaultdict
 from functools import reduce
+from collections import namedtuple
+from shift_detector.checks.Chi2Check import Results
+
+CheckResults = namedtuple("CheckResults", "check results")
 
 class Detector:
 
@@ -14,6 +18,8 @@ class Detector:
 
         self.checks_to_run = []
         self.columns = []
+
+        self.check_results = []
 
     def read_from_csv(self, file_path: str, separator) -> pd.DataFrame:
         # TODO: give user feedback about how many lines were dropped
@@ -110,11 +116,15 @@ class Detector:
 
         ## Run the checks
         for check in self.checks_to_run:
-            check.run()
+            calculations = check.run()
+            results = Results(calculations=calculations, result_class=check.result_class())
+            check_result = CheckResults(check=check, results=results)
+            self.check_results.append(check_result)
 
     ## Evaluate the results
     def evaluate(self):
-        for check in self.checks_to_run:
+        for check_result in self.check_results:
+            check, results = check_result
             print(check.name())
-            for result in check.results:
+            for result in results.results:
                 result.print_report()

@@ -9,16 +9,18 @@ from gensim.models import FastText
 
 class Results():
 
-    def __init__(self, data, result_class):
-        self.data = data
+    def __init__(self, calculations, result_class):
+        self.calculations = calculations
         self.result_class = result_class
         self.results = []
+        self.evaluate()
 
     def evaluate(self, **kwargs):
-        self.results.append(self.result_class(data=self.data, **kwargs))
+        self.results.append(self.result_class(data=self.calculations, **kwargs))
 
 ## TODO: think about whether the specific result should store the data at all or will always be
-##       passed in the print report header
+##       passed in the print report header or the result will be only calculated once when
+##       created
 class Chi2Result(CheckResult):
 
     def __init__(self, data, significance=0.01):
@@ -67,11 +69,14 @@ class Chi2Check(Check):
                                             trained_model=trained_text_embedding)
         '''
         self.categorical_threshold = categorical_threshold
-        self.results = None
 
     @staticmethod
-    def name():
+    def name() -> str:
         return "Chi Squared"
+
+    @staticmethod
+    def result_class():
+        return Chi2Result
 
     def set_data(self, data: pd.DataFrame):
         self.data = data
@@ -88,17 +93,17 @@ class Chi2Check(Check):
         }
 
     def run(self, columns=[]):
-        result = pd.DataFrame()
+        calculations = pd.DataFrame()
         for df in self.data["category"]:
             p1, p2 = random_split(df)
             column_statistics = self.column_statistics(p1, p2, \
                                 categorical_threshold=self.categorical_threshold)
-            result = result.append(column_statistics, ignore_index=True)
+            calculations = calculations.append(column_statistics, ignore_index=True)
 
         column_statistics = self.column_statistics(self.data["category"][0], \
                             self.data["category"][1], categorical_threshold=self.categorical_threshold)
-        result = result.append(column_statistics, ignore_index=True)
-        self.results.append(Chi2Result(result))
+        calculations = calculations.append(column_statistics, ignore_index=True)
+        return calculations
 
     ### Internal calculations
 
