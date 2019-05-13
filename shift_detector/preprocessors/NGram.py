@@ -14,13 +14,13 @@ class NGram:
 
     def __eq__(self, other):
         """Overrides the default implementation"""
-        return self.histogram_type == other.histogram_type
+        return self.n == other.n
 
     def process(self, train, test):
 
         def generate_ngram(text, n):
             ngram = {}
-            for i in range(len(text) - n):
+            for i in range(len(text) - n + 1):
                 ngram[text[i:i+n]] = 1 if text[i:i+n] not in ngram else ngram[text[i:i+n]] + 1
             return ngram
 
