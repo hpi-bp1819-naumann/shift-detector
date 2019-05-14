@@ -115,7 +115,7 @@ class Detector:
         :param checks: the checks the prepocessings will be aggregated from
         :return: Dict
         {
-            ColumnType: Set(Preproccessing, ...)
+            ColumnType: Set(Preprocessor, ...)
             ...
         }
         """
@@ -127,6 +127,30 @@ class Detector:
         type_to_needed_preprocessings = reduce(update_preprocessings, checks, defaultdict(set))
         type_to_needed_preprocessings = dict(type_to_needed_preprocessings)
         return type_to_needed_preprocessings
+
+    def _preprocess(self,
+                    column_type_to_columns: Dict,
+                    type_to_needed_preprocessings: Dict) -> Dict:
+        """
+        Execute the preprocessing.
+        :param column_type_to_columns: result of _split_dataframes
+        :param type_to_needed_preprocessings: result of _needed_preprocessing
+        :return: Dict
+        {
+            ColumnType: {
+                Preprocessor: (df1_processed, df2_processed)
+            }
+        }
+        """
+        preprocessings = defaultdict(dict)
+
+        for column_type, needed_preprocessings in type_to_needed_preprocessings.items():
+            (first_df, second_df) = column_type_to_columns[column_type]
+            for needed_preprocessing in needed_preprocessings:
+                preprocessed = needed_preprocessing.process(first_df, second_df)
+                preprocessings[column_type][needed_preprocessing] = preprocessed
+
+        return preprocessings
 
     def run(self):
         columns = self._shared_column_names(self.first_df, self.second_df)
@@ -141,20 +165,8 @@ class Detector:
         type_to_needed_preprocessings = self._needed_preprocessing(self.checks_to_run)
         logger.info(f"Needed Preprocessing: {type_to_needed_preprocessings}")
 
-        preprocessings = defaultdict(dict)
-        '''
-        preprocessings: {
-            "int": {
-                Default.Default: (pd.Dataframe1, pd.Dataframe2)
-            }
-        }
-        '''
         ## Do the preprocessing
-        for column_type, needed_preprocessings in type_to_needed_preprocessings.items():
-            (first_df, second_df) = column_type_to_columns[column_type]
-            for needed_preprocessing in needed_preprocessings:
-                preprocessed = needed_preprocessing.process(first_df, second_df)
-                preprocessings[column_type][needed_preprocessing] = preprocessed
+        preprocessings = self._preprocess(column_type_to_columns, type_to_needed_preprocessings)
 
         def choose_preprocessings(specific_preprocessings, pair):
             column_type, preprocessings_method = pair
