@@ -3,16 +3,16 @@ import numpy as np
 from scipy import stats
 from datawig.utils import random_split
 from shift_detector.checks.Check import Check, Report
-from shift_detector.preprocessors.Default import Default
+from shift_detector.preprocessors.DefaultEmbedding import DefaultEmbedding
 from shift_detector.preprocessors.WordEmbeddings import WordEmbedding, EmbeddingType
 from shift_detector.Utils import ColumnType
 from gensim.models import FastText
+
 
 ## TODO: think about whether the specific result should store the data at all or will always be
 ##       passed in the print report header or the result will be only calculated once when
 ##       created
 class Chi2Report(Report):
-
     def __init__(self, data, significance=0.01):
         self.data = data
         self.significance = significance
@@ -43,22 +43,19 @@ class Chi2Report(Report):
 
 class Chi2Check(Check):
     
-    def __init__(self, text_embedding=EmbeddingType.FastText, trained_text_embedding=None, \
+    def __init__(self, text_embedding=EmbeddingType.FastText, trained_text_embedding=None,
                 categorical_threshold=100):
         """
-        
         :param text_embedding:  Either a EmbeddingType or model class that has the methods
                                 'build_vocab' and 'train'
         :param trained_text_embedding: Pretrained Model
         :param categorical_threshold: #TODO
         :param significance:    The chi2 value that needs to be exceeded in order to have to
                                 similiar data sets.
-
         """
         super().__init__()
         '''
-        self.text_embedding = WordEmbedding(model=text_embedding, \
-                                            trained_model=trained_text_embedding)
+        self.text_embedding = WordEmbedding(model=text_embedding, trained_model=trained_text_embedding)
         '''
         self.categorical_threshold = categorical_threshold
 
@@ -71,14 +68,14 @@ class Chi2Check(Check):
         return Chi2Report
 
     def needed_preprocessing(self) -> dict:
-        '''
+        """
         return {
             "category": Default(),
             "text": self.text_embedding
         }
-        '''
+        """
         return {
-            ColumnType.categorical: Default()
+            ColumnType.categorical: DefaultEmbedding()
         }
 
     def run(self, columns=[]):
@@ -95,7 +92,7 @@ class Chi2Check(Check):
         result = result.append(column_statistics, ignore_index=True)
         return result
 
-    ### Internal calculations
+    # Internal calculations
 
     def column_statistics(self, first_df, second_df, columns=[], categorical_threshold=100):
         c_stats = pd.DataFrame()
@@ -117,6 +114,6 @@ class Chi2Check(Check):
         for value in b_counts.index:
             if value not in a_counts:
                 a_counts = a_counts.append(pd.Series(0, index=[value]))
-        observed = pd.DataFrame.from_dict({'a':a_counts, 'b':b_counts})
+        observed = pd.DataFrame.from_dict({'a': a_counts, 'b': b_counts})
         _, p, _, _ = stats.chi2_contingency(observed)
         return p

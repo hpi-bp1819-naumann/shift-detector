@@ -3,7 +3,7 @@ import numpy as np
 from scipy import stats
 from datawig.utils import random_split
 from shift_detector.checks.Check import Check, CheckResult
-from shift_detector.preprocessors.Default import Default
+from shift_detector.preprocessors.DefaultEmbedding import DefaultEmbedding
 from shift_detector.preprocessors.WordEmbeddings import WordEmbedding, EmbeddingType
 from gensim.models import FastText
 
@@ -47,7 +47,7 @@ class TestCheck(Check):
 
     def needed_preprocessing(self):
         return {
-            "category": Default(),
+            "category": DefaultEmbedding(),
             "text": self.text_embedding
         }
 
