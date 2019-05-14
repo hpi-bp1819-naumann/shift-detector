@@ -1,9 +1,10 @@
 import pandas as pd
 from abc import ABCMeta, abstractmethod
 from datawig.utils import logger as datawig_logger
+from shift_detector.preprocessors.DefaultEmbedding import DefaultEmbedding
+
 
 class Check(metaclass=ABCMeta):
-
     def __init__(self):
         self.data = dict()
 
@@ -30,7 +31,6 @@ class Check(metaclass=ABCMeta):
     @abstractmethod
     def run(self, columns=[]) -> pd.DataFrame:
         """
-
         Runs check on provided columns
 
         :param columns:
@@ -39,6 +39,7 @@ class Check(metaclass=ABCMeta):
         """
         pass
 
+    @abstractmethod
     def needed_preprocessing(self) -> dict:
         """
 
@@ -71,8 +72,8 @@ class Report(metaclass=ABCMeta):
 
         """
 
-class Reports():
 
+class Reports:
     def __init__(self, check_result, report_class):
         self.check_result = check_result
         self.result_class = report_class
@@ -97,3 +98,4 @@ class CheckResult(metaclass=ABCMeta):
         Print report for checked columns
 
         """
+        pass
