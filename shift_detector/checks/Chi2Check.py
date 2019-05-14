@@ -5,6 +5,7 @@ from datawig.utils import random_split
 from shift_detector.checks.Check import Check, Report
 from shift_detector.preprocessors.Default import Default
 from shift_detector.preprocessors.WordEmbeddings import WordEmbedding, EmbeddingType
+from shift_detector.Detector import ColumnType
 from gensim.models import FastText
 
 ## TODO: think about whether the specific result should store the data at all or will always be
@@ -75,19 +76,20 @@ class Chi2Check(Check):
         }
         '''
         return {
-            "category": Default()
+            ColumnType.categorical: Default()
         }
 
     def run(self, columns=[]):
         result = pd.DataFrame()
-        for df in self.data["category"]:
+        for df in self.data[ColumnType.categorical]:
             p1, p2 = random_split(df)
-            column_statistics = self.column_statistics(p1, p2, \
+            column_statistics = self.column_statistics(p1, p2,
                                 categorical_threshold=self.categorical_threshold)
             result = result.append(column_statistics, ignore_index=True)
 
-        column_statistics = self.column_statistics(self.data["category"][0], \
-                            self.data["category"][1], categorical_threshold=self.categorical_threshold)
+        column_statistics = self.column_statistics(self.data[ColumnType.categorical][0],
+                            self.data[ColumnType.categorical][1],
+                            categorical_threshold=self.categorical_threshold)
         result = result.append(column_statistics, ignore_index=True)
         return result
 
