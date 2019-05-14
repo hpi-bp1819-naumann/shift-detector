@@ -9,6 +9,7 @@ install:
   - pip install pandas
   - pip install scipy
   - pip install datawig
+  - pip install gensim
 script:
   - python3 -m unittest discover
   - nosetests --with-coverage --cover-package=shift_detector
