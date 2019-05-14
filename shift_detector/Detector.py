@@ -173,6 +173,21 @@ class Detector:
             chosen_preprocessing = reduce(choose_preprocessings, check.needed_preprocessing().items(), dict())
             check.set_data(chosen_preprocessing)
 
+    def _run_checks(self, checks: List[Check]) -> List[CheckReports]:
+        """
+        Execute the checks.
+        :param checks: the checks that will be executed
+        :return: list of CheckReports, that connects runned checks with their reports
+        """
+        checks_reports = []
+        for check in self.checks_to_run:
+            check_result = check.run()
+            reports = Reports(check_result=check_result, report_class=check.report_class())
+            check_reports = CheckReports(check=check, reports=reports)
+            checks_reports.append(check_reports)
+
+        return checks_reports
+
     def run(self):
         columns = self._shared_column_names(self.first_df, self.second_df)
 
@@ -186,15 +201,9 @@ class Detector:
         logger.info(f"Needed Preprocessing: {type_to_needed_preprocessings}")
 
         preprocessings = self._preprocess(column_type_to_columns, type_to_needed_preprocessings)
-
+        
         self._distribute_preprocessings(self.checks_to_run, preprocessings)
-
-        ## Run the checks
-        for check in self.checks_to_run:
-            check_result = check.run()
-            reports = Reports(check_result=check_result, report_class=check.report_class())
-            check_reports = CheckReports(check=check, reports=reports)
-            self.checks_reports.append(check_reports)
+        self.checks_reports = self._run_checks(self.checks_to_run)
 
     ## Evaluate the results
     def evaluate(self):
