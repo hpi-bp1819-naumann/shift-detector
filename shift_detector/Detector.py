@@ -51,16 +51,14 @@ class Detector:
         df2_columns = set(df2.columns.values)
 
         if df1_columns != df2_columns:
-            logger.warning('The columns of the provided dataset \
-                           should be the same, but are {} and {}'.format(df1_columns, df2_columns))
+            logger.warning('The columns of the provided dataset should be the same, '
+                           'but are {} for df1 and {} for df2'.format(df1_columns, df2_columns))
 
             shared_columns = df1_columns.intersection(df2_columns)
 
             if len(shared_columns) == 0:
-                raise Exception('The provided datasets do not have any column names in common. \
-                    They have {} and {}'.format(df1_columns, df2_columns))
-
-            logger.info('Using columns {} instead.'.format(shared_columns))
+                raise Exception('The provided datasets do not have any column names in common.'
+                                'They have {} and {}'.format(df1_columns, df2_columns))
         else:
             shared_columns = df1_columns
 
@@ -190,23 +188,29 @@ class Detector:
 
     def run(self):
         columns = self._shared_column_names(self.first_df, self.second_df)
+        logger.info(f"Used columns: {columns}")
 
         if not self.checks_to_run:
-            raise Exception('Please use the method add_test to \
-                add tests that should be executed, before calling run()')
+            raise Exception('Please use the method add_check to add checks, '
+                            'that should be executed, before calling run()')
 
         column_type_to_columns = self._split_dataframes(self.first_df, self.second_df, columns)
+        logger.info("Splitted dataframes by column types")
 
         type_to_needed_preprocessings = self._needed_preprocessing(self.checks_to_run)
         logger.info(f"Needed Preprocessing: {type_to_needed_preprocessings}")
 
         preprocessings = self._preprocess(column_type_to_columns, type_to_needed_preprocessings)
-        
+        logger.info("Finished Preprocessing")
+
         self._distribute_preprocessings(self.checks_to_run, preprocessings)
+        logger.info("Distributed Preprocessings to the Checks")
+
         self.checks_reports = self._run_checks(self.checks_to_run)
 
     ## Evaluate the results
     def evaluate(self):
+        print("EVALUATION")
         for check_report in self.checks_reports:
             check, reports = check_report
             print(check.name())
