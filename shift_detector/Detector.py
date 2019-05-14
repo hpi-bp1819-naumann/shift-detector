@@ -1,11 +1,12 @@
 import pandas as pd
-from typing import List
+from typing import List, Dict
 import logging as logger
 from shift_detector.checks.Check import Check
 from collections import defaultdict
 from functools import reduce
 from collections import namedtuple
 from shift_detector.checks.Check import Reports
+from pandas.api.types import is_numeric_dtype
 
 CheckReports = namedtuple("CheckReports", "check reports")
 
@@ -47,9 +48,44 @@ class Detector:
         self.checks_to_run += checks
         return self
 
-    def get_result(self, index):
-        """ Return the last calculated result for the check with the index """
-        return self.checks_to_run[index].results[-1]
+    @staticmethod
+    def _is_categorical(col: pd.Series,
+                        n_samples: int = 100,
+                        max_unique_fraction=0.05) -> bool:
+        """
+        A heuristic to check whether a column is categorical:
+        a column is considered categorical (as opposed to a plain text column)
+        if the relative cardinality is max_unique_fraction or less.
+        :param col: pandas Series containing strings
+        :param n_samples: number of samples used for heuristic (default: 100)
+        :param max_unique_fraction: maximum relative cardinality.
+        :return: True if the column is categorical according to the heuristic
+        """
+
+        sample = col.sample(n=n_samples, replace=len(col) < n_samples).unique()
+
+        return sample.shape[0] / n_samples < max_unique_fraction
+
+    def _split_dataframes(self, df1: pd.DataFrame, df2: pd.DataFrame, columns: List[str]) -> Dict:
+        """
+        Split df1 and df2 in different dataframes related to type of the column.
+        The column types are numeric, categorical and string.
+        :param df1: first dataframe
+        :param df2: second dataframe
+        :param columns: the columns that both dataframes contain
+        :return: dictionary that maps the column types to the splitted dataframes as tuples
+        """
+        numeric_columns = [c for c in columns if is_numeric_dtype(df1[c]) \
+                            and is_numeric_dtype(df2[c])]
+        categorical_columns = [c for c in columns if Detector._is_categorical(df1[c]) \
+                                and Detector._is_categorical(df2[c])]
+        string_columns = list(set(columns) - set(numeric_columns) - set(categorical_columns))
+
+        return {
+            "numeric": (df1[numeric_columns], df2[numeric_columns]),
+            "categorical": (df1[categorical_columns], df2[categorical_columns]),
+            "text": (df1[string_columns], df2[string_columns])
+        }
 
     def run(self):
         first_df_columns = list(self.first_df.head(0))
