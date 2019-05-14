@@ -40,7 +40,7 @@ class TestCheck(Check):
 
     def __init__(self):
         self.data = dict()
-        self.text_embedding = WordEmbedding(model=FastText(size=50, window=5, min_count=1, workers=4))
+        self.text_embedding = WordEmbedding(model=FastText(size=300, window=5, min_count=1, workers=4))
 
     def set_data(self, data):
         self.data = data
