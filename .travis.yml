@@ -2,6 +2,10 @@ language: python
 python:
   - "3.5"
   - "3.6"
+before_install:
+  - ls /etc/boto.cfg
+  - sudo rm -f /etc/boto.cfg
+  - ls /etc/boto.cfg
 install:
   - pip3 install python-coveralls
   - pip3 install coverage
