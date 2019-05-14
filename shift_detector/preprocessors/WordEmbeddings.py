@@ -12,7 +12,6 @@ class EmbeddingType(Enum):
 
 
 class WordEmbedding(Preprocessor):
-
     def __init__(self, model=None, trained_model=None):
         self.model = None
         self.trained_model = None
@@ -39,8 +38,8 @@ class WordEmbedding(Preprocessor):
                                        if isinstance(v, Number) or isinstance(v, str)])
             other_model_attributes = sorted([(k, v) for k, v in other.model.__dict__.items()
                                              if isinstance(v, Number) or isinstance(v, str)])
-            if isinstance(other.model, self.model.__class__) \
-                    and model_attributes == other_model_attributes:
+
+            if isinstance(other.model, self.model.__class__) and model_attributes == other_model_attributes:
                 return True
         return False
 
