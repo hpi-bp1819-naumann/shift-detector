@@ -10,6 +10,7 @@ install:
   - pip3 install scipy
   - pip3 install datawig
   - pip3 install gensim
+  - pip3 install google-compute-engine
 script:
   - python3 -m unittest discover
   - nosetests --with-coverage --cover-package=shift_detector
