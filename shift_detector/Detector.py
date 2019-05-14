@@ -108,6 +108,26 @@ class Detector:
             ColumnType.text: (df1[text_columns], df2[text_columns])
         }
 
+    def _needed_preprocessing(self, checks: List[Check]) -> Dict:
+        """
+        Find the needed preprocessings for each column type and
+        aggregate them.
+        :param checks: the checks the prepocessings will be aggregated from
+        :return: Dict
+        {
+            ColumnType: Set(Preproccessing, ...)
+            ...
+        }
+        """
+        def update_preprocessings(groups, checks):
+            for key, value in checks.needed_preprocessing().items():
+                groups[key].add(value)
+            return groups
+
+        type_to_needed_preprocessings = reduce(update_preprocessings, checks, defaultdict(set))
+        type_to_needed_preprocessings = dict(type_to_needed_preprocessings)
+        return type_to_needed_preprocessings
+
     def run(self):
         columns = self._shared_column_names(self.first_df, self.second_df)
 
@@ -118,13 +138,7 @@ class Detector:
         ## Find column types
         column_type_to_columns = self._split_dataframes(self.first_df, self.second_df, columns)
 
-        def update_preprocessings(groups, checks):
-            for key, value in checks.needed_preprocessing().items():
-                groups[key].add(value)
-            return groups
-
-        type_to_needed_preprocessings = reduce(update_preprocessings, self.checks_to_run, defaultdict(set))
-        type_to_needed_preprocessings = dict(type_to_needed_preprocessings)
+        type_to_needed_preprocessings = self._needed_preprocessing(self.checks_to_run)
         logger.info(f"Needed Preprocessing: {type_to_needed_preprocessings}")
 
         preprocessings = defaultdict(dict)
