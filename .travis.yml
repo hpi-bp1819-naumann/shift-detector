@@ -3,13 +3,13 @@ python:
   - "3.5"
   - "3.6"
 install:
-  - pip install python-coveralls
-  - pip install coverage
-  - pip install nose
-  - pip install pandas
-  - pip install scipy
-  - pip install datawig
-  - pip install gensim
+  - pip3 install python-coveralls
+  - pip3 install coverage
+  - pip3 install nose
+  - pip3 install pandas
+  - pip3 install scipy
+  - pip3 install datawig
+  - pip3 install gensim
 script:
   - python3 -m unittest discover
   - nosetests --with-coverage --cover-package=shift_detector
