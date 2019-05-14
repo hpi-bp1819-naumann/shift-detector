@@ -82,3 +82,23 @@ class TestCheck(Check):
             results = results.append(self.column_statistics(p1, p2), ignore_index=True)
         results = results.append(self.column_statistics(self.data["category"][0], self.data["category"][1]), ignore_index=True)
         return TestResult(results)
+
+    @staticmethod
+    @abstractmethod
+    def name() -> str:
+        """
+
+        :return: Name of the Check
+
+        """
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def report_class():
+        """
+
+        :return: The class that will be used for reports
+
+        """
+        pass
