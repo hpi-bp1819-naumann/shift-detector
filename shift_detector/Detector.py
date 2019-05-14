@@ -24,28 +24,8 @@ class Detector:
         self.second_df = self.read_from_csv(second_path, separator).sample(100)
 
         self.checks_to_run = []
-        self.columns = []
-
         self.checks_reports = []
 
-    def read_from_csv(self, file_path: str, separator) -> pd.DataFrame:
-        # TODO: give user feedback about how many lines were dropped
-        logger.info('Reading in CSV file. This may take a while ...')
-        return pd.read_csv(file_path, sep=separator, error_bad_lines=False).dropna()
-
-    def get_common_column_names(self) -> List[str]:
-
-        first_df_columns = list(self.first_df.head(0))
-        second_df_columns = list(self.second_df.head(0))
-
-        common_columns = set(first_df_columns).intersection(second_df_columns)
-
-        if len(common_columns) == 0:
-            raise Exception('The provided datasets do not have any column names in common. \
-                They have {} and {}'.format(first_df_columns, second_df_columns))
-
-        return list(common_columns)
-    
     def add_check(self, check: Check):
         self.checks_to_run += [check]
         return self
@@ -53,6 +33,38 @@ class Detector:
     def add_checks(self, checks: List[Check]):
         self.checks_to_run += checks
         return self
+
+    def read_from_csv(self, file_path: str, separator) -> pd.DataFrame:
+        # TODO: give user feedback about how many lines were dropped
+        logger.info('Reading in CSV file. This may take a while ...')
+        return pd.read_csv(file_path, sep=separator, error_bad_lines=False).dropna()
+
+    def _shared_column_names(self, df1: pd.DataFrame, df2: pd.DataFrame) -> List[str]:
+        """
+        Find the column names that both dataframes share.
+        Raise an exception if the dataframes do not a shared column name.
+        :param df1: first dataframe
+        :param df2: second dataframe
+        :return: List of the column names that both dataframes have. 
+        """
+        df1_columns = set(df1.columns.values)
+        df2_columns = set(df2.columns.values)
+
+        if df1_columns != df2_columns:
+            logger.warning('The columns of the provided dataset \
+                           should be the same, but are {} and {}'.format(df1_columns, df2_columns))
+
+            shared_columns = df1_columns.intersection(df2_columns)
+
+            if len(shared_columns) == 0:
+                raise Exception('The provided datasets do not have any column names in common. \
+                    They have {} and {}'.format(df1_columns, df2_columns))
+
+            logger.info('Using columns {} instead.'.format(shared_columns))
+        else:
+            shared_columns = df1_columns
+
+        return list(shared_columns)
 
     @staticmethod
     def _is_categorical(col: pd.Series,
@@ -97,24 +109,14 @@ class Detector:
         }
 
     def run(self):
-        first_df_columns = list(self.first_df.head(0))
-        second_df_columns = list(self.second_df.head(0))
-
-        if first_df_columns != second_df_columns:
-            logger.warning('The columns of the provided dataset '
-                           'should be the same, but are {} and {}'.format(first_df_columns, second_df_columns))
-
-            self.columns = self.get_common_column_names()
-            logger.info('Using columns {} instead.'.format(self.columns))
-        else:
-            self.columns = first_df_columns
+        columns = self._shared_column_names(self.first_df, self.second_df)
 
         if not self.checks_to_run:
             raise Exception('Please use the method add_test to \
                 add tests that should be executed, before calling run()')
 
         ## Find column types
-        column_type_to_columns = self._split_dataframes(self.first_df, self.second_df, self.columns)
+        column_type_to_columns = self._split_dataframes(self.first_df, self.second_df, columns)
 
         def update_preprocessings(groups, checks):
             for key, value in checks.needed_preprocessing().items():
