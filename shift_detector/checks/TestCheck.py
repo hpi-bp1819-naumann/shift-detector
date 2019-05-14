@@ -84,7 +84,6 @@ class TestCheck(Check):
         return TestResult(results)
 
     @staticmethod
-    @abstractmethod
     def name() -> str:
         """
 
@@ -94,7 +93,6 @@ class TestCheck(Check):
         pass
 
     @staticmethod
-    @abstractmethod
     def report_class():
         """
 
