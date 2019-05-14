@@ -20,8 +20,8 @@ class Detector:
 
     def __init__(self, first_path: str, second_path: str, separator=','):
         # TODO: remove sampling
-        self.first_df = self.read_from_csv(first_path, separator).sample(5000)
-        self.second_df = self.read_from_csv(second_path, separator).sample(200)
+        self.first_df = self.read_from_csv(first_path, separator).sample(100)
+        self.second_df = self.read_from_csv(second_path, separator).sample(100)
 
         self.checks_to_run = []
         self.columns = []
@@ -57,7 +57,7 @@ class Detector:
     @staticmethod
     def _is_categorical(col: pd.Series,
                         n_samples: int = 100,
-                        max_unique_fraction=0.05) -> bool:
+                        max_unique_fraction=0.1) -> bool:
         """
         A heuristic to check whether a column is categorical:
         a column is considered categorical (as opposed to a plain text column)
