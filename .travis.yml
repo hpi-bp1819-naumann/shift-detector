@@ -15,6 +15,6 @@ install:
   - pip3 install pattern
 script:
   - python3 -m unittest discover
-  - nosetests --with-coverage --cover-package=shift_detector
+  - coverage run --source shift_detector -m unittest discover
 after_success:
   - coveralls
