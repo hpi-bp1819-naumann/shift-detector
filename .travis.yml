@@ -9,6 +9,6 @@ install:
   - pip install pandas
 script:
   - python3 -m unittest discover
-  - nosetests --with-coverage
+  - nosetests --with-coverage --cover-package=shift_detector
 after_success:
   - coveralls
