@@ -92,6 +92,10 @@ class Detector:
         :param df2: second dataframe
         :param columns: the columns that both dataframes contain
         :return: dictionary that maps the column types to the splitted dataframes as tuples
+        {
+            ColumnType: (df1_type, df2_type),
+            ...
+        }
         """
         numeric_columns = [c for c in columns if is_numeric_dtype(df1[c])
                             and is_numeric_dtype(df2[c])]
@@ -139,7 +143,9 @@ class Detector:
         {
             ColumnType: {
                 Preprocessor: (df1_processed, df2_processed)
+                ...
             }
+            ...
         }
         """
         preprocessings = defaultdict(dict)
@@ -152,6 +158,21 @@ class Detector:
 
         return preprocessings
 
+    def _distribute_preprocessings(self, checks: List[Check], preprocessings: Dict):
+        """
+        Distribute the preprocessings to the checks.
+        :param checks: checks to distribute the preprocessing to
+        :param preprocessings: result of _preprocess
+        """
+        def choose_preprocessings(specific_preprocessings, pair):
+            column_type, preprocessings_method = pair
+            specific_preprocessings[column_type] = preprocessings[column_type][preprocessings_method]
+            return specific_preprocessings
+
+        for check in checks:
+            chosen_preprocessing = reduce(choose_preprocessings, check.needed_preprocessing().items(), dict())
+            check.set_data(chosen_preprocessing)
+
     def run(self):
         columns = self._shared_column_names(self.first_df, self.second_df)
 
@@ -159,24 +180,14 @@ class Detector:
             raise Exception('Please use the method add_test to \
                 add tests that should be executed, before calling run()')
 
-        ## Find column types
         column_type_to_columns = self._split_dataframes(self.first_df, self.second_df, columns)
 
         type_to_needed_preprocessings = self._needed_preprocessing(self.checks_to_run)
         logger.info(f"Needed Preprocessing: {type_to_needed_preprocessings}")
 
-        ## Do the preprocessing
         preprocessings = self._preprocess(column_type_to_columns, type_to_needed_preprocessings)
 
-        def choose_preprocessings(specific_preprocessings, pair):
-            column_type, preprocessings_method = pair
-            specific_preprocessings[column_type] = preprocessings[column_type][preprocessings_method]
-            return specific_preprocessings
-
-        ## Link the preprocessing and pass them to the checks
-        for check in self.checks_to_run:
-            chosen_preprocessing = reduce(choose_preprocessings, check.needed_preprocessing().items(), dict())
-            check.set_data(chosen_preprocessing)
+        self._distribute_preprocessings(self.checks_to_run, preprocessings)
 
         ## Run the checks
         for check in self.checks_to_run:
