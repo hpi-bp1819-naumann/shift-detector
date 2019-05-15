@@ -72,6 +72,18 @@ class TestTextMetadata(unittest.TestCase):
         self.assertEqual(tm.num_distinct_words(capitalLetters), 4)
         self.assertEqual(tm.num_distinct_words(empty), 0)
 
+    def test_num_unique_words(self):
+        distinct = "this are all different words"
+        same = "same, same. same"
+        mixed = "there are doubled words and there are distinct words."
+        capitalLetters = "Capital letters letters matter Matter"
+        empty = ""
+        self.assertEqual(tm.num_unique_words(distinct), 5)
+        self.assertEqual(tm.num_unique_words(same), 0)
+        self.assertEqual(tm.num_unique_words(mixed), 3)
+        self.assertEqual(tm.num_unique_words(capitalLetters), 3)
+        self.assertEqual(tm.num_unique_words(empty), 0)
+
     def test_unknown_words(self):
         correctEnglish = "This is a correct sentence"
         incorrectEnglish = "Thiis is an incozyzyrrect sentence"
@@ -97,24 +109,6 @@ class TestTextMetadata(unittest.TestCase):
         self.assertRaises(ValueError, tm.stopword_ratio(unsupportedLanguage, 'so'))
         self.assertEqual(tm.stopword_ratio(punctuation, 'en'), 0.0)
         self.assertEqual(tm.stopword_ratio(empty, 'en'), 0.0)
-        
-    def test_num_parts(self):
-        html = "some text <p> some other text < br/ > more text"
-        sentence = "some text. some other text. more text."
-        other = "some text, some other text -- more text."
-        none = "some text some other text more text"
-        htmlsentence = "some text <p> some other text. more text."
-        sentenceother = "some text, some other text. more text."
-        htmlsentenceother = "some text -- some. other text <br> more text."
-        empty = ""
-        self.assertEqual(tm.num_parts(html), 3)
-        self.assertEqual(tm.num_parts(sentence), 3)
-        self.assertEqual(tm.num_parts(other), 3)
-        self.assertEqual(tm.num_parts(none), 0)
-        self.assertEqual(tm.num_parts(htmlsentence), 2)
-        self.assertEqual(tm.num_parts(sentenceother), 2)
-        self.assertEqual(tm.num_parts(htmlsentenceother), 2)
-        self.assertEqual(tm.num_parts(empty), 0)
 
     def test_category(self):
         html = "some text <p> some other text < br/ > more text"
@@ -133,6 +127,24 @@ class TestTextMetadata(unittest.TestCase):
         self.assertEqual(tm.category(sentenceother), "sentence")
         self.assertEqual(tm.category(htmlsentenceother), "html")
         self.assertEqual(tm.category(empty), "empty")
+
+    def test_num_parts(self):
+        html = "some text <p> some other text < br/ > more text"
+        sentence = "some text. some other text. more text."
+        other = "some text, some other text -- more text."
+        none = "some text some other text more text"
+        htmlsentence = "some text <p> some other text. more text."
+        sentenceother = "some text, some other text. more text."
+        htmlsentenceother = "some text -- some. other text <br> more text."
+        empty = ""
+        self.assertEqual(tm.num_parts(html), 3)
+        self.assertEqual(tm.num_parts(sentence), 3)
+        self.assertEqual(tm.num_parts(other), 3)
+        self.assertEqual(tm.num_parts(none), 0)
+        self.assertEqual(tm.num_parts(htmlsentence), 2)
+        self.assertEqual(tm.num_parts(sentenceother), 2)
+        self.assertEqual(tm.num_parts(htmlsentenceother), 2)
+        self.assertEqual(tm.num_parts(empty), 0)
 
     def test_languages(self):
         english = "This is a normal sentence. Language detection is easy."
