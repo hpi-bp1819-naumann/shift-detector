@@ -34,4 +34,5 @@ class TestNGramPreprocessor(unittest.TestCase):
         self.assertRaises(Exception, lambda: NGram(-1))
 
     def test_hash(self):
-        self.assertIsNotNone(hash(self.ng))
+        ng2 = NGram(self.n)
+        self.assertEqual(hash(self.ng), hash(ng2))

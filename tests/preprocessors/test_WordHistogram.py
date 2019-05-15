@@ -37,4 +37,5 @@ class TestWordHistogramPreprocessor(unittest.TestCase):
         self.assertRaises(Exception, lambda: WordHistogram(-1))
 
     def test_hash(self):
-        self.assertIsNotNone(hash(self.wh1))
+        wh3 = WordHistogram(self.n2)
+        self.assertIsNotNone(hash(self.wh2), hash(wh3))
