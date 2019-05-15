@@ -16,7 +16,8 @@ DetectorFactory.seed = 0
 
 
 def md_functions(type):
-    return {'num_chars': num_chars,
+    return {'dict_to_string': dictionary_to_sorted_string,
+            'num_chars': num_chars,
             'ratio_upper': ratio_upper,
             'unicode_category': unicode_category_histogram,
             'unicode_block': unicode_block_histogram,
@@ -47,6 +48,13 @@ def block(ch):
     for start, end, name in UCBlist._blocks:
         if start <= cp <= end:
             return name
+
+# postprocessors
+
+def dictionary_to_sorted_string(histogram):
+    sorted_histo = sorted(histogram.items(), key=lambda kv: (-kv[1], kv[0]))
+    only_keys = [item[0] for item in sorted_histo]
+    return ', '.join(only_keys)
 
 # metrics
 

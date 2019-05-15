@@ -12,6 +12,14 @@ class TestTextMetadata(unittest.TestCase):
         self.assertEqual(tm.text_to_array(empty), [])
         self.assertEqual(tm.text_to_array(punctuation), [])
 
+    def test_dictionary_to_sorted_string(self):
+        many = {'a': 2, 'b': 5, 'c': 3, 'f': 5, 'd': 1, 'e': 5} 
+        one = {'a': 100}
+        empty = {}
+        self.assertEqual(tm.dictionary_to_sorted_string(many), "b, e, f, c, a, d")
+        self.assertEqual(tm.dictionary_to_sorted_string(one), "a")
+        self.assertEqual(tm.dictionary_to_sorted_string(empty), "")
+
     def test_num_chars(self):
         normal = "normaler Text"
         unicodes = "\u6667 is one char"
