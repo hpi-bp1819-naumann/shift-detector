@@ -6,7 +6,7 @@ from typing import List, Dict, Union
 
 import pandas as pd
 
-from shift_detector.Utils import Utils
+from shift_detector.Utils import shared_column_names, read_from_csv
 from shift_detector.checks.Check import Check
 from shift_detector.checks.Check import Reports
 
@@ -28,14 +28,14 @@ class Detector:
         if type(df1) is pd.DataFrame:
             self.first_df = df1
         elif type(df1) is str:
-            self.first_df = Utils.read_from_csv(df1, delimiter).sample(100)
+            self.first_df = read_from_csv(df1, delimiter).sample(100)
         else:
             raise Exception("df1 is not a dataframe or a string")
 
         if type(df2) is pd.DataFrame:
             self.second_df = df2
         elif type(df2) is str:
-            self.second_df = Utils.read_from_csv(df1, delimiter).sample(100)
+            self.second_df = read_from_csv(df1, delimiter).sample(100)
         else:
             raise Exception("df2 is not a dataframe or a string")
 
@@ -122,7 +122,7 @@ class Detector:
         :return: list of CheckReports, that connects runned checks with their reports
         """
         checks_reports = []
-        for check in self.checks_to_run:
+        for check in checks:
             check_result = check.run()
             reports = Reports(check_result=check_result, report_class=check.report_class())
             check_reports = CheckReports(check=check, reports=reports)
@@ -131,7 +131,7 @@ class Detector:
         return checks_reports
 
     def run(self):
-        columns = Utils.shared_column_names(self.first_df, self.second_df)
+        columns = shared_column_names(self.first_df, self.second_df)
         logger.info(f"Used columns: {columns}")
 
         if not self.checks_to_run:
