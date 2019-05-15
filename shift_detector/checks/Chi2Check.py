@@ -5,7 +5,7 @@ from datawig.utils import random_split
 from shift_detector.checks.Check import Check, Report
 from shift_detector.preprocessors.Default import Default
 from shift_detector.preprocessors.WordEmbeddings import WordEmbedding, EmbeddingType
-from shift_detector.Detector import ColumnType
+from shift_detector.Utils import ColumnType
 from gensim.models import FastText
 
 ## TODO: think about whether the specific result should store the data at all or will always be
