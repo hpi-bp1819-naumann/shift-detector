@@ -1,30 +1,48 @@
-import pandas as pd
-from typing import List, Dict
 import logging as logger
-from shift_detector.checks.Check import Check
 from collections import defaultdict
-from functools import reduce
 from collections import namedtuple
-from shift_detector.checks.Check import Reports
-from pandas.api.types import is_numeric_dtype
-from enum import Enum
+from functools import reduce
+from typing import List, Dict, Union
 
-class ColumnType(Enum):
-    numeric = "numeric"
-    categorical = "categorical"
-    text = "text"
+import pandas as pd
+
+from shift_detector.Utils import Utils
+from shift_detector.checks.Check import Check
+from shift_detector.checks.Check import Reports
 
 CheckReports = namedtuple("CheckReports", "check reports")
 
+
 class Detector:
 
-    def __init__(self, first_path: str, second_path: str, separator=','):
+    def __init__(self,
+                 df1: Union[pd.DataFrame, str],
+                 df2: Union[pd.DataFrame, str],
+                 delimiter=','):
+        """
+        :param df1: either a dataframe or the file path
+        :param df2: either a dataframe or the file path
+        :param delimiter: used delimiter for csv files
+        """
         # TODO: remove sampling
-        self.first_df = self.read_from_csv(first_path, separator).sample(100)
-        self.second_df = self.read_from_csv(second_path, separator).sample(100)
+        if type(df1) is pd.DataFrame:
+            self.first_df = df1
+        elif type(df1) is str:
+            self.first_df = Utils.read_from_csv(df1, delimiter).sample(100)
+        else:
+            raise Exception("df1 is not a dataframe or a string")
+
+        if type(df2) is pd.DataFrame:
+            self.second_df = df2
+        elif type(df2) is str:
+            self.second_df = Utils.read_from_csv(df1, delimiter).sample(100)
+        else:
+            raise Exception("df2 is not a dataframe or a string")
 
         self.checks_to_run = []
         self.checks_reports = []
+        self.column_type_to_columns = {}
+        self.preprocessings = {}
 
     def add_check(self, check: Check):
         self.checks_to_run += [check]
@@ -33,82 +51,6 @@ class Detector:
     def add_checks(self, checks: List[Check]):
         self.checks_to_run += checks
         return self
-
-    def read_from_csv(self, file_path: str, separator) -> pd.DataFrame:
-        # TODO: give user feedback about how many lines were dropped
-        logger.info('Reading in CSV file. This may take a while ...')
-        return pd.read_csv(file_path, sep=separator, error_bad_lines=False).dropna()
-
-    def _shared_column_names(self, df1: pd.DataFrame, df2: pd.DataFrame) -> List[str]:
-        """
-        Find the column names that both dataframes share.
-        Raise an exception if the dataframes do not a shared column name.
-        :param df1: first dataframe
-        :param df2: second dataframe
-        :return: List of the column names that both dataframes have. 
-        """
-        df1_columns = set(df1.columns.values)
-        df2_columns = set(df2.columns.values)
-
-        if df1_columns != df2_columns:
-            logger.warning('The columns of the provided dataset should be the same, '
-                           'but are {} for df1 and {} for df2'.format(df1_columns, df2_columns))
-
-            shared_columns = df1_columns.intersection(df2_columns)
-
-            if len(shared_columns) == 0:
-                raise Exception('The provided datasets do not have any column names in common.'
-                                'They have {} and {}'.format(df1_columns, df2_columns))
-        else:
-            shared_columns = df1_columns
-
-        return list(shared_columns)
-
-    @staticmethod
-    def _is_categorical(col: pd.Series,
-                        n_samples: int = 100,
-                        max_unique_fraction=0.1) -> bool:
-        """
-        A heuristic to check whether a column is categorical:
-        a column is considered categorical (as opposed to a plain text column)
-        if the relative cardinality is max_unique_fraction or less.
-        :param col: pandas Series containing strings
-        :param n_samples: number of samples used for heuristic (default: 100)
-        :param max_unique_fraction: maximum relative cardinality.
-        :return: True if the column is categorical according to the heuristic
-        """
-
-        sample = col.sample(n=n_samples, replace=len(col) < n_samples).unique()
-
-        return sample.shape[0] / n_samples <= max_unique_fraction
-
-    def _split_dataframes(self, df1: pd.DataFrame, df2: pd.DataFrame, columns: List[str]) -> Dict:
-        """
-        Split df1 and df2 in different dataframes related to type of the column.
-        The column types are numeric, categorical and text.
-        :param df1: first dataframe
-        :param df2: second dataframe
-        :param columns: the columns that both dataframes contain
-        :return: dictionary that maps the column types to the splitted dataframes as tuples
-        {
-            ColumnType: (df1_type, df2_type),
-            ...
-        }
-        """
-        numeric_columns = [c for c in columns if is_numeric_dtype(df1[c])
-                            and is_numeric_dtype(df2[c])]
-        logger.info("Assuming numerical columns: {}".format(", ".join(numeric_columns)))
-        categorical_columns = [c for c in columns if Detector._is_categorical(df1[c])
-                                and Detector._is_categorical(df2[c])]
-        logger.info("Assuming categorical columns: {}".format(", ".join(categorical_columns)))
-        text_columns = list(set(columns) - set(numeric_columns) - set(categorical_columns))
-        logger.info("Assuming text columns: {}".format(", ".join(text_columns)))
-
-        return {
-            ColumnType.numeric: (df1[numeric_columns], df2[numeric_columns]),
-            ColumnType.categorical: (df1[categorical_columns], df2[categorical_columns]),
-            ColumnType.text: (df1[text_columns], df2[text_columns])
-        }
 
     def _needed_preprocessing(self, checks: List[Check]) -> Dict:
         """
@@ -121,6 +63,7 @@ class Detector:
             ...
         }
         """
+
         def update_preprocessings(groups, checks):
             for key, value in checks.needed_preprocessing().items():
                 groups[key].add(value)
@@ -135,7 +78,7 @@ class Detector:
                     type_to_needed_preprocessings: Dict) -> Dict:
         """
         Execute the preprocessing.
-        :param column_type_to_columns: result of _split_dataframes
+        :param column_type_to_columns: result of split_dataframes
         :param type_to_needed_preprocessings: result of _needed_preprocessing
         :return: Dict
         {
@@ -162,6 +105,7 @@ class Detector:
         :param checks: checks to distribute the preprocessing to
         :param preprocessings: result of _preprocess
         """
+
         def choose_preprocessings(specific_preprocessings, pair):
             column_type, preprocessings_method = pair
             specific_preprocessings[column_type] = preprocessings[column_type][preprocessings_method]
@@ -187,14 +131,14 @@ class Detector:
         return checks_reports
 
     def run(self):
-        columns = self._shared_column_names(self.first_df, self.second_df)
+        columns = Utils.shared_column_names(self.first_df, self.second_df)
         logger.info(f"Used columns: {columns}")
 
         if not self.checks_to_run:
             raise Exception('Please use the method add_check to add checks, '
                             'that should be executed, before calling run()')
 
-        column_type_to_columns = self._split_dataframes(self.first_df, self.second_df, columns)
+        column_type_to_columns = Utils.split_dataframes(self.first_df, self.second_df, columns)
         logger.info("Splitted dataframes by column types")
 
         type_to_needed_preprocessings = self._needed_preprocessing(self.checks_to_run)
