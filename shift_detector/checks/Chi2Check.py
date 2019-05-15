@@ -13,29 +13,28 @@ from gensim.models import FastText
 ##       created
 class Chi2Report(Report):
 
-    def __init__(self, data, significance=0.01):
-        self.data = data
+    def __init__(self, check_result, significance=0.01):
+        self.check_result = check_result
         self.significance = significance
 
     def remarkable_columns(self):
         # return names of columns for which inner set test didn't fail, but cross set test failed
-        return list(self.data[self.data.columns[
-            (self.data.loc[0] >= self.significance) & 
-            (self.data.loc[1] >= self.significance) & 
-            (self.data.loc[2] < self.significance)
+        return list(self.check_result[self.check_result.columns[
+            (self.check_result.loc[0] >= self.significance) & 
+            (self.check_result.loc[1] >= self.significance) & 
+            (self.check_result.loc[2] < self.significance)
         ]])
 
     def pvalues(self):
-        return self.data.loc[2]
+        return self.check_result.loc[2]
 
     def failing_feature_ratio(self):
-        return len(self.data.loc[2][self.data.loc[2] < self.significance]) / len(self.data.columns)
+        return len(self.check_result.loc[2][self.check_result.loc[2] < self.significance]) \
+                / len(self.check_result.columns)
     
     def print_report(self):
         """
-
         Print report for analyzed columns
-
         """
         print(f"Columns with a Shift (significance: {self.significance}):", self.remarkable_columns())
 

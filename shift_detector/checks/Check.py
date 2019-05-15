@@ -60,8 +60,8 @@ class Check(metaclass=ABCMeta):
 
 class Report(metaclass=ABCMeta):
 
-    def __init__(self, result={}):
-        self.result = result
+    def __init__(self, check_result={}):
+        self.check_result = check_result
 
     @abstractmethod
     def print_report(self):
@@ -70,7 +70,7 @@ class Report(metaclass=ABCMeta):
         Print report for checked columns
 
         """
-
+        
 class Reports():
 
     def __init__(self, check_result, report_class):
@@ -80,7 +80,7 @@ class Reports():
         self.evaluate()
 
     def evaluate(self, **kwargs):
-        self.reports.append(self.result_class(data=self.check_result, **kwargs))
+        self.reports.append(self.result_class(check_result=self.check_result, **kwargs))
 
 
 ## Deprecated
