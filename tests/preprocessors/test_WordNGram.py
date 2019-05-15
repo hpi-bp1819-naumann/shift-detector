@@ -1,17 +1,17 @@
 import unittest
 import pandas as pd
-from shift_detector.preprocessors.WordHistogram import WordHistogram
+from shift_detector.preprocessors.WordNGram import WordNGram
 
 
-class TestWordHistogramPreprocessor(unittest.TestCase):
+class TestWordNGram(unittest.TestCase):
 
     def setUp(self):
         self.ser1 = pd.Series(['This is a text', 'This is another text'])
         self.ser2 = pd.Series(['test text test text', 'test test test test test'])
         self.n1 = 1
-        self.wh1 = WordHistogram(self.n1)
+        self.wh1 = WordNGram(self.n1)
         self.n2 = 3
-        self.wh2 = WordHistogram(self.n2)
+        self.wh2 = WordNGram(self.n2)
         self.res11, self.res12 = self.wh1.process(self.ser1, self.ser2)
         self.res21, self.res22 = self.wh2.process(self.ser1, self.ser2)
 
@@ -28,14 +28,14 @@ class TestWordHistogramPreprocessor(unittest.TestCase):
         self.assertEqual(self.res22[1][('test', 'test', 'test')], 3)
 
     def test_eq(self):
-        wh3 = WordHistogram(3)
+        wh3 = WordNGram(3)
         self.assertTrue(self.wh2 == wh3)
         self.assertFalse(self.wh1 == self.wh2)
 
     def test_exception_on_small_n(self):
-        self.assertRaises(Exception, lambda: WordHistogram(0))
-        self.assertRaises(Exception, lambda: WordHistogram(-1))
+        self.assertRaises(Exception, lambda: WordNGram(0))
+        self.assertRaises(Exception, lambda: WordNGram(-1))
 
     def test_hash(self):
-        wh3 = WordHistogram(self.n2)
+        wh3 = WordNGram(self.n2)
         self.assertIsNotNone(hash(self.wh2), hash(wh3))
