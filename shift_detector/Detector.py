@@ -1,11 +1,18 @@
 import pandas as pd
-from typing import List
+from typing import List, Dict
 import logging as logger
 from shift_detector.checks.Check import Check
 from collections import defaultdict
 from functools import reduce
 from collections import namedtuple
 from shift_detector.checks.Check import Reports
+from pandas.api.types import is_numeric_dtype
+from enum import Enum
+
+class ColumnType(Enum):
+    numeric = "numeric"
+    categorical = "categorical"
+    text = "text"
 
 CheckReports = namedtuple("CheckReports", "check reports")
 
@@ -13,8 +20,8 @@ class Detector:
 
     def __init__(self, first_path: str, second_path: str, separator=','):
         # TODO: remove sampling
-        self.first_df = self.read_from_csv(first_path, separator).head(100)
-        self.second_df = self.read_from_csv(second_path, separator).head(100)
+        self.first_df = self.read_from_csv(first_path, separator).sample(100)
+        self.second_df = self.read_from_csv(second_path, separator).sample(100)
 
         self.checks_to_run = []
         self.columns = []
@@ -47,9 +54,47 @@ class Detector:
         self.checks_to_run += checks
         return self
 
-    def get_result(self, index):
-        """ Return the last calculated result for the check with the index """
-        return self.checks_to_run[index].results[-1]
+    @staticmethod
+    def _is_categorical(col: pd.Series,
+                        n_samples: int = 100,
+                        max_unique_fraction=0.1) -> bool:
+        """
+        A heuristic to check whether a column is categorical:
+        a column is considered categorical (as opposed to a plain text column)
+        if the relative cardinality is max_unique_fraction or less.
+        :param col: pandas Series containing strings
+        :param n_samples: number of samples used for heuristic (default: 100)
+        :param max_unique_fraction: maximum relative cardinality.
+        :return: True if the column is categorical according to the heuristic
+        """
+
+        sample = col.sample(n=n_samples, replace=len(col) < n_samples).unique()
+
+        return sample.shape[0] / n_samples <= max_unique_fraction
+
+    def _split_dataframes(self, df1: pd.DataFrame, df2: pd.DataFrame, columns: List[str]) -> Dict:
+        """
+        Split df1 and df2 in different dataframes related to type of the column.
+        The column types are numeric, categorical and text.
+        :param df1: first dataframe
+        :param df2: second dataframe
+        :param columns: the columns that both dataframes contain
+        :return: dictionary that maps the column types to the splitted dataframes as tuples
+        """
+        numeric_columns = [c for c in columns if is_numeric_dtype(df1[c])
+                            and is_numeric_dtype(df2[c])]
+        logger.info("Assuming numerical columns: {}".format(", ".join(numeric_columns)))
+        categorical_columns = [c for c in columns if Detector._is_categorical(df1[c])
+                                and Detector._is_categorical(df2[c])]
+        logger.info("Assuming categorical columns: {}".format(", ".join(categorical_columns)))
+        text_columns = list(set(columns) - set(numeric_columns) - set(categorical_columns))
+        logger.info("Assuming text columns: {}".format(", ".join(text_columns)))
+
+        return {
+            ColumnType.numeric: (df1[numeric_columns], df2[numeric_columns]),
+            ColumnType.categorical: (df1[categorical_columns], df2[categorical_columns]),
+            ColumnType.text: (df1[text_columns], df2[text_columns])
+        }
 
     def run(self):
         first_df_columns = list(self.first_df.head(0))
@@ -69,12 +114,7 @@ class Detector:
                 add tests that should be executed, before calling run()')
 
         ## Find column types
-        # TODO: replace this provisional
-        column_type_to_columns = {
-            "int": (self.first_df[["marketplace_id", "refinement_id"]], self.second_df[["marketplace_id", "refinement_id"]]),
-            "category": (self.first_df[["value", "attribute"]], self.second_df[["value", "attribute"]]),
-            "text": (self.first_df["bullet_points"], self.second_df["bullet_points"])
-        }
+        column_type_to_columns = self._split_dataframes(self.first_df, self.second_df, self.columns)
 
         def update_preprocessings(groups, checks):
             for key, value in checks.needed_preprocessing().items():
