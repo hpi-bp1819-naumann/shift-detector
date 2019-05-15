@@ -35,3 +35,7 @@ class TestWordHistogramPreprocessor(unittest.TestCase):
     def test_exception_on_small_n(self):
         self.assertRaises(Exception, lambda: WordHistogram(0))
         self.assertRaises(Exception, lambda: WordHistogram(-1))
+
+    def test_hash(self):
+        self.assertEqual(hash(self.wh1), 1959496291449989020)
+        self.assertEqual(hash(self.wh2), 1959496291452154070)
