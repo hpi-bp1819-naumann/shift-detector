@@ -7,7 +7,7 @@ class NGram(Preprocessor, metaclass=ABCMeta):
     def __init__(self, n):
         self.n = n
         if self.n < 1:
-            raise Exception('n has to be greater than 0')
+            raise ValueError('n has to be greater than 0')
 
     def __eq__(self, other):
         """Overrides the default implementation"""

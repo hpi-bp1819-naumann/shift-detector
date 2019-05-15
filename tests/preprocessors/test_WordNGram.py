@@ -33,8 +33,8 @@ class TestWordNGram(unittest.TestCase):
         self.assertFalse(self.wh1 == self.wh2)
 
     def test_exception_on_small_n(self):
-        self.assertRaises(Exception, lambda: WordNGram(0))
-        self.assertRaises(Exception, lambda: WordNGram(-1))
+        self.assertRaises(ValueError, lambda: WordNGram(0))
+        self.assertRaises(ValueError, lambda: WordNGram(-1))
 
     def test_hash(self):
         wh3 = WordNGram(self.n2)

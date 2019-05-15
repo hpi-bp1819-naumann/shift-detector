@@ -30,8 +30,8 @@ class TestCharNGram(unittest.TestCase):
         self.assertFalse(self.ng == ng2)
 
     def test_exception_on_small_n(self):
-        self.assertRaises(Exception, lambda: CharNGram(0))
-        self.assertRaises(Exception, lambda: CharNGram(-1))
+        self.assertRaises(ValueError, lambda: CharNGram(0))
+        self.assertRaises(ValueError, lambda: CharNGram(-1))
 
     def test_hash(self):
         ng2 = CharNGram(self.n)

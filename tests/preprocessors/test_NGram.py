@@ -20,8 +20,8 @@ class TestNGram(unittest.TestCase):
 
     @patch.multiple(NGram, __abstractmethods__=set())
     def test_exception_on_small_n(self):
-        self.assertRaises(Exception, lambda: NGram(0))
-        self.assertRaises(Exception, lambda: NGram(-1))
+        self.assertRaises(ValueError, lambda: NGram(0))
+        self.assertRaises(ValueError, lambda: NGram(-1))
 
     def test_hash(self):
         self.assertEqual(hash(self.ng2), hash(self.ng3))
