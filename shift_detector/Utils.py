@@ -78,8 +78,8 @@ def split_dataframes(df1: pd.DataFrame, df2: pd.DataFrame, columns: List[str]) -
     numeric_columns = [c for c in columns if is_numeric_dtype(df1[c])
                        and is_numeric_dtype(df2[c])]
     logger.info("Assuming numerical columns: {}".format(", ".join(numeric_columns)))
-    categorical_columns = [c for c in columns if Utils.is_categorical(df1[c])
-                           and Utils.is_categorical(df2[c])]
+    categorical_columns = [c for c in columns if is_categorical(df1[c])
+                           and is_categorical(df2[c])]
     logger.info("Assuming categorical columns: {}".format(", ".join(categorical_columns)))
     text_columns = list(set(columns) - set(numeric_columns) - set(categorical_columns))
     logger.info("Assuming text columns: {}".format(", ".join(text_columns)))
