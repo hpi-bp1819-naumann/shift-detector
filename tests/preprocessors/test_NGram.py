@@ -32,3 +32,7 @@ class TestNGramPreprocessor(unittest.TestCase):
     def test_exception_on_small_n(self):
         self.assertRaises(Exception, lambda: NGram(0))
         self.assertRaises(Exception, lambda: NGram(-1))
+
+    def test_hash(self):
+        ng2 = NGram(self.n)
+        self.assertEqual(hash(self.ng), hash(ng2))
