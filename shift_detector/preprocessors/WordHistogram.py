@@ -9,6 +9,9 @@ class WordHistogram:
         """Overrides the default implementation"""
         return self.n == other.n
 
+    def __hash__(self):
+        return hash((self.__class__, self.n))
+
     def process(self, train, test):
 
         def generate_ngram(text, n):
