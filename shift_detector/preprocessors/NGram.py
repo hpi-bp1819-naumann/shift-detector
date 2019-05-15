@@ -1,7 +1,8 @@
 from shift_detector.preprocessors.Preprocessor import Preprocessor
+from abc import ABCMeta, abstractmethod
 
 
-class NGram(Preprocessor):
+class NGram(Preprocessor, metaclass=ABCMeta):
 
     def __init__(self, n):
         self.n = n
@@ -14,3 +15,7 @@ class NGram(Preprocessor):
 
     def __hash__(self):
         return hash((self.__class__, self.n))
+
+    @abstractmethod
+    def process(self, first_df, second_df):
+        return first_df, second_df
