@@ -24,28 +24,8 @@ class Detector:
         self.second_df = self.read_from_csv(second_path, separator).sample(100)
 
         self.checks_to_run = []
-        self.columns = []
-
         self.checks_reports = []
 
-    def read_from_csv(self, file_path: str, separator) -> pd.DataFrame:
-        # TODO: give user feedback about how many lines were dropped
-        logger.info('Reading in CSV file. This may take a while ...')
-        return pd.read_csv(file_path, sep=separator, error_bad_lines=False).dropna()
-
-    def get_common_column_names(self) -> List[str]:
-
-        first_df_columns = list(self.first_df.head(0))
-        second_df_columns = list(self.second_df.head(0))
-
-        common_columns = set(first_df_columns).intersection(second_df_columns)
-
-        if len(common_columns) == 0:
-            raise Exception('The provided datasets do not have any column names in common. \
-                They have {} and {}'.format(first_df_columns, second_df_columns))
-
-        return list(common_columns)
-    
     def add_check(self, check: Check):
         self.checks_to_run += [check]
         return self
@@ -53,6 +33,36 @@ class Detector:
     def add_checks(self, checks: List[Check]):
         self.checks_to_run += checks
         return self
+
+    def read_from_csv(self, file_path: str, separator) -> pd.DataFrame:
+        # TODO: give user feedback about how many lines were dropped
+        logger.info('Reading in CSV file. This may take a while ...')
+        return pd.read_csv(file_path, sep=separator, error_bad_lines=False).dropna()
+
+    def _shared_column_names(self, df1: pd.DataFrame, df2: pd.DataFrame) -> List[str]:
+        """
+        Find the column names that both dataframes share.
+        Raise an exception if the dataframes do not a shared column name.
+        :param df1: first dataframe
+        :param df2: second dataframe
+        :return: List of the column names that both dataframes have. 
+        """
+        df1_columns = set(df1.columns.values)
+        df2_columns = set(df2.columns.values)
+
+        if df1_columns != df2_columns:
+            logger.warning('The columns of the provided dataset should be the same, '
+                           'but are {} for df1 and {} for df2'.format(df1_columns, df2_columns))
+
+            shared_columns = df1_columns.intersection(df2_columns)
+
+            if len(shared_columns) == 0:
+                raise Exception('The provided datasets do not have any column names in common.'
+                                'They have {} and {}'.format(df1_columns, df2_columns))
+        else:
+            shared_columns = df1_columns
+
+        return list(shared_columns)
 
     @staticmethod
     def _is_categorical(col: pd.Series,
@@ -80,6 +90,10 @@ class Detector:
         :param df2: second dataframe
         :param columns: the columns that both dataframes contain
         :return: dictionary that maps the column types to the splitted dataframes as tuples
+        {
+            ColumnType: (df1_type, df2_type),
+            ...
+        }
         """
         numeric_columns = [c for c in columns if is_numeric_dtype(df1[c])
                             and is_numeric_dtype(df2[c])]
@@ -96,69 +110,107 @@ class Detector:
             ColumnType.text: (df1[text_columns], df2[text_columns])
         }
 
-    def run(self):
-        first_df_columns = list(self.first_df.head(0))
-        second_df_columns = list(self.second_df.head(0))
-
-        if first_df_columns != second_df_columns:
-            logger.warning('The columns of the provided dataset '
-                           'should be the same, but are {} and {}'.format(first_df_columns, second_df_columns))
-
-            self.columns = self.get_common_column_names()
-            logger.info('Using columns {} instead.'.format(self.columns))
-        else:
-            self.columns = first_df_columns
-
-        if not self.checks_to_run:
-            raise Exception('Please use the method add_test to \
-                add tests that should be executed, before calling run()')
-
-        ## Find column types
-        column_type_to_columns = self._split_dataframes(self.first_df, self.second_df, self.columns)
-
+    def _needed_preprocessing(self, checks: List[Check]) -> Dict:
+        """
+        Find the needed preprocessings for each column type and
+        aggregate them.
+        :param checks: the checks the prepocessings will be aggregated from
+        :return: Dict
+        {
+            ColumnType: Set(Preprocessor, ...)
+            ...
+        }
+        """
         def update_preprocessings(groups, checks):
             for key, value in checks.needed_preprocessing().items():
                 groups[key].add(value)
             return groups
 
-        type_to_needed_preprocessings = reduce(update_preprocessings, self.checks_to_run, defaultdict(set))
+        type_to_needed_preprocessings = reduce(update_preprocessings, checks, defaultdict(set))
         type_to_needed_preprocessings = dict(type_to_needed_preprocessings)
-        logger.info(f"Needed Preprocessing: {type_to_needed_preprocessings}")
+        return type_to_needed_preprocessings
 
-        preprocessings = defaultdict(dict)
-        '''
-        preprocessings: {
-            "int": {
-                Default.Default: (pd.Dataframe1, pd.Dataframe2)
+    def _preprocess(self,
+                    column_type_to_columns: Dict,
+                    type_to_needed_preprocessings: Dict) -> Dict:
+        """
+        Execute the preprocessing.
+        :param column_type_to_columns: result of _split_dataframes
+        :param type_to_needed_preprocessings: result of _needed_preprocessing
+        :return: Dict
+        {
+            ColumnType: {
+                Preprocessor: (df1_processed, df2_processed)
+                ...
             }
+            ...
         }
-        '''
-        ## Do the preprocessing
+        """
+        preprocessings = defaultdict(dict)
+
         for column_type, needed_preprocessings in type_to_needed_preprocessings.items():
             (first_df, second_df) = column_type_to_columns[column_type]
             for needed_preprocessing in needed_preprocessings:
                 preprocessed = needed_preprocessing.process(first_df, second_df)
                 preprocessings[column_type][needed_preprocessing] = preprocessed
 
+        return preprocessings
+
+    def _distribute_preprocessings(self, checks: List[Check], preprocessings: Dict):
+        """
+        Distribute the preprocessings to the checks.
+        :param checks: checks to distribute the preprocessing to
+        :param preprocessings: result of _preprocess
+        """
         def choose_preprocessings(specific_preprocessings, pair):
             column_type, preprocessings_method = pair
             specific_preprocessings[column_type] = preprocessings[column_type][preprocessings_method]
             return specific_preprocessings
 
-        ## Link the preprocessing and pass them to the checks
-        for check in self.checks_to_run:
+        for check in checks:
             chosen_preprocessing = reduce(choose_preprocessings, check.needed_preprocessing().items(), dict())
             check.set_data(chosen_preprocessing)
 
-        ## Run the checks
+    def _run_checks(self, checks: List[Check]) -> List[CheckReports]:
+        """
+        Execute the checks.
+        :param checks: the checks that will be executed
+        :return: list of CheckReports, that connects runned checks with their reports
+        """
+        checks_reports = []
         for check in self.checks_to_run:
             check_result = check.run()
             reports = Reports(check_result=check_result, report_class=check.report_class())
             check_reports = CheckReports(check=check, reports=reports)
-            self.checks_reports.append(check_reports)
+            checks_reports.append(check_reports)
+
+        return checks_reports
+
+    def run(self):
+        columns = self._shared_column_names(self.first_df, self.second_df)
+        logger.info(f"Used columns: {columns}")
+
+        if not self.checks_to_run:
+            raise Exception('Please use the method add_check to add checks, '
+                            'that should be executed, before calling run()')
+
+        column_type_to_columns = self._split_dataframes(self.first_df, self.second_df, columns)
+        logger.info("Splitted dataframes by column types")
+
+        type_to_needed_preprocessings = self._needed_preprocessing(self.checks_to_run)
+        logger.info(f"Needed Preprocessing: {type_to_needed_preprocessings}")
+
+        preprocessings = self._preprocess(column_type_to_columns, type_to_needed_preprocessings)
+        logger.info("Finished Preprocessing")
+
+        self._distribute_preprocessings(self.checks_to_run, preprocessings)
+        logger.info("Distributed Preprocessings to the Checks")
+
+        self.checks_reports = self._run_checks(self.checks_to_run)
 
     ## Evaluate the results
     def evaluate(self):
+        print("EVALUATION")
         for check_report in self.checks_reports:
             check, reports = check_report
             print(check.name())
