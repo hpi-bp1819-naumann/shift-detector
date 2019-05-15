@@ -1,6 +1,7 @@
-import abc
+from shift_detector.preprocessors.Preprocessor import Preprocessor
 
-class NGram:
+
+class NGram(Preprocessor):
 
     def __init__(self, n):
         self.n = n
@@ -13,7 +14,3 @@ class NGram:
 
     def __hash__(self):
         return hash((self.__class__, self.n))
-
-    @abc.abstractmethod
-    def process(self, train, test):
-        return
