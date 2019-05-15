@@ -1,7 +1,10 @@
 import unittest
-from itertools import chain, combinations
-from shift_detector.checks.frequent_item_rules import fpgrowth, pyfpgrowth_core
 from collections import namedtuple
+from itertools import chain, combinations
+
+import pandas as pd
+
+from shift_detector.checks.frequent_item_rules import fpgrowth, pyfpgrowth_core
 
 
 class TestFPGrowth(unittest.TestCase):
@@ -45,6 +48,76 @@ class TestFPGrowth(unittest.TestCase):
 
         result = pyfpgrowth_core.generate_association_rules(frequent_items, min_confidence, num_rows)
         self.assertDictEqual(expected, result)
+
+    def test_iterator(self):
+        data = [[1, 2], [3, 4]]
+        columns = ['a', 'b']
+        df = pd.DataFrame(data, columns=columns)
+        it = fpgrowth.DataFrameIteratorAdapter(df)
+        self.assertEqual(len(it), 2)
+        for i, t in enumerate(it):
+            with self.subTest():
+                self.assertEqual(t, [(columns[0], data[i][0]), (columns[1], data[i][1])])
+
+        for i, t in enumerate(it):
+            with self.subTest():
+                self.assertEqual(t, [(columns[0], data[i][0]), (columns[1], data[i][1])])
+
+    def test_calculate_frequent_rules(self):
+        columns = ['c1', 'c2']
+        data1 = [['exclusive 1', 1], ['common', 42]]
+        data2 = [['exclusive 2', 2], ['common', 42]]
+        df1 = pd.DataFrame(data1, columns=columns)
+        df2 = pd.DataFrame(data2, columns=columns)
+        rules = fpgrowth.calculate_frequent_rules(df1, df2)
+        Rule = namedtuple('Rule', ['left_side', 'right_side', 'supports_of_left_side', 'delta_supports_of_left_side',
+                                   'supports', 'delta_supports', 'confidences', 'delta_confidences'])
+        expected = [Rule(left_side=(('c1', 'common'),), right_side=(), supports_of_left_side=(0.5, 0.5),
+                         delta_supports_of_left_side=0.0, supports=(0.5, 0.5), delta_supports=0.0,
+                         confidences=(1.0, 1.0), delta_confidences=0.0),
+                    Rule(left_side=(('c2', 42),), right_side=(('c1', 'common'),), supports_of_left_side=(0.5, 0.5),
+                         delta_supports_of_left_side=0.0, supports=(0.5, 0.5), delta_supports=0.0,
+                         confidences=(1.0, 1.0), delta_confidences=0.0),
+                    Rule(left_side=(('c1', 'common'), ('c2', 42)), right_side=(), supports_of_left_side=(0.5, 0.5),
+                         delta_supports_of_left_side=0.0, supports=(0.5, 0.5), delta_supports=0.0,
+                         confidences=(1.0, 1.0), delta_confidences=0.0),
+                    Rule(left_side=(('c2', 42),), right_side=(), supports_of_left_side=(0.5, 0.5),
+                         delta_supports_of_left_side=0.0, supports=(0.5, 0.5), delta_supports=0.0,
+                         confidences=(1.0, 1.0), delta_confidences=0.0),
+                    Rule(left_side=(('c1', 'common'),), right_side=(('c2', 42),), supports_of_left_side=(0.5, 0.5),
+                         delta_supports_of_left_side=0.0, supports=(0.5, 0.5), delta_supports=0.0,
+                         confidences=(1.0, 1.0), delta_confidences=0.0),
+                    Rule(left_side=(('c1', 'exclusive 1'), ('c2', 1)), right_side=(), supports_of_left_side=(0.5, 0.0),
+                         delta_supports_of_left_side=0.5, supports=(0.5, 0.0), delta_supports=0.5,
+                         confidences=(1.0, 0.0), delta_confidences=1.0),
+                    Rule(left_side=(('c1', 'exclusive 1'),), right_side=(('c2', 1),), supports_of_left_side=(0.5, 0.0),
+                         delta_supports_of_left_side=0.5, supports=(0.5, 0.0), delta_supports=0.5,
+                         confidences=(1.0, 0.0), delta_confidences=1.0),
+                    Rule(left_side=(('c2', 1),), right_side=(), supports_of_left_side=(0.5, 0.0),
+                         delta_supports_of_left_side=0.5, supports=(0.5, 0.0), delta_supports=0.5,
+                         confidences=(1.0, 0.0), delta_confidences=1.0),
+                    Rule(left_side=(('c1', 'exclusive 1'),), right_side=(), supports_of_left_side=(0.5, 0.0),
+                         delta_supports_of_left_side=0.5, supports=(0.5, 0.0), delta_supports=0.5,
+                         confidences=(1.0, 0.0), delta_confidences=1.0),
+                    Rule(left_side=(('c2', 1),), right_side=(('c1', 'exclusive 1'),), supports_of_left_side=(0.5, 0.0),
+                         delta_supports_of_left_side=0.5, supports=(0.5, 0.0), delta_supports=0.5,
+                         confidences=(1.0, 0.0), delta_confidences=1.0),
+                    Rule(left_side=(('c2', 2),), right_side=(('c1', 'exclusive 2'),), supports_of_left_side=(0.0, 0.5),
+                         delta_supports_of_left_side=-0.5, supports=(0.0, 0.5), delta_supports=-0.5,
+                         confidences=(0.0, 1.0), delta_confidences=-1.0),
+                    Rule(left_side=(('c2', 2),), right_side=(), supports_of_left_side=(0.0, 0.5),
+                         delta_supports_of_left_side=-0.5, supports=(0.0, 0.5), delta_supports=-0.5,
+                         confidences=(0.0, 1.0), delta_confidences=-1.0),
+                    Rule(left_side=(('c1', 'exclusive 2'), ('c2', 2)), right_side=(), supports_of_left_side=(0.0, 0.5),
+                         delta_supports_of_left_side=-0.5, supports=(0.0, 0.5), delta_supports=-0.5,
+                         confidences=(0.0, 1.0), delta_confidences=-1.0),
+                    Rule(left_side=(('c1', 'exclusive 2'),), right_side=(('c2', 2),), supports_of_left_side=(0.0, 0.5),
+                         delta_supports_of_left_side=-0.5, supports=(0.0, 0.5), delta_supports=-0.5,
+                         confidences=(0.0, 1.0), delta_confidences=-1.0),
+                    Rule(left_side=(('c1', 'exclusive 2'),), right_side=(), supports_of_left_side=(0.0, 0.5),
+                         delta_supports_of_left_side=-0.5, supports=(0.0, 0.5), delta_supports=-0.5,
+                         confidences=(0.0, 1.0), delta_confidences=-1.0)]
+        self.assertCountEqual(rules, expected)
 
 
 if __name__ == '__main__':
