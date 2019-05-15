@@ -7,11 +7,18 @@ import pandas as pd
 
 from shift_detector.Utils import shared_column_names, read_from_csv
 from shift_detector.checks.Check import Check
+from collections import defaultdict
+from collections import namedtuple
+from functools import reduce
+from typing import List
+
+import pandas as pd
+
+from shift_detector.checks.Check import Check
 from shift_detector.checks.Check import Reports
 from shift_detector.preprocessors.Preprocessing import preprocess
 
 CheckReports = namedtuple("CheckReports", "check reports")
-
 
 class Detector:
 
