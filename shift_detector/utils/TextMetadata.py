@@ -1,17 +1,17 @@
 import re
 import numpy as np
 
-from langdetect import DetectorFactory, detect, detect_langs
+from langdetect import DetectorFactory, detect, detect_langs, lang_detect_exception
 from iso639 import languages
 import textstat
 from spellchecker import SpellChecker
 import unicodedata
-import UCBlist
+import shift_detector.utils.UCBlist as UCBlist
 from nltk.corpus import stopwords
 
-delimiter_HTML = '<\s*br\s*/?>|<\s*p\s*>'
-delimiter_sentence = '\.\s'
-delimiter_other = '\s*,\s|\s+-+\s+'
+delimiter_HTML = r'<\s*br\s*/?\s*>|<\s*p\s*>'
+delimiter_sentence = r'\.\s'
+delimiter_other = r'\s*,\s|\s+-+\s+'
 DetectorFactory.seed = 0
 
 
@@ -32,8 +32,8 @@ def md_functions(type):
 # preprocessors
 
 def text_to_array(text):
-    text = re.sub(r'[^\w\s]',' ',text)
-    splitted = re.split('\W\s|\s', text)
+    text = re.sub(r'[^\w\s]','',text)
+    splitted = re.split(r'\W\s|\s', text)
     while '' in splitted:
         splitted.remove('')
     return splitted
@@ -46,7 +46,7 @@ def block(ch):
     cp = ord(ch)
     for start, end, name in UCBlist._blocks:
         if start <= cp <= end:
-        return name
+            return name
 
 # metrics
     
@@ -94,21 +94,26 @@ def unicode_block_histogram(text):
 
 
 def ratio_upper(text):
+    if text == "":
+        return 0
     lower = sum(map(str.islower, text))
     upper = sum(1 for c in text if c.isupper())
     return round((upper * 100) / (lower + upper), 2)
 
 
-def unknown_word_ratio(text):
+def unknown_word_ratio(text, language):
     # not working for every language
     try:
         words = text_to_array(text)
-        spell = SpellChecker(language=detect(text))
+        spell = SpellChecker(language)
+
+        if len(words) == 0:
+            return 0.0
 
         misspelled = spell.unknown(words)
         return round(len(misspelled)*100 / len(words),2)
     except:
-        return float('nan')
+        pass
 
 
 def category(text):
@@ -140,42 +145,44 @@ def num_parts(text):
 
 def language(text):
     parts = []
-    if (category(text) == 'html'):
-        parts = re.split(r'<\s*br\s*/?>', text)
-    else:
-        parts = re.split(r'[\n\r]+', text)
-    parts = [x.strip() for x in parts if x.strip()]
-    languages = {}
-    for part in parts:
-        lang = detect(part)
-        if lang in languages:
-            languages[lang] += 1
+    try: 
+        if (len(text) == 0):
+            detect(text) # trigger LangDetectException. Throwing one in here smh doesnt work
+        if (category(text) == 'html'):
+            parts = re.split(r'<\s*br\s*/?>', text)
         else:
-            languages[lang] = 1
-    return languages
+            parts = re.split(r'[\n\r]+', text)
+        parts = [x.strip() for x in parts if x.strip()]
+        languages = {}
+        for part in parts:
+            lang = detect(part)
+            if lang in languages:
+                languages[lang] += 1
+            else:
+                languages[lang] = 1
+        return languages
+    except:
+        pass
 
 
 def text_complexity(text):
-    # only working for english
-    if(len(text) == 0):
-        return 0
-    complexity = float('nan')
-    
-    if (detect(text) == 'en'):
-        complexity = textstat.flesch_reading_ease(text)
+    # lower value means more complex
+    # works best for longer english texts. kinda works for other languages as well (not good though)
+    complexity = textstat.textstat.flesch_reading_ease(text)
     return complexity
 
 
-def stopword_ratio(text):
+def stopword_ratio(text, language):
     # not working for every language
     try:
         stopword_count = 0
         words = text_to_array(text)
-        language = detect(text)
         stop = stopwords.words(languages.get(part1=language).name.lower())
+        if(len(words) == 0):
+            return 0.0
         for word in words:
             if word.lower() in stop:
                 stopword_count += 1
         return round(stopword_count*100 / len(words),2)
     except: 
-        return float('nan')
+        pass
