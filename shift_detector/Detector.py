@@ -2,7 +2,7 @@ import logging as logger
 from collections import defaultdict
 from collections import namedtuple
 from functools import reduce
-from typing import List, Dict
+from typing import List, Dict, Union
 
 import pandas as pd
 
@@ -15,22 +15,29 @@ CheckReports = namedtuple("CheckReports", "check reports")
 
 class Detector:
 
-    def __init__(self, df1: pd.DataFrame = None, df2: pd.DataFrame = None,
-                 first_path: str = "", second_path: str = "", separator=','):
+    def __init__(self,
+                 df1: Union[pd.DataFrame, str],
+                 df2: Union[pd.DataFrame, str],
+                 delimiter=','):
+        """
+        :param df1: either a dataframe or the file path
+        :param df2: either a dataframe or the file path
+        :param delimiter: used delimiter for csv files
+        """
         # TODO: remove sampling
         if type(df1) is pd.DataFrame:
             self.first_df = df1
-        elif type(first_path) is str:
-            self.first_df = Utils.read_from_csv(first_path, separator).sample(100)
+        elif type(df1) is str:
+            self.first_df = Utils.read_from_csv(df1, delimiter).sample(100)
         else:
-            raise Exception("The first dataframe is not defined")
+            raise Exception("df1 is not a dataframe or a string")
 
         if type(df2) is pd.DataFrame:
             self.second_df = df2
-        elif type(first_path) is str:
-            self.second_df = Utils.read_from_csv(second_path, separator).sample(100)
+        elif type(df2) is str:
+            self.second_df = Utils.read_from_csv(df1, delimiter).sample(100)
         else:
-            raise Exception("The second dataframe is not defined")
+            raise Exception("df2 is not a dataframe or a string")
 
         self.checks_to_run = []
         self.checks_reports = []
