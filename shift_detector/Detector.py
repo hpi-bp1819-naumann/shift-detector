@@ -9,15 +9,18 @@ from shift_detector.preprocessors.Store import Store
 
 
 class Detector:
+    """The detector object acts as the central object.
+    It is passed the data frames you want to compare.
+
+    :param df1: either a pandas data frame or a file path
+    :param df2: either a pandas data frame or a file path
+    :param delimiter: delimiter for csv files
+    """
+
     def __init__(self,
                  df1: Union[pd.DataFrame, str],
                  df2: Union[pd.DataFrame, str],
                  delimiter=','):
-        """
-        :param df1: either a dataframe or the file path
-        :param df2: either a dataframe or the file path
-        :param delimiter: used delimiter for csv files
-        """
         if type(df1) is pd.DataFrame:
             self.df1 = df1
         elif type(df1) is str:
