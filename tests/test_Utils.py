@@ -2,7 +2,7 @@ import unittest
 
 import pandas as pd
 
-from shift_detector.Utils import Utils, ColumnType
+from shift_detector.Utils import ColumnType, shared_column_names, is_categorical, split_dataframes
 
 
 class TestUtils(unittest.TestCase):
@@ -18,8 +18,8 @@ class TestUtils(unittest.TestCase):
 
     def test_shared_column_names(self):
         with self.subTest():
-            shared_columns = Utils.shared_column_names(self.df1, self.df2)
-            self.assertListEqual(shared_columns, list(set(['brand', 'payment', 'description'])))
+            shared_columns = shared_column_names(self.df1, self.df2)
+            self.assertCountEqual(shared_columns, ['brand', 'payment', 'description'])
 
         with self.subTest():
             df2_dict = {'brand': ["Jones LLC"],
@@ -27,25 +27,25 @@ class TestUtils(unittest.TestCase):
                         'text': ["A"]}
             df2 = pd.DataFrame.from_dict(df2_dict)
 
-            shared_columns = Utils.shared_column_names(self.df1, df2)
-            self.assertListEqual(shared_columns, list(set(['brand'])))
+            shared_columns = shared_column_names(self.df1, df2)
+            self.assertCountEqual(shared_columns, ['brand'])
 
         with self.subTest():
             df2_dict = {'number': [150],
                         'text': ["A"]}
             df2 = pd.DataFrame.from_dict(df2_dict)
 
-            self.assertRaises(Exception, Utils.shared_column_names, self.df1, df2)
+            self.assertRaises(Exception, shared_column_names, self.df1, df2)
 
     def test_is_categorical(self):
-        self.assertTrue(Utils.is_categorical(self.df1['brand']))
-        self.assertTrue(Utils.is_categorical(self.df1['payment']))
-        self.assertFalse(Utils.is_categorical(self.df1['payment'], max_unique_fraction=0.05))
-        self.assertFalse(Utils.is_categorical(self.df1['description']))
+        self.assertTrue(is_categorical(self.df1['brand']))
+        self.assertTrue(is_categorical(self.df1['payment']))
+        self.assertFalse(is_categorical(self.df1['payment'], max_unique_fraction=0.05))
+        self.assertFalse(is_categorical(self.df1['description']))
 
     def test_split_dataframes(self):
-        splitted_df = Utils.split_dataframes(self.df1, self.df2,
-                                             columns=['brand', 'payment', 'description'])
+        splitted_df = split_dataframes(self.df1, self.df2,
+                                       columns=['brand', 'payment', 'description'])
 
         numeric_columns = splitted_df[ColumnType.numeric][0].columns.values
         categorical_columns = splitted_df[ColumnType.categorical][0].columns.values

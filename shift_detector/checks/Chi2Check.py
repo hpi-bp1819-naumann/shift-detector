@@ -37,7 +37,9 @@ class Chi2Report(Report):
         Print report for analyzed columns
 
         """
-        print(f"Columns with a Shift (significance: {self.significance}):", self.remarkable_columns())
+        print("Columns with a Shift (significance: {})".format(self.significance),
+              self.remarkable_columns())
+
 
 class Chi2Check(Check):
     
