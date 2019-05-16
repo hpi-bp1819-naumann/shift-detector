@@ -19,7 +19,7 @@ class TestUtils(unittest.TestCase):
     def test_shared_column_names(self):
         with self.subTest():
             shared_columns = shared_column_names(self.df1, self.df2)
-            self.assertListEqual(shared_columns, list({'brand', 'payment', 'description'}))
+            self.assertCountEqual(shared_columns, ['brand', 'payment', 'description'])
 
         with self.subTest():
             df2_dict = {'brand': ["Jones LLC"],
@@ -28,7 +28,7 @@ class TestUtils(unittest.TestCase):
             df2 = pd.DataFrame.from_dict(df2_dict)
 
             shared_columns = shared_column_names(self.df1, df2)
-            self.assertListEqual(shared_columns, list({'brand'}))
+            self.assertCountEqual(shared_columns, ['brand'])
 
         with self.subTest():
             df2_dict = {'number': [150],
