@@ -33,7 +33,7 @@ def preprocess(checks: List[Check],
     logger.info("Splitted dataframes by column types")
 
     type_to_needed_preprocessings = Preprocessor.needed_preprocessing(checks)
-    logger.info("Needed Preprocessing: {}".join(type_to_needed_preprocessings))
+    logger.info("Needed Preprocessing: {}".format(type_to_needed_preprocessings))
 
     preprocessings = Preprocessor.run_preprocessings(column_type_to_columns,
                                                      type_to_needed_preprocessings)
