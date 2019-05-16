@@ -46,7 +46,7 @@ def shared_column_names(df1: pd.DataFrame, df2: pd.DataFrame) -> List[str]:
 
 def is_categorical(col: pd.Series,
                    n_samples: int = 100,
-                   max_unique_fraction=0.1) -> bool:
+                   max_unique_fraction: float = 0.1) -> bool:
     """
     A heuristic to check whether a column is categorical:
     a column is considered categorical (as opposed to a plain text column)
