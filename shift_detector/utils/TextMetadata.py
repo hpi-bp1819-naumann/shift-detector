@@ -8,6 +8,7 @@ from spellchecker import SpellChecker
 import unicodedata
 import shift_detector.utils.UCBlist as UCBlist
 from nltk.corpus import stopwords
+import nltk
 
 delimiter_HTML = r'<\s*br\s*/?\s*>|<\s*p\s*>'
 delimiter_sentence = r'\.\s'
@@ -192,3 +193,6 @@ def text_complexity(text):
     # works best for longer english texts. kinda works for other languages as well (not good though)
     complexity = textstat.textstat.flesch_reading_ease(text)
     return complexity
+
+#def pos_histogram(text):
+    
