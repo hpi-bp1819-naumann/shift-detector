@@ -12,7 +12,7 @@ from shift_detector.checks.Check import Check
 def preprocess(checks: List[Check],
                df1: pd.DataFrame,
                df2: pd.DataFrame,
-               columns: List[str]):
+               columns: List[str]) -> Dict:
     """
     Preprocess the columns of df1 and df2 according to
     the preprocessings that the checks request.
