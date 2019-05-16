@@ -8,14 +8,14 @@ from shift_detector.checks.statistical_checks.StatisticalCheck import Statistica
 from shift_detector.preprocessors.Default import Default
 
 
-class StatisticalNumericalCheck(Check):
+class NumericalStatisticalCheck(Check):
 
     def __init__(self):
         super().__init__()
 
     @staticmethod
     def name() -> str:
-        return 'StatisticalNumericalCheck'
+        return 'NumericalStatisticalCheck'
 
     @staticmethod
     def report_class():
