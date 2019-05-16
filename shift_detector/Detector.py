@@ -1,14 +1,14 @@
 import logging as logger
-from collections import defaultdict
 from collections import namedtuple
 from functools import reduce
 from typing import List, Dict, Union
 
 import pandas as pd
 
-from shift_detector.Utils import Utils
+from shift_detector.Utils import shared_column_names, read_from_csv
 from shift_detector.checks.Check import Check
 from shift_detector.checks.Check import Reports
+from shift_detector.preprocessors.Preprocessing import preprocess
 
 CheckReports = namedtuple("CheckReports", "check reports")
 
@@ -28,14 +28,14 @@ class Detector:
         if type(df1) is pd.DataFrame:
             self.first_df = df1
         elif type(df1) is str:
-            self.first_df = Utils.read_from_csv(df1, delimiter).sample(100)
+            self.first_df = read_from_csv(df1, delimiter).sample(100)
         else:
             raise Exception("df1 is not a dataframe or a string")
 
         if type(df2) is pd.DataFrame:
             self.second_df = df2
         elif type(df2) is str:
-            self.second_df = Utils.read_from_csv(df1, delimiter).sample(100)
+            self.second_df = read_from_csv(df1, delimiter).sample(100)
         else:
             raise Exception("df2 is not a dataframe or a string")
 
@@ -52,53 +52,7 @@ class Detector:
         self.checks_to_run += checks
         return self
 
-    def _needed_preprocessing(self, checks: List[Check]) -> Dict:
-        """
-        Find the needed preprocessings for each column type and
-        aggregate them.
-        :param checks: the checks the prepocessings will be aggregated from
-        :return: Dict
-        {
-            ColumnType: Set(Preprocessor, ...)
-            ...
-        }
-        """
-
-        def update_preprocessings(groups, checks):
-            for key, value in checks.needed_preprocessing().items():
-                groups[key].add(value)
-            return groups
-
-        type_to_needed_preprocessings = reduce(update_preprocessings, checks, defaultdict(set))
-        type_to_needed_preprocessings = dict(type_to_needed_preprocessings)
-        return type_to_needed_preprocessings
-
-    def _preprocess(self,
-                    column_type_to_columns: Dict,
-                    type_to_needed_preprocessings: Dict) -> Dict:
-        """
-        Execute the preprocessing.
-        :param column_type_to_columns: result of split_dataframes
-        :param type_to_needed_preprocessings: result of _needed_preprocessing
-        :return: Dict
-        {
-            ColumnType: {
-                Preprocessor: (df1_processed, df2_processed)
-                ...
-            }
-            ...
-        }
-        """
-        preprocessings = defaultdict(dict)
-
-        for column_type, needed_preprocessings in type_to_needed_preprocessings.items():
-            (first_df, second_df) = column_type_to_columns[column_type]
-            for needed_preprocessing in needed_preprocessings:
-                preprocessed = needed_preprocessing.process(first_df, second_df)
-                preprocessings[column_type][needed_preprocessing] = preprocessed
-
-        return preprocessings
-
+    @staticmethod
     def _distribute_preprocessings(self, checks: List[Check], preprocessings: Dict):
         """
         Distribute the preprocessings to the checks.
@@ -122,7 +76,7 @@ class Detector:
         :return: list of CheckReports, that connects runned checks with their reports
         """
         checks_reports = []
-        for check in self.checks_to_run:
+        for check in checks:
             check_result = check.run()
             reports = Reports(check_result=check_result, report_class=check.report_class())
             check_reports = CheckReports(check=check, reports=reports)
@@ -131,20 +85,14 @@ class Detector:
         return checks_reports
 
     def run(self):
-        columns = Utils.shared_column_names(self.first_df, self.second_df)
-        logger.info(f"Used columns: {columns}")
+        columns = shared_column_names(self.first_df, self.second_df)
+        logger.info("Used columns: {}".format(columns))
 
         if not self.checks_to_run:
             raise Exception('Please use the method add_check to add checks, '
                             'that should be executed, before calling run()')
 
-        column_type_to_columns = Utils.split_dataframes(self.first_df, self.second_df, columns)
-        logger.info("Splitted dataframes by column types")
-
-        type_to_needed_preprocessings = self._needed_preprocessing(self.checks_to_run)
-        logger.info(f"Needed Preprocessing: {type_to_needed_preprocessings}")
-
-        preprocessings = self._preprocess(column_type_to_columns, type_to_needed_preprocessings)
+        preprocessings = preprocess(self.checks_to_run, self.first_df, self.second_df, columns)
         logger.info("Finished Preprocessing")
 
         self._distribute_preprocessings(self.checks_to_run, preprocessings)
