@@ -19,16 +19,16 @@ class CheckResult(metaclass=ABCMeta):
 
 class Check(metaclass=ABCMeta):
 
-    def __init__(self, data1: pd.DataFrame, data2: pd.DataFrame):
+    def __init__(self, df1: pd.DataFrame, df2: pd.DataFrame):
 
-        if data1 is None:
+        if df1 is None:
             raise Exception('No dataframe provided for argument first_df')
 
-        if data2 is None:
+        if df2 is None:
             raise Exception('No dataframe provided for argument second_df')
 
-        self.data1 = data1
-        self.data2 = data2
+        self.df1 = df1
+        self.df2 = df2
 
         datawig_logger.setLevel('ERROR')
         

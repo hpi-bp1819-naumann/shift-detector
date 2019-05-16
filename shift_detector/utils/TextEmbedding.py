@@ -1,11 +1,14 @@
 import re
+
 import pandas as pd
 import numpy as np
 from gensim.models import Word2Vec, Doc2Vec, FastText
 from nltk import SnowballStemmer
 from sklearn.feature_extraction.stop_words import ENGLISH_STOP_WORDS
 
-DIMENSIONS = 300
+from shift_detector.utils.Miscellaneous import print_progress_bar
+
+DIMENSIONS = 50
 
 
 class Vector:
@@ -56,7 +59,7 @@ class Vector:
         return (self * other) / (self.magnitude() * other.magnitude())
 
 
-def makeUsableList(data):
+def make_usable_list(data):
     usable = []
     for i, entry in enumerate(data):
         wordlist = []
@@ -69,13 +72,20 @@ def makeUsableList(data):
     return usable
 
 
+def separate_words(data):
+    usable = []
+    for entry in data:
+        usable.append(re.sub(r'[^\w+\s]', ' ', entry).split())
+    return usable
+
+
 def buildModel(documentset, embedding):
     if embedding == 'word2vec':
         model = Word2Vec(size=DIMENSIONS, min_count=1)
     elif embedding == 'doc2vec':
         model = Doc2Vec(size=DIMENSIONS, min_count=1)
     elif embedding == 'fasttext':
-        model = FastText(size=DIMENSIONS, min_count=1)
+        model = FastText(size=DIMENSIONS, window=5, min_count=1, workers=4)
     else:
         raise ValueError(
             'Please specify the preferred embedding to build a model! Currently only "word2vec" , "doc2vec" and "fasttext" are supported.')
@@ -85,10 +95,12 @@ def buildModel(documentset, embedding):
 
 
 def get_column_embedding(col1, col2):
-    preprocessed = makeUsableList(col1.append(col2))
-    model = buildModel(preprocessed, 'fasttext')
+    documents = separate_words(col1.append(col2))
+    print('Start building')
+    model = FastText(documents, size=DIMENSIONS, window=5, min_count=1, workers=4)
+    print('Model built')
     vecs = []
-    for document in preprocessed:
+    for document in documents:
         sum_vec = Vector([0] * DIMENSIONS)
         for word in document:
             vec = Vector(model.wv[word])
