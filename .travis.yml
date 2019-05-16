@@ -2,12 +2,18 @@ language: python
 python:
   - "3.5"
   - "3.6"
+before_install:
+  - sudo rm -f /etc/boto.cfg
 install:
-  - pip install python-coveralls
-  - pip install coverage
-  - pip install nose
+  - pip3 install python-coveralls
+  - pip3 install coverage
+  - pip3 install pandas
+  - pip3 install scipy
+  - pip3 install datawig
+  - pip3 install gensim
+  - pip3 install pattern
 script:
-  - python -m unittest discover
-  - nosetests --with-coverage
+  - python3 -m unittest discover
+  - coverage run --source shift_detector -m unittest discover
 after_success:
   - coveralls
