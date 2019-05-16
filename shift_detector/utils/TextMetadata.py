@@ -1,112 +1,198 @@
 import re
 import numpy as np
 
-from langdetect import DetectorFactory, detect, detect_langs
+from langdetect import DetectorFactory, detect, detect_langs, lang_detect_exception
+from iso639 import languages
+import textstat
+from spellchecker import SpellChecker
+import unicodedata
+import shift_detector.utils.UCBlist as UCBlist
+from nltk.corpus import stopwords
+import nltk
 
-delimiterHTML = '<\s*br\s*/?>|<\s*p\s*>'
-delimiterSentence = '\.\s'
-delimiterOther = '\s*,\s|\s+-+\s+'
+delimiter_HTML = r'<\s*br\s*/?\s*>|<\s*p\s*>'
+delimiter_sentence = r'\.\s'
+delimiter_other = r'\s*,\s|\s+-+\s+'
 DetectorFactory.seed = 0
 
 
 def md_functions(type):
-    return {'num_chars': num_chars,
+    return {'dict_to_string': dictionary_to_sorted_string,
+            'num_chars': num_chars,
             'ratio_upper': ratio_upper,
+            'unicode_category': unicode_category_histogram,
+            'unicode_block': unicode_block_histogram,
             'num_words': num_words,
             'distinct_words': num_distinct_words,
-            'num_parts': num_parts,
+            'unique_words': num_unique_words,
+            'unknown_words': unknown_word_ratio,
+            'stopwords': stopword_ratio,
             'category': category,
-            'language': language,
-            'lang_ambiguity': lang_count}[type]
+            'num_parts': num_parts,
+            'languages': language,
+            'complexity': text_complexity}[type]
 
+# preprocessors
+
+def text_to_array(text):
+    text = re.sub(r'[^\w\s]','',text)
+    splitted = re.split(r'\W\s|\s', text)
+    while '' in splitted:
+        splitted.remove('')
+    return splitted
+
+def block(ch):
+    # Return the Unicode block name for ch, or None if ch has no block.
+    # from https://stackoverflow.com/questions/243831/unicode-block-of-a-character-in-python
+    assert isinstance(ch, str) and len(ch) == 1, repr(ch)
+    cp = ord(ch)
+    for start, end, name in UCBlist._blocks:
+        if start <= cp <= end:
+            return name
+
+# postprocessors
+
+def dictionary_to_sorted_string(histogram):
+    sorted_histo = sorted(histogram.items(), key=lambda kv: (-kv[1], kv[0]))
+    only_keys = [item[0] for item in sorted_histo]
+    return ', '.join(only_keys)
+
+# metrics
+
+def num_chars(text):
+    return len(text)
+    
+def ratio_upper(text):
+    if text == "":
+        return 0
+    lower = sum(map(str.islower, text))
+    upper = sum(1 for c in text if c.isupper())
+    return round((upper * 100) / (lower + upper), 2)
+
+def unicode_category_histogram(text):
+    characters = {}
+    for c in text:
+        category = unicodedata.category(c)
+        if category in characters:
+            characters[category] += 1
+        else:
+            characters[category] = 1
+    return characters
+
+def unicode_block_histogram(text):
+    characters = {}
+    for c in text:
+        category = block(c)
+        if category in characters:
+            characters[category] += 1
+        else:
+            characters[category] = 1
+    return characters
+
+def num_words(text):
+    return len(text_to_array(text))
 
 def num_distinct_words(text):
     distinct_words = []
-    text = re.sub(r'[^\w\s]', ' ', text)
-    while "  " in text:
-        text = text.replace("  ", " ")
-    words = re.split('\W\s|\s', text)
-    while '' in words:
-        words.remove('')
+    words = text_to_array(text)
     for word in words:
         if word not in distinct_words:
             distinct_words.append(word)
     return len(distinct_words)
 
+def num_unique_words(text):
+    words = text_to_array(text)
+    seen_once = []
+    seen_often = []
+    for word in words:
+        if word not in seen_often:
+            if word not in seen_once:
+                seen_once.append(word)
+            else:
+                seen_once.remove(word)
+                seen_often.append(word)
+    return len(seen_once)
 
-def num_words(text):
-    text = re.sub(r'[^\w\s]', ' ', text)
-    while "  " in text:
-        text = text.replace("  ", " ")
-    splitted = re.split('\W\s|\s', text)
-    while '' in splitted:
-        splitted.remove('')
-    return len(splitted)
+def unknown_word_ratio(text, language):
+    # not working for every language
+    try:
+        words = text_to_array(text)
+        spell = SpellChecker(language)
 
+        if len(words) == 0:
+            return 0.0
 
-def min_num_words(data):
-    return min([num_words(text) for text in data])
+        misspelled = spell.unknown(words)
+        return round(len(misspelled)*100 / len(words),2)
+    except:
+        pass
 
-
-def num_chars(text):
-    return len(text)
-
-
-def ratio_upper(text):
-    lower = sum(map(str.islower, text))
-    upper = sum(1 for c in text if c.isupper())
-    return round((upper * 100) / (lower + upper), 2)
-
+def stopword_ratio(text, language):
+    # not working for every language
+    try:
+        stopword_count = 0
+        words = text_to_array(text)
+        stop = stopwords.words(languages.get(part1=language).name.lower())
+        if(len(words) == 0):
+            return 0.0
+        for word in words:
+            if word.lower() in stop:
+                stopword_count += 1
+        return round(stopword_count*100 / len(words),2)
+    except: 
+        pass
 
 def category(text):
     html = re.compile('<.*?>')
-    point = re.compile(delimiterSentence)
-    other = re.compile(delimiterOther)
+    point = re.compile(delimiter_sentence)
+    other = re.compile(delimiter_other)
     if (html.search(text)):
         return 'html'
     elif (point.search(text)):
         return 'sentence'
     elif (other.search(text)):
-        return 'otherDelimiter'
+        return 'other delimiter'
     elif (len(text) == 0):
         return 'empty'
     else:
-        return 'noDelimiter'
-
+        return 'no delimiter'
 
 def num_parts(text):
     if (category(text) == 'html'):
-        return len(re.split(delimiterHTML, text))
+        return len(re.split(delimiter_HTML, text))
     elif (category(text) == 'sentence'):
-        return len(re.split(delimiterSentence, text))
-    elif (category(text) == 'otherDelimiter'):
-        return len(re.split(delimiterOther, text))
+        return len(re.split(delimiter_sentence, text))
+    elif (category(text) == 'other delimiter'):
+        return len(re.split(delimiter_other, text))
     else:
         return 0
 
-
 def language(text):
-    l = 'unknown'
-    try:
-        l = detect(text)
+    parts = []
+    try: 
+        if (len(text) == 0):
+            detect(text) # trigger LangDetectException. Throwing one in here smh doesnt work
+        if (category(text) == 'html'):
+            parts = re.split(r'<\s*br\s*/?>', text)
+        else:
+            parts = re.split(r'[\n\r]+', text)
+        parts = [x.strip() for x in parts if x.strip()]
+        languages = {}
+        for part in parts:
+            lang = detect(part)
+            if lang in languages:
+                languages[lang] += 1
+            else:
+                languages[lang] = 1
+        return languages
     except:
-        l = 'unknown'
-    return l
+        pass
 
+def text_complexity(text):
+    # lower value means more complex
+    # works best for longer english texts. kinda works for other languages as well (not good though)
+    complexity = textstat.textstat.flesch_reading_ease(text)
+    return complexity
 
-def languages(text):
-    l = 'unknown'
-    try:
-        l = ', '.join([language.lang for language in detect_langs(text)])
-    except:
-        l = 'unknown'
-    return l
-
-
-def lang_count(text):
-    c = np.nan
-    try:
-        c = len(detect_langs(text))
-    except:
-        c = np.nan
-    return c
+#def pos_histogram(text):
+    
