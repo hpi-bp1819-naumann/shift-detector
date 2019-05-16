@@ -1,16 +1,14 @@
 import unittest
-from unittest.mock import patch
 import pandas as pd
-from shift_detector.preprocessors.Preprocessor import Preprocessor
+from shift_detector.preprocessors.Default import Default
 
 
-class TestPreprocessor(unittest.TestCase):
+class TestDefault(unittest.TestCase):
 
-    @patch.multiple(Preprocessor, __abstractmethods__=set())
     def setUp(self):
         self.n = 5
-        self.ng1 = Preprocessor()
-        self.ng2 = Preprocessor()
+        self.ng1 = Default()
+        self.ng2 = Default()
         self.ser1 = pd.Series(['Hello World', 'Foo Bar Baz'])
         self.ser2 = pd.Series(['TestText1', 'TestText2'])
 
