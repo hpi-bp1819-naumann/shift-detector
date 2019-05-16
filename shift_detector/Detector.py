@@ -1,38 +1,49 @@
-import pandas as pd
-from typing import List
 import logging as logger
-from shift_detector.checks.Check import Check
-from collections import defaultdict
+from collections import namedtuple
 from functools import reduce
+from typing import List, Dict, Union
+
+import pandas as pd
+
+from shift_detector.Utils import shared_column_names, read_from_csv
+from shift_detector.checks.Check import Check
+from shift_detector.checks.Check import Reports
+from shift_detector.preprocessors.Preprocessing import preprocess
+
+CheckReports = namedtuple("CheckReports", "check reports")
+
 
 class Detector:
 
-    def __init__(self, first_path: str, second_path: str, separator=','):
+    def __init__(self,
+                 df1: Union[pd.DataFrame, str],
+                 df2: Union[pd.DataFrame, str],
+                 delimiter=','):
+        """
+        :param df1: either a dataframe or the file path
+        :param df2: either a dataframe or the file path
+        :param delimiter: used delimiter for csv files
+        """
         # TODO: remove sampling
-        self.first_df = self.read_from_csv(first_path, separator).head(100)
-        self.second_df = self.read_from_csv(second_path, separator).head(100)
+        if type(df1) is pd.DataFrame:
+            self.first_df = df1
+        elif type(df1) is str:
+            self.first_df = read_from_csv(df1, delimiter).sample(100)
+        else:
+            raise Exception("df1 is not a dataframe or a string")
+
+        if type(df2) is pd.DataFrame:
+            self.second_df = df2
+        elif type(df2) is str:
+            self.second_df = read_from_csv(df1, delimiter).sample(100)
+        else:
+            raise Exception("df2 is not a dataframe or a string")
 
         self.checks_to_run = []
-        self.columns = []
+        self.checks_reports = []
+        self.column_type_to_columns = {}
+        self.preprocessings = {}
 
-    def read_from_csv(self, file_path: str, separator) -> pd.DataFrame:
-        # TODO: give user feedback about how many lines were dropped
-        logger.info('Reading in CSV file. This may take a while ...')
-        return pd.read_csv(file_path, sep=separator, error_bad_lines=False).dropna()
-
-    def get_common_column_names(self) -> List[str]:
-
-        first_df_columns = list(self.first_df.head(0))
-        second_df_columns = list(self.second_df.head(0))
-
-        common_columns = set(first_df_columns).intersection(second_df_columns)
-
-        if len(common_columns) == 0:
-            raise Exception('The provided datasets do not have any column names in common. \
-                They have {} and {}'.format(first_df_columns, second_df_columns))
-
-        return list(common_columns)
-    
     def add_check(self, check: Check):
         self.checks_to_run += [check]
         return self
@@ -41,78 +52,59 @@ class Detector:
         self.checks_to_run += checks
         return self
 
-    def run(self):
-        first_df_columns = list(self.first_df.head(0))
-        second_df_columns = list(self.second_df.head(0))
-
-        if first_df_columns != second_df_columns:
-            logger.warning('The columns of the provided dataset '
-                           'should be the same, but are {} and {}'.format(first_df_columns, second_df_columns))
-
-            self.columns = self.get_common_column_names()
-            logger.info('Using columns {} instead.'.format(self.columns))
-        else:
-            self.columns = first_df_columns
-
-        if not self.checks_to_run:
-            raise Exception('Please use the method add_test to '
-                            'add tests that should be executed, before calling run()')
-
-        if not self.checks_to_run:
-            raise Exception('Please use the method add_test to \
-                add tests that should be executed, before calling run()')
-
-        ## Find column types
-        column_type_to_columns = {
-            "int": (self.first_df[["marketplace_id", "refinement_id"]], self.second_df[["marketplace_id", "refinement_id"]]),
-            "category": (self.first_df[["value", "attribute"]], self.second_df[["value", "attribute"]]),
-            "text": (self.first_df[["bullet_points"]], self.second_df[["bullet_points"]])
-        }
-
-        def update_preprocessings(groups, checks):
-            for key, value in checks.needed_preprocessing().items():
-                groups[key].add(value)
-            return groups
-
-        type_to_needed_preprocessings = reduce(update_preprocessings, self.checks_to_run, defaultdict(set))
-        type_to_needed_preprocessings = dict(type_to_needed_preprocessings)
-        logger.info(f"Needed Preprocessing: {type_to_needed_preprocessings}")
-
-        preprocessings = defaultdict(dict)
-        '''
-        preprocessings: {
-            "int": {
-                "default": (pd.Dataframe1, pd.Dataframe2)
-            }
-        }
-        '''
-        ## Do the preprocessing
-        for column_type, needed_preprocessings in type_to_needed_preprocessings.items():
-            (first_df, second_df) = column_type_to_columns[column_type]
-            for needed_preprocessing in needed_preprocessings:
-                if type(needed_preprocessing) is str:
-                    logger.warn(f"Unprocessed: {needed_preprocessing}")
-                    preprocessings[column_type][needed_preprocessing] = (first_df, second_df)
-                    continue
-                preprocessed = needed_preprocessing(first_df, second_df)
-                preprocessings[column_type][needed_preprocessing] = preprocessed
+    @staticmethod
+    def _distribute_preprocessings(self, checks: List[Check], preprocessings: Dict):
+        """
+        Distribute the preprocessings to the checks.
+        :param checks: checks to distribute the preprocessing to
+        :param preprocessings: result of _preprocess
+        """
 
         def choose_preprocessings(specific_preprocessings, pair):
             column_type, preprocessings_method = pair
             specific_preprocessings[column_type] = preprocessings[column_type][preprocessings_method]
             return specific_preprocessings
 
-        ## Link the preprocessing and pass them to the checks
-        checks = []
-        for check_class in self.checks_to_run:
-            chosen_preprocessing = reduce(choose_preprocessings, check_class.needed_preprocessing().items(), dict())
-            # TODO: remove this after changing method call
-            check = check_class(self.first_df, self.second_df)
-            check.set_data(chosen_preprocessing)
-            checks.append(check)
-
-        ## Run the checks
         for check in checks:
-            check\
-                .run(self.columns)\
-                .print_report()
+            chosen_preprocessing = reduce(choose_preprocessings, check.needed_preprocessing().items(), dict())
+            check.set_data(chosen_preprocessing)
+
+    def _run_checks(self, checks: List[Check]) -> List[CheckReports]:
+        """
+        Execute the checks.
+        :param checks: the checks that will be executed
+        :return: list of CheckReports, that connects runned checks with their reports
+        """
+        checks_reports = []
+        for check in checks:
+            check_result = check.run()
+            reports = Reports(check_result=check_result, report_class=check.report_class())
+            check_reports = CheckReports(check=check, reports=reports)
+            checks_reports.append(check_reports)
+
+        return checks_reports
+
+    def run(self):
+        columns = shared_column_names(self.first_df, self.second_df)
+        logger.info("Used columns: {}".format(columns))
+
+        if not self.checks_to_run:
+            raise Exception('Please use the method add_check to add checks, '
+                            'that should be executed, before calling run()')
+
+        preprocessings = preprocess(self.checks_to_run, self.first_df, self.second_df, columns)
+        logger.info("Finished Preprocessing")
+
+        self._distribute_preprocessings(self.checks_to_run, preprocessings)
+        logger.info("Distributed Preprocessings to the Checks")
+
+        self.checks_reports = self._run_checks(self.checks_to_run)
+
+    ## Evaluate the results
+    def evaluate(self):
+        print("EVALUATION")
+        for check_report in self.checks_reports:
+            check, reports = check_report
+            print(check.name())
+            for report in reports.reports:
+                report.print_report()

@@ -82,6 +82,7 @@ The algorithm proceeds with the following steps:
 from collections import namedtuple
 
 from shift_detector.checks.frequent_item_rules import pyfpgrowth_core
+from collections import namedtuple
 
 
 class DataFrameIteratorAdapter:
