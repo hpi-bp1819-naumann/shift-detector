@@ -21,7 +21,7 @@ def read_from_csv(file_path: str, separator: str) -> pd.DataFrame:
 def shared_column_names(df1: pd.DataFrame, df2: pd.DataFrame) -> List[str]:
     """
     Find the column names that both dataframes share.
-    Raise an exception if the dataframes do not a shared column name.
+    Raise an exception if the dataframes do not have a shared column name.
     :param df1: first dataframe
     :param df2: second dataframe
     :return: List of the column names that both dataframes have.
