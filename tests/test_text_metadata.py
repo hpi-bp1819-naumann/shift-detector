@@ -127,14 +127,14 @@ class TestTextMetadata(unittest.TestCase):
         sentenceother = "some text, some other text. more text."
         htmlsentenceother = "some text -- some. other text <br> more text."
         empty = ""
-        self.assertEqual(tm.category(html), "html")
-        self.assertEqual(tm.category(sentence), "sentence")
-        self.assertEqual(tm.category(other), "other delimiter")
-        self.assertEqual(tm.category(none), "no delimiter")
-        self.assertEqual(tm.category(htmlsentence), "html")
-        self.assertEqual(tm.category(sentenceother), "sentence")
-        self.assertEqual(tm.category(htmlsentenceother), "html")
-        self.assertEqual(tm.category(empty), "empty")
+        self.assertEqual(tm.delimiter_type(html), "html")
+        self.assertEqual(tm.delimiter_type(sentence), "sentence")
+        self.assertEqual(tm.delimiter_type(other), "other delimiter")
+        self.assertEqual(tm.delimiter_type(none), "no delimiter")
+        self.assertEqual(tm.delimiter_type(htmlsentence), "html")
+        self.assertEqual(tm.delimiter_type(sentenceother), "sentence")
+        self.assertEqual(tm.delimiter_type(htmlsentenceother), "html")
+        self.assertEqual(tm.delimiter_type(empty), "empty")
 
     def test_num_parts(self):
         html = "some text <p> some other text < br/ > more text"

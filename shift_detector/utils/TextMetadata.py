@@ -16,23 +16,23 @@ delimiter_other = r'\s*,\s|\s+-+\s+'
 DetectorFactory.seed = 0
 
 
-def md_functions(type):
-    return {'dict_to_string': dictionary_to_sorted_string,
-            'num_chars': num_chars,
+def md_functions(kind):
+    return {'num_chars': num_chars,
             'ratio_upper': ratio_upper,
-            'unicode_category': unicode_category_histogram,
-            'unicode_block': unicode_block_histogram,
+            'unicode_categories': unicode_category_string,
+            'unicode_blocks': unicode_block_string,
             'num_words': num_words,
             'distinct_words': num_distinct_words,
             'unique_words': num_unique_words,
-            'unknown_words': unknown_word_ratio,
-            'stopwords': stopword_ratio,
-            'category': category,
+            'unknown_ratio': unknown_word_ratio,
+            'stopword_ratio': stopword_ratio,
+            'delimiter_type': delimiter_type,
             'num_parts': num_parts,
-            'languages': language,
-            'complexity': text_complexity}[type]
+            'languages': language_string,
+            'complexity': text_complexity}[kind]
 
 # preprocessors
+
 
 def text_to_array(text):
     text = re.sub(r'[^\w\s]','',text)
@@ -40,6 +40,7 @@ def text_to_array(text):
     while '' in splitted:
         splitted.remove('')
     return splitted
+
 
 def block(ch):
     # Return the Unicode block name for ch, or None if ch has no block.
@@ -52,12 +53,23 @@ def block(ch):
 
 # postprocessors
 
+
 def dictionary_to_sorted_string(histogram):
     sorted_histo = sorted(histogram.items(), key=lambda kv: (-kv[1], kv[0]))
     only_keys = [item[0] for item in sorted_histo]
     return ', '.join(only_keys)
 
+def language_string(text):
+    return dictionary_to_sorted_string(language(text))
+
+def unicode_category_string(text):
+    return dictionary_to_sorted_string(unicode_category_histogram(text))
+
+def unicode_block_string(text):
+    return dictionary_to_sorted_string(unicode_block_histogram(text))
+
 # metrics
+
 
 def num_chars(text):
     return len(text)
@@ -142,7 +154,7 @@ def stopword_ratio(text, language):
     except: 
         pass
 
-def category(text):
+def delimiter_type(text):
     html = re.compile('<.*?>')
     point = re.compile(delimiter_sentence)
     other = re.compile(delimiter_other)
@@ -158,11 +170,11 @@ def category(text):
         return 'no delimiter'
 
 def num_parts(text):
-    if (category(text) == 'html'):
+    if (delimiter_type(text) == 'html'):
         return len(re.split(delimiter_HTML, text))
-    elif (category(text) == 'sentence'):
+    elif (delimiter_type(text) == 'sentence'):
         return len(re.split(delimiter_sentence, text))
-    elif (category(text) == 'other delimiter'):
+    elif (delimiter_type(text) == 'other delimiter'):
         return len(re.split(delimiter_other, text))
     else:
         return 0
@@ -172,7 +184,7 @@ def language(text):
     try: 
         if (len(text) == 0):
             detect(text) # trigger LangDetectException. Throwing one in here smh doesnt work
-        if (category(text) == 'html'):
+        if (delimiter_type(text) == 'html'):
             parts = re.split(r'<\s*br\s*/?>', text)
         else:
             parts = re.split(r'[\n\r]+', text)
