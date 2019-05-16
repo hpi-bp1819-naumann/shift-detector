@@ -1,4 +1,4 @@
-from shift_detector.checks.frequent_item_rules.extendedrule_and_cluster import ExtendedRule, RuleCluster
+from shift_detector.checks.frequent_item_rules.ExtendendRule import ExtendedRule, RuleCluster
 # from shift_detector.checks.frequent_item_rules import fpgrowth
 
 
@@ -11,9 +11,15 @@ def printrule(rule):
         print('//rule has no left side')
         print('() -->', rule.right_side)
     print()
+    return
 
 
-def remove_duplicate_rules(rules):
+def remove_allsame_attributes(rules):
+    """
+    Given a list of rules, return the same list but having removed those attributes that are the same across all
+    elements in the list
+    """
+
     if len(rules) == 0:
         return []
     duplicate_candidates = set(rules[0].right_side + rules[0].left_side)
@@ -30,48 +36,32 @@ def remove_duplicate_rules(rules):
     for i, value in enumerate(rules):
         left_side = [t for t in rules[i].left_side if t not in duplicate_candidates]
         right_side = [t for t in rules[i].right_side if t not in duplicate_candidates]
-        all_sides = left_side + right_side
 
         rules[i] = ExtendedRule(left_side, right_side, rules[i].supports_of_left_side,
                                 rules[i].delta_supports_of_left_side, rules[i].supports, rules[i].delta_supports,
-                                rules[i].confidences, rules[i].delta_confidences, rules[i].length, all_sides,
-                                rules[i].groupkey)
+                                rules[i].confidences, rules[i].delta_confidences)
+
     return rules
 
 
-def filter_rules_by_threshold(rules):
-    filtered_rules = []
-    threshold = 0.001
-
-    for rule in rules:
-        if rule.delta_supports > threshold or rule.delta_confidences > threshold:
-            filtered_rules.append(rule)
-    return filtered_rules
-
-
-def return_if_no_attribute_none(rule):
-    for attribute in rule.all_sides:
+def true_if_no_attribute_none(rule):
+    for attribute in rule.all_sides():
         if attribute[1] is None:
-            return
-    return rule
+            return False
+    return True
 
 
 def filter_non_values(rules):
-    rules = list(filter(return_if_no_attribute_none, rules))
+    rules = list(filter(true_if_no_attribute_none, rules))
     return rules
 
 
 def add_side_attributes_to_rules(rules):
     rules_extended = []
     for rule in rules:
-        length = len(rule.right_side) + len(rule.left_side)
-        all_sides = rule.right_side + rule.left_side
-        all_sides_stringified = [str(x) for x in all_sides]
-        groupkey = str(sorted(all_sides_stringified, key=lambda x: x[0]))
-
         rule_ext = ExtendedRule(rule.left_side, rule.right_side, rule.supports_of_left_side,
                                 rule.delta_supports_of_left_side, rule.supports, rule.delta_supports,
-                                rule.confidences, rule.delta_confidences, length, all_sides, groupkey)
+                                rule.confidences, rule.delta_confidences)
         rules_extended.append(rule_ext)
 
     return rules_extended
@@ -83,16 +73,10 @@ def group_rules_by_length(rules):
         groupings.append([])
 
     for rule in rules:
-        groupings[rule.length].append(rule)
+        groupings[len(rule.all_sides())].append(rule)
 
     groupings_cleaned = [x for x in groupings if x != []]
     return groupings_cleaned
-
-
-def matches_cluster(rule, cluster):
-    rule_set = set(rule.all_sides)
-    cluster_set = set(sorted(cluster.attributes, key=lambda x: x[0]))
-    return rule_set.issubset(cluster_set)
 
 
 def new_cluster_from_rule(rule):
@@ -103,7 +87,6 @@ def new_cluster_from_rule(rule):
 
 
 def cluster_rules_hierarchically(length_groups):
-
     hierarchical_clusters = []
     for group_of_same_length in length_groups:
 
@@ -113,9 +96,7 @@ def cluster_rules_hierarchically(length_groups):
             possible_supercluster = []
 
             for established_cluster in hierarchical_clusters:
-
-                comparison_string = established_cluster.compare_to_new_rule(rule)
-                if comparison_string == 'supercluster':
+                if established_cluster.is_supercluster(rule):
                     supercluster_was_found = True
                     possible_supercluster.append(established_cluster)
 
@@ -135,10 +116,10 @@ def cluster_rules_hierarchically(length_groups):
 
 def compress_rules(rules):
     rules = add_side_attributes_to_rules(rules)
-    rules = remove_duplicate_rules(rules)
+    rules = remove_allsame_attributes(rules)
     rules = filter_non_values(rules)
-    rules = sorted(rules, key=lambda x: abs(x.delta_supports_of_left_side))
 
+    rules = sorted(rules, key=lambda x: abs(x.delta_supports_of_left_side))
     length_groups = group_rules_by_length(rules)
     hierarchical_clusters = cluster_rules_hierarchically(length_groups)
 
@@ -150,8 +131,8 @@ def compress_rules(rules):
     return hierarchical_clusters
 
 
-if __name__ == '__main__':
-    compress_rules()
+# if __name__ == '__main__':
+#     compress_rules()
 
 
 
