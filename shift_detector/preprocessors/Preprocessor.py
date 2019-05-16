@@ -6,13 +6,13 @@ class Preprocessor(metaclass=ABCMeta):
     @abstractmethod
     def __eq__(self, other):
         """Overrides the default implementation"""
-        return hash(self) == hash(other)
+        pass
 
     @abstractmethod
     def __hash__(self):
         """Overrides the default implementation"""
-        return hash(self.__class__)
+        pass
 
     @abstractmethod
     def process(self, first_df, second_df):
-        return first_df, second_df
+        pass
