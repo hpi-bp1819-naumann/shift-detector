@@ -85,7 +85,7 @@ class Detector:
 
     def run(self):
         columns = shared_column_names(self.first_df, self.second_df)
-        logger.info(f"Used columns: {columns}")
+        logger.info("Used columns: {}".format(columns))
 
         if not self.checks_to_run:
             raise Exception('Please use the method add_check to add checks, '

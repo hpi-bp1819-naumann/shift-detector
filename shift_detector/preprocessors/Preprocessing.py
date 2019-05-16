@@ -33,7 +33,7 @@ def preprocess(checks: List[Check],
     logger.info("Splitted dataframes by column types")
 
     type_to_needed_preprocessings = Preprocessor.needed_preprocessing(checks)
-    logger.info(f"Needed Preprocessing: {type_to_needed_preprocessings}")
+    logger.info("Needed Preprocessing: {}".join(type_to_needed_preprocessings))
 
     preprocessings = Preprocessor.run_preprocessings(column_type_to_columns,
                                                      type_to_needed_preprocessings)
@@ -62,8 +62,7 @@ class Preprocessor:
             return groups
 
         type_to_needed_preprocessings = reduce(update_preprocessings, checks, defaultdict(set))
-        type_to_needed_preprocessings = dict(type_to_needed_preprocessings)
-        return type_to_needed_preprocessings
+        return dict(type_to_needed_preprocessings)
 
     @staticmethod
     def run_preprocessings(column_type_to_columns: Dict,
@@ -89,4 +88,4 @@ class Preprocessor:
                 preprocessed = needed_preprocessing.process(first_df, second_df)
                 preprocessings[column_type][needed_preprocessing] = preprocessed
 
-        return preprocessings
+        return dict(preprocessings)
