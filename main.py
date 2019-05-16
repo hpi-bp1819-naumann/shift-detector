@@ -1,7 +1,7 @@
 import argparse
 from shift_detector.Detector import Detector
 from shift_detector.checks.BasicCheck import BasicCheck
-from shift_detector.checks.StatisticalTestCheck import StatisticalTestCheck
+from shift_detector.checks.StatisticalTestCheckLegacy import StatisticalTestCheck
 from shift_detector.checks.Chi2Check import Chi2Check
 from shift_detector.checks.FrequentItemRulesCheck import FrequentItemsetCheck
 from shift_detector.checks.TestCheck import TestCheck
