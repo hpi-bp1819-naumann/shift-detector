@@ -12,7 +12,7 @@ class ColumnType(Enum):
     text = 'text'
 
 
-def read_from_csv(file_path: str, separator) -> pd.DataFrame:
+def read_from_csv(file_path: str, separator: str) -> pd.DataFrame:
     # TODO: give user feedback about how many lines were dropped
     logger.info('Reading in CSV file. This may take a while ...')
     return pd.read_csv(file_path, sep=separator, error_bad_lines=False).dropna()
