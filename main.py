@@ -16,7 +16,8 @@ if __name__ == "__main__":
     # ap.add_argument("-s", "--sep", required=True, help="separator for datasets")
     # args = vars(ap.parse_args())
 
-    args = {'train': '/Users/pzimme/Desktop/Datasets/audits_leonard.csv', 'test': '/Users/pzimme/Desktop/Datasets/train_leonard.csv', 'sep': ','}
+    args = {'train': '/Users/pzimme/Desktop/Datasets/audits_leonard.csv',
+            'test': '/Users/pzimme/Desktop/Datasets/train_leonard.csv', 'sep': ','}
     train_path = args["train"]
     audits_path = args["test"]
     separator = args["sep"]
