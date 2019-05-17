@@ -1,9 +1,8 @@
 import logging as logger
-from typing import List
 
 from pandas import DataFrame
 
-from shift_detector.Utils import split_dataframes, ColumnType
+from shift_detector.Utils import split_dataframes, ColumnType, shared_column_names
 from shift_detector.preprocessors.Preprocessor import Preprocessor
 
 
@@ -11,13 +10,12 @@ class Store:
 
     def __init__(self,
                  df1: DataFrame,
-                 df2: DataFrame,
-                 shared_columns: List[str]):
-
+                 df2: DataFrame):
         self.df1 = df1
         self.df2 = df2
-        self.columns = shared_columns
-        self.splitted_dfs = split_dataframes(df1, df2, shared_columns)
+
+        self.columns = shared_column_names(self.df1, self.df2)
+        self.splitted_dfs = split_dataframes(df1, df2, self.columns)
 
         self.preprocessings = dict()
 

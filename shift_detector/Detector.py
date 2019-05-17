@@ -36,7 +36,7 @@ class Detector:
 
         self.checks_to_run = []
         self.check_reports = []
-        self.store = None
+        self.store = Store(self.first_df, self.second_df)
 
     def add_check(self, check: Check):
         self.checks_to_run += [check]
@@ -54,15 +54,10 @@ class Detector:
         return [check.run(self.store) for check in self.checks_to_run]
 
     def run(self):
-        # Maybe move this to store
-        columns = shared_column_names(self.first_df, self.second_df)
-        logger.info("Used columns: {}".format(columns))
-
         if not self.checks_to_run:
             raise Exception('Please use the method add_check to add checks, '
                             'that should be executed, before calling run()')
 
-        self.store = Store(self.first_df, self.second_df, columns)
         self.check_reports = self.run_checks()
 
     # Evaluate the results
