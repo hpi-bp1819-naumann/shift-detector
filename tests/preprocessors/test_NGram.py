@@ -1,38 +1,38 @@
 import unittest
+from shift_detector.preprocessors.NGram import NGram, NGramType
 import pandas as pd
-from shift_detector.preprocessors.NGram import NGram
 
 
-class TestNGramPreprocessor(unittest.TestCase):
+class TestNGram(unittest.TestCase):
 
     def setUp(self):
+        self.wordng1 = NGram(1, NGramType.word)
+        self.wordng2 = NGram(1, NGramType.word)
+        self.wordng3 = NGram(2, NGramType.word)
+        self.charng1 = NGram(1, NGramType.character)
+        self.charng2 = NGram(5, NGramType.character)
         self.ser1 = pd.Series(['Hello World', 'Foo Bar Baz'])
         self.ser2 = pd.Series(['TestText1', 'TestText2'])
-        self.n = 5
-        self.ng = NGram(self.n)
-        self.res1, self.res2 = self.ng.process(self.ser1, self.ser2)
-
-    def test_result_length(self):
-        self.assertEqual(len(self.res1[0]), len(self.ser1[0]) - self.n + 1)
-        self.assertEqual(len(self.res1[1]), len(self.ser1[1]) - self.n + 1)
-        self.assertEqual(len(self.res2[0]), len(self.ser2[0]) - self.n + 1)
-        self.assertEqual(len(self.res2[1]), len(self.ser2[1]) - self.n + 1)
-
-    def test_result_content(self):
-        self.assertIn('hello', self.res1[0])
-        self.assertIn('oo ba', self.res1[1])
-        self.assertIn('text2', self.res2[1])
+        self.ser3 = pd.Series(['abababa'])
 
     def test_eq(self):
-        ng2 = NGram(6)
-        ng3 = NGram(6)
-        self.assertTrue(ng2 == ng3)
-        self.assertFalse(self.ng == ng2)
+        self.assertTrue(self.wordng1 == self.wordng2)
+        self.assertFalse(self.wordng1 == self.wordng3)
+        self.assertFalse(self.wordng1 == self.charng1)
 
     def test_exception_on_small_n(self):
-        self.assertRaises(Exception, lambda: NGram(0))
-        self.assertRaises(Exception, lambda: NGram(-1))
+        self.assertRaises(ValueError, lambda: NGram(0, NGramType.word))
+        self.assertRaises(ValueError, lambda: NGram(-1, NGramType.character))
 
     def test_hash(self):
-        ng2 = NGram(self.n)
-        self.assertEqual(hash(self.ng), hash(ng2))
+        self.assertEqual(hash(self.wordng1), hash(self.wordng2))
+
+    def test_generate_ngram(self):
+        self.assertDictEqual(self.charng1.generate_ngram(('t', 'e', 's', 't')), {('t',): 2, ('e',): 1, ('s',): 1})
+
+    def test_process(self):
+        res1, res2 = self.wordng1.process(self.ser1, self.ser2)
+        self.assertListEqual(list(res2), [{('testtext1',): 1}, {('testtext2',): 1}])
+        res3, res4 = self.charng2.process(self.ser1, self.ser3)
+        self.assertListEqual(list(res4), [{('a', 'b', 'a', 'b', 'a'): 2,
+                                           ('b', 'a', 'b', 'a', 'b'): 1}])
