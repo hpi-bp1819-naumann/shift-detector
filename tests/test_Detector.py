@@ -21,9 +21,13 @@ class TestCreateDetector(unittest.TestCase):
         with self.subTest("Test successful initialization with csv paths"):
             Detector(self.path, self.path)
 
-        with self.subTest("Test unsuccessful initialization"):
+        with self.subTest("Test unsuccessful initialization with wrong df1 parameter"):
             no_df = 0
             self.assertRaises(Exception, Detector, no_df, no_df)
+
+        with self.subTest("Test unsuccessful initialization with wrong df2 parameter"):
+            no_df = 0
+            self.assertRaises(Exception, Detector, self.df1, no_df)
 
     def tearDown(self):
         os.remove(self.path)
