@@ -1,5 +1,5 @@
 import unittest
-import shift_detector.utils.TextMetadata as tm
+import shift_detector.utils.TextMetadataFunctions as tm
 from langdetect.lang_detect_exception import LangDetectException
 
 class TestTextMetadata(unittest.TestCase):

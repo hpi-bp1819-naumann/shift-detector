@@ -8,7 +8,7 @@ from datawig.utils import random_split
 from shift_detector.checks.BasicCheck import BasicCheck, CheckResult
 from shift_detector.utils.Miscellaneous import print_progress_bar
 from shift_detector.utils.TextEmbedding import get_column_embedding, DIMENSIONS
-import shift_detector.utils.TextMetadata as TextMd
+import shift_detector.utils.TextMetadataFunctions as TextMd
 from shift_detector.utils.Visualization import plot_histogram
 
 
