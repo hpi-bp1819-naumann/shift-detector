@@ -1,7 +1,7 @@
 from shift_detector.preprocessors.Preprocessor import Preprocessor
 
-class DefaultEmbedding(Preprocessor):
 
+class DefaultEmbedding(Preprocessor):
     def __eq__(self, other):
         """Overrides the default implementation"""
         return isinstance(other, self.__class__)

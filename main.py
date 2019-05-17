@@ -18,11 +18,11 @@ if __name__ == "__main__":
 
     args = {'train': '/Users/pzimme/Desktop/Datasets/audits_leonard.csv',
             'test': '/Users/pzimme/Desktop/Datasets/train_leonard.csv', 'sep': ','}
-    train_path = args["train"]
-    audits_path = args["test"]
-    separator = args["sep"]
+    # train_path = args["train"]
+    # audits_path = args["test"]
+    # separator = args["sep"]
 
-    detector = Detector(train_path, audits_path, separator=separator)
+    detector = Detector(args['train'], args['test'], delimiter=args['sep'])
     detector.add_check(SimpleCheck())
     # detector.add_check(Chi2Check())
 
