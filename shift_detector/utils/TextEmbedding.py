@@ -9,7 +9,7 @@ from sklearn.feature_extraction.stop_words import ENGLISH_STOP_WORDS
 from shift_detector.utils.Miscellaneous import print_progress_bar
 
 DIMENSIONS = 50
-
+# DEPRECATED
 
 class Vector:
     def __init__(self, elementList):
