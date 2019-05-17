@@ -68,4 +68,4 @@ class TestDetector(unittest.TestCase):
         mock.print_report = MagicMock()
         self.detector.check_reports = [mock]
         self.detector.evaluate()
-        mock.print_report.assert_called_once()
+        mock.print_report.assert_called_with()
