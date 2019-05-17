@@ -3,12 +3,15 @@ import numpy as np
 from gensim.models import FastText, Word2Vec
 from numbers import Number
 from copy import copy
+from shift_detector.preprocessors.Preprocessor import Preprocessor
+
 
 class EmbeddingType(Enum):
     FastText = "fasttext"
     Word2Vec = "word2vec"
 
-class WordEmbedding():
+
+class WordEmbedding(Preprocessor):
 
     def __init__(self, model=None, trained_model=None):
         self.model = None
@@ -29,15 +32,15 @@ class WordEmbedding():
         """Overrides the default implementation"""
         if isinstance(other, self.__class__):
             if self.trained_model and self.trained_model == other.trained_model \
-                or self.model == other.model:
+                    or self.model == other.model:
                 return True
 
-            model_attributes = sorted([(k, v) for k, v in self.model.__dict__.items() \
-                                if isinstance(v, Number) or isinstance(v, str)])
-            other_model_attributes = sorted([(k, v) for k, v in other.model.__dict__.items() \
-                                        if isinstance(v, Number) or isinstance(v, str)])
+            model_attributes = sorted([(k, v) for k, v in self.model.__dict__.items()
+                                       if isinstance(v, Number) or isinstance(v, str)])
+            other_model_attributes = sorted([(k, v) for k, v in other.model.__dict__.items()
+                                             if isinstance(v, Number) or isinstance(v, str)])
             if isinstance(other.model, self.model.__class__) \
-                and model_attributes == other_model_attributes:
+                    and model_attributes == other_model_attributes:
                 return True
         return False
 
