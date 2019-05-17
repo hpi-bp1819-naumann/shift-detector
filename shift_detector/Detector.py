@@ -1,9 +1,8 @@
-import logging as logger
 from typing import List, Union
 
 import pandas as pd
 
-from shift_detector.Utils import shared_column_names, read_from_csv
+from shift_detector.Utils import read_from_csv
 from shift_detector.checks.Check import Check, Report
 from shift_detector.preprocessors.Store import Store
 
@@ -38,13 +37,18 @@ class Detector:
         self.check_reports = []
         self.store = Store(self.first_df, self.second_df)
 
-    def add_check(self, check: Check):
-        self.checks_to_run += [check]
-        return self
-
-    def add_checks(self, checks: List[Check]):
-        self.checks_to_run += checks
-        return self
+    def add_checks(self, checks):
+        """
+        Add checks to the detector
+        :param checks: single or list of Checks
+        """
+        if isinstance(checks, Check):
+            checks_to_run = [checks]
+        elif isinstance(checks, list) and all(isinstance(check, Check) for check in checks):
+            checks_to_run = checks
+        else:
+            raise Exception("All elements in checks should be a Check")
+        self.checks_to_run += checks_to_run
 
     def run_checks(self) -> List[Report]:
         """
@@ -54,14 +58,19 @@ class Detector:
         return [check.run(self.store) for check in self.checks_to_run]
 
     def run(self):
+        """
+        Run the Detector.
+        """
         if not self.checks_to_run:
-            raise Exception('Please use the method add_check to add checks, '
-                            'that should be executed, before calling run()')
+            raise Exception("Please use the method add_checks to add checks, "
+                            "that should be executed, before calling run()")
 
         self.check_reports = self.run_checks()
 
-    # Evaluate the results
     def evaluate(self):
+        """
+        Evaluate the reports.
+        """
         print("EVALUATION")
         for report in self.check_reports:
             report.print_report()
