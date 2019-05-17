@@ -7,7 +7,7 @@ from pandas.api.types import is_numeric_dtype
 
 
 class ColumnType(Enum):
-    numeric = 'numeric'
+    numerical = 'numerical'
     categorical = 'categorical'
     text = 'text'
 
@@ -85,7 +85,7 @@ def split_dataframes(df1: pd.DataFrame, df2: pd.DataFrame, columns: List[str]) -
     logger.info("Assuming text columns: {}".format(", ".join(text_columns)))
 
     return {
-        ColumnType.numeric: (df1[numeric_columns], df2[numeric_columns]),
+        ColumnType.numerical: (df1[numeric_columns], df2[numeric_columns]),
         ColumnType.categorical: (df1[categorical_columns], df2[categorical_columns]),
         ColumnType.text: (df1[text_columns], df2[text_columns])
     }

@@ -1,6 +1,7 @@
 import pandas as pd
 import pprint as pp
 
+from shift_detector.Utils import ColumnType
 from shift_detector.checks.Check import Check, Report
 from shift_detector.preprocessors.DefaultEmbedding import DefaultEmbedding
 from copy import deepcopy
@@ -16,8 +17,8 @@ class SimpleCheckReport(Report):
         self.categorical_threshold = 0.05
 
     def relative_metric_difference(self, column, metric_name):
-        metric_in_df1 = self.data['numerical'][column][metric_name]['df1']
-        metric_in_df2 = self.data['numerical'][column][metric_name]['df2']
+        metric_in_df1 = self.data['numerical_comparison'][column][metric_name]['df1']
+        metric_in_df2 = self.data['numerical_comparison'][column][metric_name]['df2']
 
         if metric_in_df1 == 0 and metric_in_df2 == 0:
             return 0
@@ -40,7 +41,7 @@ class SimpleCheckReport(Report):
         return metrics_difference_string
 
     def print_numerical_report(self):
-        numerical_comparison = self.data['numerical']
+        numerical_comparison = self.data['numerical_comparison']
         for column_name, metrics in numerical_comparison.items():
 
             if 'df1' in numerical_comparison[column_name]['available_in'] and \
@@ -61,7 +62,7 @@ class SimpleCheckReport(Report):
                             print('shift in column', column_name, '\t', metric, self.difference_to_string(diff))
 
     def print_categorical_report(self):
-        categorical_comparison = self.data['categorical']
+        categorical_comparison = self.data['numerical_comparison']
         for column_name, attribute in categorical_comparison.items():
             for attribute_name, attribute_values in attribute.items():
 
@@ -91,20 +92,20 @@ class SimpleCheck(Check):
 
     def needed_preprocessing(self) -> dict:
         return {
-            "category": DefaultEmbedding(),
-            "int": DefaultEmbedding(),
+            ColumnType.categorical: DefaultEmbedding(),
+            ColumnType.numerical: DefaultEmbedding()
         }
 
     def run(self, columns=[]):
-        df1_numerical = self.data["int"][0]
-        df2_numerical = self.data["int"][1]
-        df1_categorical = self.data["category"][0]
-        df2_categorical = self.data['category'][1]
+        df1_numerical = self.data[ColumnType.numerical][0]
+        df2_numerical = self.data[ColumnType.numerical][1]
+        df1_categorical = self.data[ColumnType.categorical][0]
+        df2_categorical = self.data[ColumnType.categorical][1]
 
         numerical_comparison = self.compare_numerical_columns(df1_numerical, df2_numerical)
         categorical_comparison = self.compare_categorical_columns(df1_categorical, df2_categorical)
 
-        return {'numerical': numerical_comparison, 'categorical': categorical_comparison}
+        return {"categorical_comparison": categorical_comparison, 'numerical_comparison': numerical_comparison}
 
     @staticmethod
     def compare_numerical_columns(df1, df2):
