@@ -21,22 +21,22 @@ class Detector:
         """
         # TODO: remove sampling
         if type(df1) is pd.DataFrame:
-            self.first_df = df1
+            self.df1 = df1
         elif type(df1) is str:
-            self.first_df = read_from_csv(df1, delimiter).sample(100)
+            self.df1 = read_from_csv(df1, delimiter).sample(100)
         else:
             raise Exception("df1 is not a dataframe or a string")
 
         if type(df2) is pd.DataFrame:
-            self.second_df = df2
+            self.df2 = df2
         elif type(df2) is str:
-            self.second_df = read_from_csv(df1, delimiter).sample(100)
+            self.df2 = read_from_csv(df1, delimiter).sample(100)
         else:
             raise Exception("df2 is not a dataframe or a string")
 
         self.checks_to_run = []
         self.check_reports = []
-        self.store = Store(self.first_df, self.second_df)
+        self.store = Store(self.df1, self.df2)
         logger.info("Used columns: {}".format(' '.join(self.store.columns)))
 
     def add_checks(self, checks):
