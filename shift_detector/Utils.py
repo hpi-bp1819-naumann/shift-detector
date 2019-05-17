@@ -26,14 +26,14 @@ def shared_column_names(df1: pd.DataFrame, df2: pd.DataFrame) -> List[str]:
     :param df2: second dataframe
     :return: List of the column names that both dataframes have.
     """
-    df1_columns = list(df1.columns.values)
-    df2_columns = list(df2.columns.values)
+    df1_columns = df1.columns.values
+    df2_columns = df2.columns.values
 
     if set(df1_columns) != set(df2_columns):
         logger.warning("The columns of the provided dataset should be the same, "
                        "but are {} for df1 and {} for df2".format(df1_columns, df2_columns))
 
-        shared_columns = df1_columns.intersection(df2_columns)
+        shared_columns = [column for column in df1_columns if column in df2_columns]
 
         if len(shared_columns) == 0:
             raise Exception("The provided datasets do not have any column names in common."

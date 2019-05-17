@@ -1,3 +1,4 @@
+import logging as logger
 from typing import List, Union
 
 import pandas as pd
@@ -36,6 +37,7 @@ class Detector:
         self.checks_to_run = []
         self.check_reports = []
         self.store = Store(self.first_df, self.second_df)
+        logger.info("Used columns: {}".format(' '.join(self.store.columns)))
 
     def add_checks(self, checks):
         """
