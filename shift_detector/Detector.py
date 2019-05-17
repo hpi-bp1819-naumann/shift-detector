@@ -20,8 +20,8 @@ from shift_detector.preprocessors.Preprocessing import preprocess
 
 CheckReports = namedtuple("CheckReports", "check reports")
 
-class Detector:
 
+class Detector:
     def __init__(self,
                  df1: Union[pd.DataFrame, str],
                  df2: Union[pd.DataFrame, str],
@@ -60,7 +60,7 @@ class Detector:
         return self
 
     @staticmethod
-    def _distribute_preprocessings(self, checks: List[Check], preprocessings: Dict):
+    def _distribute_preprocessings(checks: List[Check], preprocessings: Dict):
         """
         Distribute the preprocessings to the checks.
         :param checks: checks to distribute the preprocessing to
@@ -107,7 +107,7 @@ class Detector:
 
         self.checks_reports = self._run_checks(self.checks_to_run)
 
-    ## Evaluate the results
+    # Evaluate the results
     def evaluate(self):
         print("EVALUATION")
         for check_report in self.checks_reports:

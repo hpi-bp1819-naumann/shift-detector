@@ -53,7 +53,7 @@ class TestPreprocessing(unittest.TestCase):
             self.assertEqual(categorical[self.needed_preprocessings[0]], 0)
 
         with self.subTest("Test missing preprocessings"):
-            self.assertFalse(ColumnType.numeric in preprocessings)
+            self.assertFalse(ColumnType.numerical in preprocessings)
 
         with self.subTest("Test accumulation of preprocessings"):
             text = preprocessings[ColumnType.text]

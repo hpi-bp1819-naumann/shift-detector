@@ -68,12 +68,6 @@ class Chi2Check(Check):
         return Chi2Report
 
     def needed_preprocessing(self) -> dict:
-        """
-        return {
-            "category": Default(),
-            "text": self.text_embedding
-        }
-        """
         return {
             ColumnType.categorical: DefaultEmbedding()
         }
