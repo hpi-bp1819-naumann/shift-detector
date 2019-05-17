@@ -1,16 +1,11 @@
 import logging as logger
-from collections import namedtuple
-from functools import reduce
-from typing import List, Dict, Union
+from typing import List, Union
 
 import pandas as pd
 
 from shift_detector.Utils import shared_column_names, read_from_csv
-from shift_detector.checks.Check import Check
-from shift_detector.checks.Check import Reports
-from shift_detector.preprocessors.Preprocessing import preprocess
-
-CheckReports = namedtuple("CheckReports", "check reports")
+from shift_detector.checks.Check import Check, Report
+from shift_detector.preprocessors.Store import Store
 
 
 class Detector:
@@ -40,9 +35,8 @@ class Detector:
             raise Exception("df2 is not a dataframe or a string")
 
         self.checks_to_run = []
-        self.checks_reports = []
-        self.column_type_to_columns = {}
-        self.preprocessings = {}
+        self.check_reports = []
+        self.store = None
 
     def add_check(self, check: Check):
         self.checks_to_run += [check]
@@ -52,39 +46,15 @@ class Detector:
         self.checks_to_run += checks
         return self
 
-    @staticmethod
-    def _distribute_preprocessings(self, checks: List[Check], preprocessings: Dict):
+    def run_checks(self) -> List[Report]:
         """
-        Distribute the preprocessings to the checks.
-        :param checks: checks to distribute the preprocessing to
-        :param preprocessings: result of _preprocess
+        Execute the checks to run.
+        :return: list of Reports that resulted from the checks
         """
-
-        def choose_preprocessings(specific_preprocessings, pair):
-            column_type, preprocessings_method = pair
-            specific_preprocessings[column_type] = preprocessings[column_type][preprocessings_method]
-            return specific_preprocessings
-
-        for check in checks:
-            chosen_preprocessing = reduce(choose_preprocessings, check.needed_preprocessing().items(), dict())
-            check.set_data(chosen_preprocessing)
-
-    def _run_checks(self, checks: List[Check]) -> List[CheckReports]:
-        """
-        Execute the checks.
-        :param checks: the checks that will be executed
-        :return: list of CheckReports, that connects runned checks with their reports
-        """
-        checks_reports = []
-        for check in checks:
-            check_result = check.run()
-            reports = Reports(check_result=check_result, report_class=check.report_class())
-            check_reports = CheckReports(check=check, reports=reports)
-            checks_reports.append(check_reports)
-
-        return checks_reports
+        return [check.run(self.store) for check in self.checks_to_run]
 
     def run(self):
+        # Maybe move this to store
         columns = shared_column_names(self.first_df, self.second_df)
         logger.info("Used columns: {}".format(columns))
 
@@ -92,19 +62,11 @@ class Detector:
             raise Exception('Please use the method add_check to add checks, '
                             'that should be executed, before calling run()')
 
-        preprocessings = preprocess(self.checks_to_run, self.first_df, self.second_df, columns)
-        logger.info("Finished Preprocessing")
+        self.store = Store(self.first_df, self.second_df, columns)
+        self.check_reports = self.run_checks()
 
-        self._distribute_preprocessings(self.checks_to_run, preprocessings)
-        logger.info("Distributed Preprocessings to the Checks")
-
-        self.checks_reports = self._run_checks(self.checks_to_run)
-
-    ## Evaluate the results
+    # Evaluate the results
     def evaluate(self):
         print("EVALUATION")
-        for check_report in self.checks_reports:
-            check, reports = check_report
-            print(check.name())
-            for report in reports.reports:
-                report.print_report()
+        for report in self.check_reports:
+            report.print_report()
