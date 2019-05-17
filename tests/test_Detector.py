@@ -1,16 +1,17 @@
 import os
 import unittest
+from unittest.mock import MagicMock
 
 import pandas as pd
 
 from shift_detector.Detector import Detector
-from shift_detector.checks.DummyCheck import DummyCheck
+from shift_detector.checks.DummyCheck import DummyCheck, DummyReport
 
 
 class TestCreateDetector(unittest.TestCase):
 
     def setUp(self):
-        sales = {'brand': ['Jones LLC']}
+        sales = {'brand': ['Jones LLC'] * 100}
         self.df1 = pd.DataFrame.from_dict(sales)
         self.df2 = self.df1
         self.path = 'test.csv'
@@ -18,7 +19,7 @@ class TestCreateDetector(unittest.TestCase):
 
     def test_init(self):
         with self.subTest("Test successful initialization with csv paths"):
-            self.assertRaises(Exception, Detector.__init__, self.path, self.path)
+            Detector(self.path, self.path)
 
         with self.subTest("Test unsuccessful initialization"):
             no_df = 0
@@ -63,4 +64,8 @@ class TestDetector(unittest.TestCase):
             self.assertEquals(len(self.detector.checks_to_run), 2)
 
     def test_evaluate(self):
+        mock = MagicMock()
+        mock.print_report = MagicMock()
+        self.detector.check_reports = [mock]
         self.detector.evaluate()
+        mock.print_report.assert_called_once()
