@@ -33,14 +33,19 @@ class NGram(Preprocessor):
             ngram[segment] = 1 if segment not in ngram else ngram[segment] + 1
         return ngram
 
-    def process(self, train: pd.Series, test: pd.Series) -> tuple:
-        train = train.dropna().str.lower()
-        test = test.dropna().str.lower()
-        if self.ngram_type == NGramType.word:
-            train = train.str.split()
-            test = test.str.split()
+    def process(self, train: pd.DataFrame, test: pd.DataFrame) -> tuple:
+        train = train.copy()
+        test = test.copy()
+        for column in train:
+            train[column] = train[column].dropna().str.lower()
+            if self.ngram_type == NGramType.word:
+                train[column] = train[column].str.split()
+            train[column] = train[column].apply(lambda row: self.generate_ngram(tuple(row)))
 
-        train_processed = train.apply(lambda row: self.generate_ngram(tuple(row)))
-        test_processed = test.apply(lambda row: self.generate_ngram(tuple(row)))
+        for column in test:
+            test[column] = test[column].dropna().str.lower()
+            if self.ngram_type == NGramType.word:
+                test[column] = test[column].str.split()
+            test[column] = test[column].apply(lambda row: self.generate_ngram(tuple(row)))
 
-        return train_processed, test_processed
+        return train, test

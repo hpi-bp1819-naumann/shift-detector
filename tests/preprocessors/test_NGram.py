@@ -11,9 +11,9 @@ class TestNGram(unittest.TestCase):
         self.wordng3 = NGram(2, NGramType.word)
         self.charng1 = NGram(1, NGramType.character)
         self.charng2 = NGram(5, NGramType.character)
-        self.ser1 = pd.Series(['Hello World', 'Foo Bar Baz'])
-        self.ser2 = pd.Series(['TestText1', 'TestText2'])
-        self.ser3 = pd.Series(['abababa'])
+        self.ser1 = pd.DataFrame(['Hello World', 'Foo Bar Baz'])
+        self.ser2 = pd.DataFrame(['TestText1', 'TestText2'])
+        self.ser3 = pd.DataFrame(['abababa'])
 
     def test_eq(self):
         self.assertTrue(self.wordng1 == self.wordng2)
@@ -32,7 +32,7 @@ class TestNGram(unittest.TestCase):
 
     def test_process(self):
         res1, res2 = self.wordng1.process(self.ser1, self.ser2)
-        self.assertListEqual(list(res2), [{('testtext1',): 1}, {('testtext2',): 1}])
+        self.assertListEqual(list(res2[0]), [{('testtext1',): 1}, {('testtext2',): 1}])
         res3, res4 = self.charng2.process(self.ser1, self.ser3)
-        self.assertListEqual(list(res4), [{('a', 'b', 'a', 'b', 'a'): 2,
+        self.assertListEqual(list(res4[0]), [{('a', 'b', 'a', 'b', 'a'): 2,
                                            ('b', 'a', 'b', 'a', 'b'): 1}])
