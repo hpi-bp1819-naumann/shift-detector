@@ -23,7 +23,7 @@ class TestCreateDetector(unittest.TestCase):
 
         with self.subTest("Test unsuccessful initialization"):
             no_df = 0
-            self.assertRaises(Exception, Detector.__init__, no_df, no_df)
+            self.assertRaises(Exception, Detector, no_df, no_df)
 
     def tearDown(self):
         os.remove(self.path)
