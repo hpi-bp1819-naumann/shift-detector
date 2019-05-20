@@ -23,8 +23,8 @@ if __name__ == "__main__":
     # separator = args["sep"]
 
     detector = Detector(args['train'], args['test'], delimiter=args['sep'])
-    detector.add_check(SimpleCheck())
-    # detector.add_check(Chi2Check())
+    # detector.add_check(SimpleCheck())
+    detector.add_check(Chi2Check())
 
     detector.run()
     detector.evaluate()

@@ -127,15 +127,21 @@ class SimpleCheck(Check):
                 numerical_comparison[column]['max'][df_name] = df[column].max()
                 numerical_comparison[column]['quartile_1'][df_name] = df[column].quantile(.25)
                 numerical_comparison[column]['quartile_3'][df_name] = df[column].quantile(.75)
+
                 numerical_comparison[column]['median'][df_name] = df[column].median()
-
                 numerical_comparison[column]['mean'][df_name] = df[column].mean()
-                numerical_comparison[column]['std'][df_name] = df[column].std()
 
-                numerical_comparison[column]['distinctness'][df_name] = df[column].nunique() / len(df1[column])
-                numerical_comparison[column]['completeness'][df_name] = df[column].count() / len(df1[column])
+                column_droppedna = df[column].dropna()
+                numerical_comparison[column]['std'][df_name] = column_droppedna.std()
+
+                numerical_comparison[column]['distinctness'][df_name] = column_droppedna.nunique() / \
+                                                                        len(column_droppedna)
+
+                numerical_comparison[column]['completeness'][df_name] = len(column_droppedna) / len(df1[column])
+
                 numerical_comparison[column]['uniqueness'][df_name] = len(df.groupby(column)
-                                                                    .filter(lambda x: len(x) == 1)) / len(df1[column])
+                                                                    .filter(lambda x: len(x) == 1)) / \
+                                                                    len(column_droppedna)
         return numerical_comparison
 
     @staticmethod
