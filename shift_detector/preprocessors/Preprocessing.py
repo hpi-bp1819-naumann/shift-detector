@@ -41,6 +41,7 @@ def preprocess(checks: List[Check],
     return preprocessings
 
 
+# DEPRECATED
 class Preprocessor:
 
     @staticmethod
