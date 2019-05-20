@@ -5,7 +5,7 @@ API
 
 .. module:: shift_detector
 
-This part of the documentation covers all the public interfaces of Icarus.
+This part of the documentation covers all the public interfaces of Morpheus.
 
 Detector Object
 ---------------

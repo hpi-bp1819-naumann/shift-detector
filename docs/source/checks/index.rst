@@ -9,9 +9,15 @@ Checks
 
     conditional_probabilities
 
-Icarus comprises several methods to systematically compare two
-data sets. This section introduces each of those methods, which
-we call checks.
+Morpheus comprises several methods to systematically compare two
+data sets and check for shifts. This section introduces each of
+those methods, which we call checks.
 
-The documentation of each check gives details about reasoning,
-functioning, input and output.
+For each check we give details about:
+
+- Why is it included?
+- What kind of shifts can be detected?
+- How does it work?
+- What input is required?
+- How does the output look?
+- How is it implemented?
