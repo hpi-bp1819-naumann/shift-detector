@@ -43,38 +43,45 @@ class LDA(Preprocessor):
             return hash(self.trained_model)
         return hash(tuple([self.model.__class__] + self.n_topics))
 
-    def process(self, train_df, test_df):
-
+    def process(self, store):
+        train_df = store.df1
+        test_df = store.df2
         if not self.trained_model:
             model = copy(self.model)
-            df_merged = pd.concat([train_df, test_df])
+            merged_df = pd.concat([train_df, test_df])
         else:
             inferred_train_vec = train_df.shape[0] * [0]
             inferred_test_vec = test_df.shape[0] * [0]
 
             if self.type == 'gensim':
                 # TODO do preprocessing in different class with store
+                merged_tokenized, train_tokenized, test_tokenized = store[WordTokenizer()]
                 # word_tokenized = nltk.word_tokenize(df_merged['text'])
                 # train_word_tokenized = nltk.word_tokenize(train_df['text'])
                 # test_word_tokenized = nltk.word_tokenize(test_df['text'])
-
-                df_dict = Dictionary(word_tokenized)
-                df_corpus = [df_dict.doc2bow(line) for line in word_tokenized]
-                train_corpus = [train_dict.doc2bow(line) for line in train_word_tokenized]
-                test_corpus = [test_dict.doc2bow(line) for line in test_word_tokenized]
-                self.model = self.model.fit(df_corpus)
+                merged_dict = Dictionary(merged_tokenized)
+                train_dict = Dictionary(train_tokenized)
+                test_dict = Dictionary(test_tokenized)
+                merged_corpus = [merged_dict.doc2bow(line) for line in merged_tokenized]
+                train_corpus = [train_dict.doc2bow(line) for line in train_tokenized]
+                test_corpus = [test_dict.doc2bow(line) for line in test_tokenized]
+                self.model = self.model.fit(merged_corpus)
                 transformed_train = self.model.transform(train_corpus)
                 transformed_test = self.model.transform(test_corpus)
 
             else:
                 # TODO do preprocessing in different class with store
-                tokenized = CountVectorizer().fit_transform(df_merged['text'])
+                train_texts, test_texts = store[ColumnType.text]
+                merged_texts = pd.concat([train_texts, test_texts])
+                vectorized_merged = CountVectorizer().fit_transform()
+                vectorized_train = CountVectorizer().fit_transform()
+                vectorized_test = CountVectorizer().fit_transform()
                 if self.type == 'sklearn':
-                    self.model = self.model.fit(tokenized)
+                    self.model = self.model.fit(vectorized_merged)
                 elif self.type == 'lda':
-                    self.model = self.model.fit(tokenized)
-                transformed_train = self.model.transform(tokenized_train)
-                transformed_test = self.model.transform(tokenized_test)
+                    self.model = self.model.fit(vectorized_merged)
+                transformed_train = self.model.transform(vectorized_train)
+                transformed_test = self.model.transform(vectorized_test)
 
             # infer topics for train_df
             for i in range(len(transformed_train)):
