@@ -19,18 +19,17 @@ class Detector:
         :param df2: either a dataframe or the file path
         :param delimiter: used delimiter for csv files
         """
-        # TODO: remove sampling
         if type(df1) is pd.DataFrame:
             self.df1 = df1
         elif type(df1) is str:
-            self.df1 = read_from_csv(df1, delimiter).sample(100)
+            self.df1 = read_from_csv(df1, delimiter)
         else:
             raise Exception("df1 is not a dataframe or a string")
 
         if type(df2) is pd.DataFrame:
             self.df2 = df2
         elif type(df2) is str:
-            self.df2 = read_from_csv(df1, delimiter).sample(100)
+            self.df2 = read_from_csv(df2, delimiter)
         else:
             raise Exception("df2 is not a dataframe or a string")
 
