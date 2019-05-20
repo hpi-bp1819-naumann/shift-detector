@@ -3,17 +3,26 @@
 Conditional probabilities
 =========================
 
-This package implements an algorithm to compare two data sets using **association rule mining**.
+Abstract
+--------
+
+This check compares two data sets using conditional probabilities.
+Specifically, it compares the probability of co-occurring
+values inside a tuple. Its output highlights where those
+probabilities diverge.
+
+Motivation
+----------
 
 .. _example:
 
-We introduce this algorithm by an example:
+We introduce this check by an example:
 
     Assume you have two data sets (``ds1`` and ``ds2``) about shoes extracted from a
-    product catalog. Each row contains information about *make*, *color* and
+    product catalog. Each tuple contains information about *make*, *color* and
     *category*.
 
-    Our algorithm returns a list of *association rules* obeying the following form::
+    This check returns a list of rules obeying the following form::
 
         MAKE: Nike, COLOR: black ==> CATEGORY: football
         [SUPPORTS_OF_LEFT_SIDES: (0.3, 0.07), DELTA_SUPPORTS_OF_LEFT_SIDES: 0.23,
@@ -34,7 +43,15 @@ We introduce this algorithm by an example:
     probability that such a shoe is made for football is way higher in ``ds2`` than
     in ``ds1``.
 
-The algorithm proceeds with the following steps:
+Example
+-------
+
+
+
+Specification
+-------------
+
+The check proceeds with the following steps:
 
 1. Both data sets are transformed: each component of every tuple is replaced by an
    attribute-name, attribute-value pair. This is required for the correct
@@ -75,7 +92,10 @@ The algorithm proceeds with the following steps:
    generate the remaining association rules and our algorithm terminates.
 
 
-An implementation of the FP-growth algorithm as proposed in [Han2000]_.
+Implementation Notes
+--------------------
+
+We use the FP-growth algorithm as proposed in [Han2000]_ for association rule mining.
 The code is largely copied from fp-growth_.
 The function ``generate_association_rules(...)`` is revised in the following ways:
 
