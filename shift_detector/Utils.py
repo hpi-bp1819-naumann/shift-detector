@@ -36,8 +36,7 @@ def shared_column_names(df1: pd.DataFrame, df2: pd.DataFrame) -> List[str]:
         shared_columns = [column for column in df1_columns if column in df2_columns]
 
         if len(shared_columns) == 0:
-            raise Exception("The provided datasets do not have any column names in common."
-                            "They have {} and {}".format(df1_columns, df2_columns))
+            raise Exception("The provided datasets do not have any column names in common.")
     else:
         shared_columns = df1_columns
 
