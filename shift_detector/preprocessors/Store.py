@@ -34,6 +34,3 @@ class Store:
         preprocessing = needed_preprocessing.process(self)
         self.preprocessings[needed_preprocessing] = preprocessing
         return preprocessing
-
-    def numerical(self) -> (DataFrame, DataFrame):
-        return self.splitted_dfs[ColumnType.numeric]
