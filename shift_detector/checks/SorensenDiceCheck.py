@@ -1,12 +1,17 @@
 import pandas as pd
 from shift_detector.preprocessors.NGram import NGram, NGramType
 from shift_detector.Utils import ColumnType
-from shift_detector.checks.Check import Check, CheckResult
+from shift_detector.checks.Check import Check, CheckResult, Report
 
 
 class SorensenDiceResult(CheckResult):
     def print_report(self):
         print('Hello World!')
+
+
+class SorensenDiceReport(Report):
+    def print_report(self):
+        print('Hi World!')
 
 
 class SorensenDiceCheck(Check):
@@ -23,7 +28,7 @@ class SorensenDiceCheck(Check):
         """
         :return: The class that will be used for reports
         """
-        return
+        return SorensenDiceReport
 
     def run(self, columns=[]) -> pd.DataFrame:
         """

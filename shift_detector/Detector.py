@@ -53,7 +53,7 @@ class Detector:
         return self
 
     @staticmethod
-    def _distribute_preprocessings(self, checks: List[Check], preprocessings: Dict):
+    def _distribute_preprocessings(checks: List[Check], preprocessings: Dict):
         """
         Distribute the preprocessings to the checks.
         :param checks: checks to distribute the preprocessing to
