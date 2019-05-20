@@ -4,7 +4,7 @@ from shift_detector.checks.Check import Check, Report
 class StatisticalReport(Report):
 
     def __init__(self, check_result, significance=0.01):
-        super().__init__(check_result)
+        self.result = check_result
         self.significance = significance
 
     def is_significant(self, base1_p: float, base2_p: float, p: float) -> bool:
