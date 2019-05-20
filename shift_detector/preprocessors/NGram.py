@@ -1,7 +1,9 @@
 from shift_detector.preprocessors.Preprocessor import Preprocessor
 from enum import Enum
-import pandas as pd
+from shift_detector.Utils import ColumnType
+from shift_detector.preprocessors.Store import Store
 
+import pandas as pd
 
 class NGramType(Enum):
     word = "word"
@@ -33,7 +35,9 @@ class NGram(Preprocessor):
             ngram[segment] = 1 if segment not in ngram else ngram[segment] + 1
         return ngram
 
-    def process(self, train: pd.DataFrame, test: pd.DataFrame) -> tuple:
+    def process(self, store: Store) -> tuple:
+        # TODO: category should be text -> repair categorization
+        train, test = store[ColumnType.categorical]
         train = train.copy()
         test = test.copy()
         for column in train:
