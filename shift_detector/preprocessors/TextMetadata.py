@@ -1,5 +1,6 @@
 import pandas as pd
 
+from shift_detector.preprocessors.Preprocessor import Preprocessor
 from shift_detector.utils.Miscellaneous import print_progress_bar
 from shift_detector.utils.TextMetadataFunctions import md_functions
 
@@ -8,7 +9,7 @@ NUMERICAL_METADATA_TYPES = frozenset(['num_chars', 'ratio_upper','num_words', 'd
                                       'unknown_ratio', 'stopword_ratio', 'num_parts', 'complexity'])
 
 
-class TextMetadata():
+class TextMetadata(Preprocessor):
 
     def __init__(self, text_metadata_types=None):
         if text_metadata_types is None:
@@ -18,6 +19,9 @@ class TextMetadata():
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.text_metadata_types == other.text_metadata_types
+
+    def __hash__(self):
+        return hash(self.text_metadata_types)
 
     def categorical_columns(self):
         return [column for column in self.text_metadata_types if column in CATEGORICAL_METADATA_TYPES]

@@ -10,8 +10,8 @@ from shift_detector.preprocessors.Default import Default
 
 def chi2_test(part1: pd.Series, part2: pd.Series):
     observed = pd.DataFrame.from_dict({'a': part1.value_counts(), 'b': part2.value_counts()})
-    observed['a'] = observed['a'].add(5, fill_value=0)  # rule of succession
-    observed['b'] = observed['b'].add(5, fill_value=0)
+    observed['a'] = observed['a'].add(1, fill_value=0)  # rule of succession
+    observed['b'] = observed['b'].add(1, fill_value=0)
     chi2, p, dof, expected = stats.chi2_contingency(observed, lambda_='log-likelihood')
     return p
 
