@@ -19,7 +19,13 @@ class Store:
 
         self.preprocessings = dict()
 
-    def __getitem__(self, needed_preprocessing: Preprocessor) -> DataFrame:
+    def __getitem__(self, needed_preprocessing) -> DataFrame:
+        if isinstance(needed_preprocessing, ColumnType):
+            return self.splitted_dfs[needed_preprocessing]
+
+        if not isinstance(needed_preprocessing, Preprocessor):
+            raise Exception("Needed Preprocessing must be of type Preprocessor or ColumnType")
+
         if needed_preprocessing in self.preprocessings:
             logger.info("Use already existing Preprocessing")
             return self.preprocessings[needed_preprocessing]
