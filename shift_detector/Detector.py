@@ -1,16 +1,11 @@
 import logging as logger
-from collections import namedtuple
-from functools import reduce
-from typing import List, Dict, Union
+from typing import List, Union
 
 import pandas as pd
 
-from shift_detector.Utils import shared_column_names, read_from_csv
-from shift_detector.checks.Check import Check
-from shift_detector.checks.Check import Reports
-from shift_detector.preprocessors.Preprocessing import preprocess
-
-CheckReports = namedtuple("CheckReports", "check reports")
+from shift_detector.Utils import read_from_csv
+from shift_detector.checks.Check import Check, Report
+from shift_detector.preprocessors.Store import Store
 
 
 class Detector:
@@ -26,85 +21,58 @@ class Detector:
         """
         # TODO: remove sampling
         if type(df1) is pd.DataFrame:
-            self.first_df = df1
+            self.df1 = df1
         elif type(df1) is str:
-            self.first_df = read_from_csv(df1, delimiter).sample(100)
+            self.df1 = read_from_csv(df1, delimiter).sample(100)
         else:
             raise Exception("df1 is not a dataframe or a string")
 
         if type(df2) is pd.DataFrame:
-            self.second_df = df2
+            self.df2 = df2
         elif type(df2) is str:
-            self.second_df = read_from_csv(df1, delimiter).sample(100)
+            self.df2 = read_from_csv(df1, delimiter).sample(100)
         else:
             raise Exception("df2 is not a dataframe or a string")
 
         self.checks_to_run = []
-        self.checks_reports = []
-        self.column_type_to_columns = {}
-        self.preprocessings = {}
+        self.check_reports = []
+        self.store = Store(self.df1, self.df2)
+        logger.info("Used columns: {}".format(' '.join(self.store.columns)))
 
-    def add_check(self, check: Check):
-        self.checks_to_run += [check]
-        return self
-
-    def add_checks(self, checks: List[Check]):
-        self.checks_to_run += checks
-        return self
-
-    @staticmethod
-    def _distribute_preprocessings(checks: List[Check], preprocessings: Dict):
+    def add_checks(self, checks):
         """
-        Distribute the preprocessings to the checks.
-        :param checks: checks to distribute the preprocessing to
-        :param preprocessings: result of _preprocess
+        Add checks to the detector
+        :param checks: single or list of Checks
         """
+        if isinstance(checks, Check):
+            checks_to_run = [checks]
+        elif isinstance(checks, list) and all(isinstance(check, Check) for check in checks):
+            checks_to_run = checks
+        else:
+            raise Exception("All elements in checks should be a Check")
+        self.checks_to_run += checks_to_run
 
-        def choose_preprocessings(specific_preprocessings, pair):
-            column_type, preprocessings_method = pair
-            specific_preprocessings[column_type] = preprocessings[column_type][preprocessings_method]
-            return specific_preprocessings
-
-        for check in checks:
-            chosen_preprocessing = reduce(choose_preprocessings, check.needed_preprocessing().items(), dict())
-            check.set_data(chosen_preprocessing)
-
-    def _run_checks(self, checks: List[Check]) -> List[CheckReports]:
+    def run_checks(self) -> List[Report]:
         """
-        Execute the checks.
-        :param checks: the checks that will be executed
-        :return: list of CheckReports, that connects runned checks with their reports
+        Execute the checks to run.
+        :return: list of Reports that resulted from the checks
         """
-        checks_reports = []
-        for check in checks:
-            check_result = check.run()
-            reports = Reports(check_result=check_result, report_class=check.report_class())
-            check_reports = CheckReports(check=check, reports=reports)
-            checks_reports.append(check_reports)
-
-        return checks_reports
+        return [check.run(self.store) for check in self.checks_to_run]
 
     def run(self):
-        columns = shared_column_names(self.first_df, self.second_df)
-        logger.info("Used columns: {}".format(columns))
-
+        """
+        Run the Detector.
+        """
         if not self.checks_to_run:
-            raise Exception('Please use the method add_check to add checks, '
-                            'that should be executed, before calling run()')
+            raise Exception("Please use the method add_checks to add checks, "
+                            "that should be executed, before calling run()")
 
-        preprocessings = preprocess(self.checks_to_run, self.first_df, self.second_df, columns)
-        logger.info("Finished Preprocessing")
+        self.check_reports = self.run_checks()
 
-        self._distribute_preprocessings(self.checks_to_run, preprocessings)
-        logger.info("Distributed Preprocessings to the Checks")
-
-        self.checks_reports = self._run_checks(self.checks_to_run)
-
-    ## Evaluate the results
     def evaluate(self):
+        """
+        Evaluate the reports.
+        """
         print("EVALUATION")
-        for check_report in self.checks_reports:
-            check, reports = check_report
-            print(check.name())
-            for report in reports.reports:
-                report.print_report()
+        for report in self.check_reports:
+            report.print_report()
