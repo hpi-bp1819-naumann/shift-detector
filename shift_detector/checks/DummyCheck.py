@@ -1,7 +1,7 @@
 from pandas import DataFrame
 
 from shift_detector.checks.Check import Check, Report
-from shift_detector.preprocessors.DummyProcessing import DummyPreprocessing
+from shift_detector.preprocessors.DummyPreprocessor import DummyPreprocessor
 
 
 class DummyReport(Report):
@@ -24,7 +24,7 @@ class DummyReport(Report):
 class DummyCheck(Check):
 
     def run(self, store) -> DummyReport:
-        processed_df1, processed_df2 = store[DummyPreprocessing(5)]
+        processed_df1, processed_df2 = store[DummyPreprocessor(5)]
 
         means1 = processed_df1.mean()
         means2 = processed_df2.mean()

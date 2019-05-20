@@ -14,5 +14,5 @@ class Preprocessor(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def process(self, first_df, second_df):
+    def process(self, store):
         pass

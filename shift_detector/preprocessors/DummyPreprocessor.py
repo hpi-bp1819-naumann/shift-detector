@@ -5,7 +5,7 @@ from shift_detector.preprocessors.Preprocessor import Preprocessor
 from shift_detector.preprocessors.Store import Store
 
 
-class DummyPreprocessing(Preprocessor):
+class DummyPreprocessor(Preprocessor):
 
     def __init__(self, dummy_parameter=2):
         self.parameter = dummy_parameter
