@@ -104,7 +104,6 @@ class SimpleCheck(Check):
 
         numerical_comparison = self.compare_numerical_columns(df1_numerical, df2_numerical)
         categorical_comparison = self.compare_categorical_columns(df1_categorical, df2_categorical)
-
         return {"categorical_comparison": categorical_comparison, 'numerical_comparison': numerical_comparison}
 
     @staticmethod
