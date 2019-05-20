@@ -11,12 +11,11 @@ class Store:
     def __init__(self,
                  df1: DataFrame,
                  df2: DataFrame):
-        self.df1 = df1
-        self.df2 = df2
+        self.columns = shared_column_names(df1, df2)
+        self.df1 = df1[self.columns]
+        self.df2 = df2[self.columns]
 
-        self.columns = shared_column_names(self.df1, self.df2)
         self.splitted_dfs = split_dataframes(df1, df2, self.columns)
-
         self.preprocessings = dict()
 
     def __getitem__(self, needed_preprocessing) -> DataFrame:

@@ -1,24 +1,22 @@
-from shift_detector.checks.Check import Check, CheckResult
+from shift_detector.checks.Check import Check, Report
 from shift_detector.checks.frequent_item_rules import fpgrowth, rule_compression
-import pandas as pd
+from shift_detector.preprocessors.Store import Store
 
 
-class FrequentItemsetResult(CheckResult):
+class FrequentItemsetReport(Report):
 
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, compressed_rules):
+        self.compressed_rules = compressed_rules
 
     def print_report(self):
         """
-
         Print report for checked columns
-
         """
         limit = 4
         count = 0
         print(str(limit+1), 'MOST IMPORTANT RULES \n')
 
-        for rule in self.data:
+        for rule in self.compressed_rules:
             rule.print()
             count += 1
             if count == limit:
@@ -27,29 +25,21 @@ class FrequentItemsetResult(CheckResult):
 
 class FrequentItemsetCheck(Check):
 
-    def __init__(self, first_df: pd.DataFrame, second_df: pd.DataFrame):
-        Check.__init__(self, first_df, second_df)
+    def __init__(self, min_support: float = 0.01, min_confidence: float = 0.15):
+        self.min_support = min_support
+        self.min_confidence = min_confidence
 
-    @staticmethod
-    def needed_preprocessing():
-        return {
-            "category": "default",
-            "text": "word2vec"
-        }
-
-    def set_data(self, dataframes):
-        return
-
-    def run(self, columns=[]) -> CheckResult:
+    def run(self, store: Store) -> FrequentItemsetReport:
         """
-        Runs check on provided columns
-
-        :param columns:
-        :return: CheckResult
-
+        Calculate frequent rules, compress them and create a
+        FrequentItemsetReport.
+        :param store: the Store
+        :return: FrequentItemsetReport
         """
-        df1 = self.first_df[columns]
-        df2 = self.second_df[columns]
-        item_rules = fpgrowth.calculate_frequent_rules(df1, df2)
+        df1 = store.df1
+        df2 = store.df2
+
+        item_rules = fpgrowth.calculate_frequent_rules(df1, df2, self.min_support,
+                                                       self.min_confidence)
         compressed_rules = rule_compression.compress_rules(item_rules)
-        return FrequentItemsetResult(compressed_rules)
+        return FrequentItemsetReport(compressed_rules)
