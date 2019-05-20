@@ -7,13 +7,13 @@ from typing import Tuple
 from sklearn.metrics import classification_report
 import numpy as np
 import logging as logger
-from shift_detector.checks.Check import Check, CheckResult
+from shift_detector.checks.Check import Check, Reports
 
 
-class BasicCheckResult(CheckResult):
+class BasicCheckResult(Reports):
 
     def __init__(self, result={}):
-        CheckResult.__init__(self, result)
+        Reports.__init__(self, result)
 
     def get_columns_with_shift(self):
         return self.result['relevant_columns']
