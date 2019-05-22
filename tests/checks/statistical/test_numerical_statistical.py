@@ -9,9 +9,6 @@ from shift_detector.checks.statistical_checks.NumericalStatisticalCheck import k
 
 class TestCategoricalStatisticalCheck(unittest.TestCase):
 
-    def setUp(self):
-        pass
-
     def test_kolmogorov_smirnov_test_result(self):
         part1 = pd.Series(([21] * 4) +
                           ([23] * 11) +
@@ -34,7 +31,7 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
                           ([37] * 8) +
                           ([39] * 9))
         p = kolmogorov_smirnov_test(part1, part2)
-        self.assertAlmostEqual(p, 0.043055, places=5)
+        self.assertAlmostEqual(0.043055, p, places=5)
 
     def test_not_significant(self):
         df1 = pd.DataFrame(([2] * 1) +
@@ -81,6 +78,3 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
         detector.add_checks(NumericalStatisticalCheck())
         detector.run()
         self.assertEqual(1, len(detector.check_reports[0].significant_columns()))
-
-    def tearDown(self):
-        pass

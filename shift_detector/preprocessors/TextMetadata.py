@@ -23,31 +23,30 @@ class TextMetadata(Preprocessor):
     def __hash__(self):
         return hash(self.text_metadata_types)
 
-    def categorical_columns(self):
-        return [column for column in self.text_metadata_types if column in CATEGORICAL_METADATA_TYPES]
+    def selected_categorical_types(self):
+        return self.text_metadata_types.intersection(CATEGORICAL_METADATA_TYPES)
 
-    def numerical_columns(self):
-        return [column for column in self.text_metadata_types if column in NUMERICAL_METADATA_TYPES]
+    def selected_numerical_types(self):
+        return self.text_metadata_types.intersection(NUMERICAL_METADATA_TYPES)
 
-    def process(self, first_df, second_df):
-        metadata1 = pd.DataFrame()
-        metadata2 = pd.DataFrame()
-        for column in first_df.columns:
-            clean1 = first_df[column].dropna()
-            clean2 = second_df[column].dropna()
+    def process(self, store):
+        index = pd.MultiIndex.from_product([store.columns, self.text_metadata_types], names=['column', 'metadata'])
+        metadata1 = pd.DataFrame(columns=index)
+        metadata2 = pd.DataFrame(columns=index)
+        for column in store.columns:
+            clean1 = store.df1[column].dropna()
+            clean2 = store.df2[column].dropna()
             print(column, ' - text metadata analysis:')
-            for i, metadata_type in enumerate(self.text_metadata_types):
+            for outer_iteration, metadata_type in enumerate(self.text_metadata_types):
                 print('computing metadata ', metadata_type, ':')
                 mdtype_values = []
-                for j, text in enumerate(clean1):
+                for inner_iteration, text in enumerate(clean1):
                     mdtype_values.append(md_functions(metadata_type)(text))
-                    print_progress_bar(j, len(clean1) - 1, 50)
-                metadata1[metadata_type] = mdtype_values
-                # metadata1[metadata_type] = [md_functions(metadata_type)(text) for text in clean1]
+                    print_progress_bar(inner_iteration, len(clean1) - 1, 50)
+                metadata1[(column, metadata_type)] = mdtype_values
                 mdtype_values = []
-                for j, text in enumerate(clean2):
+                for inner_iteration, text in enumerate(clean2):
                     mdtype_values.append(md_functions(metadata_type)(text))
-                    print_progress_bar(j, len(clean2) - 1, 50)
-                metadata2[metadata_type] = mdtype_values
-                # metadata2[metadata_type] = [md_functions(metadata_type)(text) for text in clean2]
+                    print_progress_bar(inner_iteration, len(clean2) - 1, 50)
+                metadata2[(column, metadata_type)] = mdtype_values
         return metadata1, metadata2
