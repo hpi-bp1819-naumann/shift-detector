@@ -90,7 +90,6 @@ class SimpleCheck(Check):
     def name() -> str:
         return 'SimpleCheck'
 
-<<<<<<< HEAD
     def run(self, store):
         df1_numerical = store[ColumnType.numerical][0]
         df2_numerical = store[ColumnType.numerical][1]
@@ -99,23 +98,6 @@ class SimpleCheck(Check):
 
         numerical_comparison = self.compare_numerical_columns(df1_numerical, df2_numerical)
         categorical_comparison = self.compare_categorical_columns(df1_categorical, df2_categorical)
-=======
-    def needed_preprocessing(self) -> dict:
-        return {
-            ColumnType.categorical: DefaultEmbedding(),
-            ColumnType.numerical: DefaultEmbedding()
-        }
-
-    def run(self, columns=[]):
-        df1_numerical = self.data[ColumnType.numerical][0]
-        df2_numerical = self.data[ColumnType.numerical][1]
-        df1_categorical = self.data[ColumnType.categorical][0]
-        df2_categorical = self.data[ColumnType.categorical][1]
-
-        numerical_comparison = self.compare_numerical_columns(df1_numerical, df2_numerical)
-        categorical_comparison = self.compare_categorical_columns(df1_categorical, df2_categorical)
-
->>>>>>> 5f65ed458c4201dd83e807a29bbdb62f77903f4f
         return {"categorical_comparison": categorical_comparison, 'numerical_comparison': numerical_comparison}
 
     @staticmethod
@@ -139,7 +121,6 @@ class SimpleCheck(Check):
                 numerical_comparison[column]['max'][df_name] = df[column].max()
                 numerical_comparison[column]['quartile_1'][df_name] = df[column].quantile(.25)
                 numerical_comparison[column]['quartile_3'][df_name] = df[column].quantile(.75)
-<<<<<<< HEAD
 
                 numerical_comparison[column]['median'][df_name] = df[column].median()
                 numerical_comparison[column]['mean'][df_name] = df[column].mean()
@@ -155,17 +136,6 @@ class SimpleCheck(Check):
                 numerical_comparison[column]['uniqueness'][df_name] = len(df.groupby(column)
                                                                     .filter(lambda x: len(x) == 1)) / \
                                                                     len(column_droppedna)
-=======
-                numerical_comparison[column]['median'][df_name] = df[column].median()
-
-                numerical_comparison[column]['mean'][df_name] = df[column].mean()
-                numerical_comparison[column]['std'][df_name] = df[column].std()
-
-                numerical_comparison[column]['distinctness'][df_name] = df[column].nunique() / len(df1[column])
-                numerical_comparison[column]['completeness'][df_name] = df[column].count() / len(df1[column])
-                numerical_comparison[column]['uniqueness'][df_name] = len(df.groupby(column)
-                                                                    .filter(lambda x: len(x) == 1)) / len(df1[column])
->>>>>>> 5f65ed458c4201dd83e807a29bbdb62f77903f4f
         return numerical_comparison
 
     @staticmethod
