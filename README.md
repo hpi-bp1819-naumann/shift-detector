@@ -7,10 +7,6 @@ shift-detector can be installed via pip:
 ```
 pip3 install .
 ```
-If you want to install a version suitable for development:
-```
-pip3 install -e .[dev]
-```
 
 ## Testing
 See [unittest-Documentation](https://docs.python.org/3/library/unittest.html) for information of test framework.
