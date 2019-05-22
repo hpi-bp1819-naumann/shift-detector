@@ -15,7 +15,7 @@ A minimal example for Morpheus looks something like this::
 
     from morpheus import Detector
 
-    detector = Detector('pat1.csv', 'path2.csv')
+    detector = Detector('path1.csv', 'path2.csv')
     detector.run()
 
 So what did that code do?

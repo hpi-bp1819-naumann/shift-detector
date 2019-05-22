@@ -10,7 +10,7 @@ Checks
     conditional_probabilities
 
 Morpheus comprises several methods to systematically compare two
-data sets and check for shifts. This section introduces each of
+data sets and check for a :term:`shift`. This section introduces each of
 those methods, which we call :term:`check`.
 
 For each check we give details about:
