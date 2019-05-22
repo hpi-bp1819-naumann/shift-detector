@@ -1,5 +1,3 @@
-python-coveralls
-coverage
 pandas
 scipy
 datawig
