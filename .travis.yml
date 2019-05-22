@@ -17,6 +17,7 @@ install:
   - pip3 install pyspellchecker
   - pip3 install nltk
 script:
+  - python3 nltk_stopwords_download.py
   - python3 -m unittest discover
   - coverage run --source shift_detector -m unittest discover
 after_success:
