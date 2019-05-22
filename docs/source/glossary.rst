@@ -9,4 +9,4 @@ Glossary
         Here we should define what a shift is.
 
     check
-        A method to systematically compare two data sets
+        A method to systematically compare two data sets.
