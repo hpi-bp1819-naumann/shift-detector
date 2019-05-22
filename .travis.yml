@@ -11,13 +11,7 @@ install:
   - pip3 install scipy
   - pip3 install datawig
   - pip3 install gensim
-  - pip3 install iso-639
-  - pip3 install langdetect
-  - pip3 install textstat
-  - pip3 install pyspellchecker
-  - pip3 install nltk
 script:
-  - python3 nltk_stopwords_download.py
   - python3 -m unittest discover
   - coverage run --source shift_detector -m unittest discover
 after_success:
