@@ -23,7 +23,11 @@ class StatisticalReport(Report):
 
 
 class SimpleStatisticalCheck(Check):
-
+    """
+    Blueprint for a statistical test check. Subclasses are runnable checks
+    :param sampling: whether or not to use sampling if compared datasets have unequal sizes
+    :param sampling_seed: seed to use for sampling
+    """
     def __init__(self, sampling=False, sampling_seed=None):
         self.sampling = sampling
         self.seed = sampling_seed
