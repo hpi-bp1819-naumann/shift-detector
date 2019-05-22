@@ -1,10 +1,11 @@
-import unittest
 import math
+import unittest
+
 import pandas as pd
-import pprint as pp
 
 from shift_detector.Utils import ColumnType
 from shift_detector.checks.SimpleCheck import SimpleCheck, SimpleCheckReport
+from shift_detector.preprocessors.Store import Store
 
 
 class TestSimpleCheck(unittest.TestCase):
@@ -15,10 +16,10 @@ class TestSimpleCheck(unittest.TestCase):
         numerical_df_1 = pd.DataFrame([[1, 2, 3], [4, 2, 6]], columns=['col_1', 'col_2', 'col_3'])
         numerical_df_2 = pd.DataFrame([[7, 8, 8], [10, None, 8]], columns=['col_1', 'col_2', 'col_3'])
         categorical_df_1 = pd.DataFrame(['red', 'blue', 'blue', 'green', 'green', 'green'])
-        categorical_df_2 = pd.DataFrame(['red', 'green'])
+        categorical_df_2 = pd.DataFrame(['red', 'green', 'green', 'green', 'green', 'green'])
 
-        self.check.data[ColumnType.numerical] = [numerical_df_1, numerical_df_2]
-        self.check.data[ColumnType.categorical] = [categorical_df_1, categorical_df_2]
+        self.store_numerical = Store(numerical_df_1, numerical_df_2)
+        self.store_categorical = Store(categorical_df_1, categorical_df_2)
 
     def test_basic_functions(self):
         self.assertEqual(self.check.name(), 'SimpleCheck')
