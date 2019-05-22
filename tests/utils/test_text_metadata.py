@@ -105,18 +105,19 @@ class TestTextMetadata(unittest.TestCase):
         self.assertEqual(tm.unknown_word_ratio(empty, 'en'), 00.00)
 
     def test_stopwords(self):
-        noStopwords = "computer calculates math"
-        onlyStopwords = "The and is I am"
+        no_stopwords = "computer calculates math"
+        only_stopwords = "The and is I am"
         mixed = "A normal sentence has both"
-        unsupportedLanguage = "Aqoonyahanada caalamku waxay aad ugu murmaan sidii luuqadaha aduunku ku bilaabmeem."
         punctuation = " . "
         empty = ""
-        self.assertEqual(tm.stopword_ratio(noStopwords, 'en'), 0.0)
-        self.assertEqual(tm.stopword_ratio(onlyStopwords, 'en'), 100.0)
+        unsupported_language = "Aqoonyahanada caalamku waxay aad ugu murmaan sidii luuqadaha aduunku ku bilaabmeem."
+        self.assertEqual(tm.stopword_ratio(no_stopwords, 'en'), 0.0)
+        self.assertEqual(tm.stopword_ratio(only_stopwords, 'en'), 100.0)
         self.assertEqual(tm.stopword_ratio(mixed, 'en'), 60.0)
-        self.assertRaises(ValueError, tm.stopword_ratio(unsupportedLanguage, 'so'))
         self.assertEqual(tm.stopword_ratio(punctuation, 'en'), 0.0)
         self.assertEqual(tm.stopword_ratio(empty, 'en'), 0.0)
+        self.assertRaises(ValueError, tm.stopword_ratio, text=unsupported_language, language='so')
+
 
     def test_category(self):
         html = "some text <p> some other text < br/ > more text"
@@ -167,8 +168,8 @@ class TestTextMetadata(unittest.TestCase):
         self.assertEqual(tm.language(german), {'de': 1})
         self.assertEqual(tm.language(englishgerman), {'en': 1, 'de': 1})
         self.assertEqual(tm.language(multipleLanguages), {'en': 2, 'de': 1, 'fr': 1, 'es': 1, 'id': 1})
-        self.assertRaises(LangDetectException, tm.language(punctuation))
-        self.assertRaises(LangDetectException, tm.language(empty))
+        self.assertRaises(LangDetectException, tm.language, text=punctuation)
+        self.assertRaises(LangDetectException, tm.language, text=empty)
 
     def text_complexity(self):
         easy = "This is easy. This is a sentence. This has a big number."

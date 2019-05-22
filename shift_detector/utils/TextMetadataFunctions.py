@@ -142,13 +142,16 @@ def stopword_ratio(text, language):
     # not working for every language
     stopword_count = 0
     words = text_to_array(text)
-    stop = stopwords.words(languages.get(part1=language).name.lower())
-    if(len(words) == 0):
-        return 0.0
-    for word in words:
-        if word.lower() in stop:
-            stopword_count += 1
-    return round(stopword_count*100 / len(words),2)
+    try:
+        stop = stopwords.words(languages.get(part1=language).name.lower())
+        if (len(words) == 0):
+            return 0.0
+        for word in words:
+            if word.lower() in stop:
+                stopword_count += 1
+        return round(stopword_count * 100 / len(words), 2)
+    except OSError as error:
+        raise ValueError('Language ' + languages.get(part1=language).name.lower() + ' is not supported for stopword ratio') from error
 
 
 def delimiter_type(text):
@@ -178,24 +181,21 @@ def num_parts(text):
 
 def language(text):
     parts = []
-    try: 
-        if (len(text) == 0):
-            detect(text) # trigger LangDetectException. Throwing one in here smh doesnt work
-        if (delimiter_type(text) == 'html'):
-            parts = re.split(r'<\s*br\s*/?>', text)
+    if (len(text) == 0):
+        detect(text) # trigger LangDetectException. Throwing one in here smh doesnt work
+    if (delimiter_type(text) == 'html'):
+        parts = re.split(r'<\s*br\s*/?>', text)
+    else:
+        parts = re.split(r'[\n\r]+', text)
+    parts = [x.strip() for x in parts if x.strip()]
+    languages = {}
+    for part in parts:
+        lang = detect(part)
+        if lang in languages:
+            languages[lang] += 1
         else:
-            parts = re.split(r'[\n\r]+', text)
-        parts = [x.strip() for x in parts if x.strip()]
-        languages = {}
-        for part in parts:
-            lang = detect(part)
-            if lang in languages:
-                languages[lang] += 1
-            else:
-                languages[lang] = 1
-        return languages
-    except:
-        pass
+            languages[lang] = 1
+    return languages
 
 def text_complexity(text):
     # lower value means more complex
