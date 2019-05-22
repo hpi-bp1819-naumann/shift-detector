@@ -91,8 +91,8 @@ class SimpleCheck(Check):
         return 'SimpleCheck'
 
     def run(self, store):
-        df1_numerical = store[ColumnType.numerical[1]]
-        df2_numerical = store[ColumnType.numerical[2]]
+        df1_numerical = store[ColumnType.numerical][0]
+        df2_numerical = store[ColumnType.numerical][1]
         df1_categorical = store[ColumnType.categorical][0]
         df2_categorical = store[ColumnType.categorical][1]
 

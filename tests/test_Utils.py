@@ -47,7 +47,7 @@ class TestUtils(unittest.TestCase):
         splitted_df = split_dataframes(self.df1, self.df2,
                                        columns=['brand', 'payment', 'description'])
 
-        numeric_columns = splitted_df[ColumnType.numerical][0].columns.values
+        numerical_columns = splitted_df[ColumnType.numerical][0].columns.values
         categorical_columns = splitted_df[ColumnType.categorical][0].columns.values
         text_columns = splitted_df[ColumnType.text][0].columns.values
 

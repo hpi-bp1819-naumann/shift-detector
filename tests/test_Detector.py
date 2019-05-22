@@ -56,13 +56,13 @@ class TestDetector(unittest.TestCase):
         with self.subTest("Test successful run"):
             self.detector.checks_to_run = [DummyCheck(), DummyCheck()]
             self.detector.run()
-            self.assertEquals(len(self.detector.check_reports), 2)
+            self.assertEqual(len(self.detector.check_reports), 2)
 
     def test_add_check(self):
         with self.subTest("Test with single check"):
             check = DummyCheck()
             self.detector.add_checks(check)
-            self.assertEquals(len(self.detector.checks_to_run), 1)
+            self.assertEqual(len(self.detector.checks_to_run), 1)
 
         with self.subTest("Test with not a check"):
             no_check = "No check"
@@ -72,7 +72,7 @@ class TestDetector(unittest.TestCase):
         with self.subTest("Test with list of checks"):
             checks = [DummyCheck(), DummyCheck()]
             self.detector.add_checks(checks)
-            self.assertEquals(len(self.detector.checks_to_run), 2)
+            self.assertEqual(len(self.detector.checks_to_run), 2)
 
     def test_evaluate(self):
         mock = MagicMock()
