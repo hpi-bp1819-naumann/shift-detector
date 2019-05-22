@@ -1,10 +1,7 @@
 import argparse
+
 from shift_detector.Detector import Detector
-from shift_detector.checks.BasicCheck import BasicCheck
-from shift_detector.checks.StatisticalTestCheckLegacy import StatisticalTestCheck
-from shift_detector.checks.Chi2Check import Chi2Check
-from shift_detector.checks.FrequentItemRulesCheck import FrequentItemsetCheck
-from shift_detector.checks.TestCheck import TestCheck
+from shift_detector.checks.DummyCheck import DummyCheck
 
 # Starting via console:
 # python3 main.py --train ./train_ascii.csv --test ./audits_ascii.csv --sep  ";"
@@ -21,7 +18,7 @@ if __name__ == "__main__":
     separator = args["sep"]
     
     detector = Detector(train_path, audits_path, separator=separator)
-    detector.add_check(Chi2Check())
+    detector.add_check(DummyCheck())
     
     detector.run()
     detector.evaluate()
