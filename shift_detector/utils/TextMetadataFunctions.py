@@ -1,14 +1,13 @@
 import re
-import numpy as np
-
-from langdetect import DetectorFactory, detect, detect_langs, lang_detect_exception
-from iso639 import languages
-import textstat
-from spellchecker import SpellChecker
 import unicodedata
-import shift_detector.utils.UCBlist as UCBlist
+
+import textstat
+from iso639 import languages
+from langdetect import DetectorFactory, detect
 from nltk.corpus import stopwords
-import nltk
+from spellchecker import SpellChecker
+
+import shift_detector.utils.UCBlist as UCBlist
 
 delimiter_HTML = r'<\s*br\s*/?\s*>|<\s*p\s*>'
 delimiter_sentence = r'\.\s'

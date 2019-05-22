@@ -14,6 +14,10 @@ install:
   - pip3 install pattern
   - pip3 install iso-639
   - pip3 install langdetect
+  - pip3 install textstat
+  - pip3 install spellchecker
+  - pip3 install unicodedata
+  - pip3 install nltk
 script:
   - python3 -m unittest discover
   - coverage run --source shift_detector -m unittest discover
