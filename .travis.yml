@@ -15,6 +15,7 @@ install:
   - pip3 install iso-639
   - pip3 install langdetect
   - pip3 install textstat
+  - pip3 install indexer
   - pip3 install spellchecker
   - pip3 install nltk
 script:
