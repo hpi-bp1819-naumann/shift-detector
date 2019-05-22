@@ -3,7 +3,7 @@ Welcome to Morpheus
 
     **Remember: all I'm offering is the truth. Nothing more.**
 
-Morpheus is a framework for shift detection. It unifies several methods
+Morpheus is a framework for :term:`shift` detection. It unifies several methods
 to systematically compare data sets into an easy-to-use interface.
 
 Get started with :ref:`installation` and then get an overview with

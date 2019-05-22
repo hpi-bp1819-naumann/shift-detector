@@ -46,7 +46,22 @@ We introduce this check by an example:
 Example
 -------
 
+The basic example of this check is::
 
+    from shift_detector.Detector import Detector
+    from shift_detector.checks.FrequentItemRulesCheck import FrequentItemsetCheck
+
+    detector = Detector('/path1.csv', '/path2.csv', delimiter=',')
+    detector.add_checks(
+        FrequentItemsetCheck(min_support=0.01, min_confidence=0.15)
+    )
+
+    detector.run()
+    detector.evaluate()
+
+1. You have to create a :class:`~shift_detector.Detector.Detector` object in order to tell Morpheus which data sets you want to compare.
+2. Then you have to specify in :meth:`~shift_detector.Detector.Detector.add_checks`, which checks you want to run: in this case only :class:`~shift_detector.checks.FrequentItemRulesCheck.FrequentItemsetCheck`.
+3. Finally you have to start the detector with :meth:`~shift_detector.Detector.Detector.run` and print the results with :meth:`~shift_detector.Detector.Detector.evaluate`.
 
 Specification
 -------------
@@ -58,36 +73,36 @@ The check proceeds with the following steps:
    working of the next step. However, the transformation is applied on the fly; we
    never actually copy the data.
 2. Our implementation of FP-growth is used to generate *association rules* for both
-   data sets individually. The parameters ``relative_min_support`` and
-   ``relative_min_confidence`` are used as described in [Han2000]_ and
+   data sets individually. The parameters ``min_support`` and
+   ``min_confidence`` are used as described in [Han2000]_ and
    [Agrawal1994]_. The only difference is that both parameters are relative and
-   expect ``floats`` between 0 and 1, whereas [Han2000]_ and [Agrawal1994]_ use the
-   absolute value ``min_support``:
+   expect ``floats`` between 0 and 1, whereas [Han2000]_ and [Agrawal1994]_ use an
+   absolute value for ``min_support``:
 
-   ``relative_min_support``:
+   ``min_support``:
      This parameter mainly impacts the runtime of FP-growth. The lower
-     ``relative_min_support`` the more resources are required during computation
+     ``min_support`` the more resources are required during computation
      both in terms of memory and CPU. The default value is ``0.01``, which is high
      enough to get a reasonably good performance and still low enough to not
      prematurely exclude significant association rules. This parameter allows you to
      adjust the granularity of the comparison of the two data sets.
 
-   ``relative_min_confidence``:
+   ``min_confidence``:
      This parameter impacts the amount of generated association rules. The higher
-     ``relative_min_confidence`` the more rules are generated. The default value is
+     ``min_confidence`` the more rules are generated. The default value is
      ``0.15``. There is no further significance in this value other than that it
      seems sufficiently reasonable.
 
-   Only association rules whose support exceeds ``relative_min_support`` and whose
-   confidence exceeds ``relative_min_confidence`` in at least one data set are
+   Only association rules whose support exceeds ``min_support`` and whose
+   confidence exceeds ``min_confidence`` in at least one data set are
    included in the generated association rules.
-3. All association rules exceeding ``relative_min_support`` and
-   ``relative_min_confidence`` in both data sets can be compared directly. For each
+3. All association rules exceeding ``min_support`` and
+   ``min_confidence`` in both data sets can be compared directly. For each
    such rule generate one association rule of the form showed in the example_ above.
-4. If a rule exceeds ``relative_min_support`` and ``relative_min_confidence`` in
+4. If a rule exceeds ``min_support`` and ``min_confidence`` in
    one data set but not in the other, we don't know if this rule does not appear in
-   the other data set at all or just does not exceed ``relative_min_support`` and/or
-   ``relative_min_confidence``. We therefore have to scan both data sets one
+   the other data set at all or just does not exceed ``min_support`` and/or
+   ``min_confidence``. We therefore have to scan both data sets one
    last time to aggregate the counts of such rules. This information at hand, we can
    generate the remaining association rules and our algorithm terminates.
 
@@ -135,6 +150,9 @@ We feel very confident that the code is correct and reasonably fast:
 
 As a last aside: we issued a `Pull Request <https://github.com/evandempsey/fp-growth/pull/17>`_
 for fp-growth_ containing our bug fixes.
+
+References
+----------
 
 .. [Han2000] Jiawei Han, Jian Pei, and Yiwen Yin. 2000. Mining frequent patterns
    without candidate generation. In Proceedings of the 2000 ACM SIGMOD international
