@@ -11,7 +11,7 @@ Checks
 
 Morpheus comprises several methods to systematically compare two
 data sets and check for shifts. This section introduces each of
-those methods, which we call checks.
+those methods, which we call :term:`check`.
 
 For each check we give details about:
 

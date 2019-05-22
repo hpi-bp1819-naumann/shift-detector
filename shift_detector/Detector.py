@@ -44,6 +44,7 @@ class Detector:
     def add_checks(self, checks):
         """
         Add checks to the detector
+
         :param checks: single or list of Checks
         """
         if isinstance(checks, Check):
@@ -54,9 +55,10 @@ class Detector:
             raise Exception("All elements in checks should be a Check")
         self.checks_to_run += checks_to_run
 
-    def run_checks(self) -> List[Report]:
+    def run_checks(self):
         """
         Execute the checks to run.
+
         :return: list of Reports that resulted from the checks
         """
         return [check.run(self.store) for check in self.checks_to_run]

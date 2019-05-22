@@ -22,3 +22,11 @@ method, this part of the documentation is for you.
    :maxdepth: 2
 
    api
+
+Additional Notes
+----------------
+
+.. toctree::
+   :maxdepth: 2
+
+   glossary
