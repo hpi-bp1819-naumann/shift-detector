@@ -19,7 +19,7 @@ class DummyPreprocessor(Preprocessor):
         return hash(tuple([self.__class__, self.parameter]))
 
     def process(self, store: Store) -> (DataFrame, DataFrame):
-        df1_numerical, df2_numerical = store[ColumnType.numeric]
+        df1_numerical, df2_numerical = store[ColumnType.numerical]
         df1_processed = df1_numerical + self.parameter
         df2_processed = df2_numerical + self.parameter
         return df1_processed, df2_processed
