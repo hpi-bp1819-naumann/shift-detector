@@ -3,7 +3,6 @@ from enum import Enum
 from shift_detector.Utils import ColumnType
 from shift_detector.preprocessors.Store import Store
 
-import pandas as pd
 
 class NGramType(Enum):
     word = "word"
@@ -29,6 +28,11 @@ class NGram(Preprocessor):
         return hash((self.__class__, self.n, self.ngram_type))
 
     def generate_ngram(self, text: tuple) -> dict:
+        """
+        Generates an ngram from a given text, n is defined by the class
+        :param text: tuple that contains the atomic elements of the text (e.g. characters or words)
+        :return: a dictionary representing the ngram
+        """
         ngram = {}
         for i in range(len(text) - self.n + 1):
             segment = tuple(text[i:i + self.n])
@@ -36,20 +40,25 @@ class NGram(Preprocessor):
         return ngram
 
     def process(self, store: Store) -> tuple:
-        # TODO: category should be text -> repair categorization
-        train, test = store[ColumnType.categorical]
-        train = train.copy()
-        test = test.copy()
-        for column in train:
-            train[column] = train[column].dropna().str.lower()
-            if self.ngram_type == NGramType.word:
-                train[column] = train[column].str.split()
-            train[column] = train[column].apply(lambda row: self.generate_ngram(tuple(row)))
+        """
+        :param store:
+        :return: a tuple that contains the processed dataframes
+        """
 
-        for column in test:
-            test[column] = test[column].dropna().str.lower()
-            if self.ngram_type == NGramType.word:
-                test[column] = test[column].str.split()
-            test[column] = test[column].apply(lambda row: self.generate_ngram(tuple(row)))
+        df1, df2 = store[ColumnType.text]
+        df1 = df1.copy()
+        df2 = df2.copy()
 
-        return train, test
+        for column in df1:
+            df1[column] = df1[column].dropna().str.lower()
+            if self.ngram_type == NGramType.word:
+                df1[column] = df1[column].str.split()
+            df1[column] = df1[column].apply(lambda row: self.generate_ngram(tuple(row)))
+
+        for column in df2:
+            df2[column] = df2[column].dropna().str.lower()
+            if self.ngram_type == NGramType.word:
+                df2[column] = df2[column].str.split()
+            df2[column] = df2[column].apply(lambda row: self.generate_ngram(tuple(row)))
+
+        return df1, df2

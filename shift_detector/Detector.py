@@ -30,7 +30,7 @@ class Detector:
         if type(df2) is pd.DataFrame:
             self.df2 = df2
         elif type(df2) is str:
-            self.df2 = read_from_csv(df1, delimiter).sample(100)
+            self.df2 = read_from_csv(df2, delimiter).sample(100)
         else:
             raise Exception("df2 is not a dataframe or a string")
 
