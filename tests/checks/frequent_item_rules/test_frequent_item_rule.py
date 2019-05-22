@@ -30,11 +30,11 @@ class TestRuleCluster(unittest.TestCase):
 
     def test_print(self):
         cluster_a = RuleCluster([('value', 'A')], [])
-
+        real_stdout = sys.stdout
         captured_output = io.StringIO()
         sys.stdout = captured_output
         cluster_a.print()
-        sys.stdout = sys.__stdout__
+        sys.stdout = real_stdout
         self.assertTrue('[  value:A  ]\nmax_delta_support:  None \t max_delta_confidence: None \t '
                         'number of subrules: 0\n\n\n' == captured_output.getvalue())
 
