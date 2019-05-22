@@ -61,7 +61,11 @@ def is_categorical(col: pd.Series,
     return sample.shape[0] / n_samples <= max_unique_fraction
 
 
-def split_dataframes(df1: pd.DataFrame, df2: pd.DataFrame, columns: List[str]) -> Dict:
+def column_names(columns):
+    return [str(c) for c in columns]
+
+
+def split_dataframes(df1: pd.DataFrame, df2: pd.DataFrame, columns: List) -> Dict:
     """
     Split df1 and df2 in different dataframes related to type of the column.
     The column types are numeric, categorical and text.
@@ -76,12 +80,12 @@ def split_dataframes(df1: pd.DataFrame, df2: pd.DataFrame, columns: List[str]) -
     """
     numeric_columns = [c for c in columns if is_numeric_dtype(df1[c])
                        and is_numeric_dtype(df2[c])]
-    logger.info("Assuming numerical columns: {}".format(", ".join(numeric_columns)))
+    logger.info("Assuming numerical columns: {}".format(", ".join(column_names(numeric_columns))))
     categorical_columns = [c for c in columns if is_categorical(df1[c])
                            and is_categorical(df2[c])]
-    logger.info("Assuming categorical columns: {}".format(", ".join(categorical_columns)))
+    logger.info("Assuming categorical columns: {}".format(", ".join(column_names(categorical_columns))))
     text_columns = list(set(columns) - set(numeric_columns) - set(categorical_columns))
-    logger.info("Assuming text columns: {}".format(", ".join(text_columns)))
+    logger.info("Assuming text columns: {}".format(", ".join(column_names(text_columns))))
 
     return {
         ColumnType.numeric: (df1[numeric_columns], df2[numeric_columns]),

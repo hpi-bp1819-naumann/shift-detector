@@ -3,7 +3,7 @@ from typing import List, Union
 
 import pandas as pd
 
-from shift_detector.Utils import read_from_csv
+from shift_detector.Utils import read_from_csv, column_names
 from shift_detector.checks.Check import Check, Report
 from shift_detector.preprocessors.Store import Store
 
@@ -36,7 +36,8 @@ class Detector:
         self.checks_to_run = []
         self.check_reports = []
         self.store = Store(self.df1, self.df2)
-        logger.info("Used columns: {}".format(' '.join(self.store.columns)))
+
+        logger.info("Used columns: {}".format(' '.join(column_names(self.store.columns))))
 
     def add_checks(self, checks):
         """
