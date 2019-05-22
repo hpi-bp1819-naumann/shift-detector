@@ -1,9 +1,8 @@
 import pandas as pd
 from scipy import stats
 
+from shift_detector.checks.statistical_checks.StatisticalCheck import SimpleStatisticalCheck
 from shift_detector.Utils import ColumnType
-from shift_detector.checks.Check import Check
-from shift_detector.checks.statistical_checks.StatisticalCheck import StatisticalReport
 
 
 def chi2_test(part1: pd.Series, part2: pd.Series):
@@ -14,13 +13,10 @@ def chi2_test(part1: pd.Series, part2: pd.Series):
     return p
 
 
-class CategoricalStatisticalCheck(Check):
+class CategoricalStatisticalCheck(SimpleStatisticalCheck):
 
-    def run(self, store) -> StatisticalReport:
-        pvalues = pd.DataFrame(index=['pvalue'])
-        for df1, df2 in [store[key] for key in [ColumnType.categorical]]:
-            sample_size = min(len(df1), len(df2))
-            for column in store.columns:
-                p = chi2_test(df1.sample(sample_size)[column], df2.sample(sample_size)[column])
-                pvalues[column] = [p]
-        return StatisticalReport(pvalues)
+    def store_keys(self):
+        return [ColumnType.categorical]
+
+    def statistical_test(self, part1: pd.Series, part2: pd.Series) -> float:
+        return chi2_test(part1, part2)

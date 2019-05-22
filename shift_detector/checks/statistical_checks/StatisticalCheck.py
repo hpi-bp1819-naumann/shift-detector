@@ -1,3 +1,7 @@
+from abc import abstractmethod
+
+import pandas as pd
+
 from shift_detector.checks.Check import Check, Report
 
 
@@ -18,5 +22,31 @@ class StatisticalReport(Report):
         print(self.significant_columns())
 
 
-class StatisticalCheck(Check):
-    pass
+class SimpleStatisticalCheck(Check):
+
+    def __init__(self, sampling=False, sampling_seed=None):
+        self.sampling = sampling
+        self.seed = sampling_seed
+
+    @abstractmethod
+    def statistical_test(self, part1: pd.Series, part2: pd.Series) -> float:
+        return 0.0
+
+    @abstractmethod
+    def store_keys(self):
+        return []
+
+    def run(self, store) -> StatisticalReport:
+        pvalues = pd.DataFrame(index=['pvalue'])
+        df1 = pd.DataFrame()
+        df2 = pd.DataFrame()
+        for columns1, columns2 in [store[key] for key in self.store_keys()]:
+            df1 = pd.concat([df1, columns1])
+            df2 = pd.concat([df2, columns2])
+        sample_size = min(len(df1), len(df2))
+        part1 = df1.sample(sample_size, random_state=self.seed) if self.sampling else df1
+        part2 = df2.sample(sample_size, random_state=self.seed) if self.sampling else df2
+        for column in store.columns:
+            p = self.statistical_test(part1[column], part2[column])
+            pvalues[column] = [p]
+        return StatisticalReport(pvalues)
