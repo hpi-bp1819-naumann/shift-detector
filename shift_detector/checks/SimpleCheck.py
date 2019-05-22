@@ -90,17 +90,11 @@ class SimpleCheck(Check):
     def name() -> str:
         return 'SimpleCheck'
 
-    def needed_preprocessing(self) -> dict:
-        return {
-            ColumnType.categorical: DefaultEmbedding(),
-            ColumnType.numerical: DefaultEmbedding()
-        }
-
-    def run(self, columns=[]):
-        df1_numerical = self.data[ColumnType.numerical][0]
-        df2_numerical = self.data[ColumnType.numerical][1]
-        df1_categorical = self.data[ColumnType.categorical][0]
-        df2_categorical = self.data[ColumnType.categorical][1]
+    def run(self, store):
+        df1_numerical = store[ColumnType.numerical[1]]
+        df2_numerical = store[ColumnType.numerical[2]]
+        df1_categorical = store[ColumnType.categorical][0]
+        df2_categorical = store[ColumnType.categorical][1]
 
         numerical_comparison = self.compare_numerical_columns(df1_numerical, df2_numerical)
         categorical_comparison = self.compare_categorical_columns(df1_categorical, df2_categorical)
