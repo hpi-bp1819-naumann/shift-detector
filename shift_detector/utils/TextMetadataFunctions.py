@@ -140,18 +140,16 @@ def unknown_word_ratio(text, language):
 
 def stopword_ratio(text, language):
     # not working for every language
-    try:
-        stopword_count = 0
-        words = text_to_array(text)
-        stop = stopwords.words(languages.get(part1=language).name.lower())
-        if(len(words) == 0):
-            return 0.0
-        for word in words:
-            if word.lower() in stop:
-                stopword_count += 1
-        return round(stopword_count*100 / len(words),2)
-    except: 
-        pass
+    stopword_count = 0
+    words = text_to_array(text)
+    stop = stopwords.words(languages.get(part1=language).name.lower())
+    if(len(words) == 0):
+        return 0.0
+    for word in words:
+        if word.lower() in stop:
+            stopword_count += 1
+    return round(stopword_count*100 / len(words),2)
+
 
 def delimiter_type(text):
     html = re.compile('<.*?>')
