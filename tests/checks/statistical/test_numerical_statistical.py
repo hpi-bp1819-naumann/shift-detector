@@ -77,4 +77,5 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
         detector = Detector(df1=df1, df2=df2)
         detector.add_checks(NumericalStatisticalCheck())
         detector.run()
+        print(detector.check_reports[0].significant_columns())
         self.assertEqual(1, len(detector.check_reports[0].significant_columns()))
