@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from numbers import Number
 from sklearn.decomposition import LatentDirichletAllocation as LDA_skl
 from sklearn.feature_extraction.text import *
 from gensim.sklearn_api import LdaTransformer
@@ -7,10 +8,11 @@ from gensim.corpora import Dictionary
 import lda
 from copy import copy
 from shift_detector.preprocessors.Preprocessor import Preprocessor
-import nltk
+from shift_detector.preprocessors.WordTokenizer import WordTokenizer
+from shift_detector.Utils import ColumnType
 
 
-class LDA(Preprocessor):
+class LDAEmbedding(Preprocessor):
 
     def __init__(self, n_topics=20, n_iter=1000, type=None, trained_model=None):
         if n_topics != 'auto':
@@ -33,9 +35,14 @@ class LDA(Preprocessor):
     def __eq__(self, other):
         """Overrides the default implementation"""
         if isinstance(other, self.__class__):
-            if self.trained_model and self.trained_model == other.trained_model \
-                    or self.model == other.model:
+            model_attributes = sorted([(k, v) for k, v in self.model.__dict__.items()
+                                       if isinstance(v, Number) or isinstance(v, str)])
+            other_model_attributes = sorted([(k, v) for k, v in other.model.__dict__.items()
+                                             if isinstance(v, Number) or isinstance(v, str)])
+            if isinstance(other.model, self.model.__class__) \
+                    and model_attributes == other_model_attributes:
                 return True
+        return False
 
     def __hash__(self):
         """Overrides the default implementation"""
@@ -56,9 +63,6 @@ class LDA(Preprocessor):
             if self.type == 'gensim':
                 # TODO do preprocessing in different class with store
                 merged_tokenized, train_tokenized, test_tokenized = store[WordTokenizer()]
-                # word_tokenized = nltk.word_tokenize(df_merged['text'])
-                # train_word_tokenized = nltk.word_tokenize(train_df['text'])
-                # test_word_tokenized = nltk.word_tokenize(test_df['text'])
                 merged_dict = Dictionary(merged_tokenized)
                 train_dict = Dictionary(train_tokenized)
                 test_dict = Dictionary(test_tokenized)
@@ -73,9 +77,9 @@ class LDA(Preprocessor):
                 # TODO do preprocessing in different class with store
                 train_texts, test_texts = store[ColumnType.text]
                 merged_texts = pd.concat([train_texts, test_texts])
-                vectorized_merged = CountVectorizer().fit_transform()
-                vectorized_train = CountVectorizer().fit_transform()
-                vectorized_test = CountVectorizer().fit_transform()
+                vectorized_merged = CountVectorizer().fit_transform(merged_texts)
+                vectorized_train = CountVectorizer().fit_transform(train_texts)
+                vectorized_test = CountVectorizer().fit_transform(test_texts)
                 if self.type == 'sklearn':
                     self.model = self.model.fit(vectorized_merged)
                 elif self.type == 'lda':
