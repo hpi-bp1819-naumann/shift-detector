@@ -27,9 +27,9 @@ class BasicCheckResult(CheckResult):
 
 class BasicCheck(Check):
 
-    def __init__(self, df1: pd.DataFrame, df2: pd.DataFrame):
+    def __init__(self, first_df: pd.DataFrame, second_df: pd.DataFrame):
 
-        Check.__init__(self, df1, df2)
+        Check.__init__(self, first_df, second_df)
 
         self.output_column = '__shiftDetecor__dataset'
         self.output_path = 'tmp/basicChecks_params'
@@ -39,51 +39,51 @@ class BasicCheck(Check):
 
         self.imputer = None
 
-    def label_datasets(self, df1: pd.DataFrame, df2: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def label_datasets(self, first_df: pd.DataFrame, second_df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
 
         Set labels of the first dataframe to 'A' and those of the second dataframe to 'B'
 
-        :param df1: first dataset
-        :param df2: second dataset
+        :param first_df: first dataset
+        :param second_df: second dataset
         :return: tuple of labeled datasets
 
         """
-        df1[self.output_column] = 'A'
-        df2[self.output_column] = 'B'
+        first_df[self.output_column] = 'A'
+        second_df[self.output_column] = 'B'
 
-        return df1, df2
+        return first_df, second_df
 
-    def sample_datasets(self, df1: pd.DataFrame, df2: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def sample_datasets(self, first_df: pd.DataFrame, second_df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
 
         Sample datasets to length of shorter dataset
 
-        :param df1: first dataset 
-        :param df2: second dataset
+        :param first_df: first dataset
+        :param second_df: second dataset
         :return: tuple of sampled datasets
-        
-        """
-        min_len = min(len(df1), len(df2))
-        return df1.sample(n=min_len), df2.sample(n=min_len)
 
-    def prepare_datasets(self, df1: pd.DataFrame, df2: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
+        """
+        min_len = min(len(first_df), len(second_df))
+        return first_df.sample(n=min_len), second_df.sample(n=min_len)
+
+    def prepare_datasets(self, first_df: pd.DataFrame, second_df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
 
-        Create a train and a test dataset, in which the number number of tuples 
+        Create a train and a test dataset, in which the number number of tuples
         that come from the first and the number of those from the second dataset are equal
 
-        :param df1: first dataset 
-        :param df2: second dataset
+        :param first_df: first dataset
+        :param second_df: second dataset
         :return: tuple of train and test dataset
 
         """
-        df1, df2 = self.label_datasets(df1, df2)
-        first_df_sampled, second_df_sampled = self.sample_datasets(df1, df2)
-        
+        first_df, second_df = self.label_datasets(first_df, second_df)
+        first_df_sampled, second_df_sampled = self.sample_datasets(first_df, second_df)
+
         first_df_train, first_df_test = random_split(first_df_sampled)
         second_df_train, second_df_test = random_split(second_df_sampled)
-        
+
         train_df = pd.concat([first_df_train, second_df_train])
         test_df = pd.concat([first_df_test, second_df_test])
 
@@ -142,7 +142,7 @@ class BasicCheck(Check):
             output_column=self.output_column,
             output_path=self.output_path)
 
-        self.train_df, self.test_df = self.prepare_datasets(self.df1, self.df2)
+        self.train_df, self.test_df = self.prepare_datasets(self.first_df, self.second_df)
         self.imputer.fit(self.train_df, self.test_df)
 
         imputed = self.imputer.predict(self.test_df)
