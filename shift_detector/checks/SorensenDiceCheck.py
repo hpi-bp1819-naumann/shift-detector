@@ -46,9 +46,9 @@ class SorensenDiceCheck(Check):
         return 2 * nt / (SorensenDiceCheck.count_fragments(histo1) + SorensenDiceCheck.count_fragments(histo2))
 
     @staticmethod
-    def join_ngrams(ser: pd.Series) -> dict:
+    def join_and_normalize_ngrams(ser: pd.Series) -> dict:
         """
-        Join all ngrams of the given series to one ngram
+        Join and normalize all ngrams to one ngram
         :param ser: A series that contains the ngrams to join
         :return: A dict that represents the final ngram
         """
@@ -76,11 +76,11 @@ class SorensenDiceCheck(Check):
         result = {}
         for i in df1:
 
-            result[i] = (self.calculate_sdc(self.join_ngrams(df1a[i]),
-                                            self.join_ngrams(df1b[i])),
-                         self.calculate_sdc(self.join_ngrams(df2a[i]),
-                                            self.join_ngrams(df2b[i])),
-                         self.calculate_sdc(self.join_ngrams(df1[i]),
-                                            self.join_ngrams(df2[i])))
+            result[i] = (self.calculate_sdc(self.join_and_normalize_ngrams(df1a[i]),
+                                            self.join_and_normalize_ngrams(df1b[i])),
+                         self.calculate_sdc(self.join_and_normalize_ngrams(df2a[i]),
+                                            self.join_and_normalize_ngrams(df2b[i])),
+                         self.calculate_sdc(self.join_and_normalize_ngrams(df1[i]),
+                                            self.join_and_normalize_ngrams(df2[i])))
 
         return SorensenDiceReport(result)
