@@ -1,10 +1,4 @@
-import argparse
 from shift_detector.Detector import Detector
-from shift_detector.checks.BasicCheck import BasicCheck
-from shift_detector.checks.KsChiCheck import KsChiCheck
-from shift_detector.checks.Chi2Check import Chi2Check
-from shift_detector.checks.FrequentItemRulesCheck import FrequentItemsetCheck
-from shift_detector.checks.TestCheck import TestCheck
 from shift_detector.checks.SimpleCheck import SimpleCheck
 
 # Starting via console:
@@ -23,8 +17,8 @@ if __name__ == "__main__":
     # separator = args["sep"]
 
     detector = Detector(args['train'], args['test'], delimiter=args['sep'])
-    # detector.add_check(SimpleCheck())
-    detector.add_check(Chi2Check())
+    detector.add_checks(SimpleCheck())
+    # detector.add_check(Chi2Check())
 
     detector.run()
     detector.evaluate()

@@ -82,14 +82,6 @@ class SimpleCheckReport(Report):
 
 
 class SimpleCheck(Check):
-    @staticmethod
-    def report_class():
-        return SimpleCheckReport
-
-    @staticmethod
-    def name() -> str:
-        return 'SimpleCheck'
-
     def run(self, store):
         df1_numerical = store[ColumnType.numerical][0]
         df2_numerical = store[ColumnType.numerical][1]
@@ -97,8 +89,10 @@ class SimpleCheck(Check):
         df2_categorical = store[ColumnType.categorical][1]
 
         numerical_comparison = self.compare_numerical_columns(df1_numerical, df2_numerical)
-        categorical_comparison = self.compare_categorical_columns(df1_categorical, df2_categorical)
-        return {"categorical_comparison": categorical_comparison, 'numerical_comparison': numerical_comparison}
+        categorical_comparison = self.compare_categorical_columns(df1_categorical, df2_categorical, store.columns)
+        combined_comparisons = {'categorical_comparison': categorical_comparison,
+                                'numerical_comparison': numerical_comparison}
+        return SimpleCheckReport(data=combined_comparisons)
 
     @staticmethod
     def compare_numerical_columns(df1, df2):
@@ -139,23 +133,21 @@ class SimpleCheck(Check):
         return numerical_comparison
 
     @staticmethod
-    def compare_categorical_columns(df1, df2):
+    def compare_categorical_columns(df1, df2, columns):
         category_comparison = {}
-        for column in df1.columns:
+
+        for column in columns:
             category_comparison[column] = {}
-            attribute_ratios = df1[column].value_counts(normalize=True).to_dict()
-            for key, value in attribute_ratios.items():
-                category_comparison[column][key] = {}
-                category_comparison[column][key]['df1'] = value
+            attribute_ratios_df1 = df1[column].value_counts(normalize=True).to_dict()
+            # category_comparison[column]['df1'] = {}
+            # category_comparison[column]['df2'] = {}
 
-        for column in df2.columns:
-            if not category_comparison.get(column):
-                category_comparison[column] = {}
+            for key, value in attribute_ratios_df1.items():
+                category_comparison[column][key] = {'df1': value}
 
-            attribute_ratios = df2[column].value_counts(normalize=True).to_dict()
-            for key, value in attribute_ratios.items():
-                if key not in category_comparison[column]:
-                    category_comparison[column][key] = {}
-                category_comparison[column][key]['df2'] = value
+            attribute_ratios_df2 = df2[column].value_counts(normalize=True).to_dict()
+            for key, value in attribute_ratios_df2.items():
+                if category_comparison[column].get(key):
+                    category_comparison[column][key]['df2'] = value
 
         return category_comparison
