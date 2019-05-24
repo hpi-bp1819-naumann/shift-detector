@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import MagicMock
 from shift_detector.checks.SorensenDiceCheck import SorensenDiceCheck, SorensenDiceReport
+from shift_detector.preprocessors.NGram import NGramType
 from shift_detector.preprocessors.Store import Store
 import pandas as pd
 import io
@@ -16,7 +17,7 @@ class TestSorensenDice(unittest.TestCase):
         self.df2 = pd.DataFrame({'col1': ['ab ','hi ','jk ','lm ','no ','pq ','rs ','tu ','vw ','xy ','z1 ','23 ','45 ','67 ','89 ']})
 
         self.store = Store(self.df1, self.df2)
-        self.result = SorensenDiceCheck().run(self.store)
+        self.result = SorensenDiceCheck(ngram_type=NGramType.character, n=3).run(self.store)
 
     def test_result(self):
         self.assertEqual(len(self.result.result), 1)
@@ -27,7 +28,6 @@ class TestSorensenDice(unittest.TestCase):
         self.result.print_report()
         output = mock_stdout.getvalue()
         self.assertIn('Sorensen Dice Report', output)
-
 
     def test_count_fragments(self):
         ngram1 = {'abc': 6, 'bcd':4, 'def': 3}

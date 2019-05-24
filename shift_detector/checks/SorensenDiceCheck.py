@@ -17,6 +17,11 @@ class SorensenDiceReport(Report):
 
 class SorensenDiceCheck(Check):
 
+    def __init__(self, ngram_type=NGramType.character, n=3):
+        self.ngram_type = ngram_type
+        self.n = n
+
+
     @staticmethod
     def count_fragments(ngram: dict) -> int:
         """
@@ -68,7 +73,7 @@ class SorensenDiceCheck(Check):
         :return: CheckResult
         """
 
-        df1, df2 = store[NGram(n=3, ngram_type=NGramType.character)]
+        df1, df2 = store[NGram(n=self.n, ngram_type=self.ngram_type)]
 
         df1a, df1b = random_split(df1, [0.95, 0.05], seed=11)           # Baseline for df1
         df2a, df2b = random_split(df2, [0.95, 0.05], seed=11)           # Baseline for df2
