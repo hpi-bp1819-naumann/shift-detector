@@ -9,7 +9,6 @@ from shift_detector.preprocessors.Store import Store
 
 
 class Detector:
-
     def __init__(self,
                  df1: Union[pd.DataFrame, str],
                  df2: Union[pd.DataFrame, str],
