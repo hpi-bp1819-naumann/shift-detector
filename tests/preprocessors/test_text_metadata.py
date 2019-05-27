@@ -1,11 +1,84 @@
 import unittest
+
+from pandas.util.testing import assert_frame_equal
+
 import shift_detector.utils.TextMetadataUtils as TmUtils
 from langdetect.lang_detect_exception import LangDetectException
 
+from shift_detector.preprocessors.Store import Store
 from shift_detector.preprocessors.TextMetadata import *
 
+class TestTextMetadataPreprocessors(unittest.TestCase):
 
-class TestTextMetadata(unittest.TestCase):
+    def setUp(self):
+        poems = [
+            'Tell me not, in mournful numbers,\nLife is but an empty dream!\nFor the soul is dead that slumbers,\nAnd things are not what they seem.',
+            'Life is real! Life is earnest!\nAnd the grave is not its goal;\nDust thou art, to dust returnest,\nWas not spoken of the soul.'
+        ]
+        phrases = [
+            'Front-line leading edge website',
+            'Upgradable upward-trending software'
+        ]
+        df1 = pd.DataFrame.from_dict({'text': poems})
+        df2 = pd.DataFrame.from_dict({'text': phrases})
+        self.store = Store(df1, df2)
+
+    def test_num_chars(self):
+        md1, md2 = NumCharsMetadata().process(self.store)
+        solution1 = pd.DataFrame([132, 123], columns=['text'])
+        solution2 = pd.DataFrame([31, 35], columns=['text'])
+        assert_frame_equal(solution1, md1)
+        assert_frame_equal(solution2, md2)
+
+    def test_ratio_upper(self):
+        md1, md2 = RatioUpperMetadata().process(self.store)
+        solution1 = pd.DataFrame([3.92, 5.38], columns=['text'])
+        solution2 = pd.DataFrame([3.70, 3.12], columns=['text'])
+        assert_frame_equal(solution1, md1)
+        assert_frame_equal(solution2, md2)
+
+    def test_unicode_categories(self):
+        md1, md2 = UnicodeCategoriesMetadata().process(self.store)
+        solution1 = pd.DataFrame(['Ll, Zs, Po, Lu, Cc', 'Ll, Zs, Po, Lu, Cc'], columns=['text'])
+        solution2 = pd.DataFrame(['Ll, Zs, Lu, Pd', 'Ll, Zs, Lu, Pd'], columns=['text'])
+        assert_frame_equal(solution1, md1)
+        assert_frame_equal(solution2, md2)
+
+    def test_unicode_blocks(self):
+        md1, md2 = UnicodeBlocksMetadata().process(self.store)
+        solution1 = pd.DataFrame([23, 22], columns=['text'])
+        solution2 = pd.DataFrame([4, 3], columns=['text'])
+        solution1 = pd.DataFrame(['Basic Latin', 'Basic Latin'], columns=['text'])
+        solution2 = pd.DataFrame(['Basic Latin', 'Basic Latin'], columns=['text'])
+        assert_frame_equal(solution1, md1)
+        assert_frame_equal(solution2, md2)
+
+    def test_num_words(self):
+        md1, md2 = NumWordsMetadata().process(self.store)
+        solution1 = pd.DataFrame([26, 25], columns=['text'])
+        solution2 = pd.DataFrame([4, 3], columns=['text'])
+        assert_frame_equal(solution1, md1)
+        assert_frame_equal(solution2, md2)
+
+    def test_distinct_words(self):
+        md1, md2 = NumDistinctWordsMetadata().process(self.store)
+        solution1 = pd.DataFrame([24, 20], columns=['text'])
+        solution2 = pd.DataFrame([4, 3], columns=['text'])
+        assert_frame_equal(solution1, md1)
+        assert_frame_equal(solution2, md2)
+
+    def test_unique_words(self):
+        md1, md2 = NumUniqueWordsMetadata().process(self.store)
+        solution1 = pd.DataFrame([22, 16], columns=['text'])
+        solution2 = pd.DataFrame([4, 3], columns=['text'])
+        assert_frame_equal(solution1, md1)
+        assert_frame_equal(solution2, md2)
+
+    # TODO: Add tests for other metadata types
+    # TODO: Add tests for overall metadata preprocessor
+
+
+class TestTextMetadataFunctions(unittest.TestCase):
 
     def test_text_to_array(self):
         normal = "This. is a'n example, ,, 12  35,6  , st/r--ing    \n test."
