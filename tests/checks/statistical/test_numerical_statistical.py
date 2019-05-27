@@ -1,10 +1,12 @@
 import unittest
 
 import pandas as pd
+from pandas.util.testing import assert_frame_equal
 
 from shift_detector.Detector import Detector
 from shift_detector.checks.statistical_checks.NumericalStatisticalCheck import kolmogorov_smirnov_test, \
     NumericalStatisticalCheck
+from shift_detector.preprocessors.Store import Store
 
 
 class TestCategoricalStatisticalCheck(unittest.TestCase):
@@ -48,10 +50,9 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
                            ([6] * 1) +
                            ([8] * 1) +
                            ([9] * 0))
-        detector = Detector(df1=df1, df2=df2)
-        detector.add_checks(NumericalStatisticalCheck())
-        detector.run()
-        self.assertEqual(0, len(detector.check_reports[0].significant_columns()))
+        store = Store(df1, df2)
+        result = NumericalStatisticalCheck().run(store)
+        self.assertEqual(0, len(result.significant_columns()))
 
     def test_significant(self):
         df1 = pd.DataFrame(([21] * 4) +
@@ -74,8 +75,14 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
                            ([35] * 4) +
                            ([37] * 2) +
                            ([39] * 9))
+        store = Store(df1, df2)
+        result = NumericalStatisticalCheck().run(store)
+        self.assertEqual(1, len(result.significant_columns()))
+
+    def test_compliance_with_detector(self):
+        df1 = pd.DataFrame([0])
+        df2 = pd.DataFrame([0])
         detector = Detector(df1=df1, df2=df2)
         detector.add_checks(NumericalStatisticalCheck())
         detector.run()
-        print(detector.check_reports[0].significant_columns())
-        self.assertEqual(1, len(detector.check_reports[0].significant_columns()))
+        assert_frame_equal(pd.DataFrame([1.0], index=['pvalue']), detector.check_reports[0].result)
