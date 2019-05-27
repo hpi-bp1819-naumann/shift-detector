@@ -1,23 +1,21 @@
+import numpy as np
 import gensim
+from copy import copy
+import pandas as pd
 from shift_detector.preprocessors.Preprocessor import Preprocessor
-from shift_detector.Utils import ColumnType
 from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import CountVectorizer as CountVectorizer_sklearn
 
 
-class WordTokenizer(Preprocessor):
+class CountVectorizer(Preprocessor):
 
     def __init__(self, stop_words='english'):
         self.stopwords = None
         if isinstance(stop_words, str):
-            if stop_words in stopwords.fileids():
-                self.stop_words = stopwords.words(stop_words)
-            else:
-                raise Exception('The language you entered is not available')
+            self.stop_words = stopwords.words(stop_words)
         elif isinstance(stop_words, list):
             if all(isinstance(elem, str) for elem in stop_words):
                 for lang in stop_words:
-                    if lang not in stopwords.fileids():
-                        raise Exception('At least one language you entered is not available')
                     if self.stopwords is None:
                         self.stopwords = set(stopwords.words(lang))
                     else:
@@ -38,10 +36,8 @@ class WordTokenizer(Preprocessor):
 
     def process(self, store):
         train_texts, test_texts = store[ColumnType.text]
-        # TODO: do everything in the process function
-        processed1 = [[[word for word in gensim.utils.simple_preprocess(str(doc), deacc=True)
-                       if word not in self.stopwords] for doc in texts] for texts in train_texts]
-        processed2 = [[[word for word in gensim.utils.simple_preprocess(str(doc), deacc=True)
-                        if word not in self.stopwords] for doc in texts] for texts in test_texts]
-
-        return processed1, processed2
+        merged_texts = pd.concat([train_texts, test_texts])
+        vectorized_merged = CountVectorizer_sklearn().fit_transform(merged_texts)
+        vectorized_train = CountVectorizer_sklearn().fit_transform(train_texts)
+        vectorized_test = CountVectorizer_sklearn().fit_transform(test_texts)
+        return processed

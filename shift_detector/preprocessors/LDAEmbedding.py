@@ -14,23 +14,25 @@ from shift_detector.Utils import ColumnType
 
 class LDAEmbedding(Preprocessor):
 
-    def __init__(self, n_topics=20, n_iter=1000, type=None, trained_model=None):
+    def __init__(self, n_topics=20, n_iter=100, lib=None, trained_model=None):
         if n_topics != 'auto':
             self.n_topics = n_topics
         self.n_iter = n_iter
         self.model = None
         self.trained_model = None
-        self.type = type
+        self.lib = lib
         if trained_model:
             self.trained_model = trained_model
-        elif type == 'sklearn':
-            self.model = LDA_skl(n_components=self.n_topics, max_iter=self.n_iter, random_state=0)
-        elif type == 'gensim':
+        elif lib == 'sklearn':
+            self.model = LDA_skl(n_components=self.n_topics, max_iter=self.n_iter, random_state=0, n_jobs: 0)
+        elif lib == 'gensim':
             self.model = LdaTransformer(num_topics=self.n_topics, iterations=self.n_iter, random_state=0)
-        elif type == 'lda':
+        elif lib == 'lda':
             self.model = lda.LDA(n_topics=self.n_topics, n_iter=self.n_iter, random_state=0)
+            # n_iter is only the amount of sample iterations, so it can be much higher than the iterations parameter of
+            # the other models without sacrificing performance
         else:
-            raise Exception('No LDA type defined')
+            raise Exception('No LDA library defined')
     
     def __eq__(self, other):
         """Overrides the default implementation"""
@@ -51,51 +53,52 @@ class LDAEmbedding(Preprocessor):
         return hash(tuple([self.model.__class__] + self.n_topics))
 
     def process(self, store):
-        train_df = store.df1
-        test_df = store.df2
-        if not self.trained_model:
-            model = copy(self.model)
-            merged_df = pd.concat([train_df, test_df])
+
+
+        inferred_train_vec = train_df.shape[0] * [0]
+        inferred_test_vec = test_df.shape[0] * [0]
+
+        if self.lib == 'gensim':
+            # TODO do preprocessing in different class with store
+            merged_tokenized, train_tokenized, test_tokenized = store[WordTokenizer()]
+            merged_dict = Dictionary(merged_tokenized)
+            train_dict = Dictionary(train_tokenized)
+            test_dict = Dictionary(test_tokenized)
+            merged_corpus = [merged_dict.doc2bow(line) for line in merged_tokenized]
+            train_corpus = [train_dict.doc2bow(line) for line in train_tokenized]
+            test_corpus = [test_dict.doc2bow(line) for line in test_tokenized]
+            if not self.trained_model:
+                model = copy(self.model)
+                model = model.fit(merged_corpus)
+                self.trained_model = model
+            transformed_train = self.trained_model.transform(train_corpus)
+            transformed_test = self.trained_model.transform(test_corpus)
+
         else:
-            inferred_train_vec = train_df.shape[0] * [0]
-            inferred_test_vec = test_df.shape[0] * [0]
+            # TODO do preprocessing in different class with store
+            train_texts, test_texts = store[ColumnType.text]
+            merged_texts = pd.concat([train_texts, test_texts])
 
-            if self.type == 'gensim':
-                # TODO do preprocessing in different class with store
-                merged_tokenized, train_tokenized, test_tokenized = store[WordTokenizer()]
-                merged_dict = Dictionary(merged_tokenized)
-                train_dict = Dictionary(train_tokenized)
-                test_dict = Dictionary(test_tokenized)
-                merged_corpus = [merged_dict.doc2bow(line) for line in merged_tokenized]
-                train_corpus = [train_dict.doc2bow(line) for line in train_tokenized]
-                test_corpus = [test_dict.doc2bow(line) for line in test_tokenized]
-                self.model = self.model.fit(merged_corpus)
-                transformed_train = self.model.transform(train_corpus)
-                transformed_test = self.model.transform(test_corpus)
+            vectorized_merged = CountVectorizer().fit_transform(merged_texts)
+            vectorized_train = CountVectorizer().fit_transform(train_texts)
+            vectorized_test = CountVectorizer().fit_transform(test_texts)
 
-            else:
-                # TODO do preprocessing in different class with store
-                train_texts, test_texts = store[ColumnType.text]
-                merged_texts = pd.concat([train_texts, test_texts])
-                vectorized_merged = CountVectorizer().fit_transform(merged_texts)
-                vectorized_train = CountVectorizer().fit_transform(train_texts)
-                vectorized_test = CountVectorizer().fit_transform(test_texts)
-                if self.type == 'sklearn':
-                    self.model = self.model.fit(vectorized_merged)
-                elif self.type == 'lda':
-                    self.model = self.model.fit(vectorized_merged)
-                transformed_train = self.model.transform(vectorized_train)
-                transformed_test = self.model.transform(vectorized_test)
+            if not self.trained_model:
+                model = copy(self.model)
+                model = model.fit(vectorized_merged)
+                self.trained_model = model
+            transformed_train = self.trained_model.transform(vectorized_train)
+            transformed_test = self.trained_model.transform(vectorized_test)
 
-            # infer topics for train_df
-            for i in range(len(transformed_train)):
-                inferred_train_vec[i] = transformed_train[i].argmax()
+        # infer topics for train_df
+        for i in range(len(transformed_train)):
+            inferred_train_vec[i] = transformed_train[i].argmax()
 
-            # infer topics for test_df
-            for i in range(len(transformed_test)):
-                inferred_test_vec[i] = transformed_test[i].argmax()
+        # infer topics for test_df
+        for i in range(len(transformed_test)):
+            inferred_test_vec[i] = transformed_test[i].argmax()
 
-            train_df['topic'] = inferred_train_vec
-            test_df['topic'] = inferred_test_vec
+        train_df['topic'] = inferred_train_vec
+        test_df['topic'] = inferred_test_vec
 
         return train_df, test_df
