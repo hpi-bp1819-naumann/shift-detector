@@ -35,11 +35,13 @@ class TestTextMetadata(unittest.TestCase):
         upper = "ALL UPPER CASE LETTERS"
         mixed1 = "FifTY fIFty"
         mixed2 = "Tre"
+        space = " "
         empty = ""
         self.assertEqual(tm.ratio_upper(lower), 0.00)
         self.assertEqual(tm.ratio_upper(upper), 100.00)
         self.assertEqual(tm.ratio_upper(mixed1), 50.00)
         self.assertEqual(tm.ratio_upper(mixed2), 33.33)
+        self.assertEqual(tm.ratio_upper(space), 0.00)
         self.assertEqual(tm.ratio_upper(empty), 0.00)
 
     def test_unicode_category(self):
@@ -61,11 +63,13 @@ class TestTextMetadata(unittest.TestCase):
     def test_num_words(self):
         distinct = "this are all different words"
         same = "same same, same. same"
-        withPunctuation= "Punctuation. doesn't affect. the---y get deleted.   "
+        withPunctuation = "Punctuation. doesn't affect. the---y get deleted.   "
+        unicodeArabic = "هذا اختبار"
         empty = ""
         self.assertEqual(tm.num_words(distinct), 5)
         self.assertEqual(tm.num_words(same), 4)
         self.assertEqual(tm.num_words(withPunctuation), 6)
+        self.assertEqual(tm.num_words(unicodeArabic), 2)
         self.assertEqual(tm.num_words(empty), 0)
 
     def test_num_distinct_words(self):
@@ -73,11 +77,13 @@ class TestTextMetadata(unittest.TestCase):
         same = "same same, same. same"
         mixed = "there are doubled words and there are distinct words."
         capitalLetters = "Capital letters matter Matter"
+        unicodeArabic = "هذا اختبار"
         empty = ""
         self.assertEqual(tm.num_distinct_words(distinct), 5)
         self.assertEqual(tm.num_distinct_words(same), 1)
         self.assertEqual(tm.num_distinct_words(mixed), 6)
         self.assertEqual(tm.num_distinct_words(capitalLetters), 4)
+        self.assertEqual(tm.num_distinct_words(unicodeArabic), 2)
         self.assertEqual(tm.num_distinct_words(empty), 0)
 
     def test_num_unique_words(self):
@@ -85,11 +91,13 @@ class TestTextMetadata(unittest.TestCase):
         same = "same, same. same"
         mixed = "there are doubled words and there are distinct words."
         capitalLetters = "Capital letters letters matter Matter"
+        unicodeArabic = "هذا اختبار"
         empty = ""
         self.assertEqual(tm.num_unique_words(distinct), 5)
         self.assertEqual(tm.num_unique_words(same), 0)
         self.assertEqual(tm.num_unique_words(mixed), 3)
         self.assertEqual(tm.num_unique_words(capitalLetters), 3)
+        self.assertEqual(tm.num_unique_words(unicodeArabic), 2)
         self.assertEqual(tm.num_unique_words(empty), 0)
 
     def test_unknown_words(self):
@@ -160,6 +168,7 @@ class TestTextMetadata(unittest.TestCase):
         german = "Dies ist ein einfacher Satz. Kurz und knackig."
         englishgerman = "Dieser Text ist zum Teil deutsch. <br> Part of this text is in english"
         multipleLanguages = "Dieser Text ist zum Teil deutsch. \n Part of this text is in english. \n there actually is some french coming. \n Ce n'est pas anglais. \n No puedo hablar español. \n Beberapa bahasa untuk diuji."
+        unicodeArabic = "هذا اختبار"
         punctuation = " . ,"
         empty = ""
         self.assertEqual(tm.language(english), {'en': 1})
@@ -167,6 +176,7 @@ class TestTextMetadata(unittest.TestCase):
         self.assertEqual(tm.language(german), {'de': 1})
         self.assertEqual(tm.language(englishgerman), {'en': 1, 'de': 1})
         self.assertEqual(tm.language(multipleLanguages), {'en': 2, 'de': 1, 'fr': 1, 'es': 1, 'id': 1})
+        self.assertEqual(tm.language(unicodeArabic), {'ar': 1})
         self.assertRaises(LangDetectException, tm.language(punctuation))
         self.assertRaises(LangDetectException, tm.language(empty))
 
@@ -175,7 +185,28 @@ class TestTextMetadata(unittest.TestCase):
         hard = "Quantum mechanics (QM; also known as quantum physics, quantum theory, the wave mechanical model, or matrix mechanics), including quantum field theory, is a fundamental theory in physics which describes nature at the smallest scales of energy levels of atoms and subatomic particles."
         punctuation = " . ,"
         empty = ""
-        self.assertEqual(tm.text_complexity(empty), 206.84)
-        self.assertEqual(tm.text_complexity(punctuation), 206.84)
+        self.assertEqual(tm.text_complexity(empty), 0.0)
+        self.assertEqual(tm.text_complexity(punctuation), 0.0)
         self.assertEqual(tm.text_complexity(easy), tm.text_complexity(easy))
-        self.assertGreater(tm.text_complexity(easy), tm.text_complexity(hard))
+        self.assertGreater(tm.text_complexity(hard), tm.text_complexity(easy))
+
+    def test_pos_histogram(self):
+        english_short = "This is a short sentence." 
+        english_long = "This is a longer sentence with a more complex structure, more complex words and much more different parts of speech."
+        english_punctuation_foreign = "This has unsupported punctuation.[3] هذا اختبار and foreign language. This is supported: . (42)"
+        german = "Die deutsche Sprache wird ebenfalls unterstützt."
+        italian = "Il linguaggio, in linguistica, è il complesso definito di suoni, gesti e movimenti attraverso il quale si attiva un processo di comunicazione."
+        unsupportedLanguage = "Aqoonyahanada caalamku waxay aad ugu murmaan sidii luuqadaha aduunku ku bilaabmeem." #This is somali
+        punctuation = ", .. "
+        empty = ""
+        self.assertEqual(tm.pos_histogram(english_short, 'en'), {'DT': 2, 'VBZ': 1, 'JJ': 1, 'NN': 1, 'SENT': 1})
+        self.assertEqual(tm.pos_histogram(english_long, 'en'), {'DT': 3, 'VBZ': 1, 'JJR': 2, 'NN': 3, 'IN': 2, 'RBR': 2, 'JJ': 3, ',': 1, 'NNS': 2, 'CC': 1, 'RB': 1, 'SENT': 1})
+        self.assertEqual(tm.pos_histogram(english_punctuation_foreign, 'en'), {'DT': 2, 'VHZ': 1, 'JJ': 3, 'NNS': 1, 'UNK': 1, 'SYM': 1, 'NN': 2, 'CC': 1, 'SENT': 2, 'VBZ': 1, 'VVN': 1, ':': 1, '(': 1, 'CD': 1, ')': 1})
+        self.assertEqual(tm.pos_histogram(german, 'de'), {'ART': 1, 'ADJA': 1, 'NN': 1, 'VAFIN': 1, 'ADV': 1, 'VVPP': 1, '$.': 1})
+        self.assertEqual(tm.pos_histogram(italian, 'it'), {'DET:def': 3, 'NOM': 8, 'PON': 3, 'PRE': 4, 'VER:pres': 2, 'VER:pper': 1, 'CON': 1, 'PRO:rela': 1, 'PRO:refl': 1, 'DET:indef': 1, 'SENT': 1})
+        self.assertEqual(tm.pos_histogram(unsupportedLanguage, 'so'), None)
+        self.assertEqual(tm.pos_histogram(punctuation, 'en'), {',': 1, 'SENT': 2})
+        self.assertEqual(tm.pos_histogram(empty, 'en'), {})
+        self.assertEqual(tm.smaller_pos_histogram(tm.pos_histogram(italian, 'it')), {'DET': 4, 'NOM': 8, 'PON': 3, 'PRE': 4, 'VER': 3, 'CON': 1, 'PRO': 2, 'SEN': 1})
+        self.assertEqual(tm.smaller_pos_histogram({'!': 2, '$.': 3}), {'SEN': 5})
+        self.assertEqual(tm.smaller_pos_histogram({}), {})

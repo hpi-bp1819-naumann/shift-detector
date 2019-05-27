@@ -1,6 +1,4 @@
 import re
-import numpy as np
-
 from langdetect import DetectorFactory, detect, detect_langs, lang_detect_exception
 from iso639 import languages
 import textstat
@@ -8,7 +6,10 @@ from spellchecker import SpellChecker
 import unicodedata
 import shift_detector.utils.UCBlist as UCBlist
 from nltk.corpus import stopwords
-import nltk
+from nltk.tokenize import word_tokenize
+import treetaggerwrapper
+import string
+from collections import defaultdict
 
 delimiter_HTML = r'<\s*br\s*/?\s*>|<\s*p\s*>'
 delimiter_sentence = r'\.\s'
@@ -29,7 +30,8 @@ def md_functions(type):
             'stopwords': stopword_ratio,
             'category': category,
             'num_parts': num_parts,
-            'languages': language,
+            'languages': language_dict,
+            'language': language,
             'complexity': text_complexity}[type]
 
 # preprocessors
@@ -63,30 +65,24 @@ def num_chars(text):
     return len(text)
     
 def ratio_upper(text):
-    if text == "":
-        return 0
     lower = sum(map(str.islower, text))
     upper = sum(1 for c in text if c.isupper())
+    if (lower + upper) == 0:
+        return 0
     return round((upper * 100) / (lower + upper), 2)
 
 def unicode_category_histogram(text):
-    characters = {}
+    characters = defaultdict(int)
     for c in text:
         category = unicodedata.category(c)
-        if category in characters:
-            characters[category] += 1
-        else:
-            characters[category] = 1
+        characters[category] += 1
     return characters
 
 def unicode_block_histogram(text):
-    characters = {}
+    characters = defaultdict(int)
     for c in text:
         category = block(c)
-        if category in characters:
-            characters[category] += 1
-        else:
-            characters[category] = 1
+        characters[category] += 1
     return characters
 
 def num_words(text):
@@ -100,6 +96,11 @@ def num_distinct_words(text):
             distinct_words.append(word)
     return len(distinct_words)
 
+def distinct_words_ratio(text):
+    if (num_words(text) == 0):
+        return 0
+    return round(num_distinct_words(text)*100/num_words(text),2)
+
 def num_unique_words(text):
     words = text_to_array(text)
     seen_once = []
@@ -112,6 +113,11 @@ def num_unique_words(text):
                 seen_once.remove(word)
                 seen_often.append(word)
     return len(seen_once)
+
+def unique_words_ratio(text):
+    if (num_words(text) == 0):
+        return 0
+    return round(num_unique_words(text)*100/num_words(text),2)
 
 def unknown_word_ratio(text, language):
     # not working for every language
@@ -167,7 +173,7 @@ def num_parts(text):
     else:
         return 0
 
-def language(text):
+def language_dict(text):
     parts = []
     try: 
         if (len(text) == 0):
@@ -177,22 +183,49 @@ def language(text):
         else:
             parts = re.split(r'[\n\r]+', text)
         parts = [x.strip() for x in parts if x.strip()]
-        languages = {}
+        languages = defaultdict(int)
         for part in parts:
             lang = detect(part)
-            if lang in languages:
-                languages[lang] += 1
-            else:
-                languages[lang] = 1
+            languages[lang] += 1
         return languages
     except:
         pass
 
-def text_complexity(text):
-    # lower value means more complex
+def language(text):
+    return detect(text)
+
+def complexity(text):
     # works best for longer english texts. kinda works for other languages as well (not good though)
-    complexity = textstat.textstat.flesch_reading_ease(text)
+    complexity = textstat.textstat.text_standard(text, True)
     return complexity
 
-#def pos_histogram(text):
-    
+def pos_histogram(text, language):
+    try:
+        tagger = treetaggerwrapper.TreeTagger(TAGLANG=language)
+        tagged = treetaggerwrapper.make_tags(tagger.tag_text(text))
+        tags = defaultdict(int)
+        for item in tagged:
+            if not isinstance(item,treetaggerwrapper.Tag): #Tag as UNK for unknown
+                tags['UNK'] += 1
+            else:
+                tags[item.pos] += 1
+        return tags
+    except:
+        pass
+  
+def smaller_pos_histogram(pos_histogram):
+    smaller = defaultdict(int)
+    for key, value in pos_histogram.items():
+        if all(j in string.punctuation for j in key):
+            smaller['SEN'] += value
+        else:
+            smaller[key.split(':')[0][:3]] += value
+    return smaller
+
+def pos_ratio_histogram(pos_histogram):
+    possum = sum(pos_histogram.values())
+    pos_ratios = {}
+    for key, value in pos_histogram.items():
+        pos_ratios[key] = round(value*100/possum,2)
+    return pos_ratios
+  
