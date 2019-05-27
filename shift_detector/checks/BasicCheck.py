@@ -7,13 +7,13 @@ from typing import Tuple
 from sklearn.metrics import classification_report
 import numpy as np
 import logging as logger
-from shift_detector.checks.Check import Check, CheckResult
+from shift_detector.checks.Check import Check, Reports
 
 
-class BasicCheckResult(CheckResult):
+class BasicCheckResult(Reports):
 
     def __init__(self, result={}):
-        CheckResult.__init__(self, result)
+        Reports.__init__(self, result)
 
     def get_columns_with_shift(self):
         return self.result['relevant_columns']
@@ -44,7 +44,7 @@ class BasicCheck(Check):
 
         Set labels of the first dataframe to 'A' and those of the second dataframe to 'B'
 
-        :param first_df: first dataset 
+        :param first_df: first dataset
         :param second_df: second dataset
         :return: tuple of labeled datasets
 
@@ -59,10 +59,10 @@ class BasicCheck(Check):
 
         Sample datasets to length of shorter dataset
 
-        :param first_df: first dataset 
+        :param first_df: first dataset
         :param second_df: second dataset
         :return: tuple of sampled datasets
-        
+
         """
         min_len = min(len(first_df), len(second_df))
         return first_df.sample(n=min_len), second_df.sample(n=min_len)
@@ -70,20 +70,20 @@ class BasicCheck(Check):
     def prepare_datasets(self, first_df: pd.DataFrame, second_df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
 
-        Create a train and a test dataset, in which the number number of tuples 
+        Create a train and a test dataset, in which the number number of tuples
         that come from the first and the number of those from the second dataset are equal
 
-        :param first_df: first dataset 
+        :param first_df: first dataset
         :param second_df: second dataset
         :return: tuple of train and test dataset
 
         """
         first_df, second_df = self.label_datasets(first_df, second_df)
         first_df_sampled, second_df_sampled = self.sample_datasets(first_df, second_df)
-        
+
         first_df_train, first_df_test = random_split(first_df_sampled)
         second_df_train, second_df_test = random_split(second_df_sampled)
-        
+
         train_df = pd.concat([first_df_train, second_df_train])
         test_df = pd.concat([first_df_test, second_df_test])
 

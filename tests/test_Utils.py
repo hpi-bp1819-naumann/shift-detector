@@ -47,10 +47,10 @@ class TestUtils(unittest.TestCase):
         splitted_df = split_dataframes(self.df1, self.df2,
                                        columns=['brand', 'payment', 'description'])
 
-        numeric_columns = splitted_df[ColumnType.numeric][0].columns.values
+        numerical_columns = splitted_df[ColumnType.numerical][0].columns.values
         categorical_columns = splitted_df[ColumnType.categorical][0].columns.values
         text_columns = splitted_df[ColumnType.text][0].columns.values
 
-        self.assertListEqual(list(numeric_columns), list(['payment']))
+        self.assertListEqual(list(numerical_columns), list(['payment']))
         self.assertListEqual(list(categorical_columns), list(['brand', 'payment']))
         self.assertListEqual(list(text_columns), list(['description']))
