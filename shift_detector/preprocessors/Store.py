@@ -2,8 +2,9 @@ import logging as logger
 
 from pandas import DataFrame
 
-from shift_detector.Utils import split_dataframes, ColumnType, shared_column_names
 from shift_detector.preprocessors.Preprocessor import Preprocessor
+from shift_detector.utils.ColumnManagement import split_dataframes, ColumnType
+from shift_detector.utils.DataIO import shared_column_names
 
 
 class Store:

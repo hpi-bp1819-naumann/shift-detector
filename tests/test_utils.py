@@ -2,7 +2,8 @@ import unittest
 
 import pandas as pd
 
-from shift_detector.Utils import ColumnType, shared_column_names, is_categorical, split_dataframes
+from shift_detector.utils.ColumnManagement import is_categorical, split_dataframes, ColumnType
+from shift_detector.utils.DataIO import shared_column_names
 
 
 class TestUtils(unittest.TestCase):

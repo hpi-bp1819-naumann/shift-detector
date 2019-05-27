@@ -1,11 +1,10 @@
 import math
+import pprint as pp
 import unittest
 
 import pandas as pd
-import pprint as pp
 
-from shift_detector.Utils import ColumnType
-from shift_detector.checks.SimpleCheck import SimpleCheck, SimpleCheckReport
+from shift_detector.checks.SimpleCheck import SimpleCheck
 from shift_detector.preprocessors.Store import Store
 
 

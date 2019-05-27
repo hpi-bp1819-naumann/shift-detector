@@ -1,10 +1,7 @@
-import pandas as pd
-import pprint as pp
-
-from shift_detector.Utils import ColumnType
-from shift_detector.checks.Check import Check, Report
-from shift_detector.preprocessors.DefaultEmbedding import DefaultEmbedding
 from copy import deepcopy
+
+from shift_detector.checks.Check import Check, Report
+from shift_detector.utils.ColumnManagement import ColumnType
 
 
 class SimpleCheckReport(Report):
