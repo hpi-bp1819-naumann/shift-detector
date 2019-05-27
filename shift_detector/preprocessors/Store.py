@@ -11,6 +11,7 @@ class Store:
     def __init__(self,
                  df1: DataFrame,
                  df2: DataFrame):
+
         self.columns = shared_column_names(df1, df2)
         self.df1 = df1[self.columns]
         self.df2 = df2[self.columns]
@@ -22,8 +23,10 @@ class Store:
         if isinstance(needed_preprocessing, ColumnType):
             return self.splitted_dfs[needed_preprocessing]
 
+        """
         if not isinstance(needed_preprocessing, Preprocessor):
             raise Exception("Needed Preprocessing must be of type Preprocessor or ColumnType")
+        """
 
         if needed_preprocessing in self.preprocessings:
             logger.info("Use already existing Preprocessing")
