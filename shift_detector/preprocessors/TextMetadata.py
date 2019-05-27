@@ -89,6 +89,9 @@ class UnicodeCategoriesMetadata(GenericTextMetadata):
     def metadata_name() -> str:
         return 'unicode_categories'
 
+    def metadata_column_type(self) -> ColumnType:
+        return ColumnType.categorical
+
     @staticmethod
     def unicode_category_histogram(text):
         characters = {}
@@ -109,6 +112,9 @@ class UnicodeBlocksMetadata(GenericTextMetadata):
     @staticmethod
     def metadata_name() -> str:
         return 'unicode_blocks'
+
+    def metadata_column_type(self) -> ColumnType:
+        return ColumnType.categorical
 
     @staticmethod
     def unicode_block_histogram(text):
@@ -249,6 +255,9 @@ class DelimiterTypeMetadata(GenericTextMetadata):
     def metadata_name() -> str:
         return 'delimiter_type'
 
+    def metadata_column_type(self) -> ColumnType:
+        return ColumnType.categorical
+
     def metadata_function(self, text):
         html = re.compile('<.*?>')
         point = re.compile(delimiter_sentence)
@@ -293,6 +302,9 @@ class LanguageMetadata(GenericTextMetadata):
     @staticmethod
     def metadata_name() -> str:
         return 'language'
+
+    def metadata_column_type(self) -> ColumnType:
+        return ColumnType.categorical
 
     @staticmethod
     def detect_languages(text):
