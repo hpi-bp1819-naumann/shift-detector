@@ -13,7 +13,7 @@ def kolmogorov_smirnov_test(part1: pd.Series, part2: pd.Series):
 class NumericalStatisticalCheck(SimpleStatisticalCheck):
 
     def store_keys(self):
-        return [ColumnType.numeric]
+        return [ColumnType.numerical]
 
     def statistical_test(self, part1: pd.Series, part2: pd.Series) -> float:
         return kolmogorov_smirnov_test(part1, part2)
