@@ -3,13 +3,12 @@ from typing import List, Union
 
 import pandas as pd
 
-from shift_detector.Utils import read_from_csv
+from shift_detector.Utils import read_from_csv, column_names
 from shift_detector.checks.Check import Check, Report
 from shift_detector.preprocessors.Store import Store
 
 
 class Detector:
-
     def __init__(self,
                  df1: Union[pd.DataFrame, str],
                  df2: Union[pd.DataFrame, str],
@@ -19,25 +18,25 @@ class Detector:
         :param df2: either a dataframe or the file path
         :param delimiter: used delimiter for csv files
         """
-        # TODO: remove sampling
         if type(df1) is pd.DataFrame:
             self.df1 = df1
         elif type(df1) is str:
-            self.df1 = read_from_csv(df1, delimiter).sample(100)
+            self.df1 = read_from_csv(df1, delimiter)
         else:
             raise Exception("df1 is not a dataframe or a string")
 
         if type(df2) is pd.DataFrame:
             self.df2 = df2
         elif type(df2) is str:
-            self.df2 = read_from_csv(df1, delimiter).sample(100)
+            self.df2 = read_from_csv(df2, delimiter)
         else:
             raise Exception("df2 is not a dataframe or a string")
 
         self.checks_to_run = []
         self.check_reports = []
         self.store = Store(self.df1, self.df2)
-        logger.info("Used columns: {}".format(' '.join(self.store.columns)))
+
+        logger.info("Used columns: {}".format(' '.join(column_names(self.store.columns))))
 
     def add_checks(self, checks):
         """

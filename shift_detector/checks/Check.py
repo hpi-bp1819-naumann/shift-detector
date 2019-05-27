@@ -8,6 +8,7 @@ class Report(metaclass=ABCMeta):
         """
         Print the report.
         """
+        pass
 
 
 class Reports:
