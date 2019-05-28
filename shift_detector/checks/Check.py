@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 
+
 class Report:
 
     def __init__(self, examined_columns, shifted_columns, explanation):
@@ -57,7 +58,7 @@ class Reports:
 class Check(metaclass=ABCMeta):
 
     @abstractmethod
-    def run(self, store) -> DeprecatedReport:
+    def run(self, store) -> Report:
         """
         Run the check.
         :param store:
