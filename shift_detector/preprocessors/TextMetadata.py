@@ -2,6 +2,7 @@ import logging as logger
 import re
 import unicodedata
 from abc import abstractmethod
+from collections import defaultdict
 
 import pandas as pd
 # noinspection PyPackageRequirements
@@ -94,13 +95,10 @@ class UnicodeCategoriesMetadata(GenericTextMetadata):
 
     @staticmethod
     def unicode_category_histogram(text):
-        characters = {}
+        characters = defaultdict(int)
         for c in text:
             category = unicodedata.category(c)
-            if category in characters:
-                characters[category] += 1
-            else:
-                characters[category] = 1
+            characters[category] += 1
         return characters
 
     def metadata_function(self, text):
@@ -120,22 +118,19 @@ class UnicodeBlocksMetadata(GenericTextMetadata):
     def unicode_block_histogram(text):
 
         def block(character):
-            """ Return the Unicode block name for ch, or None if ch has no block.
-            from https://stackoverflow.com/questions/243831/unicode-block-of-a-character-in-python
-            :param character"""
-            assert isinstance(character, str) and len(character) == 1, repr(character)
-            cp = ord(character)
-            for start, end, name in UCBlist._blocks:
-                if start <= cp <= end:
-                    return name
+        """ Return the Unicode block name for ch, or None if ch has no block.
+        from https://stackoverflow.com/questions/243831/unicode-block-of-a-character-in-python
+        :param character"""
+        assert isinstance(character, str) and len(character) == 1, repr(character)
+        cp = ord(character)
+        for start, end, name in UCBlist._blocks:
+            if start <= cp <= end:
+                return name
 
-        characters = {}
+        characters = defaultdict(int)
         for c in text:
             category = block(c)
-            if category in characters:
-                characters[category] += 1
-            else:
-                characters[category] = 1
+            characters[category] += 1
         return characters
 
     def metadata_function(self, text):
@@ -315,13 +310,10 @@ class LanguageMetadata(GenericTextMetadata):
         else:
             parts = re.split(r'[\n\r]+', text)
         parts = [x.strip() for x in parts if x.strip()]
-        detected_languages = {}
+        detected_languages = defaultdict(int)
         for part in parts:
             lang = detect(part)
-            if lang in detected_languages:
-                detected_languages[lang] += 1
-            else:
-                detected_languages[lang] = 1
+            detected_languages[lang] += 1
         return detected_languages
 
     def metadata_function(self, text):
