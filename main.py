@@ -1,5 +1,6 @@
 from shift_detector.Detector import Detector
 from shift_detector.checks.SimpleCheck import SimpleCheck
+from shift_detector.checks.FrequentItemRulesCheck import FrequentItemsetCheck
 
 # Starting via console:
 # python3 main.py --train ./train_ascii.csv --test ./audits_ascii.csv --sep  ";"
@@ -10,14 +11,14 @@ if __name__ == "__main__":
     # ap.add_argument("-s", "--sep", required=True, help="separator for datasets")
     # args = vars(ap.parse_args())
 
-    args = {'train': '/Users/pzimme/Desktop/Datasets/audits_leonard.csv',
-            'test': '/Users/pzimme/Desktop/Datasets/train_leonard.csv', 'sep': ','}
+    args = {'train': '/Users/merzljl/Desktop/audits.csv',
+            'test': '/Users/merzljl/Desktop/train.csv', 'sep': ','}
     # train_path = args["train"]
     # audits_path = args["test"]
     # separator = args["sep"]
 
     detector = Detector(args['train'], args['test'], delimiter=args['sep'])
-    detector.add_checks(SimpleCheck())
+    detector.add_checks(FrequentItemsetCheck())
     # detector.add_check(Chi2Check())
 
     detector.run()

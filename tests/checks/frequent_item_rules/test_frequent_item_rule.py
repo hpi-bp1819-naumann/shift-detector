@@ -16,13 +16,13 @@ class TestRuleCluster(unittest.TestCase):
 
     def test_supercluster(self):
         cluster_a = RuleCluster([('value', 'A')], [])
-        cluster_a.max_abs_delta_support_left = 0.2
+        cluster_a.max_abs_delta_supports = 0.2
 
         cluster_b = RuleCluster([('value', 'A')], [])
-        cluster_b.max_abs_delta_support_left = -0.1
+        cluster_b.max_abs_delta_supports = -0.1
 
         cluster_c = RuleCluster([('value', 'B')], [])
-        cluster_c.max_abs_delta_support_left = -0.4
+        cluster_c.max_abs_delta_supports = -0.4
 
         self.assertTrue(cluster_a.is_supercluster(self.rule))
         self.assertFalse(cluster_b.is_supercluster(self.rule))

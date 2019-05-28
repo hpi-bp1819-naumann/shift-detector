@@ -1,26 +1,7 @@
+from shift_detector.Utils import ColumnType
 from shift_detector.checks.Check import Check, Report
 from shift_detector.checks.frequent_item_rules import fpgrowth, rule_compression
 from shift_detector.precalculations.Store import Store
-
-
-class FrequentItemsetReport(Report):
-
-    def __init__(self, compressed_rules):
-        self.compressed_rules = compressed_rules
-
-    def print_report(self):
-        """
-        Print report for checked columns
-        """
-        limit = 4
-        count = 0
-        print(str(limit+1), 'MOST IMPORTANT RULES \n')
-
-        for rule in self.compressed_rules:
-            rule.print()
-            count += 1
-            if count == limit:
-                break
 
 
 class FrequentItemsetCheck(Check):
@@ -44,17 +25,33 @@ class FrequentItemsetCheck(Check):
         self.min_support = min_support
         self.min_confidence = min_confidence
 
-    def run(self, store: Store) -> FrequentItemsetReport:
+    def print_report(self, compressed_rules):
+        """
+        Print report for checked columns
+        """
+        return_str = ''
+        limit = 5
+        count = 0
+        print(str(limit), 'MOST IMPORTANT RULES \n')
+
+        for rulecluster in compressed_rules:
+            return_str += rulecluster.___str__()
+            count += 1
+            if count == limit:
+                break
+
+    def run(self, store: Store) -> Report:
         """
         Calculate frequent rules, compress them and create a
         FrequentItemsetReport.
         :param store: the Store
         :return: FrequentItemsetReport
         """
-        df1 = store.df1
-        df2 = store.df2
+        df1_categorical = store[ColumnType.categorical][0]
+        df2_categorical = store[ColumnType.categorical][1]
+        # TODO: add preprocessing
 
-        item_rules = fpgrowth.calculate_frequent_rules(df1, df2, self.min_support,
-                                                       self.min_confidence)
+        item_rules = fpgrowth.calculate_frequent_rules(df1_categorical, df2_categorical, self.min_support, self.min_confidence)
         compressed_rules = rule_compression.compress_rules(item_rules)
-        return FrequentItemsetReport(compressed_rules)
+        self.print_report(compressed_rules)
+        return Report({}, {}, {})

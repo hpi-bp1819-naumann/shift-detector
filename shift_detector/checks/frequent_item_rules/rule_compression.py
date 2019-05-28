@@ -3,10 +3,10 @@ from shift_detector.checks.frequent_item_rules.ExtendendRule import ExtendedRule
 
 
 def printrule(rule):
+    # TODO, change due to new changes from support-left to support
     if len(rule.left_side) > 0:
         print(rule.left_side, '-->', rule.right_side)
-        print('supports_left: \t', rule.supports_of_left_side[0], ' - ', rule.supports_of_left_side[1],
-              '=', rule.delta_supports_of_left_side)
+        print('supports: \t', rule.supports[0], ' - ', rule.supports[1], '=', rule.delta_supports)
     else:
         print('//rule has no left side')
         print('() -->', rule.right_side)
@@ -69,6 +69,7 @@ def add_side_attributes_to_rules(rules):
 
 def group_rules_by_length(rules):
     groupings = []
+    # TODO: remove hardcoding here... >(
     for i in range(10):
         groupings.append([])
 
@@ -82,7 +83,7 @@ def group_rules_by_length(rules):
 def new_cluster_from_rule(rule):
     rule_attributes = rule.right_side + rule.left_side
     new_cluster = RuleCluster(rule_attributes, [rule])
-    new_cluster.max_abs_delta_support_left = rule.delta_supports_of_left_side
+    new_cluster.max_abs_delta_supports = rule.delta_supports_of_left_side
     return new_cluster
 
 
@@ -101,7 +102,7 @@ def cluster_rules_hierarchically(length_groups):
                     possible_supercluster.append(established_cluster)
 
             if supercluster_was_found:
-                superclusters = sorted(possible_supercluster, key=lambda x: x.max_abs_delta_support_left,
+                superclusters = sorted(possible_supercluster, key=lambda x: x.max_abs_delta_supports,
                                        reverse=True)
                 highest_support_supercluster = superclusters[0]
                 highest_support_supercluster.subcluster.append(rule)
@@ -117,16 +118,16 @@ def cluster_rules_hierarchically(length_groups):
 def compress_rules(rules):
     rules = add_side_attributes_to_rules(rules)
     rules = remove_allsame_attributes(rules)
-    rules = filter_non_values(rules)
+    # rules = filter_non_values(rules)
 
-    rules = sorted(rules, key=lambda x: abs(x.delta_supports_of_left_side))
+    rules = sorted(rules, key=lambda x: abs(x.delta_supports))
     length_groups = group_rules_by_length(rules)
     hierarchical_clusters = cluster_rules_hierarchically(length_groups)
 
     for cluster in hierarchical_clusters:
         cluster.calculate_max_support_and_confidence()
 
-    hierarchical_clusters = sorted(hierarchical_clusters, key=lambda x: x.max_abs_delta_support_left,
+    hierarchical_clusters = sorted(hierarchical_clusters, key=lambda x: x.max_abs_delta_supports,
                                    reverse=True)
     return hierarchical_clusters
 
