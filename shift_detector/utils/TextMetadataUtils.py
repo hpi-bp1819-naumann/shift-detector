@@ -8,7 +8,7 @@ delimiter_other = r'\s*,\s|\s+-+\s+'
 DetectorFactory.seed = 0
 
 
-def text_to_array(text):
+def tokenize(text):
     text = re.sub(r'[^\w\s]','',text)
     splitted = re.split(r'\W\s|\s', text)
     while '' in splitted:

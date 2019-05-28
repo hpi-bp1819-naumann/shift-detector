@@ -15,7 +15,7 @@ from textstat import textstat
 from shift_detector.preprocessors.Preprocessor import Preprocessor
 from shift_detector.utils import UCBlist
 from shift_detector.utils.ColumnManagement import ColumnType
-from shift_detector.utils.TextMetadataUtils import dictionary_to_sorted_string, text_to_array, delimiter_sentence, \
+from shift_detector.utils.TextMetadataUtils import dictionary_to_sorted_string, tokenize, delimiter_sentence, \
     delimiter_other, delimiter_HTML
 
 
@@ -152,7 +152,7 @@ class NumWordsMetadata(GenericTextMetadata):
         return ColumnType.numerical
 
     def metadata_function(self, text):
-        return len(text_to_array(text))
+        return len(tokenize(text))
 
 
 class NumDistinctWordsMetadata(GenericTextMetadata):
@@ -166,7 +166,7 @@ class NumDistinctWordsMetadata(GenericTextMetadata):
 
     def metadata_function(self, text):
         distinct_words = []
-        words = text_to_array(text)
+        words = tokenize(text)
         for word in words:
             if word not in distinct_words:
                 distinct_words.append(word)
@@ -183,7 +183,7 @@ class NumUniqueWordsMetadata(GenericTextMetadata):
         return ColumnType.numerical
 
     def metadata_function(self, text):
-        words = text_to_array(text)
+        words = tokenize(text)
         seen_once = []
         seen_often = []
         for word in words:
@@ -210,14 +210,14 @@ class UnknownWordRatioMetadata(GenericTextMetadata):
 
     def metadata_function(self, text):
         # not working for every language
-        words = text_to_array(text)
+        words = tokenize(text)
         spell = SpellChecker(self.language)
 
         if len(words) == 0:
             return 0.0
 
         misspelled = spell.unknown(words)
-        return round(len(misspelled) * 100 / len(words), 2)
+        return len(misspelled) / len(words)
 
 
 class StopwordRatioMetadata(GenericTextMetadata):
@@ -235,7 +235,7 @@ class StopwordRatioMetadata(GenericTextMetadata):
     def metadata_function(self, text):
         # not working for every language
         stopword_count = 0
-        words = text_to_array(text)
+        words = tokenize(text)
         try:
             stop = stopwords.words(languages.get(part1=self.language).name.lower())
             if (len(words) == 0):
@@ -243,7 +243,7 @@ class StopwordRatioMetadata(GenericTextMetadata):
             for word in words:
                 if word.lower() in stop:
                     stopword_count += 1
-            return round(stopword_count * 100 / len(words), 2)
+            return stopword_count/ len(words)
         except OSError as error:
             raise ValueError('Language ' + languages.get(
                 part1=self.language).name.lower() + ' is not supported for stopword ratio') from error
@@ -340,26 +340,26 @@ class ComplexityMetadata(GenericTextMetadata):
     def metadata_function(self, text):
         # lower value means more complex
         # works best for longer english texts. kinda works for other languages as well (not good though)
-        return textstat.textstat.flesch_reading_ease(text)
+        return textstat.flesch_reading_ease(text)
 
 
 class TextMetadata(Preprocessor):
 
     def __init__(self, text_metadata_types=None):
         if text_metadata_types is None:
-            self.text_metadata_types = [NumCharsMetadata(), NumWordsMetadata(), NumDistinctWordsMetadata()]
+            self.text_metadata_types = frozenset([NumCharsMetadata(), NumWordsMetadata(), NumDistinctWordsMetadata()])
         else:
-            self.text_metadata_types = text_metadata_types
+            self.text_metadata_types = frozenset(text_metadata_types)
 
     def __eq__(self, other):
-        return isinstance(other, self.__class__) and set(self.text_metadata_types) == set(other.text_metadata_types)
+        return isinstance(other, self.__class__) and self.text_metadata_types == other.text_metadata_types
 
     def __hash__(self):
         return hash((self.__class__, self.text_metadata_types))
 
     def process(self, store):
         df1, df2 = store[ColumnType.text]
-        metadata_names = [mdtype.metadata_name() for mdtype in self.text_metadata_types]
+        metadata_names = sorted([mdtype.metadata_name() for mdtype in self.text_metadata_types])
         index = pd.MultiIndex.from_product([df1.columns, metadata_names], names=['column', 'metadata'])
         metadata1 = pd.DataFrame(columns=index)
         metadata2 = pd.DataFrame(columns=index)

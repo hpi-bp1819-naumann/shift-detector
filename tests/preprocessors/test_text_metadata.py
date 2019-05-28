@@ -74,8 +74,61 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
-    # TODO: Add tests for other metadata types
-    # TODO: Add tests for overall metadata preprocessor
+    def test_unknown_ratio(self):
+        md1, md2 = UnknownWordRatioMetadata().process(self.store)
+        solution1 = pd.DataFrame([0.000000, 0.040000], columns=['text'])
+        solution2 = pd.DataFrame([0.250000, 0.333333], columns=['text'])
+        assert_frame_equal(solution1, md1)
+        assert_frame_equal(solution2, md2)
+
+    def test_stopword_ratio(self):
+        md1, md2 = StopwordRatioMetadata().process(self.store)
+        solution1 = pd.DataFrame([0.576923, 0.480000], columns=['text'])
+        solution2 = pd.DataFrame([0.000000, 0.000000], columns=['text'])
+        assert_frame_equal(solution1, md1)
+        assert_frame_equal(solution2, md2)
+
+    def test_delimiter_type(self):
+        md1, md2 = DelimiterTypeMetadata().process(self.store)
+        solution1 = pd.DataFrame(['other delimiter', 'other delimiter'], columns=['text'])
+        solution2 = pd.DataFrame(['no delimiter', 'no delimiter'], columns=['text'])
+        assert_frame_equal(solution1, md1)
+        assert_frame_equal(solution2, md2)
+
+    def test_num_parts(self):
+        md1, md2 = NumPartsMetadata().process(self.store)
+        solution1 = pd.DataFrame([4, 3], columns=['text'])
+        solution2 = pd.DataFrame([0, 0], columns=['text'])
+        assert_frame_equal(solution1, md1)
+        assert_frame_equal(solution2, md2)
+
+    def test_language(self):
+        md1, md2 = LanguageMetadata().process(self.store)
+        solution1 = pd.DataFrame(['en', 'en'], columns=['text'])
+        solution2 = pd.DataFrame(['en', 'en'], columns=['text'])
+        assert_frame_equal(solution1, md1)
+        assert_frame_equal(solution2, md2)
+
+    def test_complexity(self):
+        md1, md2 = ComplexityMetadata().process(self.store)
+        solution1 = pd.DataFrame([92.12, 113.81], columns=['text'])
+        solution2 = pd.DataFrame([50.5, 9.21], columns=['text'])
+        assert_frame_equal(solution1, md1)
+        assert_frame_equal(solution2, md2)
+
+    def test_metadata_preprocessor(self):
+        md1, md2 = self.store[TextMetadata(text_metadata_types=[NumWordsMetadata(), StopwordRatioMetadata(), UnicodeBlocksMetadata()])]
+        index = pd.MultiIndex.from_product([['text'], ['num_words', 'stopword_ratio', 'unicode_blocks']], names=['column', 'metadata'])
+        solution1 = pd.DataFrame(columns=index)
+        solution2 = pd.DataFrame(columns=index)
+        solution1[('text', 'num_words')] = [26, 25]
+        solution2[('text', 'num_words')] = [4, 3]
+        solution1[('text', 'stopword_ratio')] = [0.576923, 0.480000]
+        solution2[('text', 'stopword_ratio')] = [0.000000, 0.000000]
+        solution1[('text', 'unicode_blocks')] = ['Basic Latin', 'Basic Latin']
+        solution2[('text', 'unicode_blocks')] = ['Basic Latin', 'Basic Latin']
+        assert_frame_equal(solution1, md1)
+        assert_frame_equal(solution2, md2)
 
 
 class TestTextMetadataFunctions(unittest.TestCase):
@@ -84,9 +137,9 @@ class TestTextMetadataFunctions(unittest.TestCase):
         normal = "This. is a'n example, ,, 12  35,6  , st/r--ing    \n test."
         empty = ""
         punctuation = ".  , * (  \n \t [}"
-        self.assertEqual(TmUtils.text_to_array(normal), ['This', 'is', 'an', 'example', '12', '356', 'string', 'test'])
-        self.assertEqual(TmUtils.text_to_array(empty), [])
-        self.assertEqual(TmUtils.text_to_array(punctuation), [])
+        self.assertEqual(TmUtils.tokenize(normal), ['This', 'is', 'an', 'example', '12', '356', 'string', 'test'])
+        self.assertEqual(TmUtils.tokenize(empty), [])
+        self.assertEqual(TmUtils.tokenize(punctuation), [])
 
     def test_dictionary_to_sorted_string(self):
         many = {'a': 2, 'b': 5, 'c': 3, 'f': 5, 'd': 1, 'e': 5} 
