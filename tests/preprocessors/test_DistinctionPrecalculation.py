@@ -14,7 +14,7 @@ class TestCreateDetector(TestCase):
         self.df1 = DataFrame.from_dict(sales1)
         self.df2 = DataFrame.from_dict(sales2)
         self.store = Store(self.df1, self.df2)
-        self.precalculation = DistinctionPrecalculation()
+        self.precalculation = DistinctionPrecalculation(['shift', 'no_shift'])
 
     def test_process(self):
         calculation = self.precalculation.process(self.store)
@@ -26,3 +26,21 @@ class TestCreateDetector(TestCase):
         with self.subTest("Test relevant columns"):
             shifted_columns = calculation['relevant_columns']
             self.assertCountEqual(shifted_columns, ['shift'])
+
+    def test_equal(self):
+        with self.subTest("Test equality"):
+            other_precalculation = DistinctionPrecalculation(['no_shift', 'shift'])
+            self.assertEqual(self.precalculation, other_precalculation)
+
+        with self.subTest("Test equality"):
+            other_precalculation = DistinctionPrecalculation(['no_shift'])
+            self.assertNotEqual(self.precalculation, other_precalculation)
+
+    def test_hash(self):
+        with self.subTest("Test hash equality"):
+            other_precalculation = DistinctionPrecalculation(['no_shift', 'shift'])
+            self.assertEqual(self.precalculation.__hash__(), other_precalculation.__hash__())
+
+        with self.subTest("Test hash equality"):
+            other_precalculation = DistinctionPrecalculation(['no_shift'])
+            self.assertNotEqual(self.precalculation.__hash__(), other_precalculation.__hash__())

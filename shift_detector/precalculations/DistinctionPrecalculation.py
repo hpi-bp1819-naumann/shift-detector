@@ -11,7 +11,7 @@ from shift_detector.precalculations.Precalculation import Precalculation
 
 class DistinctionPrecalculation(Precalculation):
 
-    def __init__(self, columns=[], num_epochs=10):
+    def __init__(self, columns, num_epochs=10):
         self.columns = columns
         self.output_column = '__shift_detector__dataset'
         self.output_path = 'tmp/basicChecks_params'
@@ -24,24 +24,22 @@ class DistinctionPrecalculation(Precalculation):
         return set(self.columns) == set(other.columns)
 
     def __hash__(self):
-        return hash(tuple(set([self.__class__]) | set(self.columns)))
+        items = set(self.columns)
+        items.add(self.__class__)
+        return hash(tuple(items))
 
     def process(self, store):
         """
         Runs check on provided columns
         :return: result of the check
         """
-        input_columns = self.columns
-        if not input_columns:
-            input_columns = store.columns
-
         self.imputer = SimpleImputer(
-            input_columns=input_columns,
+            input_columns=self.columns,
             output_column=self.output_column,
             output_path=self.output_path)
 
-        df1 = store.df1[input_columns]
-        df2 = store.df2[input_columns]
+        df1 = store.df1[self.columns]
+        df2 = store.df2[self.columns]
 
         train_df, test_df = self.prepare_datasets(df1, df2)
         self.imputer.fit(train_df, test_df, num_epochs=self.num_epochs)
@@ -52,7 +50,7 @@ class DistinctionPrecalculation(Precalculation):
         return {
             'y_true': y_true,
             'y_pred': y_pred,
-            'relevant_columns': self.relevant_columns(input_columns, train_df)
+            'relevant_columns': self.relevant_columns(self.columns, train_df)
         }
 
     def label_datasets(self, df1: pd.DataFrame, df2: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:

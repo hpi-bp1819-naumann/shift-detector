@@ -11,8 +11,12 @@ class DistinctionCheck(Check):
         self.num_epochs = num_epochs
 
     def run(self, store) -> Report:
-        result = store[DistinctionPrecalculation(self.columns, self.num_epochs)]
-        examined_columns = self.columns
+        input_columns = self.columns
+        if not input_columns:
+            input_columns = store.columns
+
+        result = store[DistinctionPrecalculation(input_columns, self.num_epochs)]
+        examined_columns = input_columns
         shifted_columns = self.shifted_columns(result)
         information = self.information(result)
 
