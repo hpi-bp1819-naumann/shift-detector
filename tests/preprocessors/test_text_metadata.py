@@ -104,7 +104,7 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
         assert_frame_equal(solution2, md2)
 
     def test_language(self):
-        md1, md2 = LanguageMetadata().process(self.store)
+        md1, md2 = LanguageDictMetadata().process(self.store)
         solution1 = pd.DataFrame(['en', 'en'], columns=['text'])
         solution2 = pd.DataFrame(['en', 'en'], columns=['text'])
         assert_frame_equal(solution1, md1)
@@ -112,8 +112,8 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
 
     def test_complexity(self):
         md1, md2 = ComplexityMetadata().process(self.store)
-        solution1 = pd.DataFrame([92.12, 113.81], columns=['text'])
-        solution2 = pd.DataFrame([50.5, 9.21], columns=['text'])
+        solution1 = pd.DataFrame([5.0, 3.0], columns=['text'])
+        solution2 = pd.DataFrame([0.0, 13.0], columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
@@ -306,7 +306,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
         multipleLanguages = "Dieser Text ist zum Teil deutsch. \n Part of this text is in english. \n there actually is some french coming. \n Ce n'est pas anglais. \n No puedo hablar español. \n Beberapa bahasa untuk diuji."
         punctuation = " . ,"
         empty = ""
-        language = LanguageMetadata().detect_languages
+        language = LanguageDictMetadata().detect_languages
         self.assertEqual(language(english), {'en': 1})
         self.assertEqual(language(englishTypos), {'en': 1})
         self.assertEqual(language(german), {'de': 1})
@@ -321,7 +321,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
         punctuation = " . ,"
         empty = ""
         text_complexity = ComplexityMetadata().metadata_function
-        self.assertEqual(text_complexity(empty), 206.84)
-        self.assertEqual(text_complexity(punctuation), 206.84)
+        self.assertEqual(text_complexity(empty), 0.0)
+        self.assertEqual(text_complexity(punctuation), 0.0)
         self.assertEqual(text_complexity(easy), text_complexity(easy))
-        self.assertGreater(text_complexity(easy), text_complexity(hard))
+        self.assertGreater(text_complexity(hard), text_complexity(easy))

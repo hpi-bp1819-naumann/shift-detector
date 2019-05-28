@@ -296,7 +296,7 @@ class NumPartsMetadata(GenericTextMetadata):
 DetectorFactory.seed = 0  # seed language detection to make it deterministic
 
 
-class LanguageMetadata(GenericTextMetadata):
+class LanguageDictMetadata(GenericTextMetadata):
 
     @staticmethod
     def metadata_name() -> str:
@@ -323,6 +323,18 @@ class LanguageMetadata(GenericTextMetadata):
     def metadata_function(self, text):
         return dictionary_to_sorted_string(self.detect_languages(text))
 
+class LanguageMetadata(GenericTextMetadata):
+
+    @staticmethod
+    def metadata_name() -> str:
+        return 'language'
+
+    def metadata_column_type(self) -> ColumnType:
+        return ColumnType.categorical
+
+    def metadata_function(self, text):
+        return detect(text)
+
 
 class ComplexityMetadata(GenericTextMetadata):
 
@@ -334,9 +346,8 @@ class ComplexityMetadata(GenericTextMetadata):
         return ColumnType.numerical
 
     def metadata_function(self, text):
-        # lower value means more complex
         # works best for longer english texts. kinda works for other languages as well (not good though)
-        return textstat.flesch_reading_ease(text)
+        return textstat.text_standard(text, True)
 
 
 class TextMetadata(Preprocessor):

@@ -7,7 +7,7 @@ from shift_detector.Detector import Detector
 from shift_detector.checks.statistical_checks.TextMetadataStatisticalCheck import TextMetadataStatisticalCheck
 from shift_detector.preprocessors.Store import Store
 from shift_detector.preprocessors.TextMetadata import NumCharsMetadata, NumWordsMetadata, DistinctWordsRatioMetadata, \
-    LanguageMetadata
+    LanguageDictMetadata
 
 
 class TestTextMetadataStatisticalCheck(unittest.TestCase):
@@ -175,7 +175,7 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
         df2 = pd.DataFrame.from_dict({'text': self.phrases})
         store = Store(df1, df2)
         result = TextMetadataStatisticalCheck([NumCharsMetadata(), NumWordsMetadata(),
-                                               DistinctWordsRatioMetadata(), LanguageMetadata()]).run(store)
+                                               DistinctWordsRatioMetadata(), LanguageDictMetadata()]).run(store)
         self.assertEqual(3, len(result.significant_columns()))
 
     def test_compliance_with_detector(self):
