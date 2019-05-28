@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 import pandas as pd
 
 from shift_detector.Detector import Detector
-from shift_detector.checks.ExampleCheck import ExampleCheck, ExampleDeprecatedReport
+from shift_detector.checks.DummyCheck import DummyCheck, DummyReport
 
 
 class TestCreateDetector(unittest.TestCase):
@@ -54,13 +54,13 @@ class TestDetector(unittest.TestCase):
             self.assertRaises(Exception, self.detector.run)
 
         with self.subTest("Test successful run"):
-            self.detector.checks_to_run = [ExampleCheck(), ExampleCheck()]
+            self.detector.checks_to_run = [DummyCheck(), DummyCheck()]
             self.detector.run()
             self.assertEqual(len(self.detector.check_reports), 2)
 
     def test_add_check(self):
         with self.subTest("Test with single check"):
-            check = ExampleCheck()
+            check = DummyCheck()
             self.detector.add_checks(check)
             self.assertEqual(len(self.detector.checks_to_run), 1)
 
@@ -70,7 +70,7 @@ class TestDetector(unittest.TestCase):
 
     def test_add_checks(self):
         with self.subTest("Test with list of checks"):
-            checks = [ExampleCheck(), ExampleCheck()]
+            checks = [DummyCheck(), DummyCheck()]
             self.detector.add_checks(checks)
             self.assertEqual(len(self.detector.checks_to_run), 2)
 
