@@ -23,9 +23,9 @@ if __name__ == "__main__":
     detector.run()
     detector.evaluate()
     print()
-    
+
     # detector.checks_reports[0].reports.evaluate(significance=0.5)
     # detector.evaluate()
 
     # modules=[])
-    # .add_check(KsChiCheck) \
+    # .add_check(KsChiCheck)

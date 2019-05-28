@@ -14,3 +14,12 @@ See [unittest-Documentation](https://docs.python.org/3/library/unittest.html) fo
 # Run unittests
 python3 -m unittest discover
 ```
+
+
+## Documentation
+To build the documentation
+```
+make docs
+```
+
+View the documentation by opening ``docs/build/html/index.html`` in your browser.
