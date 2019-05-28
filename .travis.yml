@@ -7,11 +7,9 @@ before_install:
 install:
   - pip3 install python-coveralls
   - pip3 install coverage
-  - pip3 install pandas
-  - pip3 install scipy
-  - pip3 install datawig
-  - pip3 install gensim
+  - pip3 install -r requirements.txt
 script:
+  - python3 nltk_stopwords_download.py
   - python3 -m unittest discover
   - coverage run --source shift_detector -m unittest discover
 after_success:
