@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/hpi-bp1819-naumann/shift-detector.svg?branch=master)](https://travis-ci.org/hpi-bp1819-naumann/shift-detector)
-[![Coverage Status](https://coveralls.io/repos/github/hpi-bp1819-naumann/shift-detector/badge.svg?branch=master)](https://coveralls.io/github/hpi-bp1819-naumann/shift-detector?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/hpi-bp1819-naumann/shift-detector/badge.svg?branch=master&service=github)](https://coveralls.io/github/hpi-bp1819-naumann/shift-detector?branch=master&service=github)
 # shift-detector
 
 ## Installation
