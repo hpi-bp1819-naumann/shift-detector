@@ -1,6 +1,6 @@
 import unittest
 import pandas as pd
-from shift_detector.preprocessors.DefaultEmbedding import DefaultEmbedding
+from shift_detector.precalculations.DefaultEmbedding import DefaultEmbedding
 
 
 class TestDefault(unittest.TestCase):
