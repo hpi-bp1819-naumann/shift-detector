@@ -3,7 +3,7 @@ import logging as logger
 from pandas import DataFrame
 
 from shift_detector.Utils import split_dataframes, ColumnType, shared_column_names
-from shift_detector.preprocessors.Preprocessor import Preprocessor
+from shift_detector.precalculations.Preprocessor import Preprocessor
 
 
 class Store:

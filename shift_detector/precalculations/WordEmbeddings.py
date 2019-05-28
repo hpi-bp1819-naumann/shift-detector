@@ -3,7 +3,7 @@ import numpy as np
 from gensim.models import FastText, Word2Vec
 from numbers import Number
 from copy import copy
-from shift_detector.preprocessors.Preprocessor import Preprocessor
+from shift_detector.precalculations.Preprocessor import Preprocessor
 
 
 class EmbeddingType(Enum):
