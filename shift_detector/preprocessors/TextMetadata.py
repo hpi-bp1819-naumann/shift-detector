@@ -118,14 +118,14 @@ class UnicodeBlocksMetadata(GenericTextMetadata):
     def unicode_block_histogram(text):
 
         def block(character):
-        """ Return the Unicode block name for ch, or None if ch has no block.
-        from https://stackoverflow.com/questions/243831/unicode-block-of-a-character-in-python
-        :param character"""
-        assert isinstance(character, str) and len(character) == 1, repr(character)
-        cp = ord(character)
-        for start, end, name in UCBlist._blocks:
-            if start <= cp <= end:
-                return name
+            """ Return the Unicode block name for ch, or None if ch has no block.
+            from https://stackoverflow.com/questions/243831/unicode-block-of-a-character-in-python
+            :param character"""
+            assert isinstance(character, str) and len(character) == 1, repr(character)
+            cp = ord(character)
+            for start, end, name in UCBlist._blocks:
+                if start <= cp <= end:
+                    return name
 
         characters = defaultdict(int)
         for c in text:
@@ -162,6 +162,8 @@ class DistinctWordsRatioMetadata(GenericTextMetadata):
     def metadata_function(self, text):
         distinct_words = []
         words = tokenize(text)
+        if len(words) == 0:
+            return 0.0
         for word in words:
             if word not in distinct_words:
                 distinct_words.append(word)
@@ -179,6 +181,8 @@ class UniqueWordsRatioMetadata(GenericTextMetadata):
 
     def metadata_function(self, text):
         words = tokenize(text)
+        if len(words) == 0:
+            return 0.0
         seen_once = []
         seen_often = []
         for word in words:

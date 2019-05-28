@@ -33,8 +33,8 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
 
     def test_ratio_upper(self):
         md1, md2 = RatioUpperMetadata().process(self.store)
-        solution1 = pd.DataFrame([3.92, 5.38], columns=['text'])
-        solution2 = pd.DataFrame([3.70, 3.12], columns=['text'])
+        solution1 = pd.DataFrame([0.0392156, 0.0537634], columns=['text'])
+        solution2 = pd.DataFrame([0.0370370, 0.03125], columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
@@ -63,15 +63,15 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
 
     def test_distinct_words(self):
         md1, md2 = DistinctWordsRatioMetadata().process(self.store)
-        solution1 = pd.DataFrame([24, 20], columns=['text'])
-        solution2 = pd.DataFrame([4, 3], columns=['text'])
+        solution1 = pd.DataFrame([24/26, 20/25], columns=['text'])
+        solution2 = pd.DataFrame([1.0, 1.0], columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
     def test_unique_words(self):
         md1, md2 = UniqueWordsRatioMetadata().process(self.store)
-        solution1 = pd.DataFrame([22, 16], columns=['text'])
-        solution2 = pd.DataFrame([4, 3], columns=['text'])
+        solution1 = pd.DataFrame([22/26, 16/25], columns=['text'])
+        solution2 = pd.DataFrame([1.0, 1.0], columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
@@ -169,9 +169,9 @@ class TestTextMetadataFunctions(unittest.TestCase):
         empty = ""
         ratio_upper = RatioUpperMetadata().metadata_function
         self.assertEqual(ratio_upper(lower), 0.00)
-        self.assertEqual(ratio_upper(upper), 100.00)
-        self.assertEqual(ratio_upper(mixed1), 50.00)
-        self.assertEqual(ratio_upper(mixed2), 33.33)
+        self.assertEqual(ratio_upper(upper), 1.00)
+        self.assertEqual(ratio_upper(mixed1), .50)
+        self.assertAlmostEqual(ratio_upper(mixed2), 0.3333333)
         self.assertEqual(ratio_upper(empty), 0.00)
 
     def test_unicode_category(self):
@@ -203,31 +203,31 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual(num_words(withPunctuation), 6)
         self.assertEqual(num_words(empty), 0)
 
-    def test_num_distinct_words(self):
+    def test_distinct_words_ratio(self):
         distinct = "this are all different words"
         same = "same same, same. same"
         mixed = "there are doubled words and there are distinct words."
         capitalLetters = "Capital letters matter Matter"
         empty = ""
-        num_distinct_words = DistinctWordsRatioMetadata().metadata_function
-        self.assertEqual(num_distinct_words(distinct), 5)
-        self.assertEqual(num_distinct_words(same), 1)
-        self.assertEqual(num_distinct_words(mixed), 6)
-        self.assertEqual(num_distinct_words(capitalLetters), 4)
-        self.assertEqual(num_distinct_words(empty), 0)
+        distinct_words_ratio = DistinctWordsRatioMetadata().metadata_function
+        self.assertEqual(distinct_words_ratio(distinct), 1.0)
+        self.assertEqual(distinct_words_ratio(same), 0.25)
+        self.assertAlmostEqual(distinct_words_ratio(mixed), 0.66666666)
+        self.assertEqual(distinct_words_ratio(capitalLetters), 1.0)
+        self.assertEqual(distinct_words_ratio(empty), 0.0)
 
-    def test_num_unique_words(self):
+    def test_unique_words(self):
         distinct = "this are all different words"
         same = "same, same. same"
         mixed = "there are doubled words and there are distinct words."
         capitalLetters = "Capital letters letters matter Matter"
         empty = ""
-        num_unique_words = UniqueWordsRatioMetadata().metadata_function
-        self.assertEqual(num_unique_words(distinct), 5)
-        self.assertEqual(num_unique_words(same), 0)
-        self.assertEqual(num_unique_words(mixed), 3)
-        self.assertEqual(num_unique_words(capitalLetters), 3)
-        self.assertEqual(num_unique_words(empty), 0)
+        unique_words_ratio = UniqueWordsRatioMetadata().metadata_function
+        self.assertEqual(unique_words_ratio(distinct), 1.0)
+        self.assertEqual(unique_words_ratio(same), 0.0)
+        self.assertAlmostEqual(unique_words_ratio(mixed), 0.3333333)
+        self.assertEqual(unique_words_ratio(capitalLetters), 0.6)
+        self.assertEqual(unique_words_ratio(empty), 0.0)
 
     def test_unknown_words(self):
         correct_english = "This is a correct sentence"
@@ -238,7 +238,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
         empty = ""
         unknown_word_ratio = UnknownWordRatioMetadata(language='en').metadata_function
         self.assertEqual(unknown_word_ratio(correct_english), 0.00)
-        self.assertEqual(unknown_word_ratio(incorrect_english), 40.00)
+        self.assertEqual(unknown_word_ratio(incorrect_english), .4)
         self.assertRaises(ValueError, UnknownWordRatioMetadata(language='so').metadata_function,
                           text=unsupported_language)
         self.assertEqual(unknown_word_ratio(punctuation), 00.00)
@@ -253,8 +253,8 @@ class TestTextMetadataFunctions(unittest.TestCase):
         unsupported_language = "Aqoonyahanada caalamku waxay aad ugu murmaan sidii luuqadaha aduunku ku bilaabmeem."
         stopword_ratio = StopwordRatioMetadata(language='en').metadata_function
         self.assertEqual(stopword_ratio(no_stopwords), 0.0)
-        self.assertEqual(stopword_ratio(only_stopwords), 100.0)
-        self.assertEqual(stopword_ratio(mixed), 60.0)
+        self.assertEqual(stopword_ratio(only_stopwords), 1.0)
+        self.assertEqual(stopword_ratio(mixed), 0.6)
         self.assertEqual(stopword_ratio(punctuation), 0.0)
         self.assertEqual(stopword_ratio(empty), 0.0)
         self.assertRaises(ValueError, StopwordRatioMetadata(language='so').metadata_function, text=unsupported_language)
