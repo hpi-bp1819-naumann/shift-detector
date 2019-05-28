@@ -24,7 +24,8 @@ def is_categorical(col: pd.Series,
     :return: True if the column is categorical according to the heuristic
     """
 
-    sample = col.sample(n=n_samples, replace=len(col) < n_samples).unique()
+    n_samples = n_samples if len(col) >= n_samples else len(col)
+    sample = col.sample(n=n_samples).unique()
 
     return sample.shape[0] / n_samples <= max_unique_fraction
 
