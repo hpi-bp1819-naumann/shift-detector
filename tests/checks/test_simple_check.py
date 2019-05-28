@@ -4,8 +4,8 @@ import unittest
 
 import pandas as pd
 
-from shift_detector.checks.SimpleCheck import SimplePrecalculation
-from shift_detector.preprocessors.Store import Store
+from shift_detector.precalculations.SimplePrecalculation import SimplePrecalculation
+from shift_detector.precalculations.Store import Store
 
 
 class TestSimplePrecalculation(unittest.TestCase):

@@ -5,7 +5,7 @@ import pandas as pd
 
 from shift_detector.Utils import read_from_csv, column_names
 from shift_detector.checks.Check import Check, DeprecatedReport
-from shift_detector.preprocessors.Store import Store
+from shift_detector.precalculations.Store import Store
 
 
 class Detector:

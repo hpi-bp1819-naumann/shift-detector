@@ -1,6 +1,6 @@
 from shift_detector.checks.Check import Check, Report
 from shift_detector.checks.frequent_item_rules import fpgrowth, rule_compression
-from shift_detector.preprocessors.Store import Store
+from shift_detector.precalculations.Store import Store
 
 
 class FrequentItemsetReport(Report):
