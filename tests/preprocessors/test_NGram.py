@@ -1,5 +1,5 @@
 import unittest
-from shift_detector.preprocessors.NGram import NGram, NGramType
+from shift_detector.precalculations.NGram import NGram, NGramType
 import pandas as pd
 
 
