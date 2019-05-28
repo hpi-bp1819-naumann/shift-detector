@@ -6,11 +6,12 @@ from shift_detector.precalculations.DistinctionPrecalculation import Distinction
 
 class DistinctionCheck(Check):
 
-    def __init__(self, columns=[]):
+    def __init__(self, columns=[], num_epochs=10):
         self.columns = columns
+        self.num_epochs = num_epochs
 
     def run(self, store) -> Report:
-        result = store[DistinctionPrecalculation(self.columns)]
+        result = store[DistinctionPrecalculation(self.columns, self.num_epochs)]
         examined_columns = self.columns
         shifted_columns = self.shifted_columns(result)
         information = self.information(result)

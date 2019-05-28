@@ -11,10 +11,11 @@ from shift_detector.precalculations.Precalculation import Precalculation
 
 class DistinctionPrecalculation(Precalculation):
 
-    def __init__(self, columns=[]):
+    def __init__(self, columns=[], num_epochs=10):
         self.columns = columns
         self.output_column = '__shift_detector__dataset'
         self.output_path = 'tmp/basicChecks_params'
+        self.num_epochs = num_epochs
         self.imputer = None
 
     def __eq__(self, other):
@@ -43,7 +44,7 @@ class DistinctionPrecalculation(Precalculation):
         df2 = store.df2[input_columns]
 
         train_df, test_df = self.prepare_datasets(df1, df2)
-        self.imputer.fit(train_df, test_df, num_epochs=1)
+        self.imputer.fit(train_df, test_df, num_epochs=self.num_epochs)
 
         imputed = self.imputer.predict(test_df)
         y_true, y_pred = imputed[self.output_column], imputed[self.output_column + '_imputed']
