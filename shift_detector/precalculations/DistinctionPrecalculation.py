@@ -24,8 +24,7 @@ class DistinctionPrecalculation(Precalculation):
         return set(self.columns) == set(other.columns)
 
     def __hash__(self):
-        items = set(self.columns)
-        items.add(self.__class__)
+        items = sorted(self.columns) + [self.__class__]
         return hash(tuple(items))
 
     def process(self, store):
