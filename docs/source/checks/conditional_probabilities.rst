@@ -1,117 +1,153 @@
-.. _conditional_probabilities
+.. _conditional_probabilities:
 
 Conditional probabilities
 =========================
 
-Abstract
---------
+Description
+-----------
 
-This check compares two data sets using conditional probabilities.
-Specifically, it compares the probability of co-occurring
-values inside a tuple. Its output highlights where those
-probabilities diverge.
+This check uses conditional probabilities to compare your data sets.
+It produces a comprehensive and comprehensible overview of the
+differences in the value distributions of your data sets.
 
-Motivation
-----------
+As :ref:`conditional_probabilities` performs exact matching, it works best
+with data sets consisting of categorical columns only. A pre-processing
+step is included to transform continuous to categorical columns.
 
-.. _example:
-
-We introduce this check by an example:
-
-    Assume you have two data sets (``ds1`` and ``ds2``) about shoes extracted from a
-    product catalog. Each tuple contains information about *make*, *color* and
-    *category*.
-
-    This check returns a list of rules obeying the following form::
-
-        MAKE: Nike, COLOR: black ==> CATEGORY: football
-        [SUPPORTS_OF_LEFT_SIDES: (0.3, 0.07), DELTA_SUPPORTS_OF_LEFT_SIDES: 0.23,
-        SUPPORTS: (0.03, 0.05), DELTA_SUPPORTS: -0.02, CONFIDENCES: (0.1, 0.71),
-        DELTA_CONFIDENCES: -0.61]
-
-    This rule states that (a) 30% of the tuples in ``ds1`` and 7% of the tuples in
-    ``ds2`` are about black Nike shoes, which accounts to a difference of 23%,
-    (b) 3% of the tuples in ``ds1`` and 5% of the tuples in ``ds2`` are about black
-    Nike football shoes, which accounts to a difference of -2%, and
-    (c) if a tuple is about black Nike shoes the **conditional probability** that
-    the category is football is 10% in ``ds1`` and 71% in ``ds2``, which
-    accounts to a difference of -61%.
-
-    On the basis of such rules, you can easily get insights into differences
-    between the two data sets. The above rule alone tells you, that (a) ``ds1``
-    contains way more tuples about black Nike shoes than ``ds2``, however, (b) the
-    probability that such a shoe is made for football is way higher in ``ds2`` than
-    in ``ds1``.
+The result not only shows you if a shift happened. It also shows you where
+and to what extent your data sets differ from each other.
 
 Example
 -------
 
-The basic example of this check is::
+This section shows you how to use :ref:`conditional_probabilities` and interpret
+its result.
+
+Code
+++++
+
+::
 
     from shift_detector.Detector import Detector
     from shift_detector.checks.FrequentItemRulesCheck import FrequentItemsetCheck
 
-    detector = Detector('/path1.csv', '/path2.csv', delimiter=',')
+    data_set_1 = 'examples/shoes_first.csv'
+    data_set_2 = 'examples/shoes_second.csv'
+
+    detector = Detector(
+        data_set_1,
+        data_set_2,
+        delimiter=','
+    )
     detector.add_checks(
-        FrequentItemsetCheck(min_support=0.01, min_confidence=0.15)
+        FrequentItemsetCheck()
     )
 
     detector.run()
     detector.evaluate()
 
-1. You have to create a :class:`~shift_detector.Detector.Detector` object in order to tell Morpheus which data sets you want to compare.
-2. Then you have to specify in :meth:`~shift_detector.Detector.Detector.add_checks`, which checks you want to run: in this case only :class:`~shift_detector.checks.FrequentItemRulesCheck.FrequentItemsetCheck`.
-3. Finally you have to start the detector with :meth:`~shift_detector.Detector.Detector.run` and print the results with :meth:`~shift_detector.Detector.Detector.evaluate`.
+The code works as follows:
 
-Specification
--------------
+1. First, you create a :class:`~shift_detector.Detector.Detector` object to tell Morpheus
+   which data sets you want to compare.
+2. Then, you specify in :meth:`~shift_detector.Detector.Detector.add_checks`
+   which check you want to run: in this case
+   :class:`~shift_detector.checks.FrequentItemRulesCheck.FrequentItemsetCheck`.
+3. Finally, you start the detector with
+   :meth:`~shift_detector.Detector.Detector.run` and print the result with
+   :meth:`~shift_detector.Detector.Detector.evaluate`.
 
-The check proceeds with the following steps:
+Result
+++++++
 
-1. Both data sets are transformed: each component of every tuple is replaced by an
-   attribute-name, attribute-value pair. This is required for the correct
-   working of the next step. However, the transformation is applied on the fly; we
-   never actually copy the data.
-2. Our implementation of FP-growth is used to generate *association rules* for both
-   data sets individually. The parameters ``min_support`` and
+:ref:`conditional_probabilities` produces a set of rules::
+
+    MAKE: Nike, COLOR: black ==> CATEGORY: football
+    [SUPPORTS_OF_LEFT_SIDES: (0.3, 0.07), DELTA_SUPPORTS_OF_LEFT_SIDES: 0.23,
+    SUPPORTS: (0.03, 0.05), DELTA_SUPPORTS: -0.02, CONFIDENCES: (0.1, 0.71),
+    DELTA_CONFIDENCES: -0.61]
+    ...
+
+Interpretation
+++++++++++++++
+
+The above rule can be read as follows:
+
+1. 30% of the tuples in ``data_set_1`` and 7% of the tuples in ``data_set_2``
+   are about black Nike shoes. This accounts to a difference of 23%.
+2. 3% of the tuples in ``data_set_1`` and 5% of the tuples in ``data_set_2``
+   are about black Nike football shoes. This accounts to a difference of -2%.
+3. If a tuple is about black Nike shoes the **conditional probability** that
+   the category is football is 10% in ``data_set_1`` and 71% in ``data_set_2``.
+   This accounts to a difference of -61%.
+
+This tells you that:
+
+1. ``data_set_1`` contains way more tuples about black Nike shoes than
+   ``data_set_2``, however,
+2. the probability that a black Nike shoe is made for football is way higher
+   in ``data_set_2`` than in ``data_set_1``.
+
+Parameters
+----------
+
+:ref:`conditional_probabilities` provides two tuning knobs that you can use
+to control (a) the computational complexity and (b) the size of the result:
+
+``min_support``:
+    This parameter expects a float between 0 and 1 and impacts both runtime
+    and size of the result. :ref:`conditional_probabilities` only produces
+    rules whose ``support_of_left_side`` and ``support`` exceed ``min_support``
+    in at least one data set.
+
+    The lower you choose ``min_support`` the more resources are required during
+    computation both in terms of memory and CPU.
+    The default value is ``0.01``. This means that :ref:`conditional_probabilities`
+    only considers values which appear in at least 1% of your tuples.
+    By adjusting this parameter you can adjust the granularity of the comparison
+    of the two data sets.
+
+``min_confidence``:
+    This parameter expects a float between 0 and 1 and impacts the size of the
+    result. :ref:`conditional_probabilities` only produces rules whose
+    ``confidence`` exceeds ``min_confidence`` in at least one data set.
+
+    The lower you choose ``min_confidence`` the more rules are generated.
+    The default value is ``0.15``. This means that the **conditional probability**
+    of a specific right side given a specific left side has to be at least 15%.
+
+Implementation
+--------------
+
+Algorithm
++++++++++
+
+:ref:`conditional_probabilities` works as follows:
+
+1. Both data sets are transformed: each component of every tuple is replaced
+   by an attribute-name, attribute-value pair. However, this transformation is
+   applied on the fly; we never actually copy the data.
+2. The FP-growth algorithm is used to generate *association rules* for both
+   data sets. The parameters ``min_support`` and
    ``min_confidence`` are used as described in [Han2000]_ and
    [Agrawal1994]_. The only difference is that both parameters are relative and
-   expect ``floats`` between 0 and 1, whereas [Han2000]_ and [Agrawal1994]_ use an
-   absolute value for ``min_support``:
-
-   ``min_support``:
-     This parameter mainly impacts the runtime of FP-growth. The lower
-     ``min_support`` the more resources are required during computation
-     both in terms of memory and CPU. The default value is ``0.01``, which is high
-     enough to get a reasonably good performance and still low enough to not
-     prematurely exclude significant association rules. This parameter allows you to
-     adjust the granularity of the comparison of the two data sets.
-
-   ``min_confidence``:
-     This parameter impacts the amount of generated association rules. The higher
-     ``min_confidence`` the more rules are generated. The default value is
-     ``0.15``. There is no further significance in this value other than that it
-     seems sufficiently reasonable.
-
-   Only association rules whose support exceeds ``min_support`` and whose
-   confidence exceeds ``min_confidence`` in at least one data set are
-   included in the generated association rules.
-3. All association rules exceeding ``min_support`` and
-   ``min_confidence`` in both data sets can be compared directly. For each
-   such rule generate one association rule of the form showed in the example_ above.
+   expect ``floats`` between 0 and 1, whereas [Han2000]_ and [Agrawal1994]_
+   use an absolute value for ``min_support``.
+3. Association rules exceeding ``min_support`` and ``min_confidence`` in both
+   data sets can be compared directly. For each of those rule-pairs generate a
+   result rule of the form showed above.
 4. If a rule exceeds ``min_support`` and ``min_confidence`` in
    one data set but not in the other, we don't know if this rule does not appear in
    the other data set at all or just does not exceed ``min_support`` and/or
-   ``min_confidence``. We therefore have to scan both data sets one
-   last time to aggregate the counts of such rules. This information at hand, we can
-   generate the remaining association rules and our algorithm terminates.
+   ``min_confidence``. We therefore scan both data sets one
+   more time and count their appearances. This information at hand, we can
+   generate the remaining result rules.
 
+Notes
++++++
 
-Implementation Notes
---------------------
-
-We use the FP-growth algorithm as proposed in [Han2000]_ for association rule mining.
-The code is largely copied from fp-growth_.
+We use the FP-growth algorithm as proposed in [Han2000]_ to compute all relevant
+conditional probabilities. The code is largely copied from fp-growth_.
 The function ``generate_association_rules(...)`` is revised in the following ways:
 
 1. A parameter called ``size`` is added to the *parameter list*.
@@ -120,8 +156,8 @@ The function ``generate_association_rules(...)`` is revised in the following way
 2. The return value is changed to a *dictionary* of the form
    ``{(left_side, right_side): (support_of_left_side, support, confidence)}``.
    ``support_of_left_side`` and ``support`` give the
-   percentage of tuples containing all attribute-value pairs from ``left_side`` and
-   ``right_side`` combined.
+   percentage of tuples containing all attribute-value pairs from ``left_side``
+   alone and ``left_side`` and ``right_side`` combined.
 
    * This additionally fixes a `bug
      <https://github.com/evandempsey/fp-growth/issues/11>`_ present in fp-growth_:
@@ -140,12 +176,12 @@ We feel very confident that the code is correct and reasonably fast:
 2. We compared the result produced by this implementation on a large production
    data set with the result produced by an implementation of the Apriori algorithm
    [Agrawal1994]_ we used previously. Both results were identical. This is a strong
-   indicator that (a) both results are false but in exactly the same way or (b) both
-   results are correct. We opt for (b).
+   indicator that either both results are false but in exactly the same way or both
+   results are correct. We think it's the latter.
 
    * During this comparison we could confirm that FP-growth is both faster and
      requires less memory than the Apriori algorithm as is also shown in [Han2000]_.
-     This is why we feel confident, that FP-growth is the better algorithm for our
+     This is why we feel confident that FP-growth is the right choice for our
      use case.
 
 As a last aside: we issued a `Pull Request <https://github.com/evandempsey/fp-growth/pull/17>`_

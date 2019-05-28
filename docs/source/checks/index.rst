@@ -8,6 +8,8 @@ Checks
     :maxdepth: 1
 
     conditional_probabilities
+    guide
+
 
 Morpheus comprises several methods to systematically compare two
 data sets and check for a :term:`shift`. This section introduces each of
