@@ -58,18 +58,6 @@ class DeprecatedReport(metaclass=ABCMeta):
         pass
 
 
-class Reports:
-
-    def __init__(self, check_result, report_class):
-        self.check_result = check_result
-        self.result_class = report_class
-        self.reports = []
-        self.evaluate()
-
-    def evaluate(self, **kwargs):
-        self.reports.append(self.result_class(data=self.check_result, **kwargs))
-
-
 class Check(metaclass=ABCMeta):
 
     @abstractmethod
