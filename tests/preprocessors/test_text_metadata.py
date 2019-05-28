@@ -62,14 +62,14 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
         assert_frame_equal(solution2, md2)
 
     def test_distinct_words(self):
-        md1, md2 = NumDistinctWordsMetadata().process(self.store)
+        md1, md2 = DistinctWordsRatioMetadata().process(self.store)
         solution1 = pd.DataFrame([24, 20], columns=['text'])
         solution2 = pd.DataFrame([4, 3], columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
     def test_unique_words(self):
-        md1, md2 = NumUniqueWordsMetadata().process(self.store)
+        md1, md2 = UniqueWordsRatioMetadata().process(self.store)
         solution1 = pd.DataFrame([22, 16], columns=['text'])
         solution2 = pd.DataFrame([4, 3], columns=['text'])
         assert_frame_equal(solution1, md1)
@@ -209,7 +209,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
         mixed = "there are doubled words and there are distinct words."
         capitalLetters = "Capital letters matter Matter"
         empty = ""
-        num_distinct_words = NumDistinctWordsMetadata().metadata_function
+        num_distinct_words = DistinctWordsRatioMetadata().metadata_function
         self.assertEqual(num_distinct_words(distinct), 5)
         self.assertEqual(num_distinct_words(same), 1)
         self.assertEqual(num_distinct_words(mixed), 6)
@@ -222,7 +222,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
         mixed = "there are doubled words and there are distinct words."
         capitalLetters = "Capital letters letters matter Matter"
         empty = ""
-        num_unique_words = NumUniqueWordsMetadata().metadata_function
+        num_unique_words = UniqueWordsRatioMetadata().metadata_function
         self.assertEqual(num_unique_words(distinct), 5)
         self.assertEqual(num_unique_words(same), 0)
         self.assertEqual(num_unique_words(mixed), 3)

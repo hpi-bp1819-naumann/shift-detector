@@ -6,7 +6,7 @@ from pandas.util.testing import assert_frame_equal
 from shift_detector.Detector import Detector
 from shift_detector.checks.statistical_checks.TextMetadataStatisticalCheck import TextMetadataStatisticalCheck
 from shift_detector.preprocessors.Store import Store
-from shift_detector.preprocessors.TextMetadata import NumCharsMetadata, NumWordsMetadata, NumDistinctWordsMetadata, \
+from shift_detector.preprocessors.TextMetadata import NumCharsMetadata, NumWordsMetadata, DistinctWordsRatioMetadata, \
     LanguageMetadata
 
 
@@ -175,7 +175,7 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
         df2 = pd.DataFrame.from_dict({'text': self.phrases})
         store = Store(df1, df2)
         result = TextMetadataStatisticalCheck([NumCharsMetadata(), NumWordsMetadata(),
-                                               NumDistinctWordsMetadata(), LanguageMetadata()]).run(store)
+                                               DistinctWordsRatioMetadata(), LanguageMetadata()]).run(store)
         self.assertEqual(3, len(result.significant_columns()))
 
     def test_compliance_with_detector(self):

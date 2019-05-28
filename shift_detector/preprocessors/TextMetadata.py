@@ -81,7 +81,7 @@ class RatioUpperMetadata(GenericTextMetadata):
             return 0
         lower = sum(map(str.islower, text))
         upper = sum(1 for c in text if c.isupper())
-        return round((upper * 100) / (lower + upper), 2)
+        return upper / (lower + upper)
 
 
 class UnicodeCategoriesMetadata(GenericTextMetadata):
@@ -150,7 +150,7 @@ class NumWordsMetadata(GenericTextMetadata):
         return len(tokenize(text))
 
 
-class NumDistinctWordsMetadata(GenericTextMetadata):
+class DistinctWordsRatioMetadata(GenericTextMetadata):
 
     @staticmethod
     def metadata_name() -> str:
@@ -165,10 +165,10 @@ class NumDistinctWordsMetadata(GenericTextMetadata):
         for word in words:
             if word not in distinct_words:
                 distinct_words.append(word)
-        return len(distinct_words)
+        return len(distinct_words)/len(words)
 
 
-class NumUniqueWordsMetadata(GenericTextMetadata):
+class UniqueWordsRatioMetadata(GenericTextMetadata):
 
     @staticmethod
     def metadata_name() -> str:
@@ -188,7 +188,7 @@ class NumUniqueWordsMetadata(GenericTextMetadata):
                 else:
                     seen_once.remove(word)
                     seen_often.append(word)
-        return len(seen_once)
+        return len(seen_once)/len(words)
 
 
 class UnknownWordRatioMetadata(GenericTextMetadata):
@@ -339,7 +339,7 @@ class TextMetadata(Preprocessor):
 
     def __init__(self, text_metadata_types=None):
         if text_metadata_types is None:
-            self.text_metadata_types = frozenset([NumCharsMetadata(), NumWordsMetadata(), NumDistinctWordsMetadata()])
+            self.text_metadata_types = frozenset([NumCharsMetadata(), NumWordsMetadata(), DistinctWordsRatioMetadata()])
         else:
             self.text_metadata_types = frozenset(text_metadata_types)
 
