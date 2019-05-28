@@ -8,6 +8,7 @@ from langdetect.lang_detect_exception import LangDetectException
 from shift_detector.preprocessors.Store import Store
 from shift_detector.preprocessors.TextMetadata import *
 
+
 class TestTextMetadataPreprocessors(unittest.TestCase):
 
     def setUp(self):
