@@ -15,11 +15,15 @@ Morpheus comprises several methods to systematically compare two
 data sets and check for a :term:`shift`. This section introduces each of
 those methods, which we call :term:`check`.
 
-For each check we give details about:
+Example Data Sets
++++++++++++++++++
 
-- Why is it included?
-- What kind of shifts can be detected?
-- How does it work?
-- What input is required?
-- How does the output look?
-- How is it implemented?
++------------+------------+-----------+
+| Header 1   | Header 2   | Header 3  |
++============+============+===========+
+| body row 1 | column 2   | column 3  |
++------------+------------+-----------+
+| body row 2 | Cells may  | column3   |
++------------+------------+-----------+
+| body row 3 | Cells may  | Cells     |
++------------+------------+-----------+
