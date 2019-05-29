@@ -7,7 +7,7 @@ from shift_detector.Detector import Detector
 from shift_detector.checks.statistical_checks.TextMetadataStatisticalCheck import TextMetadataStatisticalCheck
 from shift_detector.preprocessors.Store import Store
 from shift_detector.preprocessors.TextMetadata import NumCharsMetadata, NumWordsMetadata, DistinctWordsRatioMetadata, \
-    LanguageDictMetadata
+    LanguagePerParagraph, UnknownWordRatioMetadata, StopwordRatioMetadata
 
 
 class TestTextMetadataStatisticalCheck(unittest.TestCase):
@@ -175,7 +175,8 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
         df2 = pd.DataFrame.from_dict({'text': self.phrases})
         store = Store(df1, df2)
         result = TextMetadataStatisticalCheck([NumCharsMetadata(), NumWordsMetadata(),
-                                               DistinctWordsRatioMetadata(), LanguageDictMetadata()]).run(store)
+                                               DistinctWordsRatioMetadata(), LanguagePerParagraph()]
+                                              ).run(store)
         self.assertEqual(3, len(result.significant_columns()))
 
     def test_compliance_with_detector(self):
@@ -185,6 +186,20 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
         detector.add_checks(TextMetadataStatisticalCheck())
         detector.run()
         column_index = pd.MultiIndex.from_product([['text'], ['distinct_words', 'num_chars', 'num_words']],
-                                                    names=['column', 'metadata'])
+                                                  names=['column', 'metadata'])
         solution = pd.DataFrame([[1.0, 1.0, 1.0]], columns=column_index, index=['pvalue'])
         assert_frame_equal(solution, detector.check_reports[0].result)
+
+    def test_language_can_be_set(self):
+        check = TextMetadataStatisticalCheck([UnknownWordRatioMetadata(), StopwordRatioMetadata()], language='fr')
+        md_with_lang = [mdtype for mdtype in check.metadata_preprocessor.text_metadata_types
+                        if type(mdtype) in [UnknownWordRatioMetadata, StopwordRatioMetadata]]
+        for mdtype in md_with_lang:
+            self.assertEqual('fr', mdtype.language)
+
+    def test_infer_language_is_set(self):
+        check = TextMetadataStatisticalCheck([UnknownWordRatioMetadata(), StopwordRatioMetadata()], infer_language=True)
+        md_with_lang = [mdtype for mdtype in check.metadata_preprocessor.text_metadata_types
+                        if type(mdtype) in [UnknownWordRatioMetadata, StopwordRatioMetadata]]
+        for mdtype in md_with_lang:
+            self.assertTrue(mdtype.infer_language)

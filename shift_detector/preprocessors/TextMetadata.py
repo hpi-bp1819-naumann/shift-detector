@@ -197,8 +197,9 @@ class UniqueWordsRatioMetadata(GenericTextMetadata):
 
 class UnknownWordRatioMetadata(GenericTextMetadata):
 
-    def __init__(self, language='en'):
+    def __init__(self, language='en', infer_language=False):
         self.language = language
+        self.infer_language = infer_language
 
     @staticmethod
     def metadata_name() -> str:
@@ -208,9 +209,15 @@ class UnknownWordRatioMetadata(GenericTextMetadata):
         return ColumnType.numerical
 
     def metadata_function(self, text):
-        # not working for every language
+        # pyspellchecker supports multiple languages including English, Spanish, German, French, and Portuguese
+        language = LanguageMetadata().metadata_function(text) if self.infer_language else self.language
+        try:
+            spell = SpellChecker(language)
+        except ValueError as error:
+            raise ValueError('The language ' +
+                             languages.get(part1=language).name.lower() +
+                             ' is not supported by UnknownWordRatioMetadata') from error
         words = tokenize(text)
-        spell = SpellChecker(self.language)
 
         if len(words) == 0:
             return 0.0
@@ -221,8 +228,9 @@ class UnknownWordRatioMetadata(GenericTextMetadata):
 
 class StopwordRatioMetadata(GenericTextMetadata):
 
-    def __init__(self, language='en'):
+    def __init__(self, language='en', infer_language=False):
         self.language = language
+        self.infer_language = infer_language
 
     @staticmethod
     def metadata_name() -> str:
@@ -233,10 +241,11 @@ class StopwordRatioMetadata(GenericTextMetadata):
 
     def metadata_function(self, text):
         # not working for every language
+        language = LanguageMetadata().metadata_function(text) if self.infer_language else self.language
         stopword_count = 0
         words = tokenize(text)
         try:
-            stop = stopwords.words(languages.get(part1=self.language).name.lower())
+            stop = stopwords.words(languages.get(part1=language).name.lower())
             if (len(words) == 0):
                 return 0.0
             for word in words:
@@ -244,8 +253,9 @@ class StopwordRatioMetadata(GenericTextMetadata):
                     stopword_count += 1
             return stopword_count/ len(words)
         except OSError as error:
-            raise ValueError('Language ' + languages.get(
-                part1=self.language).name.lower() + ' is not supported for stopword ratio') from error
+            raise ValueError('The language ' +
+                             languages.get(part1=self.language).name.lower() +
+                             ' is not supported by StopwordRatioMetadata') from error
 
 
 class DelimiterTypeMetadata(GenericTextMetadata):
@@ -296,7 +306,7 @@ class NumPartsMetadata(GenericTextMetadata):
 DetectorFactory.seed = 0  # seed language detection to make it deterministic
 
 
-class LanguageDictMetadata(GenericTextMetadata):
+class LanguagePerParagraph(GenericTextMetadata):
 
     @staticmethod
     def metadata_name() -> str:
@@ -322,6 +332,7 @@ class LanguageDictMetadata(GenericTextMetadata):
 
     def metadata_function(self, text):
         return dictionary_to_sorted_string(self.detect_languages(text))
+
 
 class LanguageMetadata(GenericTextMetadata):
 
@@ -352,11 +363,18 @@ class ComplexityMetadata(GenericTextMetadata):
 
 class TextMetadata(Preprocessor):
 
-    def __init__(self, text_metadata_types=None):
+    def __init__(self, text_metadata_types=None, language='en', infer_language=False):
         if text_metadata_types is None:
             self.text_metadata_types = frozenset([NumCharsMetadata(), NumWordsMetadata(), DistinctWordsRatioMetadata()])
         else:
             self.text_metadata_types = frozenset(text_metadata_types)
+        if infer_language or language != 'en':
+            for mdtype in self.text_metadata_types:
+                try:
+                    mdtype.language = language
+                    mdtype.infer_language = infer_language
+                except AttributeError:
+                    continue  # do nothing for types which do not accept a language as parameter
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.text_metadata_types == other.text_metadata_types

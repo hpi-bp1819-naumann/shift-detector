@@ -104,7 +104,7 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
         assert_frame_equal(solution2, md2)
 
     def test_language(self):
-        md1, md2 = LanguageDictMetadata().process(self.store)
+        md1, md2 = LanguagePerParagraph().process(self.store)
         solution1 = pd.DataFrame(['en', 'en'], columns=['text'])
         solution2 = pd.DataFrame(['en', 'en'], columns=['text'])
         assert_frame_equal(solution1, md1)
@@ -234,13 +234,17 @@ class TestTextMetadataFunctions(unittest.TestCase):
         incorrect_english = "Thiis is an incozyzyrrect sentence"
         # This is somali
         unsupported_language = "Aqoonyahanada caalamku waxay aad ugu murmaan sidii luuqadaha aduunku ku bilaabmeem."
+        french = "Demain, dès l’aube, à l’heure où blanchit la campagne,\nJe partirai. Vois-tu, je sais que tu m’attends.\nJ’irai par la forêt, j’irai par la montagne.\nJe ne puis demeurer loin de toi plus longtemps."
         punctuation = " . "
         empty = ""
-        unknown_word_ratio = UnknownWordRatioMetadata(language='en').metadata_function
+        unknown_word_ratio = UnknownWordRatioMetadata().metadata_function
         self.assertEqual(unknown_word_ratio(correct_english), 0.00)
         self.assertEqual(unknown_word_ratio(incorrect_english), .4)
         self.assertRaises(ValueError, UnknownWordRatioMetadata(language='so').metadata_function,
                           text=unsupported_language)
+        self.assertAlmostEqual(unknown_word_ratio(french), 0.470588, places=5)
+        self.assertAlmostEqual(UnknownWordRatioMetadata(language='fr').metadata_function(french), 0.26471, places=5)
+        self.assertAlmostEqual(UnknownWordRatioMetadata(infer_language=True).metadata_function(french), 0.26471, places=5)
         self.assertEqual(unknown_word_ratio(punctuation), 00.00)
         self.assertEqual(unknown_word_ratio(empty), 00.00)
 
@@ -248,13 +252,17 @@ class TestTextMetadataFunctions(unittest.TestCase):
         no_stopwords = "computer calculates math"
         only_stopwords = "The and is I am"
         mixed = "A normal sentence has both"
+        french = "Demain, dès l’aube, à l’heure où blanchit la campagne,\nJe partirai. Vois-tu, je sais que tu m’attends.\nJ’irai par la forêt, j’irai par la montagne.\nJe ne puis demeurer loin de toi plus longtemps."
         punctuation = " . "
         empty = ""
         unsupported_language = "Aqoonyahanada caalamku waxay aad ugu murmaan sidii luuqadaha aduunku ku bilaabmeem."
-        stopword_ratio = StopwordRatioMetadata(language='en').metadata_function
+        stopword_ratio = StopwordRatioMetadata().metadata_function
         self.assertEqual(stopword_ratio(no_stopwords), 0.0)
         self.assertEqual(stopword_ratio(only_stopwords), 1.0)
         self.assertEqual(stopword_ratio(mixed), 0.6)
+        self.assertAlmostEqual(stopword_ratio(french), 0.0)
+        self.assertAlmostEqual(StopwordRatioMetadata(language='fr').metadata_function(french), 0.41176, places=5)
+        self.assertAlmostEqual(StopwordRatioMetadata(infer_language=True).metadata_function(french), 0.41176, places=5)
         self.assertEqual(stopword_ratio(punctuation), 0.0)
         self.assertEqual(stopword_ratio(empty), 0.0)
         self.assertRaises(ValueError, StopwordRatioMetadata(language='so').metadata_function, text=unsupported_language)
@@ -306,7 +314,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
         multipleLanguages = "Dieser Text ist zum Teil deutsch. \n Part of this text is in english. \n there actually is some french coming. \n Ce n'est pas anglais. \n No puedo hablar español. \n Beberapa bahasa untuk diuji."
         punctuation = " . ,"
         empty = ""
-        language = LanguageDictMetadata().detect_languages
+        language = LanguagePerParagraph().detect_languages
         self.assertEqual(language(english), {'en': 1})
         self.assertEqual(language(englishTypos), {'en': 1})
         self.assertEqual(language(german), {'de': 1})
