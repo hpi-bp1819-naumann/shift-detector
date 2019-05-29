@@ -7,6 +7,7 @@ from datawig.iterators import ImputerIterDf
 from datawig.utils import random_split
 
 from shift_detector.precalculations.Precalculation import Precalculation
+from datawig.utils import logger
 
 
 class DistinctionPrecalculation(Precalculation):
@@ -17,6 +18,8 @@ class DistinctionPrecalculation(Precalculation):
         self.output_path = 'tmp/basicChecks_params'
         self.num_epochs = num_epochs
         self.imputer = None
+
+        logger.setLevel("ERROR")
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
