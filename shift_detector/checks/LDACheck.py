@@ -1,38 +1,36 @@
 import pandas as pd
+import numpy as np
 from shift_detector.checks.Check import Check, Report
-from shift_detector.preprocessors.LDAEmbedding import LDAEmbedding
+from shift_detector.precalculations.LDAEmbedding import LDAEmbedding
+from shift_detector.Utils import ColumnType
 from collections import Counter
-
-
-class LDAReport(Report):
-
-    def __init__(self, diff: pd.DataFrame, significance=1000):
-        self.diff = diff
-        self.significance = significance
-
-    def print_report(self):
-        print("LDA Report")
-        print(self.diff)
-
-        for column, column_diff in self.diff.iteritems():
-            if column_diff > self.significance:
-                print("SHIFT: Mean of {} increased by {}".format(column, column_diff))
-            else:
-                print("Mean of {} increased by {}".format(column, column_diff))
 
 
 class LDACheck(Check):
 
-    def run(self, store) -> LDAReport:
+    def __init__(self, significance=10):
+        self.significance = significance
+
+    def run(self, store) -> Report:
         processed_df1, processed_df2 = store[LDAEmbedding()]
 
         count_topics1 = Counter(processed_df1['topic'])
         count_topics2 = Counter(processed_df2['topic'])
 
-        diff = []
+        labels1_ordered, values1_ordered = zip(*sorted(count_topics1.items(), key=lambda kv: kv[0]))
+        values1_perc = [x * 100 / np.array(values1_ordered).sum() for x in values1_ordered]
 
+        labels2_ordered, values2_ordered = zip(*sorted(count_topics2.items(), key=lambda kv: kv[0]))
+        values2_perc = [x * 100 / np.array(values2_ordered).sum() for x in values2_ordered]
 
-        diff = means2 - means1
-        diff = diff.abs()
+        shifted_columns = set()
+        explanation = dict()
 
-        return LDAReport(diff)
+        for i, (v1, v2) in enumerate(zip(values1_perc, values2_perc)):
+            if abs(v1-v2) >= self.significance:
+                explanation['Topic', i]['Topic difference'] = v1 - v2
+
+        if explanation != dict():
+            shifted_columns = store[ColumnType.text]
+
+        return Report(store[ColumnType.text], shifted_columns, explanation)
