@@ -53,3 +53,14 @@ class TestReport(TestCase):
         }
 
         self.assertDictEqual(expected_explanation, actual_explanation)
+
+    def test_str(self):
+        expected_msg = "Examined Columns: ['shift', 'no_shift']\n" \
+                       "Shifted Columns: ['shift']\n" \
+                       "\n" \
+                       "Column 'shift':\n" \
+                       "shifted\n" \
+                       "'random information':\n" \
+                       "cool information\n"
+
+        self.assertEqual(expected_msg, self.report.__str__())
