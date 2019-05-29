@@ -3,7 +3,6 @@ from collections import defaultdict
 from itertools import chain
 
 
-
 class Report:
 
     def __init__(self, examined_columns, shifted_columns, explanation=dict(), information=dict()):
