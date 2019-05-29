@@ -20,15 +20,12 @@ class SorensenDicePrecalculations(Precalculation):
     @staticmethod
     def count_fragments(ngram: dict) -> int:
         """
-        Counts the the fragments in an ngram
+        Counts, how much elements the ngram contains
+        e.g. {'abc': 3, 'bcd': 2} contains 5 elements
         :param ngram:
         :return: the number of fragments as int
         """
-        n = 0
-        for i in ngram:
-            n += ngram[i]
-
-        return n
+        return sum(ngram.values())
 
     @staticmethod
     def calculate_sdc(histo1: dict, histo2: dict) -> float:

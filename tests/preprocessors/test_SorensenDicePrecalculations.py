@@ -34,12 +34,6 @@ class TestSorensenDicePrecalculations(unittest.TestCase):
         sd1 = SorensenDicePrecalculations(ngram_type=NGramType.character, n=3)
         sd2 = SorensenDicePrecalculations(ngram_type=NGramType.character, n=3)
         self.assertEqual(hash(sd1), hash(sd2))
-    #
-    # @unittest.mock.patch('sys.stdout', new_callable=io.StringIO)
-    # def test_print_result(self, mock_stdout):
-    #     self.result.print_report()
-    #     output = mock_stdout.getvalue()
-    #     self.assertIn('Sorensen Dice Report', output)
 
     def test_count_fragments(self):
         ngram1 = {'abc': 6, 'bcd':4, 'def': 3}
