@@ -1,7 +1,7 @@
 from pandas import DataFrame
 
 from shift_detector.checks.Check import Check, Report
-from shift_detector.preprocessors.DummyPreprocessor import DummyPreprocessor
+from shift_detector.precalculations.DummyPreprocessor import DummyPreprocessor
 
 
 class DummyReport(Report):
