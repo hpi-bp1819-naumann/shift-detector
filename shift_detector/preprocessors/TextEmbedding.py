@@ -49,14 +49,20 @@ class TextEmbedding(Preprocessor):
         """Overrides the default implementation"""
         if not self.model:
             return hash(self.trained_model)
-        model_attributes = [(k, v) for k, v in self.model.__dict__.items() \
+        model_attributes = [(k, v) for k, v in self.model.__dict__.items()
                             if isinstance(v, Number) or isinstance(v, str)]
         return hash(tuple([self.model.__class__] + sorted(model_attributes)))
 
+    def f(self, row):
+        ser = np.sum([self.trained_model.wv[word] for word in row.lower().split()], axis=0)
+        if type(ser) == np.float64:
+            ser = [0.0] * self.trained_model.vector_size
+        return ser
+
     def process(self, store: Store):
         df1, df2 = store[ColumnType.text]
-        df1 = df1.copy().dropna()
-        df2 = df2.copy().dropna()
+        df1 = df1.copy(deep=True).dropna()
+        df2 = df2.copy(deep=True).dropna()
 
         concatenated_ser = pd.concat([df1[i].str.lower().str.split() for i in df1] +
                                      [df2[i].str.lower().str.split() for i in df2])
@@ -69,8 +75,8 @@ class TextEmbedding(Preprocessor):
             self.trained_model = model
 
         for column in df1:
-            df1[column] = df1[column].apply(lambda row: np.sum([self.trained_model.wv[word] for word in row.lower().split()], axis=0))
+            df1[column] = df1[column].apply(self.f)
         for column in df2:
-            df2[column] = df2[column].apply(lambda row: np.sum([self.trained_model.wv[word] for word in row.lower().split()], axis=0))
+            df2[column] = df2[column].apply(self.f)
 
         return df1, df2
