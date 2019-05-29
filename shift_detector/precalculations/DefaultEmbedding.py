@@ -1,4 +1,4 @@
-from shift_detector.preprocessors.Preprocessor import Preprocessor
+from shift_detector.precalculations.Preprocessor import Preprocessor
 
 
 class DefaultEmbedding(Preprocessor):

@@ -2,10 +2,10 @@ from abc import abstractmethod
 
 import pandas as pd
 
-from shift_detector.checks.Check import Check, Report
+from shift_detector.checks.Check import Check, DeprecatedReport
 
 
-class StatisticalReport(Report):
+class StatisticalDeprecatedReport(DeprecatedReport):
 
     def __init__(self, check_result, significance=0.01):
         self.result = check_result
@@ -40,7 +40,7 @@ class SimpleStatisticalCheck(Check):
     def store_keys(self):
         return []
 
-    def run(self, store) -> StatisticalReport:
+    def run(self, store) -> StatisticalDeprecatedReport:
         pvalues = pd.DataFrame(index=['pvalue'])
         df1 = pd.DataFrame()
         df2 = pd.DataFrame()
@@ -53,4 +53,4 @@ class SimpleStatisticalCheck(Check):
         for column in store.columns:
             p = self.statistical_test(part1[column], part2[column])
             pvalues[column] = [p]
-        return StatisticalReport(pvalues)
+        return StatisticalDeprecatedReport(pvalues)
