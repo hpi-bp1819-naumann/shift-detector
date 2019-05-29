@@ -1,8 +1,7 @@
 import unittest
-from shift_detector.preprocessors.NGram import NGram, NGramType
-from shift_detector.preprocessors.Store import Store
+from shift_detector.precalculations.NGram import NGram, NGramType
+from shift_detector.precalculations.Store import Store
 import pandas as pd
-from unittest.mock import MagicMock
 
 class TestNGram(unittest.TestCase):
 
