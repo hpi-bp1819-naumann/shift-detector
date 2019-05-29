@@ -49,8 +49,10 @@ class TestUtils(unittest.TestCase):
 
         numerical_columns = splitted_df[ColumnType.numerical][0].columns.values
         categorical_columns = splitted_df[ColumnType.categorical][0].columns.values
+        all_categorical_columns = splitted_df[ColumnType.all_categorical][0].columns.values
         text_columns = splitted_df[ColumnType.text][0].columns.values
 
         self.assertListEqual(list(numerical_columns), list(['payment']))
-        self.assertListEqual(list(categorical_columns), list(['brand', 'payment']))
+        self.assertListEqual(list(categorical_columns), list(['brand']))
+        self.assertListEqual(list(all_categorical_columns), list(['brand', 'payment']))
         self.assertListEqual(list(text_columns), list(['description']))
