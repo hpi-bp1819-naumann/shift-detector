@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 
+
 class Report:
 
     def __init__(self, examined_columns, shifted_columns, explanation):
