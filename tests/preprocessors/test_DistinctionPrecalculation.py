@@ -32,15 +32,19 @@ class TestCreateDetector(TestCase):
             other_precalculation = DistinctionPrecalculation(['no_shift', 'shift'])
             self.assertEqual(self.precalculation, other_precalculation)
 
-        with self.subTest("Test equality"):
+        with self.subTest("Test inequality"):
             other_precalculation = DistinctionPrecalculation(['no_shift'])
             self.assertNotEqual(self.precalculation, other_precalculation)
+
+        with self.subTest("Test inequality with another class"):
+            other = "Not a DistinctPrecalculation"
+            self.assertNotEqual(self.precalculation, other)
 
     def test_hash(self):
         with self.subTest("Test hash equality"):
             other_precalculation = DistinctionPrecalculation(['no_shift', 'shift'])
             self.assertEqual(self.precalculation.__hash__(), other_precalculation.__hash__())
 
-        with self.subTest("Test hash equality"):
+        with self.subTest("Test hash inequality"):
             other_precalculation = DistinctionPrecalculation(['no_shift'])
             self.assertNotEqual(self.precalculation.__hash__(), other_precalculation.__hash__())
