@@ -1,5 +1,6 @@
 import logging as logger
 import re
+import regex
 import unicodedata
 from abc import abstractmethod
 from collections import defaultdict
@@ -268,7 +269,7 @@ class DelimiterTypeMetadata(GenericTextMetadata):
 
     def metadata_function(self, text):
         for key, value in delimiters.items():
-            if (value.search(text)):
+            if (regex.compile(value).search(text)):
                 return key
         return 'no delimiter'
 
