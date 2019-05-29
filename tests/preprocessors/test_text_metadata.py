@@ -98,8 +98,8 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
 
     def test_num_parts(self):
         md1, md2 = NumPartsMetadata().process(self.store)
-        solution1 = pd.DataFrame([4, 3], columns=['text'])
-        solution2 = pd.DataFrame([0, 0], columns=['text'])
+        solution1 = pd.DataFrame([4, 4], columns=['text'])
+        solution2 = pd.DataFrame([4, 3], columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
@@ -299,8 +299,8 @@ class TestTextMetadataFunctions(unittest.TestCase):
         num_parts = NumPartsMetadata().metadata_function
         self.assertEqual(num_parts(html), 3)
         self.assertEqual(num_parts(sentence), 3)
-        self.assertEqual(num_parts(comma), 3)
-        self.assertEqual(num_parts(none), 0)
+        self.assertEqual(num_parts(comma), 2)
+        self.assertEqual(num_parts(none), 7)
         self.assertEqual(num_parts(htmlsentence), 2)
         self.assertEqual(num_parts(sentenceother), 2)
         self.assertEqual(num_parts(htmlsentenceother), 2)

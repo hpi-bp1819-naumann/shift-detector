@@ -284,12 +284,10 @@ class NumPartsMetadata(GenericTextMetadata):
         return ColumnType.numerical
 
     def metadata_function(self, text):
-        if DelimiterTypeMetadata().metadata_function(text) == 'HTML':
-            return len(re.split(delimiters['HTML'], text))
-        elif DelimiterTypeMetadata().metadata_function(text) == 'list' or DelimiterTypeMetadata().metadata_function(text) == 'newline':
-            return len(re.split(delimiters['newline'], text))
-        else:
-            return 0
+        for key, value in delimiters.items():
+            if DelimiterTypeMetadata().metadata_function(text) == key:
+                return len(regex.split(regex.compile(value), text))
+        return 0
 
 
 DetectorFactory.seed = 0  # seed language detection to make it deterministic
@@ -308,7 +306,7 @@ class LanguagePerParagraph(GenericTextMetadata):
     def detect_languages(text):
         if len(text) == 0:
             detect(text)  # trigger LangDetectException. Throwing one in here smh doesnt work
-        if DelimiterTypeMetadata().metadata_function(text) == 'HTML':
+        if DelimiterTypeMetadata().metadata_function(text) == 'html':
             parts = re.split(r'<\s*br\s*/?>', text)
         else:
             parts = re.split(r'[\n\r]+', text)
