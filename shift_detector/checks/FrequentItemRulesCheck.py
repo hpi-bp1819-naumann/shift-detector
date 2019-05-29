@@ -10,7 +10,7 @@ class FrequentItemsetCheck(Check):
 
     :param min_support: a float between 0 and 1. This parameter mainly impacts
         the runtime of the check. The lower ``min_support`` the more resources are
-        required during computation both in terms of memory and CPU. The default
+        requiqred during computation both in terms of memory and CPU. The default
         value is ``0.01``, which is high enough to get a reasonably good performance
         and still low enough to not prematurely exclude significant association rules.
         This parameter allows you to adjust the granularity of the comparison of the
@@ -25,20 +25,21 @@ class FrequentItemsetCheck(Check):
         self.min_support = min_support
         self.min_confidence = min_confidence
 
-    def print_report(self, compressed_rules):
+    def fabricate_report(self, compressed_rules):
         """
         Print report for checked columns
         """
-        return_str = ''
+        return_strings = []
         limit = 5
         count = 0
         print(str(limit), 'MOST IMPORTANT RULES \n')
 
         for rulecluster in compressed_rules:
-            return_str += rulecluster.___str__()
+            return_strings.append(rulecluster.___str__() + '\n')
             count += 1
             if count == limit:
                 break
+        return return_strings
 
     def run(self, store: Store) -> Report:
         """
@@ -53,5 +54,5 @@ class FrequentItemsetCheck(Check):
 
         item_rules = fpgrowth.calculate_frequent_rules(df1_categorical, df2_categorical, self.min_support, self.min_confidence)
         compressed_rules = rule_compression.compress_rules(item_rules)
-        self.print_report(compressed_rules)
+        print(self.fabricate_report(compressed_rules))
         return Report({}, {}, {})

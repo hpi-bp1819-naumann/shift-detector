@@ -67,6 +67,8 @@ class RuleCluster:
         for attribute in self.attributes:
             attribute_string += str(attribute[0]) + ':' + str(attribute[1]) + ' '
         return_str += '[ ' + attribute_string + '] \n'
-        return_str += 'rule: ' + self.rules[0] + '\n'
-        return_str += 'max_delta_support: ' + self.max_abs_delta_supports + '\t max_delta_confidence:' + \
-              self.max_abs_delta_confidence + '\t number of subrules:' + len(self.subcluster) + '\n'
+        return_str += 'rule: ' + str(self.rules[0]) + '\n'
+        return_str += 'max_delta_support: ' + str(self.max_abs_delta_supports) + '\t max_delta_confidence:' + \
+              str(self.max_abs_delta_confidence) + '\t number of subrules:' + str(len(self.subcluster)) + '\n'
+
+        return return_str

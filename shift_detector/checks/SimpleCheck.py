@@ -1,8 +1,11 @@
 import logging as logger
 from collections import defaultdict
+from copy import deepcopy
 
+from shift_detector.Utils import ColumnType
 from shift_detector.checks.Check import Check, Report
 from shift_detector.precalculations.SimplePrecalculation import SimplePrecalculation
+
 
 
 class SimpleCheck(Check):
@@ -89,5 +92,4 @@ class SimpleCheck(Check):
                     explanation[column_name] += "Attribute: {} with Diff: {}\n".format(attribute_name, diff)
 
         return Report(examined_columns, shifted_columns, dict(explanation))
-
 
