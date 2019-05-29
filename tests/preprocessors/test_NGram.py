@@ -3,6 +3,7 @@ from shift_detector.precalculations.NGram import NGram, NGramType
 from shift_detector.precalculations.Store import Store
 import pandas as pd
 
+
 class TestNGram(unittest.TestCase):
 
     def setUp(self):
