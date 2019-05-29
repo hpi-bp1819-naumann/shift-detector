@@ -86,7 +86,7 @@ class SimpleCheck(Check):
         df2_categorical = store[ColumnType.categorical][1]
 
         numerical_comparison = self.compare_numerical_columns(df1_numerical, df2_numerical)
-        categorical_comparison = self.compare_categorical_columns(df1_categorical, df2_categorical, store.columns)
+        categorical_comparison = self.compare_categorical_columns(df1_categorical, df2_categorical, df1_categorical.columns)
         combined_comparisons = {'categorical_comparison': categorical_comparison,
                                 'numerical_comparison': numerical_comparison}
         return SimpleCheckReport(data=combined_comparisons)
