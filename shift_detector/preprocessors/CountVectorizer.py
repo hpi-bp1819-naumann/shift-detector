@@ -5,6 +5,8 @@ import pandas as pd
 from shift_detector.preprocessors.Preprocessor import Preprocessor
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer as CountVectorizer_sklearn
+from shift_detector.Utils import ColumnType
+
 
 
 class CountVectorizer(Preprocessor):
@@ -40,4 +42,4 @@ class CountVectorizer(Preprocessor):
         vectorized_merged = CountVectorizer_sklearn().fit_transform(merged_texts)
         vectorized_train = CountVectorizer_sklearn().fit_transform(train_texts)
         vectorized_test = CountVectorizer_sklearn().fit_transform(test_texts)
-        return processed
+        return vectorized_merged, vectorized_train, vectorized_test

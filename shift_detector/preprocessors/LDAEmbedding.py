@@ -24,7 +24,7 @@ class LDAEmbedding(Preprocessor):
         if trained_model:
             self.trained_model = trained_model
         elif lib == 'sklearn':
-            self.model = LDA_skl(n_components=self.n_topics, max_iter=self.n_iter, random_state=0, n_jobs: 0)
+            self.model = LDA_skl(n_components=self.n_topics, max_iter=self.n_iter, random_state=0)
         elif lib == 'gensim':
             self.model = LdaTransformer(num_topics=self.n_topics, iterations=self.n_iter, random_state=0)
         elif lib == 'lda':
@@ -54,6 +54,8 @@ class LDAEmbedding(Preprocessor):
 
     def process(self, store):
 
+        train_df = store.df1
+        test_df = store.df2
 
         inferred_train_vec = train_df.shape[0] * [0]
         inferred_test_vec = test_df.shape[0] * [0]
