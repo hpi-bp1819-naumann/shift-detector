@@ -16,13 +16,13 @@ class TextMetadataStatisticalCheck(Check):
                 try:
                     text_metadata_types[i].language = language
                 except AttributeError:
-                    pass  # do nothing for types which do not accept a language as parameter
+                    continue  # do nothing for types which do not accept a language as parameter
         elif infer_language:
             for i in range(len(text_metadata_types)):
                 try:
                     text_metadata_types[i].infer_language = True
                 except AttributeError:
-                    pass  # do nothing for types which do not accept a language as parameter
+                    continue  # do nothing for types which do not accept a language as parameter
         self.metadata_preprocessor = TextMetadata(text_metadata_types)
         self.sampling = sampling
         self.seed = sampling_seed
