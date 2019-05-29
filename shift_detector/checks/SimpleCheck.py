@@ -2,6 +2,7 @@ import logging as logger
 from collections import defaultdict
 
 from shift_detector.checks.Check import Check, Report
+from shift_detector.precalculations.SimplePrecalculation import SimplePrecalculation
 
 
 class SimpleCheck(Check):

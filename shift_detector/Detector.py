@@ -4,7 +4,7 @@ from typing import List, Union
 import pandas as pd
 
 from shift_detector.Utils import read_from_csv, column_names
-from shift_detector.checks.Check import Check, DeprecatedReport
+from shift_detector.checks.Check import Check, Report
 from shift_detector.precalculations.Store import Store
 
 
@@ -55,7 +55,7 @@ class Detector:
             raise Exception("All elements in checks should be a Check")
         self.checks_to_run += checks_to_run
 
-    def run_checks(self) -> List[DeprecatedReport]:
+    def run_checks(self) -> List[Report]:
         """
         Execute the checks to run.
 
