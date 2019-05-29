@@ -45,7 +45,7 @@ class TestReport(TestCase):
             'shift': 'shifted',
             'another_shift': 'another shift'
         }
-        actual_explanation = Report.sum_dicts(self.report.explanation, another_explanation)
+        actual_explanation = Report._Report__sum_dicts(self.report.explanation, another_explanation)
 
         expected_explanation = {
             'shift': 'shifted\nshifted',

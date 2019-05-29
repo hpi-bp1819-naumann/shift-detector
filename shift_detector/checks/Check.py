@@ -18,13 +18,13 @@ class Report:
         self.examined_columns = set(self.examined_columns).union(other.examined_columns)
         self.shifted_columns = set(self.shifted_columns).union(other.shifted_columns)
 
-        self.explanation = self.sum_dicts(self.explanation, other.explanation)
-        self.information = self.sum_dicts(self.information, other.information)
+        self.explanation = self.__sum_dicts(self.explanation, other.explanation)
+        self.information = self.__sum_dicts(self.information, other.information)
 
         return self
 
     @staticmethod
-    def sum_dicts(dict1, dict2):
+    def __sum_dicts(dict1, dict2):
         res_dict = defaultdict(str)
 
         for key, value in chain(dict1.items(), dict2.items()):
