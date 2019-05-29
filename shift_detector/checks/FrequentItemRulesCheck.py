@@ -1,3 +1,6 @@
+from collections import defaultdict
+import itertools
+
 from shift_detector.Utils import ColumnType
 from shift_detector.checks.Check import Check, Report
 from shift_detector.checks.frequent_item_rules import fpgrowth, rule_compression
@@ -25,22 +28,6 @@ class FrequentItemsetCheck(Check):
         self.min_support = min_support
         self.min_confidence = min_confidence
 
-    def fabricate_report(self, compressed_rules):
-        """
-        Print report for checked columns
-        """
-        return_strings = []
-        limit = 5
-        count = 0
-        print(str(limit), 'MOST IMPORTANT RULES \n')
-
-        for rulecluster in compressed_rules:
-            return_strings.append(rulecluster.___str__() + '\n')
-            count += 1
-            if count == limit:
-                break
-        return return_strings
-
     def run(self, store: Store) -> Report:
         """
         Calculate frequent rules, compress them and create a
@@ -50,9 +37,29 @@ class FrequentItemsetCheck(Check):
         """
         df1_categorical = store[ColumnType.categorical][0]
         df2_categorical = store[ColumnType.categorical][1]
-        # TODO: add preprocessing
 
-        item_rules = fpgrowth.calculate_frequent_rules(df1_categorical, df2_categorical, self.min_support, self.min_confidence)
+        item_rules = fpgrowth.calculate_frequent_rules(df1_categorical, df2_categorical, self.min_support,
+                                                       self.min_confidence)
         compressed_rules = rule_compression.compress_rules(item_rules)
-        print(self.fabricate_report(compressed_rules))
-        return Report({}, {}, {})
+
+        shifted_clumns = list()
+        information = defaultdict(list)
+        limit = 5
+        count = 0
+
+        for rulecluster in compressed_rules:
+            columns = []
+            for keyval_tuple in rulecluster.attributes:
+                columns.append(keyval_tuple[0])
+            shifted_clumns.append(columns)
+
+            information[str(columns)].append(rulecluster.__str__())
+            count += 1
+            if count == limit:
+                break
+
+        # remove duplicates from list of lists
+        shifted_clumns.sort()
+        shifted_clumns = list(shifted_clumns for shifted_clumns, _ in itertools.groupby(shifted_clumns))
+
+        return Report(df1_categorical.columns, shifted_clumns, information)

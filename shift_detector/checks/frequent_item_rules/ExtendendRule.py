@@ -1,5 +1,3 @@
-from pprint import pprint
-
 class ExtendedRule:
 
     def __init__(self, left_side, right_side, supports_of_left_side, delta_supports_of_left_side, supports,
@@ -61,7 +59,7 @@ class RuleCluster:
         else:
             return False
 
-    def ___str__(self):
+    def __str__(self):
         return_str = ''
         attribute_string = ''
         for attribute in self.attributes:
@@ -69,6 +67,6 @@ class RuleCluster:
         return_str += '[ ' + attribute_string + '] \n'
         return_str += 'rule: ' + str(self.rules[0]) + '\n'
         return_str += 'max_delta_support: ' + str(self.max_abs_delta_supports) + '\t max_delta_confidence:' + \
-              str(self.max_abs_delta_confidence) + '\t number of subrules:' + str(len(self.subcluster)) + '\n'
+                      str(self.max_abs_delta_confidence) + '\t number of subrules:' + str(len(self.subcluster)) + '\n'
 
         return return_str
