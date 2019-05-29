@@ -91,8 +91,8 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
 
     def test_delimiter_type(self):
         md1, md2 = DelimiterTypeMetadata().process(self.store)
-        solution1 = pd.DataFrame(['other delimiter', 'other delimiter'], columns=['text'])
-        solution2 = pd.DataFrame(['no delimiter', 'no delimiter'], columns=['text'])
+        solution1 = pd.DataFrame(['newline', 'newline'], columns=['text'])
+        solution2 = pd.DataFrame(['whitespace', 'whitespace'], columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
@@ -271,26 +271,26 @@ class TestTextMetadataFunctions(unittest.TestCase):
     def test_category(self):
         html = "some text <p> some other text < br/ > more text"
         sentence = "some text. some other text. more text."
-        other = "some text, some other text -- more text."
-        none = "some text some other text more text"
+        comma = "some text, some other text -- more text."
+        white = "some text some other text more text"
         htmlsentence = "some text <p> some other text. more text."
         sentenceother = "some text, some other text. more text."
         htmlsentenceother = "some text -- some. other text <br> more text."
         empty = ""
         delimiter_type = DelimiterTypeMetadata().metadata_function
-        self.assertEqual(delimiter_type(html), "html")
+        self.assertEqual(delimiter_type(html), "HTML")
         self.assertEqual(delimiter_type(sentence), "sentence")
-        self.assertEqual(delimiter_type(other), "other delimiter")
-        self.assertEqual(delimiter_type(none), "no delimiter")
-        self.assertEqual(delimiter_type(htmlsentence), "html")
+        self.assertEqual(delimiter_type(comma), "comma")
+        self.assertEqual(delimiter_type(white), "whitespace")
+        self.assertEqual(delimiter_type(htmlsentence), "HTML")
         self.assertEqual(delimiter_type(sentenceother), "sentence")
-        self.assertEqual(delimiter_type(htmlsentenceother), "html")
-        self.assertEqual(delimiter_type(empty), "empty")
+        self.assertEqual(delimiter_type(htmlsentenceother), "HTML")
+        self.assertEqual(delimiter_type(empty), "no delimiter")
 
     def test_num_parts(self):
         html = "some text <p> some other text < br/ > more text"
         sentence = "some text. some other text. more text."
-        other = "some text, some other text -- more text."
+        comma = "some text, some other text -- more text."
         none = "some text some other text more text"
         htmlsentence = "some text <p> some other text. more text."
         sentenceother = "some text, some other text. more text."
@@ -299,7 +299,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
         num_parts = NumPartsMetadata().metadata_function
         self.assertEqual(num_parts(html), 3)
         self.assertEqual(num_parts(sentence), 3)
-        self.assertEqual(num_parts(other), 3)
+        self.assertEqual(num_parts(comma), 3)
         self.assertEqual(num_parts(none), 0)
         self.assertEqual(num_parts(htmlsentence), 2)
         self.assertEqual(num_parts(sentenceother), 2)

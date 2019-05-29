@@ -284,9 +284,9 @@ class NumPartsMetadata(GenericTextMetadata):
         return ColumnType.numerical
 
     def metadata_function(self, text):
-        if DelimiterTypeMetadata().metadata_function(text) == 'html':
+        if DelimiterTypeMetadata().metadata_function(text) == 'HTML':
             return len(re.split(delimiters['HTML'], text))
-        elif DelimiterTypeMetadata().metadata_function(text) == 'list' | DelimiterTypeMetadata().metadata_function(text) == 'newline' :
+        elif DelimiterTypeMetadata().metadata_function(text) == 'list' or DelimiterTypeMetadata().metadata_function(text) == 'newline':
             return len(re.split(delimiters['newline'], text))
         else:
             return 0
@@ -308,7 +308,7 @@ class LanguagePerParagraph(GenericTextMetadata):
     def detect_languages(text):
         if len(text) == 0:
             detect(text)  # trigger LangDetectException. Throwing one in here smh doesnt work
-        if DelimiterTypeMetadata().metadata_function(text) == 'html':
+        if DelimiterTypeMetadata().metadata_function(text) == 'HTML':
             parts = re.split(r'<\s*br\s*/?>', text)
         else:
             parts = re.split(r'[\n\r]+', text)
