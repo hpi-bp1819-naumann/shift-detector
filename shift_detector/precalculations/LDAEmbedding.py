@@ -7,12 +7,12 @@ from gensim.sklearn_api import LdaTransformer
 from gensim.corpora import Dictionary
 import lda
 from copy import copy
-from shift_detector.preprocessors.Preprocessor import Preprocessor
-from shift_detector.preprocessors.WordTokenizer import WordTokenizer
+from shift_detector.precalculations.Precalculation import Precalculation
+from shift_detector.precalculations.WordTokenizer import WordTokenizer
 from shift_detector.Utils import ColumnType
 
 
-class LDAEmbedding(Preprocessor):
+class LDAEmbedding(Precalculation):
 
     def __init__(self, n_topics=20, n_iter=100, lib=None, trained_model=None):
         if n_topics != 'auto':
