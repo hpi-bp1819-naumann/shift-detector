@@ -1,10 +1,19 @@
 import re
 
 from langdetect import DetectorFactory
+from collections import OrderedDict
 
-delimiter_HTML = r'<\s*br\s*/?\s*>|<\s*p\s*>'
-delimiter_sentence = r'\.\s'
-delimiter_other = r'\s*,\s|\s+-+\s+'
+delimiters = OrderedDict()
+delimiters['HTML'] = r'<\s*br\s*/?\s*>|<\s*p\s*>'
+delimiters['list'] = r'\n+\p{Pd}+'
+delimiters['newline'] = r'\n+'
+delimiters['sentence'] = r'(\.|\!|\?)\s'
+delimiters['semicolon'] = r'\s*;\s'
+delimiters['comma'] = r'\s*,\s'
+delimiters['dash'] = r'\s*\p{Pd}+\s'
+delimiters['tab'] = r'\t'
+delimiters['whitespace'] = r'\s'
+
 DetectorFactory.seed = 0
 
 

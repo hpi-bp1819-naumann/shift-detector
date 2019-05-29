@@ -16,8 +16,7 @@ from textstat import textstat
 from shift_detector.preprocessors.Preprocessor import Preprocessor
 from shift_detector.utils import UCBlist
 from shift_detector.utils.ColumnManagement import ColumnType
-from shift_detector.utils.TextMetadataUtils import dictionary_to_sorted_string, tokenize, delimiter_sentence, \
-    delimiter_other, delimiter_HTML
+from shift_detector.utils.TextMetadataUtils import dictionary_to_sorted_string, tokenize, delimiters
 
 
 class GenericTextMetadata(Preprocessor):
@@ -258,19 +257,10 @@ class DelimiterTypeMetadata(GenericTextMetadata):
         return ColumnType.categorical
 
     def metadata_function(self, text):
-        html = re.compile('<.*?>')
-        point = re.compile(delimiter_sentence)
-        other = re.compile(delimiter_other)
-        if (html.search(text)):
-            return 'html'
-        elif (point.search(text)):
-            return 'sentence'
-        elif (other.search(text)):
-            return 'other delimiter'
-        elif (len(text) == 0):
-            return 'empty'
-        else:
-            return 'no delimiter'
+        for key, value in delimiters.items():
+            if (value.search(text)):
+                return key
+        return 'no delimiter'
 
 
 class NumPartsMetadata(GenericTextMetadata):
@@ -284,11 +274,9 @@ class NumPartsMetadata(GenericTextMetadata):
 
     def metadata_function(self, text):
         if DelimiterTypeMetadata().metadata_function(text) == 'html':
-            return len(re.split(delimiter_HTML, text))
-        elif DelimiterTypeMetadata().metadata_function(text) == 'sentence':
-            return len(re.split(delimiter_sentence, text))
-        elif DelimiterTypeMetadata().metadata_function(text) == 'other delimiter':
-            return len(re.split(delimiter_other, text))
+            return len(re.split(delimiters['HTML'], text))
+        elif DelimiterTypeMetadata().metadata_function(text) == 'list' | DelimiterTypeMetadata().metadata_function(text) == 'newline' :
+            return len(re.split(delimiters['newline'], text))
         else:
             return 0
 
