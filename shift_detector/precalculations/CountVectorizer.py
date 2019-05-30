@@ -1,15 +1,12 @@
-import numpy as np
-import gensim
-from copy import copy
 import pandas as pd
-from shift_detector.preprocessors.Preprocessor import Preprocessor
+from shift_detector.precalculations.Precalculation import Precalculation
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer as CountVectorizer_sklearn
 from shift_detector.Utils import ColumnType
 
 
 
-class CountVectorizer(Preprocessor):
+class CountVectorizer(Precalculation):
 
     def __init__(self, stop_words='english'):
         self.stopwords = None

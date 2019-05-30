@@ -1,10 +1,10 @@
 import gensim
-from shift_detector.preprocessors.Preprocessor import Preprocessor
+from shift_detector.precalculations.Precalculation import Precalculation
 from shift_detector.Utils import ColumnType
 from nltk.corpus import stopwords
 
 
-class WordTokenizer(Preprocessor):
+class WordTokenizer(Precalculation):
 
     def __init__(self, stop_words='english'):
         self.stopwords = None

@@ -1,18 +1,18 @@
 import pandas as pd
 import numpy as np
 from shift_detector.checks.Check import Check, Report
-from shift_detector.precalculations.LDAEmbedding import LDAEmbedding
+from shift_detector.precalculations.LdaEmbedding import LdaEmbedding
 from shift_detector.Utils import ColumnType
 from collections import Counter
 
 
-class LDACheck(Check):
+class LdaCheck(Check):
 
     def __init__(self, significance=10):
         self.significance = significance
 
     def run(self, store) -> Report:
-        processed_df1, processed_df2 = store[LDAEmbedding()]
+        processed_df1, processed_df2 = store[LdaEmbedding()]
 
         count_topics1 = Counter(processed_df1['topic'])
         count_topics2 = Counter(processed_df2['topic'])
