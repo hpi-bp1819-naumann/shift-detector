@@ -12,10 +12,8 @@ class SimplePrecalculation(Precalculation):
         return hash(self.__class__)
 
     def process(self, store):
-        df1_numerical = store[ColumnType.numerical][0]
-        df2_numerical = store[ColumnType.numerical][1]
-        df1_categorical = store[ColumnType.categorical][0]
-        df2_categorical = store[ColumnType.categorical][1]
+        df1_numerical, df2_numerical = store[ColumnType.numerical]
+        df1_categorical, df2_categorical = store[ColumnType.categorical]
 
         numerical_comparison = self.compare_numerical_columns(df1_numerical, df2_numerical)
         categorical_comparison = self.compare_categorical_columns(df1_categorical, df2_categorical, store.columns)
