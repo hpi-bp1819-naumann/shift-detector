@@ -1,6 +1,7 @@
 from shift_detector.precalculations.Preprocessor import Preprocessor
 from enum import Enum
-import pandas as pd
+from shift_detector.Utils import ColumnType
+from shift_detector.precalculations.Store import Store
 
 
 class NGramType(Enum):
@@ -27,20 +28,37 @@ class NGram(Preprocessor):
         return hash((self.__class__, self.n, self.ngram_type))
 
     def generate_ngram(self, text: tuple) -> dict:
+        """
+        Generates an ngram from a given text, n is defined by the class
+        :param text: tuple that contains the atomic elements of the text (e.g. characters or words)
+        :return: a dictionary representing the ngram
+        """
         ngram = {}
         for i in range(len(text) - self.n + 1):
             segment = tuple(text[i:i + self.n])
             ngram[segment] = 1 if segment not in ngram else ngram[segment] + 1
         return ngram
 
-    def process(self, train: pd.Series, test: pd.Series) -> tuple:
-        train = train.dropna().str.lower()
-        test = test.dropna().str.lower()
-        if self.ngram_type == NGramType.word:
-            train = train.str.split()
-            test = test.str.split()
+    def process(self, store: Store) -> tuple:
+        """
+        :param store:
+        :return: a tuple that contains the processed dataframes
+        """
 
-        train_processed = train.apply(lambda row: self.generate_ngram(tuple(row)))
-        test_processed = test.apply(lambda row: self.generate_ngram(tuple(row)))
+        df1, df2 = store[ColumnType.text]
+        df1 = df1.copy()
+        df2 = df2.copy()
 
-        return train_processed, test_processed
+        for column in df1:
+            df1[column] = df1[column].dropna().str.lower()
+            if self.ngram_type == NGramType.word:
+                df1[column] = df1[column].str.split()
+            df1[column] = df1[column].apply(lambda row: self.generate_ngram(tuple(row)))
+
+        for column in df2:
+            df2[column] = df2[column].dropna().str.lower()
+            if self.ngram_type == NGramType.word:
+                df2[column] = df2[column].str.split()
+            df2[column] = df2[column].apply(lambda row: self.generate_ngram(tuple(row)))
+
+        return df1, df2

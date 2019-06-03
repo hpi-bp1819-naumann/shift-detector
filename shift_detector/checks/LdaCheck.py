@@ -9,9 +9,14 @@ from collections import Counter
 class LdaCheck(Check):
 
     def __init__(self, significance=10):
-        self.significance = significance
+        self.significance = None
+        if isinstance(significance, int) and significance > 0:
+            self.significance = significance
+        else:
+            raise ValueError('Please enter a positive int as significance')
 
     def run(self, store) -> Report:
+        # TODO make CountVectorizer accessible from this interface
         processed_df1, processed_df2 = store[LdaEmbedding()]
 
         count_topics1 = Counter(processed_df1['topic'])
@@ -27,10 +32,11 @@ class LdaCheck(Check):
         explanation = dict()
 
         for i, (v1, v2) in enumerate(zip(values1_perc, values2_perc)):
-            if abs(v1-v2) >= self.significance:
-                explanation['Topic', i]['Topic difference'] = v1 - v2
+            if abs(round(v1 - v2, 1)) >= self.significance:
+                explanation['Topic ' + str(i) + ' diff'] = round(v1 - v2, 1)
 
         if explanation != dict():
+            # currently shows all text columns as shifted because they are merged together
             shifted_columns = store[ColumnType.text]
 
         return Report(store[ColumnType.text], shifted_columns, explanation)

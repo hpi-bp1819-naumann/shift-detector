@@ -20,6 +20,8 @@ class LdaEmbedding(Precalculation):
         self.trained_model = None
         if n_topics != 'auto':
             self.n_topics = n_topics
+        if n_topics < 2:
+            raise ValueError('Number of topics has to be at least 2')
         self.n_iter = n_iter
         self.lib = lib
         self.random_state = random_state
@@ -82,7 +84,7 @@ class LdaEmbedding(Precalculation):
             transformed_test = self.trained_model.transform(test_corpus)
 
         else:
-            vectorized_merged, vectorized_train, vectorized_test = store[CountVectorizer]
+            vectorized_merged, vectorized_train, vectorized_test = store[CountVectorizer()]
 
             if not self.trained_model:
                 model = copy(self.model)
