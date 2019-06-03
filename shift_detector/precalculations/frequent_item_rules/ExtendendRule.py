@@ -19,8 +19,8 @@ class ExtendedRule:
                   'DELTA_SUPPORTS_OF_LEFT_SIDES: {delta_supports_of_left_sides}, SUPPORTS: {supports}, '
                   'DELTA_SUPPORTS: {delta_supports}, CONFIDENCES: {confidences}, '
                   'DELTA_CONFIDENCES: {delta_confidences}]').format(
-            left_sides=', '.join(f'{l[0].upper()}: {l[1]}' for l in self.left_side),
-            right_sides='()' if not self.right_side else ', '.join(f'{l[0].upper()}: {l[1]}' for l in self.right_side),
+            left_sides=', '.join('{}: {}'.format(l[0].upper(), l[1]) for l in self.left_side),
+            right_sides='()' if not self.right_side else ', '.join('{}: {}'.format(l[0].upper(), l[1]) for l in self.right_side),
             supports_of_left_sides=self.supports_of_left_side,
             delta_supports_of_left_sides=self.delta_supports_of_left_side,
             supports=self.supports,
