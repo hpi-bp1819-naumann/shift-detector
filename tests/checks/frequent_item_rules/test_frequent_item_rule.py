@@ -1,10 +1,10 @@
 import unittest
-from shift_detector.checks.frequent_item_rules import rule_compression
-from shift_detector.checks.frequent_item_rules.ExtendendRule import ExtendedRule, RuleCluster
+from shift_detector.precalculations.frequent_item_rules import rule_compression
+from shift_detector.precalculations.frequent_item_rules.ExtendendRule import ExtendedRule, RuleCluster
 from collections import namedtuple
 import copy
-import io
-import sys
+
+import difflib
 
 
 class TestRuleCluster(unittest.TestCase):
@@ -29,14 +29,12 @@ class TestRuleCluster(unittest.TestCase):
         self.assertFalse(cluster_c.is_supercluster(self.rule))
 
     def test_print(self):
-        cluster_a = RuleCluster([('value', 'A')], [])
-        real_stdout = sys.stdout
-        captured_output = io.StringIO()
-        sys.stdout = captured_output
-        cluster_a.print()
-        sys.stdout = real_stdout
-        self.assertTrue('[  value:A  ]\nmax_delta_support:  None \t max_delta_confidence: None \t '
-                        'number of subrules: 0\n\n\n' == captured_output.getvalue())
+        cluster_a = RuleCluster([('value', 'A')], [self.rule])
+        expected_print_result = '[ value:A ] \nrule: VALUE: A ==> () [SUPPORTS_OF_LEFT_SIDES: (), ' \
+                                'DELTA_SUPPORTS_OF_LEFT_SIDES: -0.16, SUPPORTS: (0.65, 0.81), DELTA_SUPPORTS: -0.16, ' \
+                                'CONFIDENCES: (1.0, 1.0), DELTA_CONFIDENCES: 0.1]\nmax_delta_support: None	 ' \
+                                'max_delta_confidence:None	 number of subrules:0\n'
+        self.assertEqual(expected_print_result, cluster_a.__str__())
 
 
 class TestFrequentItemRule(unittest.TestCase):

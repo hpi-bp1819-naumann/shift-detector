@@ -7,7 +7,6 @@ from shift_detector.checks.Check import Check, Report
 from shift_detector.precalculations.SimplePrecalculation import SimplePrecalculation
 
 
-
 class SimpleCheck(Check):
 
     def __init__(self):

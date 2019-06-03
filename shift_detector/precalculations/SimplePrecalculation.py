@@ -16,7 +16,7 @@ class SimplePrecalculation(Precalculation):
         df1_categorical, df2_categorical = store[ColumnType.categorical]
 
         numerical_comparison = self.compare_numerical_columns(df1_numerical, df2_numerical)
-        categorical_comparison = self.compare_categorical_columns(df1_categorical, df2_categorical, store.columns)
+        categorical_comparison = self.compare_categorical_columns(df1_categorical, df2_categorical)
         combined_comparisons = {'categorical_comparison': categorical_comparison,
                                 'numerical_comparison': numerical_comparison}
         return combined_comparisons
@@ -34,37 +34,33 @@ class SimplePrecalculation(Precalculation):
                 elif not numerical_comparison.get(column):
                     numerical_comparison[column] = deepcopy(empty_metrics_dict)
 
+                comparison_column = numerical_comparison[column]
                 # TODO Later Vielleicht: verschnellerbar, in dem man alle Quantile gleichzeitig berechnet,
                 #  also quantile([0, 0.25,  ... ]) oder Methoden selbst berechnet
-                numerical_comparison[column]['min'][df_name] = df[column].min()
-                numerical_comparison[column]['max'][df_name] = df[column].max()
-                numerical_comparison[column]['quartile_1'][df_name] = df[column].quantile(.25)
-                numerical_comparison[column]['quartile_3'][df_name] = df[column].quantile(.75)
+                comparison_column['min'][df_name] = df[column].min()
+                comparison_column['max'][df_name] = df[column].max()
+                comparison_column['quartile_1'][df_name] = df[column].quantile(.25)
+                comparison_column['quartile_3'][df_name] = df[column].quantile(.75)
 
-                numerical_comparison[column]['median'][df_name] = df[column].median()
-                numerical_comparison[column]['mean'][df_name] = df[column].mean()
+                comparison_column['median'][df_name] = df[column].median()
+                comparison_column['mean'][df_name] = df[column].mean()
 
                 column_droppedna = df[column].dropna()
-                numerical_comparison[column]['std'][df_name] = column_droppedna.std()
+                comparison_column['std'][df_name] = column_droppedna.std()
 
-                numerical_comparison[column]['num_distinct'][df_name] = column_droppedna.nunique()
-
-                numerical_comparison[column]['completeness'][df_name] = len(column_droppedna) / len(df1[column])
-
-                numerical_comparison[column]['uniqueness'][df_name] = len(df.groupby(column)
-                                                                    .filter(lambda x: len(x) == 1)) / \
-                                                                    len(column_droppedna)
+                comparison_column['num_distinct'][df_name] = column_droppedna.nunique()
+                comparison_column['completeness'][df_name] = len(column_droppedna) / len(df1[column])
+                comparison_column['uniqueness'][df_name] = len(df.groupby(column).filter(lambda x: len(x) == 1)) / \
+                                                           len(column_droppedna)
         return numerical_comparison
 
     @staticmethod
-    def compare_categorical_columns(df1, df2, columns):
+    def compare_categorical_columns(df1, df2):
         category_comparison = {}
 
         for column in list(df1.columns):
             category_comparison[column] = {}
             attribute_ratios_df1 = df1[column].value_counts(normalize=True).to_dict()
-            # category_comparison[column]['df1'] = {}
-            # category_comparison[column]['df2'] = {}
 
             for key, value in attribute_ratios_df1.items():
                 category_comparison[column][key] = {'df1': value}
