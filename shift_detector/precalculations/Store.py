@@ -2,9 +2,8 @@ import logging as logger
 
 from pandas import DataFrame
 
-from shift_detector.preprocessors.Preprocessor import Preprocessor
-from shift_detector.utils.ColumnManagement import split_dataframes, ColumnType
-from shift_detector.utils.DataIO import shared_column_names
+from shift_detector.Utils import split_dataframes, ColumnType, shared_column_names
+from shift_detector.precalculations.Preprocessor import Preprocessor
 
 
 class Store:
@@ -12,6 +11,7 @@ class Store:
     def __init__(self,
                  df1: DataFrame,
                  df2: DataFrame):
+
         self.columns = shared_column_names(df1, df2)
         self.df1 = df1[self.columns]
         self.df2 = df2[self.columns]
@@ -23,8 +23,10 @@ class Store:
         if isinstance(needed_preprocessing, ColumnType):
             return self.splitted_dfs[needed_preprocessing]
 
+        """
         if not isinstance(needed_preprocessing, Preprocessor):
             raise Exception("Needed Preprocessing must be of type Preprocessor or ColumnType")
+        """
 
         if needed_preprocessing in self.preprocessings:
             logger.info("Use already existing Preprocessing")

@@ -76,7 +76,7 @@ class TestDetector(unittest.TestCase):
 
     def test_evaluate(self):
         mock = MagicMock()
-        mock.print_report = MagicMock()
+        mock.__str__ = MagicMock(return_value="")
         self.detector.check_reports = [mock]
         self.detector.evaluate()
-        mock.print_report.assert_called_with()
+        mock.__str__.assert_called_with()

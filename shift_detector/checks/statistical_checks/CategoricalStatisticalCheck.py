@@ -16,7 +16,7 @@ def chi2_test(part1: pd.Series, part2: pd.Series):
 class CategoricalStatisticalCheck(SimpleStatisticalCheck):
 
     def store_keys(self):
-        return [ColumnType.categorical]
+        return [ColumnType.all_categorical]
 
     def statistical_test(self, part1: pd.Series, part2: pd.Series) -> float:
         return chi2_test(part1, part2)

@@ -3,22 +3,24 @@ from typing import List, Union
 
 import pandas as pd
 
+from shift_detector.Utils import read_from_csv, column_names
 from shift_detector.checks.Check import Check, Report
-from shift_detector.preprocessors.Store import Store
-from shift_detector.utils.ColumnManagement import column_names
-from shift_detector.utils.DataIO import read_from_csv
+from shift_detector.precalculations.Store import Store
 
 
 class Detector:
+    """The detector object acts as the central object.
+    It is passed the data frames you want to compare.
+
+    :param df1: either a pandas data frame or a file path
+    :param df2: either a pandas data frame or a file path
+    :param delimiter: delimiter for csv files
+    """
+
     def __init__(self,
                  df1: Union[pd.DataFrame, str],
                  df2: Union[pd.DataFrame, str],
                  delimiter=','):
-        """
-        :param df1: either a dataframe or the file path
-        :param df2: either a dataframe or the file path
-        :param delimiter: used delimiter for csv files
-        """
         if type(df1) is pd.DataFrame:
             self.df1 = df1
         elif type(df1) is str:
@@ -42,6 +44,7 @@ class Detector:
     def add_checks(self, checks):
         """
         Add checks to the detector
+
         :param checks: single or list of Checks
         """
         if isinstance(checks, Check):
@@ -55,6 +58,7 @@ class Detector:
     def run_checks(self) -> List[Report]:
         """
         Execute the checks to run.
+
         :return: list of Reports that resulted from the checks
         """
         return [check.run(self.store) for check in self.checks_to_run]
@@ -75,4 +79,4 @@ class Detector:
         """
         print("EVALUATION")
         for report in self.check_reports:
-            report.print_report()
+            print(report)
