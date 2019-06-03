@@ -10,6 +10,7 @@ class TestLdaEmbedding(unittest.TestCase):
         self.lda1 = LdaEmbedding(n_topics=2, n_iter=1, random_state=0)
         self.lda2 = LdaEmbedding(n_topics=2, n_iter=1, random_state=0)
 
+        # https://www.kaggle.com/snap/amazon-fine-food-reviews/downloads/amazon-fine-food-reviews.zip/2
         reviews = pd.read_csv('../../data/Reviews.csv')
 
         self.df1 = pd.DataFrame(reviews[reviews['Score'] == 5][:50].reset_index()['Text'])
