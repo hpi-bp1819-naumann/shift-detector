@@ -4,8 +4,6 @@ from shift_detector.precalculations.frequent_item_rules.ExtendendRule import Ext
 from collections import namedtuple
 import copy
 
-import difflib
-
 
 class TestRuleCluster(unittest.TestCase):
 

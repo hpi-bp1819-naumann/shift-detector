@@ -11,8 +11,7 @@ class FrequentItemsetPrecalculation(Precalculation):
         self.min_confidence = min_confidence
 
     def process(self, store):
-        df1 = store[ColumnType.categorical][0]
-        df2 = store[ColumnType.categorical][1]
+        df1, df2 = store[ColumnType.categorical]
 
         item_rules = fpgrowth.calculate_frequent_rules(df1, df2, self.min_support, self.min_confidence)
         compressed_rules = rule_compression.compress_rules(item_rules)
@@ -20,7 +19,9 @@ class FrequentItemsetPrecalculation(Precalculation):
         return {'compressed_rules': compressed_rules, 'examined_columns': set(df1.columns)}
 
     def __eq__(self, other):
-        return isinstance(other, self.__class__)
+        if not isinstance(other, self.__class__):
+            return False
+        return self.min_support == other.min_support and self.min_confidence == other.min_confidence
 
     def __hash__(self):
-        return hash(self.__class__)
+        return hash((self.__class__, self.min_support, self.min_confidence))
