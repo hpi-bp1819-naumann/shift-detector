@@ -5,8 +5,8 @@ from pandas.util.testing import assert_frame_equal
 import shift_detector.utils.TextMetadataUtils as TmUtils
 from langdetect.lang_detect_exception import LangDetectException
 
-from shift_detector.preprocessors.Store import Store
-from shift_detector.preprocessors.TextMetadata import *
+from shift_detector.precalculations.Store import Store
+from shift_detector.precalculations.TextMetadata import *
 
 
 class TestTextMetadataPreprocessors(unittest.TestCase):

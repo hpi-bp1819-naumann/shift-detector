@@ -14,13 +14,13 @@ from nltk.corpus import stopwords
 from spellchecker import SpellChecker
 from textstat import textstat
 
-from shift_detector.preprocessors.Preprocessor import Preprocessor
+from shift_detector.precalculations.Precalculation import Precalculation
 from shift_detector.utils import UCBlist
 from shift_detector.utils.ColumnManagement import ColumnType
 from shift_detector.utils.TextMetadataUtils import dictionary_to_sorted_string, tokenize, delimiters
 
 
-class GenericTextMetadata(Preprocessor):
+class GenericTextMetadata(Precalculation):
 
     def __eq__(self, other):
         return isinstance(other, self.__class__)
@@ -48,7 +48,7 @@ class GenericTextMetadata(Preprocessor):
         for column in df1.columns:
             clean1 = df1[column].dropna()
             clean2 = df2[column].dropna()
-            logger.info(self.metadata_name(), ' analysis for ', column, ':')
+            logger.info(self.metadata_name() + ' analysis for ' + column)
             metadata1[column] = [self.metadata_function(text) for text in clean1]
             metadata2[column] = [self.metadata_function(text) for text in clean2]
         return metadata1, metadata2
@@ -348,7 +348,7 @@ class ComplexityMetadata(GenericTextMetadata):
         return textstat.text_standard(text, True)
 
 
-class TextMetadata(Preprocessor):
+class TextMetadata(Precalculation):
 
     def __init__(self, text_metadata_types=None, language='en', infer_language=False):
         if text_metadata_types is None:

@@ -3,8 +3,8 @@ import pandas as pd
 from shift_detector.checks.Check import Check
 from shift_detector.checks.statistical_checks.CategoricalStatisticalCheck import chi2_test
 from shift_detector.checks.statistical_checks.NumericalStatisticalCheck import kolmogorov_smirnov_test
-from shift_detector.checks.statistical_checks.StatisticalCheck import StatisticalReport
-from shift_detector.preprocessors.TextMetadata import TextMetadata
+from shift_detector.checks.statistical_checks.StatisticalCheck import StatisticalDeprecatedReport
+from shift_detector.precalculations.TextMetadata import TextMetadata
 from shift_detector.utils.ColumnManagement import ColumnType
 
 
@@ -15,7 +15,7 @@ class TextMetadataStatisticalCheck(Check):
         self.sampling = sampling
         self.seed = sampling_seed
 
-    def run(self, store) -> StatisticalReport:
+    def run(self, store) -> StatisticalDeprecatedReport:
         df1, df2 = store[self.metadata_preprocessor]
         sample_size = min(len(df1), len(df2))
         part1 = df1.sample(sample_size, random_state=self.seed) if self.sampling else df1
@@ -30,4 +30,4 @@ class TextMetadataStatisticalCheck(Check):
                 else:
                     raise ValueError('Metadata column type ', mdtype.metadata_column_type(),' of ', mdtype, ' is unknown. Should be numerical or categorical.')
                 text_meta_stats[(column, mdtype.metadata_name())] = [p]
-        return StatisticalReport(text_meta_stats)
+        return StatisticalDeprecatedReport(text_meta_stats)
