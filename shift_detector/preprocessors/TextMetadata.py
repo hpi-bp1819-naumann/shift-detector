@@ -306,7 +306,7 @@ class LanguagePerParagraph(GenericTextMetadata):
     def detect_languages(text):
         if len(text) == 0:
             detect(text)  # trigger LangDetectException. Throwing one in here smh doesnt work
-        if DelimiterTypeMetadata().metadata_function(text) == 'html':
+        if DelimiterTypeMetadata().metadata_function(text) == 'HTML':
             parts = re.split(r'<\s*br\s*/?>', text)
         else:
             parts = re.split(r'[\n\r]+', text)

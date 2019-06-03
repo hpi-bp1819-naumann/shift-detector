@@ -48,7 +48,7 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
     def test_unicode_blocks(self):
         md1, md2 = UnicodeBlocksMetadata().process(self.store)
         solution1 = pd.DataFrame([23, 22], columns=['text'])
-        solution2 = pd.DataFrame([4, 3], columns=['text'])
+        solution2 = pd.DataFrame([5, 4], columns=['text'])
         solution1 = pd.DataFrame(['Basic Latin', 'Basic Latin'], columns=['text'])
         solution2 = pd.DataFrame(['Basic Latin', 'Basic Latin'], columns=['text'])
         assert_frame_equal(solution1, md1)
@@ -57,7 +57,7 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
     def test_num_words(self):
         md1, md2 = NumWordsMetadata().process(self.store)
         solution1 = pd.DataFrame([26, 25], columns=['text'])
-        solution2 = pd.DataFrame([4, 3], columns=['text'])
+        solution2 = pd.DataFrame([5, 4], columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
@@ -77,15 +77,15 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
 
     def test_unknown_ratio(self):
         md1, md2 = UnknownWordRatioMetadata().process(self.store)
-        solution1 = pd.DataFrame([0.000000, 0.040000], columns=['text'])
-        solution2 = pd.DataFrame([0.250000, 0.333333], columns=['text'])
+        solution1 = pd.DataFrame([0.0, 0.04], columns=['text'])
+        solution2 = pd.DataFrame([0.2, 0.0], columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
     def test_stopword_ratio(self):
         md1, md2 = StopwordRatioMetadata().process(self.store)
-        solution1 = pd.DataFrame([0.576923, 0.480000], columns=['text'])
-        solution2 = pd.DataFrame([0.000000, 0.000000], columns=['text'])
+        solution1 = pd.DataFrame([0.576923, 0.48], columns=['text'])
+        solution2 = pd.DataFrame([0.0, 0.0], columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
@@ -123,7 +123,7 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
         solution1 = pd.DataFrame(columns=index)
         solution2 = pd.DataFrame(columns=index)
         solution1[('text', 'num_words')] = [26, 25]
-        solution2[('text', 'num_words')] = [4, 3]
+        solution2[('text', 'num_words')] = [5, 4]
         solution1[('text', 'stopword_ratio')] = [0.576923, 0.480000]
         solution2[('text', 'stopword_ratio')] = [0.000000, 0.000000]
         solution1[('text', 'unicode_blocks')] = ['Basic Latin', 'Basic Latin']
@@ -138,7 +138,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
         normal = "This. is a'n example, ,, 12  35,6  , st/r--ing    \n test."
         empty = ""
         punctuation = ".  , * (  \n \t [}"
-        self.assertEqual(TmUtils.tokenize(normal), ['This', 'is', 'an', 'example', '12', '356', 'string', 'test'])
+        self.assertEqual(TmUtils.tokenize(normal), ['This', 'is', "a'n", 'example', '12', '356', 'str', 'ing', 'test'])
         self.assertEqual(TmUtils.tokenize(empty), [])
         self.assertEqual(TmUtils.tokenize(punctuation), [])
 
@@ -195,12 +195,12 @@ class TestTextMetadataFunctions(unittest.TestCase):
     def test_num_words(self):
         distinct = "this are all different words"
         same = "same same, same. same"
-        withPunctuation= "Punctuation. doesn't affect. the---y get deleted.   "
+        withPunctuation= "Punctuation. doesn't affect. the*y get de@leted.  dashes-are-seperators "
         empty = ""
         num_words = NumWordsMetadata().metadata_function
         self.assertEqual(num_words(distinct), 5)
         self.assertEqual(num_words(same), 4)
-        self.assertEqual(num_words(withPunctuation), 6)
+        self.assertEqual(num_words(withPunctuation), 9)
         self.assertEqual(num_words(empty), 0)
 
     def test_distinct_words_ratio(self):
@@ -242,9 +242,9 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual(unknown_word_ratio(incorrect_english), .4)
         self.assertRaises(ValueError, UnknownWordRatioMetadata(language='so').metadata_function,
                           text=unsupported_language)
-        self.assertAlmostEqual(unknown_word_ratio(french), 0.470588, places=5)
-        self.assertAlmostEqual(UnknownWordRatioMetadata(language='fr').metadata_function(french), 0.26471, places=5)
-        self.assertAlmostEqual(UnknownWordRatioMetadata(infer_language=True).metadata_function(french), 0.26471, places=5)
+        self.assertAlmostEqual(unknown_word_ratio(french), 0.4571428, places=5)
+        self.assertAlmostEqual(UnknownWordRatioMetadata(language='fr').metadata_function(french), 0.1142857, places=5)
+        self.assertAlmostEqual(UnknownWordRatioMetadata(infer_language=True).metadata_function(french), 0.1142857, places=5)
         self.assertEqual(unknown_word_ratio(punctuation), 00.00)
         self.assertEqual(unknown_word_ratio(empty), 00.00)
 
@@ -261,8 +261,8 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual(stopword_ratio(only_stopwords), 1.0)
         self.assertEqual(stopword_ratio(mixed), 0.6)
         self.assertAlmostEqual(stopword_ratio(french), 0.0)
-        self.assertAlmostEqual(StopwordRatioMetadata(language='fr').metadata_function(french), 0.41176, places=5)
-        self.assertAlmostEqual(StopwordRatioMetadata(infer_language=True).metadata_function(french), 0.41176, places=5)
+        self.assertAlmostEqual(StopwordRatioMetadata(language='fr').metadata_function(french), 0.4285714, places=5)
+        self.assertAlmostEqual(StopwordRatioMetadata(infer_language=True).metadata_function(french), 0.4285714, places=5)
         self.assertEqual(stopword_ratio(punctuation), 0.0)
         self.assertEqual(stopword_ratio(empty), 0.0)
         self.assertRaises(ValueError, StopwordRatioMetadata(language='so').metadata_function, text=unsupported_language)
