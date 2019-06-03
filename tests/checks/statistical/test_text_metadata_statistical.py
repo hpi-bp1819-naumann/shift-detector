@@ -163,12 +163,20 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
                         'Managed homogeneous concept',
                         'Integrated attitude-oriented model']
 
+    def test_significant_metadata(self):
+        pvalues = pd.DataFrame([[0.001, 0.2]], columns=['num_chars', 'distinct_words_ratio'], index=['pvalue'])
+        result = TextMetadataStatisticalCheck(significance=0.01).significant_metadata(pvalues)
+        self.assertIn('num_chars', result)
+        self.assertNotIn('distinct_words_ratio', result)
+
     def test_not_significant(self):
         df1 = pd.DataFrame.from_dict({'text': self.poems})
         df2 = pd.DataFrame.from_dict({'text': list(reversed(self.poems))})
         store = Store(df1, df2)
         result = TextMetadataStatisticalCheck().run(store)
-        self.assertEqual(0, len(result.significant_columns()))
+        self.assertEqual(1, len(result.examined_columns))
+        self.assertEqual(0, len(result.shifted_columns))
+        self.assertEqual(0, len(result.explanation))
 
     def test_significant(self):
         df1 = pd.DataFrame.from_dict({'text': self.poems})
@@ -177,7 +185,9 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
         result = TextMetadataStatisticalCheck([NumCharsMetadata(), NumWordsMetadata(),
                                                DistinctWordsRatioMetadata(), LanguagePerParagraph()]
                                               ).run(store)
-        self.assertEqual(3, len(result.significant_columns()))
+        self.assertEqual(1, len(result.examined_columns))
+        self.assertEqual(1, len(result.shifted_columns))
+        self.assertEqual(1, len(result.explanation))
 
     def test_compliance_with_detector(self):
         df1 = pd.DataFrame.from_dict({'text': ['This is a very important text. It contains information.']})
@@ -188,7 +198,10 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
         column_index = pd.MultiIndex.from_product([['text'], ['distinct_words', 'num_chars', 'num_words']],
                                                   names=['column', 'metadata'])
         solution = pd.DataFrame([[1.0, 1.0, 1.0]], columns=column_index, index=['pvalue'])
-        assert_frame_equal(solution, detector.check_reports[0].result)
+        self.assertEqual(1, len(detector.check_reports[0].examined_columns))
+        self.assertEqual(0, len(detector.check_reports[0].shifted_columns))
+        self.assertEqual(0, len(detector.check_reports[0].explanation))
+        assert_frame_equal(solution, detector.check_reports[0].information['test_results'])
 
     def test_language_can_be_set(self):
         check = TextMetadataStatisticalCheck([UnknownWordRatioMetadata(), StopwordRatioMetadata()], language='fr')

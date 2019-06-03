@@ -52,7 +52,9 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
                            ([9] * 0))
         store = Store(df1, df2)
         result = NumericalStatisticalCheck().run(store)
-        self.assertEqual(0, len(result.significant_columns()))
+        self.assertEqual(1, len(result.examined_columns))
+        self.assertEqual(0, len(result.shifted_columns))
+        self.assertEqual(0, len(result.explanation))
 
     def test_significant(self):
         df1 = pd.DataFrame(([21] * 4) +
@@ -77,7 +79,9 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
                            ([39] * 9))
         store = Store(df1, df2)
         result = NumericalStatisticalCheck().run(store)
-        self.assertEqual(1, len(result.significant_columns()))
+        self.assertEqual(1, len(result.examined_columns))
+        self.assertEqual(1, len(result.shifted_columns))
+        self.assertEqual(1, len(result.explanation))
 
     def test_compliance_with_detector(self):
         df1 = pd.DataFrame([0])
@@ -85,4 +89,7 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
         detector = Detector(df1=df1, df2=df2)
         detector.add_checks(NumericalStatisticalCheck())
         detector.run()
-        assert_frame_equal(pd.DataFrame([1.0], index=['pvalue']), detector.check_reports[0].result)
+        self.assertEqual(1, len(detector.check_reports[0].examined_columns))
+        self.assertEqual(0, len(detector.check_reports[0].shifted_columns))
+        self.assertEqual(0, len(detector.check_reports[0].explanation))
+        assert_frame_equal(pd.DataFrame([1.0], index=['pvalue']), detector.check_reports[0].information['test_results'])

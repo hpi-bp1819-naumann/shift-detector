@@ -12,6 +12,9 @@ def kolmogorov_smirnov_test(part1: pd.Series, part2: pd.Series):
 
 class NumericalStatisticalCheck(SimpleStatisticalCheck):
 
+    def statistical_test_name(self) -> str:
+        return 'Kolmogorov-Smirnov-Two-Sample-Test'
+
     def store_keys(self):
         return [ColumnType.numerical]
 

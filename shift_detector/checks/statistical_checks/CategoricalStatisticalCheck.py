@@ -15,6 +15,9 @@ def chi2_test(part1: pd.Series, part2: pd.Series):
 
 class CategoricalStatisticalCheck(SimpleStatisticalCheck):
 
+    def statistical_test_name(self) -> str:
+        return 'Chi^2-Test with Log-Likelihood (G-Test)'
+
     def store_keys(self):
         return [ColumnType.all_categorical]
 
