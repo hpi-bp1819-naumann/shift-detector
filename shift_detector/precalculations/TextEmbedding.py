@@ -4,8 +4,8 @@ import pandas as pd
 from gensim.models import FastText, Word2Vec
 from numbers import Number
 from copy import copy
-from shift_detector.preprocessors.Preprocessor import Preprocessor
-from shift_detector.preprocessors.Store import Store, ColumnType
+from shift_detector.precalculations.Precalculation import Precalculation
+from shift_detector.precalculations.Store import Store, ColumnType
 
 
 class EmbeddingType(Enum):
@@ -13,7 +13,7 @@ class EmbeddingType(Enum):
     Word2Vec = "word2vec"
 
 
-class TextEmbedding(Preprocessor):
+class TextEmbedding(Precalculation):
     def __init__(self, model=None, trained_model=None):
         self.model = None
         self.trained_model = None

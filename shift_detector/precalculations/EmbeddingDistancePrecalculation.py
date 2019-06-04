@@ -1,21 +1,22 @@
-from shift_detector.preprocessors.TextEmbedding import TextEmbedding, EmbeddingType
-from shift_detector.preprocessors.Store import Store
-from shift_detector.checks.Check import Check, Report
+from shift_detector.precalculations.TextEmbedding import TextEmbedding
+from shift_detector.precalculations.Store import Store
+from shift_detector.precalculations.Precalculation import Precalculation
 from datawig.utils import random_split
 from math import sqrt
 
 
-class SorensenDiceReport(Report):
-    def __init__(self, result: dict):
-        self.result = result
+class EmbeddingDistancePrecalculation(Precalculation):
 
-    def print_report(self):
-        print('Sorensen Dice Report')
-        for i in self.result:
-            print(i, self.result[i])
+    def __init__(self, model=None, trained_model=None):
+        self.model = model
+        self.trained_model = trained_model
 
+    def __eq__(self, other):
+        return self.model == other.model \
+               and self.trained_model == other.trained_model
 
-class EmbeddingDistanceCheck(Check):
+    def __hash__(self):
+        return hash((self.model, self.trained_model))
 
     @staticmethod
     def calculate_distance(vector1, vector2):
@@ -38,14 +39,14 @@ class EmbeddingDistanceCheck(Check):
             vector[idx] = val / count
         return vector
 
-    def run(self, store: Store) -> SorensenDiceReport:
+    def process(self, store: Store) -> dict:
         """
         Calculate the Sørensen dice coefficient between two columns
         :param store:
         :return: CheckResult
         """
 
-        df1, df2 = store[TextEmbedding(model=EmbeddingType.Word2Vec)]
+        df1, df2 = store[TextEmbedding(model=self.model, trained_model=self.trained_model)]
 
         df1a, df1b = random_split(df1, [0.95, 0.05], seed=11)           # Baseline for df1
         df2a, df2b = random_split(df2, [0.95, 0.05], seed=11)           # Baseline for df2
@@ -60,4 +61,4 @@ class EmbeddingDistanceCheck(Check):
                          self.calculate_distance(self.join_and_normalize_vectors(df1[i]),
                                                  self.join_and_normalize_vectors(df2[i])))
 
-        return SorensenDiceReport(result)
+        return result
