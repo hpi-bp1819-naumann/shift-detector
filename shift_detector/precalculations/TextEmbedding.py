@@ -15,9 +15,9 @@ class TextEmbedding(Precalculation):
         if trained_model:
             self.trained_model = trained_model
         elif model == 'fasttext':
-            self.model = FastText(size=300, window=5, min_count=1, workers=4)
+            self.model = FastText(size=100, window=5, min_count=1, workers=4)
         elif model == 'word2vec':
-            self.model = Word2Vec(size=300, window=5, min_count=1, workers=4)
+            self.model = Word2Vec(size=100, window=5, min_count=1, workers=4)
         else:
             raise ValueError('Invalid model')
     

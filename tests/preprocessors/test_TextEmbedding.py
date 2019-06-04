@@ -15,7 +15,7 @@ class TestSorensenDice(unittest.TestCase):
         df2 = pd.DataFrame({'col1': ['ab ', 'hi ', 'jk ', 'lm ', 'no ', 'pq ', 'rs ', 'tu ',
                                           'vw ', 'xy ', 'z1 ', '23 ', '45 ', '67 ', '89 ']})
         self.store = Store(df1, df2)
-        ft1 = FastText(size=300, window=5, min_count=1, workers=4)
+        ft1 = FastText(size=50, window=5, min_count=1, workers=4)
         self.te1 = TextEmbedding(model='word2vec')
         self.te2 = TextEmbedding(model='word2vec')
         self.te3 = TextEmbedding(model='fasttext')
