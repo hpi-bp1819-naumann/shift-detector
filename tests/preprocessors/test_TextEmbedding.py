@@ -1,7 +1,7 @@
 import unittest
-from shift_detector.preprocessors.TextEmbedding import TextEmbedding, EmbeddingType
+from shift_detector.precalculations.TextEmbedding import TextEmbedding
 from gensim.models import FastText
-from shift_detector.preprocessors.Store import Store
+from shift_detector.precalculations.Store import Store
 import pandas as pd
 
 
@@ -16,9 +16,9 @@ class TestSorensenDice(unittest.TestCase):
                                           'vw ', 'xy ', 'z1 ', '23 ', '45 ', '67 ', '89 ']})
         self.store = Store(df1, df2)
         ft1 = FastText(size=300, window=5, min_count=1, workers=4)
-        self.te1 = TextEmbedding(model=EmbeddingType.Word2Vec)
-        self.te2 = TextEmbedding(model=EmbeddingType.Word2Vec)
-        self.te3 = TextEmbedding(model=EmbeddingType.FastText)
+        self.te1 = TextEmbedding(model='word2vec')
+        self.te2 = TextEmbedding(model='word2vec')
+        self.te3 = TextEmbedding(model='fasttext')
         self.te4 = TextEmbedding(trained_model=ft1)
         self.te5 = TextEmbedding(trained_model=ft1)
 
@@ -34,6 +34,7 @@ class TestSorensenDice(unittest.TestCase):
 
     def test_exception_in_init(self):
         self.assertRaises(ValueError, lambda: TextEmbedding())
+        self.assertRaises(ValueError, lambda: TextEmbedding(model='fasttextt'))
 
     def test_result(self):
         df1, df2 = self.te1.process(self.store)

@@ -1,4 +1,3 @@
-from enum import Enum
 import numpy as np
 import pandas as pd
 from gensim.models import FastText, Word2Vec
@@ -8,11 +7,6 @@ from shift_detector.precalculations.Precalculation import Precalculation
 from shift_detector.precalculations.Store import Store, ColumnType
 
 
-class EmbeddingType(Enum):
-    FastText = "fasttext"
-    Word2Vec = "word2vec"
-
-
 class TextEmbedding(Precalculation):
     def __init__(self, model=None, trained_model=None):
         self.model = None
@@ -20,12 +14,12 @@ class TextEmbedding(Precalculation):
 
         if trained_model:
             self.trained_model = trained_model
-        elif model == EmbeddingType.FastText:
+        elif model == 'fasttext':
             self.model = FastText(size=300, window=5, min_count=1, workers=4)
-        elif model == EmbeddingType.Word2Vec:
+        elif model == 'word2vec':
             self.model = Word2Vec(size=300, window=5, min_count=1, workers=4)
         else:
-            raise ValueError('No embedding defined')
+            raise ValueError('Invalid model')
     
     def __eq__(self, other):
         """Overrides the default implementation"""

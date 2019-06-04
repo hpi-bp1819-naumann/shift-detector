@@ -1,12 +1,11 @@
 from collections import defaultdict
 from shift_detector.checks.Check import Check, Report
 from shift_detector.precalculations.EmbeddingDistancePrecalculation import EmbeddingDistancePrecalculation
-from shift_detector.precalculations.TextEmbedding import EmbeddingType
 
 
 class EmbeddingDistanceCheck(Check):
 
-    def __init__(self, model=EmbeddingType.FastText, trained_model=None):
+    def __init__(self, model='word2vec', trained_model=None):
         self.model = model
         self.trained_model = trained_model
 
