@@ -11,7 +11,7 @@ class TestSorensenDice(unittest.TestCase):
         df1 = pd.DataFrame({'col1': ['ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef',
                                           'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef',
                                           'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef',
-                                          'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef']})
+                                          'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef', '']})
         df2 = pd.DataFrame({'col1': ['ab ', 'hi ', 'jk ', 'lm ', 'no ', 'pq ', 'rs ', 'tu ',
                                           'vw ', 'xy ', 'z1 ', '23 ', '45 ', '67 ', '89 ']})
         self.store = Store(df1, df2)

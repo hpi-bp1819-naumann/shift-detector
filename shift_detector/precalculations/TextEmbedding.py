@@ -8,6 +8,7 @@ from shift_detector.precalculations.Store import Store, ColumnType
 
 
 class TextEmbedding(Precalculation):
+
     def __init__(self, model=None, trained_model=None):
         self.model = None
         self.trained_model = None
@@ -47,8 +48,10 @@ class TextEmbedding(Precalculation):
                             if isinstance(v, Number) or isinstance(v, str)]
         return hash(tuple([self.model.__class__] + sorted(model_attributes)))
 
-    def f(self, row):
-        ser = np.sum([self.trained_model.wv[word] for word in row.lower().split()], axis=0)
+    def process_cell(self, cell):
+        ser = np.sum([self.trained_model.wv[word] for word in cell.lower().split()], axis=0)
+
+        # return vector of zeros when cell was empty
         if type(ser) == np.float64:
             ser = [0.0] * self.trained_model.vector_size
         return ser
@@ -69,8 +72,8 @@ class TextEmbedding(Precalculation):
             self.trained_model = model
 
         for column in df1:
-            df1[column] = df1[column].apply(self.f)
+            df1[column] = df1[column].apply(self.process_cell)
         for column in df2:
-            df2[column] = df2[column].apply(self.f)
+            df2[column] = df2[column].apply(self.process_cell)
 
         return df1, df2
