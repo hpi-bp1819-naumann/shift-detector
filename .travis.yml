@@ -12,7 +12,6 @@ install:
   - pip3 install datawig
   - pip3 install gensim
 script:
-  - python3 -m unittest discover
   - coverage run --source shift_detector -m unittest discover
 after_success:
   - coveralls
