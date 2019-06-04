@@ -40,4 +40,4 @@ class TestSorensenDice(unittest.TestCase):
         df1, df2 = self.te1.process(self.store)
         for column in df1:
             for field in df1[column]:
-                self.assertEqual(len(field), 300)
+                self.assertEqual(len(field), 100)
