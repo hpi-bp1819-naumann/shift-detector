@@ -24,8 +24,8 @@ class SorensenDiceCheck(Check):
                 .format(data[column_name][0], data[column_name][1], data[column_name][2])
 
             if (abs(data[column_name][0] - data[column_name][1]) > 0.1 or
-                    abs(data[column_name][0] - data[column_name][2]) > 0.1 or
-                    abs(data[column_name][1] - data[column_name][2]) > 0.1):
+                    data[column_name][2] - data[column_name][0] < 0.1 or
+                    data[column_name][2] - data[column_name][1] < 0.1):
                 shifted_columns.add(column_name)
 
         return Report(examined_columns, shifted_columns, dict(explanation))
