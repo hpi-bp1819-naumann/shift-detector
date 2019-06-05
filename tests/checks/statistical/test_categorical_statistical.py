@@ -34,6 +34,5 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
         df1 = pd.DataFrame([0])
         df2 = pd.DataFrame([0])
         detector = Detector(df1=df1, df2=df2)
-        detector.add_checks(CategoricalStatisticalCheck())
-        detector.run()
+        detector.run(CategoricalStatisticalCheck())
         assert_frame_equal(pd.DataFrame([1.0], index=['pvalue']), detector.check_reports[0].result)

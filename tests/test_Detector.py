@@ -54,8 +54,7 @@ class TestDetector(unittest.TestCase):
             self.assertRaises(Exception, self.detector.run)
 
         with self.subTest("Test successful run"):
-            self.detector.checks_to_run = [DummyCheck(), DummyCheck()]
-            self.detector.run()
+            self.detector.run(DummyCheck(), DummyCheck())
             self.assertEqual(len(self.detector.check_reports), 2)
 
     def test_add_check(self):
