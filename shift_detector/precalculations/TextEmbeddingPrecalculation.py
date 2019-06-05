@@ -58,8 +58,8 @@ class TextEmbeddingPrecalculation(Precalculation):
 
     def process(self, store: Store):
         df1, df2 = store[ColumnType.text]
-        df1 = df1.copy(deep=True).dropna()
-        df2 = df2.copy(deep=True).dropna()
+        df1 = df1.copy().dropna()
+        df2 = df2.copy().dropna()
 
         concatenated_ser = pd.concat([df1[i].str.lower().str.split() for i in df1] +
                                      [df2[i].str.lower().str.split() for i in df2])
@@ -67,8 +67,7 @@ class TextEmbeddingPrecalculation(Precalculation):
         if not self.trained_model:
             model = copy(self.model)
             model.build_vocab(sentences=concatenated_ser)
-            # TODO: replace 'epochs = 10'
-            model.train(sentences=concatenated_ser, total_examples=len(concatenated_ser), epochs=1)
+            model.train(sentences=concatenated_ser, total_examples=len(concatenated_ser), epochs=10)
             self.trained_model = model
 
         for column in df1:
