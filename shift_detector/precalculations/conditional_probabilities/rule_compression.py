@@ -1,5 +1,6 @@
 from shift_detector.precalculations.conditional_probabilities.ExtendendRule import ExtendedRule, RuleCluster
 from collections import defaultdict
+# from shift_detector.changeschecks.frequent_item_rules import fpgrowth
 
 
 def remove_attribute_value_pairs_appearing_in_all_rules(rules):
