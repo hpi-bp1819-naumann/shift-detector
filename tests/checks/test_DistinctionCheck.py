@@ -6,7 +6,7 @@ from shift_detector.checks.DistinctionCheck import DistinctionCheck
 from shift_detector.precalculations.Store import Store
 
 
-class TestCreateDetector(TestCase):
+class TestDistinctionCheck(TestCase):
 
     def setUp(self):
         sales1 = {'shift': ['A'] * 100, 'no_shift': ['C'] * 100}
