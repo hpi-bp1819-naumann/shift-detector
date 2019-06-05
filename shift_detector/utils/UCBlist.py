@@ -2,14 +2,14 @@
 import re
 
 def _initBlocks(text):
-  global blocks
-  blocks = []
-  pattern = re.compile(r'([0-9A-F]+)\.\.([0-9A-F]+);\ (\S.*\S)')
-  for line in text.splitlines():
-    m = pattern.match(line)
-    if m:
-      start, end, name = m.groups()
-      blocks.append((int(start, 16), int(end, 16), name))
+    global blocks
+    blocks = []
+    pattern = re.compile(r'([0-9A-F]+)\.\.([0-9A-F]+);\ (\S.*\S)')
+    for line in text.splitlines():
+        m = pattern.match(line)
+        if m:
+            start, end, name = m.groups()
+            blocks.append((int(start, 16), int(end, 16), name))
 
 # retrieved from http://unicode.org/Public/UNIDATA/Blocks.txt
 _initBlocks('''
