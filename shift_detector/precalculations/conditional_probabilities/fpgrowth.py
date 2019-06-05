@@ -85,7 +85,8 @@ def calculate_frequent_rules(df1, df2, min_support, min_confidence, min_delta_su
                 (rules[0][key].support, support), (rules[0][key].support - support),
                 (rules[0][key].confidence, confidence), (rules[0][key].confidence - confidence)
             )
-            if abs(candidate_rule.delta_supports) >= min_delta_supports and abs(candidate_rule.delta_confidences) >= min_delta_confidences:
+            if abs(candidate_rule.delta_supports) >= min_delta_supports and abs(
+                    candidate_rule.delta_confidences) >= min_delta_confidences:
                 result.append(candidate_rule)
 
     second_exclusives = rules[1].keys() - rules[0].keys()
@@ -106,6 +107,7 @@ def calculate_frequent_rules(df1, df2, min_support, min_confidence, min_delta_su
                 (support, rules[1][key].support), (support - rules[1][key].support),
                 (confidence, rules[1][key].confidence), (confidence - rules[1][key].confidence)
             )
-            if abs(candidate_rule.delta_supports) >= min_delta_supports and abs(candidate_rule.delta_confidences) >= min_delta_confidences:
+            if abs(candidate_rule.delta_supports) >= min_delta_supports and abs(
+                    candidate_rule.delta_confidences) >= min_delta_confidences:
                 result.append(candidate_rule)
     return result
