@@ -19,6 +19,7 @@ from shift_detector.utils import UCBlist
 from shift_detector.utils.ColumnManagement import ColumnType
 from shift_detector.utils.TextMetadataUtils import dictionary_to_sorted_string, tokenize_into_words, delimiters
 
+
 class GenericTextMetadata(Precalculation):
 
     def __eq__(self, other):
@@ -52,6 +53,7 @@ class GenericTextMetadata(Precalculation):
             metadata2[column] = [self.metadata_function(text) for text in clean2]
         return metadata1, metadata2
 
+
 class GenericTextMetadataWithTokenizing(GenericTextMetadata):
 
     @staticmethod
@@ -76,6 +78,7 @@ class GenericTextMetadataWithTokenizing(GenericTextMetadata):
             metadata1[column] = [self.metadata_function(words) for words in df1[column]]
             metadata2[column] = [self.metadata_function(words) for words in df2[column]]
         return metadata1, metadata2
+
 
 class GenericTextMetadataWithTokenizingAndLanguage(GenericTextMetadata):
 
@@ -117,6 +120,7 @@ class GenericTextMetadataWithTokenizingAndLanguage(GenericTextMetadata):
             metadata2[column] = temp_column2
         return metadata1, metadata2
 
+
 class TokenizeIntoWords(Precalculation):
 
     def __eq__(self, other):
@@ -126,8 +130,8 @@ class TokenizeIntoWords(Precalculation):
         return hash(self.__class__)
 
     def tokenize_into_words(self, text):
-        text = re.sub(r"-",' ',text)
-        text = re.sub(r"[^\w\s']",'',text)
+        text = re.sub(r"-", ' ', text)
+        text = re.sub(r"[^\w\s']", '', text)
         splitted = re.split(r'\W\s|\s', text)
         while '' in splitted:
             splitted.remove('')
@@ -143,6 +147,7 @@ class TokenizeIntoWords(Precalculation):
             tokenized1[column] = [self.tokenize_into_words(text) for text in clean1]
             tokenized2[column] = [self.tokenize_into_words(text) for text in clean2]
         return tokenized1, tokenized2
+
 
 class NumCharsMetadata(GenericTextMetadata):
 
@@ -256,7 +261,7 @@ class DistinctWordsRatioMetadata(GenericTextMetadataWithTokenizing):
         for word in words:
             if word not in distinct_words:
                 distinct_words.add(word)
-        return len(distinct_words)/len(words)
+        return len(distinct_words) / len(words)
 
 
 class UniqueWordsRatioMetadata(GenericTextMetadataWithTokenizing):
@@ -280,7 +285,7 @@ class UniqueWordsRatioMetadata(GenericTextMetadataWithTokenizing):
                 else:
                     seen_once.remove(word)
                     seen_often.add(word)
-        return len(seen_once)/len(words)
+        return len(seen_once) / len(words)
 
 
 class UnknownWordRatioMetadata(GenericTextMetadataWithTokenizingAndLanguage):
@@ -330,7 +335,7 @@ class StopwordRatioMetadata(GenericTextMetadataWithTokenizingAndLanguage):
             for word in words:
                 if word.lower() in stop:
                     stopword_count += 1
-            return stopword_count/ len(words)
+            return stopword_count / len(words)
         except OSError as error:
             raise ValueError('The language ' +
                              languages.get(part1=self.language).name.lower() +
@@ -375,6 +380,9 @@ class LanguagePerParagraph(GenericTextMetadata):
     # Depending on the texts delimiter splits the text into parts and calculates the language for each part. 
     # Returns a string with the languages, sorted by their frequency
 
+    def __init__(self, seed=0):
+        self.seed = seed
+
     @staticmethod
     def metadata_name() -> str:
         return 'language'
@@ -398,10 +406,14 @@ class LanguagePerParagraph(GenericTextMetadata):
         return detected_languages
 
     def metadata_function(self, text, seed=0):
-        DetectorFactory.seed = seed
+        DetectorFactory.seed = self.seed
         return dictionary_to_sorted_string(self.detect_languages(text))
 
+
 class LanguageMetadata(GenericTextMetadata):
+
+    def __init__(self, seed=0):
+        self.seed = seed
 
     @staticmethod
     def metadata_name() -> str:
@@ -411,7 +423,9 @@ class LanguageMetadata(GenericTextMetadata):
         return ColumnType.categorical
 
     def metadata_function(self, text):
+        DetectorFactory.seed = self.seed
         return detect(text)
+
 
 class ComplexityMetadata(GenericTextMetadata):
 

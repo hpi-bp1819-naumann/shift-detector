@@ -1,6 +1,3 @@
-import re
-
-from langdetect import DetectorFactory
 from collections import OrderedDict
 
 delimiters = OrderedDict()
@@ -13,15 +10,6 @@ delimiters['comma'] = r'\s*,\s'
 delimiters['dash'] = r'\s*\p{Pd}+\s'
 delimiters['tab'] = r'\t'
 delimiters['whitespace'] = r'\s'
-
-
-def tokenize_into_words(text):
-    text = re.sub(r"-",' ',text)
-    text = re.sub(r"[^\w\s']",'',text)
-    splitted = re.split(r'\W\s|\s', text)
-    while '' in splitted:
-        splitted.remove('')
-    return splitted
 
 
 def dictionary_to_sorted_string(histogram):
