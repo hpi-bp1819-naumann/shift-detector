@@ -32,7 +32,7 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
         assert_frame_equal(solution2, md2)
 
     def test_ratio_upper(self):
-        md1, md2 = RatioUpperMetadata().process(self.store)
+        md1, md2 = RatioUppercaseLettersMetadata().process(self.store)
         solution1 = pd.DataFrame([0.0392156, 0.0537634], columns=['text'])
         solution2 = pd.DataFrame([0.0370370, 0.03125], columns=['text'])
         assert_frame_equal(solution1, md1)
@@ -139,9 +139,9 @@ class TestTextMetadataFunctions(unittest.TestCase):
         normal = "This. is a'n example, ,, 12  35,6  , st/r--ing    \n test."
         empty = ""
         punctuation = ".  , * (  \n \t [}"
-        self.assertEqual(TmUtils.tokenize(normal), ['This', 'is', "a'n", 'example', '12', '356', 'str', 'ing', 'test'])
-        self.assertEqual(TmUtils.tokenize(empty), [])
-        self.assertEqual(TmUtils.tokenize(punctuation), [])
+        self.assertEqual(TmUtils.tokenize_into_words(normal), ['This', 'is', "a'n", 'example', '12', '356', 'str', 'ing', 'test'])
+        self.assertEqual(TmUtils.tokenize_into_words(empty), [])
+        self.assertEqual(TmUtils.tokenize_into_words(punctuation), [])
 
     def test_dictionary_to_sorted_string(self):
         many = {'a': 2, 'b': 5, 'c': 3, 'f': 5, 'd': 1, 'e': 5} 
@@ -168,7 +168,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
         mixed1 = "FifTY fIFty"
         mixed2 = "Tre"
         empty = ""
-        ratio_upper = RatioUpperMetadata().metadata_function
+        ratio_upper = RatioUppercaseLettersMetadata().metadata_function
         self.assertEqual(ratio_upper(lower), 0.00)
         self.assertEqual(ratio_upper(upper), 1.00)
         self.assertEqual(ratio_upper(mixed1), .50)

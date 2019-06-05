@@ -17,7 +17,7 @@ delimiters['whitespace'] = r'\s'
 DetectorFactory.seed = 0
 
 
-def tokenize(text):
+def tokenize_into_words(text):
     text = re.sub(r"-",' ',text)
     text = re.sub(r"[^\w\s']",'',text)
     splitted = re.split(r'\W\s|\s', text)

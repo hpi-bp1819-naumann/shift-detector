@@ -17,8 +17,9 @@ from textstat import textstat
 from shift_detector.precalculations.Precalculation import Precalculation
 from shift_detector.utils import UCBlist
 from shift_detector.utils.ColumnManagement import ColumnType
-from shift_detector.utils.TextMetadataUtils import dictionary_to_sorted_string, tokenize, delimiters
+from shift_detector.utils.TextMetadataUtils import dictionary_to_sorted_string, tokenize_into_words, delimiters
 
+DetectorFactory.seed = 0  # seed language detection to make it deterministic
 
 class GenericTextMetadata(Precalculation):
 
@@ -67,7 +68,7 @@ class NumCharsMetadata(GenericTextMetadata):
         return len(text)
 
 
-class RatioUpperMetadata(GenericTextMetadata):
+class RatioUppercaseLettersMetadata(GenericTextMetadata):
 
     @staticmethod
     def metadata_name() -> str:
@@ -79,9 +80,9 @@ class RatioUpperMetadata(GenericTextMetadata):
     def metadata_function(self, text):
         if text == "":
             return 0
-        lower = sum(map(str.islower, text))
+        alpha = sum(1 for c in text if c.isalpha())
         upper = sum(1 for c in text if c.isupper())
-        return upper / (lower + upper)
+        return upper / alpha
 
 
 class UnicodeCategoriesMetadata(GenericTextMetadata):
@@ -118,12 +119,12 @@ class UnicodeBlocksMetadata(GenericTextMetadata):
     def unicode_block_histogram(text):
 
         def block(character):
-            """ Return the Unicode block name for ch, or None if ch has no block.
+            """ Return the Unicode block name for character, or None if character has no block.
             from https://stackoverflow.com/questions/243831/unicode-block-of-a-character-in-python
             :param character"""
             assert isinstance(character, str) and len(character) == 1, repr(character)
             cp = ord(character)
-            for start, end, name in UCBlist._blocks:
+            for start, end, name in UCBlist.blocks:
                 if start <= cp <= end:
                     return name
 
@@ -147,7 +148,7 @@ class NumWordsMetadata(GenericTextMetadata):
         return ColumnType.numerical
 
     def metadata_function(self, text):
-        return len(tokenize(text))
+        return len(tokenize_into_words(text))
 
 
 class DistinctWordsRatioMetadata(GenericTextMetadata):
@@ -160,13 +161,13 @@ class DistinctWordsRatioMetadata(GenericTextMetadata):
         return ColumnType.numerical
 
     def metadata_function(self, text):
-        distinct_words = []
-        words = tokenize(text)
+        distinct_words = set()
+        words = tokenize_into_words(text)
         if len(words) == 0:
             return 0.0
         for word in words:
             if word not in distinct_words:
-                distinct_words.append(word)
+                distinct_words.add(word)
         return len(distinct_words)/len(words)
 
 
@@ -180,18 +181,18 @@ class UniqueWordsRatioMetadata(GenericTextMetadata):
         return ColumnType.numerical
 
     def metadata_function(self, text):
-        words = tokenize(text)
+        words = tokenize_into_words(text)
         if len(words) == 0:
             return 0.0
-        seen_once = []
-        seen_often = []
+        seen_once = set()
+        seen_often = set()
         for word in words:
             if word not in seen_often:
                 if word not in seen_once:
-                    seen_once.append(word)
+                    seen_once.add(word)
                 else:
                     seen_once.remove(word)
-                    seen_often.append(word)
+                    seen_often.add(word)
         return len(seen_once)/len(words)
 
 
@@ -217,7 +218,7 @@ class UnknownWordRatioMetadata(GenericTextMetadata):
             raise ValueError('The language ' +
                              languages.get(part1=language).name.lower() +
                              ' is not supported by UnknownWordRatioMetadata') from error
-        words = tokenize(text)
+        words = tokenize_into_words(text)
 
         if len(words) == 0:
             return 0.0
@@ -243,10 +244,10 @@ class StopwordRatioMetadata(GenericTextMetadata):
         # not working for every language
         language = LanguageMetadata().metadata_function(text) if self.infer_language else self.language
         stopword_count = 0
-        words = tokenize(text)
+        words = tokenize_into_words(text)
         try:
             stop = stopwords.words(languages.get(part1=language).name.lower())
-            if (len(words) == 0):
+            if len(words) == 0:
                 return 0.0
             for word in words:
                 if word.lower() in stop:
@@ -269,12 +270,13 @@ class DelimiterTypeMetadata(GenericTextMetadata):
 
     def metadata_function(self, text):
         for key, value in delimiters.items():
-            if (regex.compile(value).search(text)):
+            if regex.compile(value).search(text):
                 return key
         return 'no delimiter'
 
 
 class NumPartsMetadata(GenericTextMetadata):
+    # Calculates the delimiter of the text and then splits the text by its delimiter to calculate the number of parts in the text
 
     @staticmethod
     def metadata_name() -> str:
@@ -284,16 +286,16 @@ class NumPartsMetadata(GenericTextMetadata):
         return ColumnType.numerical
 
     def metadata_function(self, text):
+        delimiter = DelimiterTypeMetadata().metadata_function(text)
         for key, value in delimiters.items():
-            if DelimiterTypeMetadata().metadata_function(text) == key:
+            if key == delimiter:
                 return len(regex.split(regex.compile(value), text))
         return 0
 
 
-DetectorFactory.seed = 0  # seed language detection to make it deterministic
-
-
 class LanguagePerParagraph(GenericTextMetadata):
+    # Depending on the texts delimiter splits the text into parts and calculates the language for each part. 
+    # Returns a string with the languages, sorted by their frequency
 
     @staticmethod
     def metadata_name() -> str:
@@ -305,7 +307,7 @@ class LanguagePerParagraph(GenericTextMetadata):
     @staticmethod
     def detect_languages(text):
         if len(text) == 0:
-            detect(text)  # trigger LangDetectException. Throwing one in here smh doesnt work
+            detect(text)  # trigger LangDetectException. Throwing one in here somehow doesnt work
         if DelimiterTypeMetadata().metadata_function(text) == 'HTML':
             parts = re.split(r'<\s*br\s*/?>', text)
         else:
@@ -381,3 +383,4 @@ class TextMetadata(Precalculation):
                 metadata1[(column, metadata_type.metadata_name())] = md1[column]
                 metadata2[(column, metadata_type.metadata_name())] = md2[column]
         return metadata1, metadata2
+        
