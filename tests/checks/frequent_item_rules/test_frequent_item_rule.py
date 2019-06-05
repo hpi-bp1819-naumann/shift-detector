@@ -22,9 +22,9 @@ class TestRuleCluster(unittest.TestCase):
         cluster_c = RuleCluster([('value', 'B')], [])
         cluster_c.max_abs_delta_supports = -0.4
 
-        self.assertTrue(cluster_a.is_supercluster(self.rule))
-        self.assertFalse(cluster_b.is_supercluster(self.rule))
-        self.assertFalse(cluster_c.is_supercluster(self.rule))
+        self.assertTrue(cluster_a.is_super_cluster_of(self.rule))
+        self.assertFalse(cluster_b.is_super_cluster_of(self.rule))
+        self.assertFalse(cluster_c.is_super_cluster_of(self.rule))
 
     def test_print(self):
         cluster_a = RuleCluster([('value', 'A')], [self.rule])

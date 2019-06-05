@@ -18,7 +18,7 @@ class ExtendedRule:
                 'DELTA_CONFIDENCES: {delta_confidences}]').format(
             left_sides=', '.join('{}: {}'.format(l[0].upper(), l[1]) for l in self.left_side),
             right_sides='()' if not self.right_side else ', '.join(
-                '{}: {}'.format(l[0].upper(), l[1]) for l in self.right_side),
+                '{}: {}'.format(r[0].upper(), r[1]) for r in self.right_side),
             supports_of_left_sides=self.supports_of_left_side,
             delta_supports_of_left_sides=self.delta_supports_of_left_side,
             supports=self.supports,
@@ -30,31 +30,16 @@ class ExtendedRule:
 
 class RuleCluster:
 
-    def __init__(self, attributes, rules):
-        self.attributes = attributes
-        self.rules = rules
-        self.max_abs_delta_supports = None
-        self.max_abs_delta_confidence = None
-        self.subcluster = []
+    def __init__(self, rule):
+        self.attributes = set(rule.right_side + rule.left_side)
+        self.rule = rule
+        self.sub_clusters = []
 
-    def calculate_max_support_and_confidence(self):
-        self.max_abs_delta_supports = 0
-        self.max_abs_delta_confidence = 0
-        for rule in self.rules:
-            if abs(rule.delta_supports) > abs(self.max_abs_delta_supports):
-                self.max_abs_delta_supports = abs(rule.delta_supports)
-            if abs(rule.delta_confidences) > abs(self.max_abs_delta_confidence):
-                self.max_abs_delta_confidence = abs(rule.delta_confidences)
+    def is_super_cluster_of(self, other_rule):
+        other_attributes = set(other_rule.left_side + other_rule.right_side)
 
-    def is_supercluster(self, new_rule):
-        own_attributes = set(self.attributes)
-        new_rule_attributes = set(new_rule.left_side + new_rule.right_side)
-
-        if own_attributes.issubset(new_rule_attributes):
-            if abs(new_rule.delta_supports) <= abs(self.max_abs_delta_supports):
-                return True
-        else:
-            return False
+        return self.attributes.issubset(other_attributes) and abs(other_rule.delta_supports) <= abs(
+            self.rule.delta_supports)
 
     def __str__(self):
         return_str = ''
@@ -62,8 +47,9 @@ class RuleCluster:
         for attribute in self.attributes:
             attribute_string += str(attribute[0]) + ':' + str(attribute[1]) + ' '
         return_str += '[ ' + attribute_string + '] \n'
-        return_str += 'rule: ' + str(self.rules[0]) + '\n'
-        return_str += 'max_delta_support: ' + str(self.max_abs_delta_supports) + '\t max_delta_confidence:' + \
-                      str(self.max_abs_delta_confidence) + '\t number of subrules:' + str(len(self.subcluster)) + '\n'
+        return_str += 'rule: ' + str(self.rule) + '\n'
+        return_str += 'max_delta_support: ' + str(abs(self.rule.delta_supports)) + '\t max_delta_confidence:' + \
+                      str(abs(self.rule.delta_confidences)) + '\t number of subrules:' + str(
+            len(self.sub_clusters)) + '\n'
 
         return return_str
