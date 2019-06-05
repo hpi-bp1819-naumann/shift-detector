@@ -17,7 +17,7 @@ from textstat import textstat
 from shift_detector.precalculations.Precalculation import Precalculation
 from shift_detector.utils import UCBlist
 from shift_detector.utils.ColumnManagement import ColumnType
-from shift_detector.utils.TextMetadataUtils import dictionary_to_sorted_string, tokenize_into_words, delimiters
+from shift_detector.utils.TextMetadataUtils import dictionary_to_sorted_string, delimiters
 
 
 class GenericTextMetadata(Precalculation):
