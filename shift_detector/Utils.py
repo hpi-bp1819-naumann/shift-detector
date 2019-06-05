@@ -57,9 +57,14 @@ def is_categorical(col: pd.Series,
     :return: True if the column is categorical according to the heuristic
     """
 
-    sample = col.sample(n=n_samples) if len(col) >= n_samples else col
+    if len(col) >= n_samples:
+        sample = col.sample(n=n_samples)
+        unique_fraction = sample.unique().shape[0] / n_samples
+    else:
+        sample = col
+        unique_fraction = sample.unique().shape[0] / sample.shape[0]
 
-    return sample.unique().shape[0] / n_samples <= max_unique_fraction
+    return unique_fraction <= max_unique_fraction
 
 
 def column_names(columns):
@@ -80,7 +85,7 @@ def split_dataframes(df1: pd.DataFrame, df2: pd.DataFrame, columns: List) -> Dic
     }
     """
     numerical_columns = [c for c in columns if is_numeric_dtype(df1[c])
-                       and is_numeric_dtype(df2[c])]
+                         and is_numeric_dtype(df2[c])]
     logger.info("Assuming numerical columns: {}".format(", ".join(column_names(numerical_columns))))
     remaining_columns = list(set(columns) - set(numerical_columns))
 
