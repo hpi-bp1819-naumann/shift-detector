@@ -24,6 +24,17 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
         df2 = pd.DataFrame.from_dict({'text': phrases})
         self.store = Store(df1, df2)
 
+    def test_tokenize_into_words(self):
+        md1, md2 = TokenizeIntoWords().process(self.store)
+        sol1_1 = ['Tell', 'me', 'not', 'in', 'mournful', 'numbers', 'Life', 'is', 'but', 'an', 'empty', 'dream', 'For', 'the', 'soul', 'is', 'dead', 'that', 'slumbers', 'And', 'things', 'are', 'not', 'what', 'they', 'seem']
+        sol1_2 = ['Life', 'is', 'real', 'Life', 'is', 'earnest', 'And', 'the', 'grave', 'is', 'not', 'its', 'goal', 'Dust', 'thou', 'art', 'to', 'dust', 'returnest', 'Was', 'not', 'spoken', 'of', 'the', 'soul']
+        sol2_1 = ['Front', 'line', 'leading', 'edge', 'website']
+        sol2_2 = ['Upgradable', 'upward', 'trending', 'software']
+        solution1 = pd.DataFrame([[sol1_1], [sol1_2]], columns=['text'])
+        solution2 = pd.DataFrame([[sol2_1], [sol2_2]], columns=['text'])
+        assert_frame_equal(solution1, md1)
+        assert_frame_equal(solution2, md2)
+
     def test_num_chars(self):
         md1, md2 = NumCharsMetadata().process(self.store)
         solution1 = pd.DataFrame([132, 123], columns=['text'])
@@ -135,13 +146,14 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
 
 class TestTextMetadataFunctions(unittest.TestCase):
 
-    def test_text_to_array(self):
+    def test_tokenize_into_words(self):
         normal = "This. is a'n example, ,, 12  35,6  , st/r--ing    \n test."
         empty = ""
         punctuation = ".  , * (  \n \t [}"
-        self.assertEqual(TmUtils.tokenize_into_words(normal), ['This', 'is', "a'n", 'example', '12', '356', 'str', 'ing', 'test'])
-        self.assertEqual(TmUtils.tokenize_into_words(empty), [])
-        self.assertEqual(TmUtils.tokenize_into_words(punctuation), [])
+        tokenize_into_words = TokenizeIntoWords().tokenize_into_words
+        self.assertEqual(tokenize_into_words(normal), ['This', 'is', "a'n", 'example', '12', '356', 'str', 'ing', 'test'])
+        self.assertEqual(tokenize_into_words(empty), [])
+        self.assertEqual(tokenize_into_words(punctuation), [])
 
     def test_dictionary_to_sorted_string(self):
         many = {'a': 2, 'b': 5, 'c': 3, 'f': 5, 'd': 1, 'e': 5} 
@@ -194,22 +206,20 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual(unicode_block_histogram(empty), {})
 
     def test_num_words(self):
-        distinct = "this are all different words"
-        same = "same same, same. same"
-        withPunctuation= "Punctuation. doesn't affect. the*y get de@leted.  dashes-are-seperators "
-        empty = ""
+        distinct = ['this', 'are', 'all', 'different', 'words']
+        same = ['same', 'same', 'same', 'same']
+        empty = []
         num_words = NumWordsMetadata().metadata_function
         self.assertEqual(num_words(distinct), 5)
         self.assertEqual(num_words(same), 4)
-        self.assertEqual(num_words(withPunctuation), 9)
         self.assertEqual(num_words(empty), 0)
 
     def test_distinct_words_ratio(self):
-        distinct = "this are all different words"
-        same = "same same, same. same"
-        mixed = "there are doubled words and there are distinct words."
-        capitalLetters = "Capital letters matter Matter"
-        empty = ""
+        distinct = ['this', 'are', 'all', 'different', 'words']
+        same = ['same', 'same', 'same', 'same']
+        mixed = ['there', 'are', 'doubled', 'words', 'and', 'there', 'are', 'distinct', 'words']
+        capitalLetters = ['Capital', 'letters', 'matter', 'Matter']
+        empty = []
         distinct_words_ratio = DistinctWordsRatioMetadata().metadata_function
         self.assertEqual(distinct_words_ratio(distinct), 1.0)
         self.assertEqual(distinct_words_ratio(same), 0.25)
@@ -218,11 +228,11 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual(distinct_words_ratio(empty), 0.0)
 
     def test_unique_words(self):
-        distinct = "this are all different words"
-        same = "same, same. same"
-        mixed = "there are doubled words and there are distinct words."
-        capitalLetters = "Capital letters letters matter Matter"
-        empty = ""
+        distinct = ['this', 'are', 'all', 'different', 'words']
+        same = ['same', 'same', 'same', 'same']
+        mixed = ['there', 'are', 'doubled', 'words', 'and', 'there', 'are', 'distinct', 'words']
+        capitalLetters = ['Capital', 'letters', 'letters', 'matter', 'Matter']
+        empty = []
         unique_words_ratio = UniqueWordsRatioMetadata().metadata_function
         self.assertEqual(unique_words_ratio(distinct), 1.0)
         self.assertEqual(unique_words_ratio(same), 0.0)
@@ -231,42 +241,32 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual(unique_words_ratio(empty), 0.0)
 
     def test_unknown_words(self):
-        correct_english = "This is a correct sentence"
-        incorrect_english = "Thiis is an incozyzyrrect sentence"
-        # This is somali
-        unsupported_language = "Aqoonyahanada caalamku waxay aad ugu murmaan sidii luuqadaha aduunku ku bilaabmeem."
-        french = "Demain, dès l’aube, à l’heure où blanchit la campagne,\nJe partirai. Vois-tu, je sais que tu m’attends.\nJ’irai par la forêt, j’irai par la montagne.\nJe ne puis demeurer loin de toi plus longtemps."
-        punctuation = " . "
-        empty = ""
+        correct_english = ('en', ['This', 'is', 'a', 'correct', 'sentence'])
+        incorrect_english = ('en', ['Thiis', 'is', 'an', 'incozyzyrrect', 'sentence'])
+        french = ('fr', ['Demain', 'dès', 'l’aube', 'à', 'l’heure', 'où', 'blanchit', 'la', 'campagne', 'Je', 'partirai', 'Vois', 'tu', 'je', 'sais', 'que', 'tu', 'm’attends', 'J’irai', 'par', 'la', 'forêt', 'j’irai', 'par', 'la', 'montagne', 'Je', 'ne', 'puis', 'demeurer', 'loin', 'de', 'toi', 'plus', 'longtemps'])
+        empty = ('en', [])
+        unsupported_language = ('so', ['Aqoonyahanada', 'caalamku', 'waxay', 'aad', 'ugu', 'murmaan', 'sidii', 'luuqadaha', 'aduunku', 'ku', 'bilaabmeem'])
         unknown_word_ratio = UnknownWordRatioMetadata().metadata_function
         self.assertEqual(unknown_word_ratio(correct_english), 0.00)
         self.assertEqual(unknown_word_ratio(incorrect_english), .4)
-        self.assertRaises(ValueError, UnknownWordRatioMetadata(language='so').metadata_function,
-                          text=unsupported_language)
-        self.assertAlmostEqual(unknown_word_ratio(french), 0.4571428, places=5)
-        self.assertAlmostEqual(UnknownWordRatioMetadata(language='fr').metadata_function(french), 0.1142857, places=5)
-        self.assertAlmostEqual(UnknownWordRatioMetadata(infer_language=True).metadata_function(french), 0.1142857, places=5)
-        self.assertEqual(unknown_word_ratio(punctuation), 00.00)
+        self.assertRaises(ValueError, unknown_word_ratio, language_and_words=unsupported_language)
+        self.assertAlmostEqual(unknown_word_ratio(french), 0.1142857, places=5)
         self.assertEqual(unknown_word_ratio(empty), 00.00)
 
     def test_stopwords(self):
-        no_stopwords = "computer calculates math"
-        only_stopwords = "The and is I am"
-        mixed = "A normal sentence has both"
-        french = "Demain, dès l’aube, à l’heure où blanchit la campagne,\nJe partirai. Vois-tu, je sais que tu m’attends.\nJ’irai par la forêt, j’irai par la montagne.\nJe ne puis demeurer loin de toi plus longtemps."
-        punctuation = " . "
-        empty = ""
-        unsupported_language = "Aqoonyahanada caalamku waxay aad ugu murmaan sidii luuqadaha aduunku ku bilaabmeem."
+        no_stopwords = ('en', ['computer', 'calculates', 'math'])
+        only_stopwords = ('en', ['The', 'and', 'is', 'I', 'am'])
+        mixed = ('en', ['A', 'normal', 'sentence', 'has', 'both'])
+        french = ('fr', ['Demain', 'dès', 'l’aube', 'à', 'l’heure', 'où', 'blanchit', 'la', 'campagne', 'Je', 'partirai', 'Vois', 'tu', 'je', 'sais', 'que', 'tu', 'm’attends', 'J’irai', 'par', 'la', 'forêt', 'j’irai', 'par', 'la', 'montagne', 'Je', 'ne', 'puis', 'demeurer', 'loin', 'de', 'toi', 'plus', 'longtemps'])
+        empty = ('en', [])
+        unsupported_language = ('so', ['Aqoonyahanada', 'caalamku', 'waxay', 'aad', 'ugu', 'murmaan', 'sidii', 'luuqadaha', 'aduunku', 'ku', 'bilaabmeem'])
         stopword_ratio = StopwordRatioMetadata().metadata_function
         self.assertEqual(stopword_ratio(no_stopwords), 0.0)
         self.assertEqual(stopword_ratio(only_stopwords), 1.0)
         self.assertEqual(stopword_ratio(mixed), 0.6)
-        self.assertAlmostEqual(stopword_ratio(french), 0.0)
-        self.assertAlmostEqual(StopwordRatioMetadata(language='fr').metadata_function(french), 0.4285714, places=5)
-        self.assertAlmostEqual(StopwordRatioMetadata(infer_language=True).metadata_function(french), 0.4285714, places=5)
-        self.assertEqual(stopword_ratio(punctuation), 0.0)
+        self.assertAlmostEqual(stopword_ratio(french), 0.4285714, places=5)
         self.assertEqual(stopword_ratio(empty), 0.0)
-        self.assertRaises(ValueError, StopwordRatioMetadata(language='so').metadata_function, text=unsupported_language)
+        self.assertRaises(ValueError, stopword_ratio, language_and_words=unsupported_language)
 
 
     def test_category(self):

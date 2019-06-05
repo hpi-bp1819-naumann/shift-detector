@@ -14,8 +14,6 @@ delimiters['dash'] = r'\s*\p{Pd}+\s'
 delimiters['tab'] = r'\t'
 delimiters['whitespace'] = r'\s'
 
-DetectorFactory.seed = 0
-
 
 def tokenize_into_words(text):
     text = re.sub(r"-",' ',text)

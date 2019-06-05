@@ -19,8 +19,6 @@ from shift_detector.utils import UCBlist
 from shift_detector.utils.ColumnManagement import ColumnType
 from shift_detector.utils.TextMetadataUtils import dictionary_to_sorted_string, tokenize_into_words, delimiters
 
-DetectorFactory.seed = 0  # seed language detection to make it deterministic
-
 class GenericTextMetadata(Precalculation):
 
     def __eq__(self, other):
@@ -54,6 +52,97 @@ class GenericTextMetadata(Precalculation):
             metadata2[column] = [self.metadata_function(text) for text in clean2]
         return metadata1, metadata2
 
+class GenericTextMetadataWithTokenizing(GenericTextMetadata):
+
+    @staticmethod
+    @abstractmethod
+    def metadata_name() -> str:
+        pass
+
+    @abstractmethod
+    def metadata_column_type(self) -> ColumnType:
+        pass
+
+    @abstractmethod
+    def metadata_function(self, words):
+        pass
+
+    def process(self, store):
+        metadata1 = pd.DataFrame()
+        metadata2 = pd.DataFrame()
+        df1, df2 = store[TokenizeIntoWords()]
+        for column in df1.columns:
+            logger.info(self.metadata_name() + ' analysis for ' + column)
+            metadata1[column] = [self.metadata_function(words) for words in df1[column]]
+            metadata2[column] = [self.metadata_function(words) for words in df2[column]]
+        return metadata1, metadata2
+
+class GenericTextMetadataWithTokenizingAndLanguage(GenericTextMetadata):
+
+    def __init__(self, language='en', infer_language=False):
+        self.language = language
+        self.infer_language = infer_language
+
+    @staticmethod
+    @abstractmethod
+    def metadata_name() -> str:
+        pass
+
+    @abstractmethod
+    def metadata_column_type(self) -> ColumnType:
+        pass
+
+    @abstractmethod
+    def metadata_function(self, words):
+        pass
+
+    def process(self, store):
+        metadata1 = pd.DataFrame()
+        metadata2 = pd.DataFrame()
+        df1, df2 = store[TokenizeIntoWords()]
+        if self.infer_language:
+            lang1, lang2 = store[LanguageMetadata()]
+        for column in df1.columns:
+            logger.info(self.metadata_name() + ' analysis for ' + column)
+            temp_column1 = []
+            temp_column2 = []
+            for i in range(len(df1)):
+                if self.infer_language:
+                    temp_column1.append(self.metadata_function((lang1[column][i], df1[column][i])))
+                    temp_column2.append(self.metadata_function((lang2[column][i], df2[column][i])))
+                else:
+                    temp_column1.append(self.metadata_function((self.language, df1[column][i])))
+                    temp_column2.append(self.metadata_function((self.language, df2[column][i])))
+            metadata1[column] = temp_column1
+            metadata2[column] = temp_column2
+        return metadata1, metadata2
+
+class TokenizeIntoWords(Precalculation):
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__)
+
+    def __hash__(self):
+        return hash(self.__class__)
+
+    def tokenize_into_words(self, text):
+        text = re.sub(r"-",' ',text)
+        text = re.sub(r"[^\w\s']",'',text)
+        splitted = re.split(r'\W\s|\s', text)
+        while '' in splitted:
+            splitted.remove('')
+        return splitted
+
+    def process(self, store):
+        tokenized1 = pd.DataFrame()
+        tokenized2 = pd.DataFrame()
+        df1, df2 = store[ColumnType.text]
+        for column in df1.columns:
+            clean1 = df1[column].dropna()
+            clean2 = df2[column].dropna()
+            tokenized1[column] = [self.tokenize_into_words(text) for text in clean1]
+            tokenized2[column] = [self.tokenize_into_words(text) for text in clean2]
+        return tokenized1, tokenized2
 
 class NumCharsMetadata(GenericTextMetadata):
 
@@ -138,7 +227,7 @@ class UnicodeBlocksMetadata(GenericTextMetadata):
         return dictionary_to_sorted_string(self.unicode_block_histogram(text))
 
 
-class NumWordsMetadata(GenericTextMetadata):
+class NumWordsMetadata(GenericTextMetadataWithTokenizing):
 
     @staticmethod
     def metadata_name() -> str:
@@ -147,11 +236,11 @@ class NumWordsMetadata(GenericTextMetadata):
     def metadata_column_type(self) -> ColumnType:
         return ColumnType.numerical
 
-    def metadata_function(self, text):
-        return len(tokenize_into_words(text))
+    def metadata_function(self, words):
+        return len(words)
 
 
-class DistinctWordsRatioMetadata(GenericTextMetadata):
+class DistinctWordsRatioMetadata(GenericTextMetadataWithTokenizing):
 
     @staticmethod
     def metadata_name() -> str:
@@ -160,9 +249,8 @@ class DistinctWordsRatioMetadata(GenericTextMetadata):
     def metadata_column_type(self) -> ColumnType:
         return ColumnType.numerical
 
-    def metadata_function(self, text):
+    def metadata_function(self, words):
         distinct_words = set()
-        words = tokenize_into_words(text)
         if len(words) == 0:
             return 0.0
         for word in words:
@@ -171,7 +259,7 @@ class DistinctWordsRatioMetadata(GenericTextMetadata):
         return len(distinct_words)/len(words)
 
 
-class UniqueWordsRatioMetadata(GenericTextMetadata):
+class UniqueWordsRatioMetadata(GenericTextMetadataWithTokenizing):
 
     @staticmethod
     def metadata_name() -> str:
@@ -180,8 +268,7 @@ class UniqueWordsRatioMetadata(GenericTextMetadata):
     def metadata_column_type(self) -> ColumnType:
         return ColumnType.numerical
 
-    def metadata_function(self, text):
-        words = tokenize_into_words(text)
+    def metadata_function(self, words):
         if len(words) == 0:
             return 0.0
         seen_once = set()
@@ -196,11 +283,7 @@ class UniqueWordsRatioMetadata(GenericTextMetadata):
         return len(seen_once)/len(words)
 
 
-class UnknownWordRatioMetadata(GenericTextMetadata):
-
-    def __init__(self, language='en', infer_language=False):
-        self.language = language
-        self.infer_language = infer_language
+class UnknownWordRatioMetadata(GenericTextMetadataWithTokenizingAndLanguage):
 
     @staticmethod
     def metadata_name() -> str:
@@ -209,17 +292,16 @@ class UnknownWordRatioMetadata(GenericTextMetadata):
     def metadata_column_type(self) -> ColumnType:
         return ColumnType.numerical
 
-    def metadata_function(self, text):
+    def metadata_function(self, language_and_words):
         # pyspellchecker supports multiple languages including English, Spanish, German, French, and Portuguese
-        language = LanguageMetadata().metadata_function(text) if self.infer_language else self.language
+        language = language_and_words[0]
+        words = language_and_words[1]
         try:
             spell = SpellChecker(language)
         except ValueError as error:
             raise ValueError('The language ' +
                              languages.get(part1=language).name.lower() +
                              ' is not supported by UnknownWordRatioMetadata') from error
-        words = tokenize_into_words(text)
-
         if len(words) == 0:
             return 0.0
 
@@ -227,11 +309,7 @@ class UnknownWordRatioMetadata(GenericTextMetadata):
         return len(misspelled) / len(words)
 
 
-class StopwordRatioMetadata(GenericTextMetadata):
-
-    def __init__(self, language='en', infer_language=False):
-        self.language = language
-        self.infer_language = infer_language
+class StopwordRatioMetadata(GenericTextMetadataWithTokenizingAndLanguage):
 
     @staticmethod
     def metadata_name() -> str:
@@ -240,11 +318,11 @@ class StopwordRatioMetadata(GenericTextMetadata):
     def metadata_column_type(self) -> ColumnType:
         return ColumnType.numerical
 
-    def metadata_function(self, text):
+    def metadata_function(self, language_and_words):
         # not working for every language
-        language = LanguageMetadata().metadata_function(text) if self.infer_language else self.language
+        language = language_and_words[0]
+        words = language_and_words[1]
         stopword_count = 0
-        words = tokenize_into_words(text)
         try:
             stop = stopwords.words(languages.get(part1=language).name.lower())
             if len(words) == 0:
@@ -319,9 +397,9 @@ class LanguagePerParagraph(GenericTextMetadata):
             detected_languages[lang] += 1
         return detected_languages
 
-    def metadata_function(self, text):
+    def metadata_function(self, text, seed=0):
+        DetectorFactory.seed = seed
         return dictionary_to_sorted_string(self.detect_languages(text))
-
 
 class LanguageMetadata(GenericTextMetadata):
 
@@ -334,7 +412,6 @@ class LanguageMetadata(GenericTextMetadata):
 
     def metadata_function(self, text):
         return detect(text)
-
 
 class ComplexityMetadata(GenericTextMetadata):
 
@@ -383,4 +460,3 @@ class TextMetadata(Precalculation):
                 metadata1[(column, metadata_type.metadata_name())] = md1[column]
                 metadata2[(column, metadata_type.metadata_name())] = md2[column]
         return metadata1, metadata2
-        
