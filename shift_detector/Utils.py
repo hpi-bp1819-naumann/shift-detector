@@ -52,14 +52,14 @@ def is_categorical(col: pd.Series,
     a column is considered categorical (as opposed to a plain text column)
     if the relative cardinality is max_unique_fraction or less.
     :param col: pandas Series containing strings
-    :param n_samples: number of samples used for heuristic (default: 100)
+    :param n_samples: maximum sample size used for heuristic (default: 100) if series is shorter all values are used
     :param max_unique_fraction: maximum relative cardinality.
     :return: True if the column is categorical according to the heuristic
     """
 
-    sample = col.sample(n=n_samples, replace=len(col) < n_samples).unique()
+    sample = col.sample(n=n_samples) if len(col) >= n_samples else col
 
-    return sample.shape[0] / n_samples <= max_unique_fraction
+    return sample.unique().shape[0] / n_samples <= max_unique_fraction
 
 
 def column_names(columns):
