@@ -22,8 +22,7 @@ class EmbeddingDistancePrecalculation(Precalculation):
     def sum_and_normalize_vectors(series):
         vector = np.array([0.0] * len(series.iloc[0]))
         for cell in series:
-            for idx, val in enumerate(cell):
-                vector[idx] += float(val)
+            vector += cell
         return vector / len(series)
 
     def process(self, store: Store) -> dict:
