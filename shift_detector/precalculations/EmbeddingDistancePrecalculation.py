@@ -1,4 +1,4 @@
-from shift_detector.precalculations.TextEmbedding import TextEmbedding
+from shift_detector.precalculations.TextEmbeddingPrecalculation import TextEmbeddingPrecalculation
 from shift_detector.precalculations.Store import Store
 from shift_detector.precalculations.Precalculation import Precalculation
 from datawig.utils import random_split
@@ -45,8 +45,9 @@ class EmbeddingDistancePrecalculation(Precalculation):
         :param store:
         :return: CheckResult
         """
+        # TODO: Catch Error when Dataset is to small (<20 entries) -> split results in empty set
 
-        df1, df2 = store[TextEmbedding(model=self.model, trained_model=self.trained_model)]
+        df1, df2 = store[TextEmbeddingPrecalculation(model=self.model, trained_model=self.trained_model)]
 
         df1a, df1b = random_split(df1, [0.95, 0.05], seed=11)           # Baseline for df1
         df2a, df2b = random_split(df2, [0.95, 0.05], seed=11)           # Baseline for df2

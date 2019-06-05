@@ -7,7 +7,7 @@ from shift_detector.precalculations.Precalculation import Precalculation
 from shift_detector.precalculations.Store import Store, ColumnType
 
 
-class TextEmbedding(Precalculation):
+class TextEmbeddingPrecalculation(Precalculation):
 
     def __init__(self, model=None, trained_model=None):
         self.model = None
