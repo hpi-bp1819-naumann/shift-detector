@@ -12,14 +12,16 @@ class TestSorensenDicePrecalculation(unittest.TestCase):
                                           'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef',
                                           'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef',
                                           'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef']})
-        self.df2 = pd.DataFrame({'col1': ['ab ','hi ','jk ','lm ','no ','pq ','rs ','tu ','vw ','xy ','z1 ','23 ','45 ','67 ','89 ']})
+        self.df2 = pd.DataFrame({'col1': ['ab ', 'hij', 'jkl', 'lmn', 'nop', 'pqr', 'rst', 'tuv',
+                                          'vwx', 'xyz', 'z12', '234', '456', '678', '890', 'zyx',
+                                          'xwv', 'vut', 'tsr', 'rqp']})
 
         self.store = Store(self.df1, self.df2)
         self.result = SorensenDicePrecalculations(ngram_type=NGramType.character, n=3).process(self.store)
 
     def test_result(self):
         self.assertEqual(len(self.result), 1)
-        self.assertEqual(self.result['col1'], (1.0, 0.0, (2 / 15) / 7))   # ngrams get normalized during join
+        self.assertEqual(self.result['col1'], (1.0, 0.0, (2 / 20) / 7))   # ngrams get normalized during join
 
     def test_eq(self):
         sd1 = SorensenDicePrecalculations(ngram_type=NGramType.character, n=3)
@@ -49,3 +51,9 @@ class TestSorensenDicePrecalculation(unittest.TestCase):
         result = SorensenDicePrecalculations.join_and_normalize_ngrams(ngram_ser)
         self.assertDictEqual(result, {'abc': 4, 'bcd': 2, 'def': 3, 'efg': 2})
         self.assertDictEqual(SorensenDicePrecalculations.join_and_normalize_ngrams(pd.Series([])), {})
+
+    def test_error_on_small_dataframe(self):
+        df3 = pd.DataFrame({'col1': ['ab', 'hi', 'jk', 'lm', 'no', 'pq', 'rs', 'tu', 'vw', 'xy', '12', '34']})
+        store2 = Store(self.df1, df3)
+        self.assertRaises(ValueError, lambda: SorensenDicePrecalculations(ngram_type=NGramType.character, n=3)
+                          .process(store2))

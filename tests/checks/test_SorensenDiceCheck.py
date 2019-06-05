@@ -12,7 +12,9 @@ class TestSorensenDiceCheck(unittest.TestCase):
                                           'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef',
                                           'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef',
                                           'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef']})
-        self.df2 = pd.DataFrame({'col1': ['ab ','hi ','jk ','lm ','no ','pq ','rs ','tu ','vw ','xy ','z1 ','23 ','45 ','67 ','89 ']})
+        self.df2 = pd.DataFrame({'col1': ['ab c', 'hij', 'jkl', 'lmn', 'nop', 'pqr', 'rst', 'tuv',
+                                          'vwx', 'xyz', 'z12', '234', '456', '678', '890', 'zyx',
+                                          'xwv', 'vut', 'tsr', 'rqp']})
 
         self.store = Store(self.df1, self.df2)
         self.report = SorensenDiceCheck(ngram_type=NGramType.character, n=3).run(self.store)
