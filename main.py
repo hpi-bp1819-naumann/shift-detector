@@ -1,6 +1,6 @@
 from shift_detector.Detector import Detector
 from shift_detector.checks.SimpleCheck import SimpleCheck
-from shift_detector.checks.FrequentItemRulesCheck import FrequentItemsetCheck
+from shift_detector.checks.ConditionalProbabilitiesCheck import ConditionalProbabilitiesCheck
 
 # Starting via console:
 # python3 main.py --train ./train_ascii.csv --test ./audits_ascii.csv --sep  ";"
@@ -18,7 +18,7 @@ if __name__ == "__main__":
     # separator = args["sep"]
 
     detector = Detector(args['train'], args['test'], delimiter=args['sep'])
-    detector.add_checks(FrequentItemsetCheck())
+    detector.add_checks(ConditionalProbabilitiesCheck())
     # detector.add_check(Chi2Check())
 
     detector.run()

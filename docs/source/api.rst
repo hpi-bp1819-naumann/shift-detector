@@ -19,4 +19,4 @@ Checks
 Frequent Itemset
 ++++++++++++++++
 
-.. autoclass:: shift_detector.checks.FrequentItemRulesCheck.FrequentItemsetCheck
+.. autoclass:: shift_detector.checks.FrequentItemRulesCheck.ConditionalProbabilitiesCheck

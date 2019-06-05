@@ -1,6 +1,6 @@
 import unittest
-from shift_detector.precalculations.frequent_item_rules import rule_compression
-from shift_detector.precalculations.frequent_item_rules.ExtendendRule import ExtendedRule, RuleCluster
+from shift_detector.precalculations.conditional_probabilities import rule_compression
+from shift_detector.precalculations.conditional_probabilities.ExtendendRule import ExtendedRule, RuleCluster
 from collections import namedtuple
 import copy
 
@@ -44,29 +44,29 @@ class TestFrequentItemRule(unittest.TestCase):
         self.single_rule = Rule(left_side=(('value', 'A'),), right_side=(), supports_of_left_side=(0.65, 0.81),
                                 delta_supports_of_left_side=-0.16, supports=(0.65, 0.81),
                                 delta_supports=-0.16, confidences=(1.0, 1.0), delta_confidences=0.1)
-        self.extended_rule = rule_compression.add_side_attributes_to_rules([self.single_rule])[0]
+        self.extended_rule = rule_compression.transform_to_extended_rules([self.single_rule])[0]
 
         self.rule_a = copy.copy(self.extended_rule)
         self.rule_b = copy.copy(self.extended_rule)
         self.rule_c = copy.copy(self.extended_rule)
 
     def test_side_attributes(self):
-        self.assertEqual(rule_compression.add_side_attributes_to_rules([]), [])
+        self.assertEqual(rule_compression.transform_to_extended_rules([]), [])
         self.assertTrue(isinstance(self.extended_rule, ExtendedRule), msg='{0}'.format(self.extended_rule))
 
         multiple_rules = [self.single_rule, self.single_rule, self.single_rule]
-        multiple_rules_extended = rule_compression.add_side_attributes_to_rules(multiple_rules)
+        multiple_rules_extended = rule_compression.transform_to_extended_rules(multiple_rules)
         self.assertEqual(len(multiple_rules), len(multiple_rules_extended))
 
     def test_remove_duplicates(self):
-        self.assertEqual(rule_compression.remove_allsame_attributes([]), [])
+        self.assertEqual(rule_compression.remove_attribute_value_pairs_appearing_in_all_rules([]), [])
 
         self.rule_a.left_side = (('value', 'A'), ('value', 'B'), ('value', 'C'))
         self.rule_b.left_side = (('value', 'D'), ('value', 'B'), ('value', 'F'))
         self.rule_c.left_side = (('value', 'X'), ('value', 'B'), ('value', 'Z'))
 
         duplicates_list = [self.rule_a, self.rule_b, self.rule_c]
-        duplicates_list = rule_compression.remove_allsame_attributes(duplicates_list)
+        duplicates_list = rule_compression.remove_attribute_value_pairs_appearing_in_all_rules(duplicates_list)
 
         self.assertEqual(len(duplicates_list), 3)
         for rule in duplicates_list:

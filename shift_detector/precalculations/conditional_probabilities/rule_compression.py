@@ -1,5 +1,5 @@
-from shift_detector.precalculations.frequent_item_rules.ExtendendRule import ExtendedRule, RuleCluster
-# from shift_detector.checks.frequent_item_rules import fpgrowth
+from shift_detector.precalculations.conditional_probabilities.ExtendendRule import ExtendedRule, RuleCluster
+from collections import defaultdict
 
 
 def printrule(rule):
@@ -14,33 +14,24 @@ def printrule(rule):
     return
 
 
-def remove_allsame_attributes(rules):
-    """
-    Given a list of rules, return the same list but having removed those attributes that are the same across all
-    elements in the list
-    """
-
-    if len(rules) == 0:
+def remove_attribute_value_pairs_appearing_in_all_rules(rules):
+    if not rules:
         return []
-    duplicate_candidates = set(rules[0].right_side + rules[0].left_side)
+
+    appearing_in_all_seen_so_far = set(rules[0].left_side + rules[0].right_side)
 
     for rule in rules:
-        non_duplicates = []
-        for duplicate_candidate in duplicate_candidates:
-            if duplicate_candidate not in set(rule.left_side + rule.right_side):
-                non_duplicates.append(duplicate_candidate)
+        not_appearing_in_this_rule = set()
+        for attribute_value_pair in appearing_in_all_seen_so_far:
+            if attribute_value_pair not in set(rule.left_side + rule.right_side):
+                not_appearing_in_this_rule.add(attribute_value_pair)
 
-        for non_duplicate in non_duplicates:
-            duplicate_candidates.remove(non_duplicate)
+        appearing_in_all_seen_so_far -= not_appearing_in_this_rule
 
-    for i, value in enumerate(rules):
-        left_side = [t for t in rules[i].left_side if t not in duplicate_candidates]
-        right_side = [t for t in rules[i].right_side if t not in duplicate_candidates]
-
-        rules[i] = ExtendedRule(left_side, right_side, rules[i].supports_of_left_side,
-                                rules[i].delta_supports_of_left_side, rules[i].supports, rules[i].delta_supports,
-                                rules[i].confidences, rules[i].delta_confidences)
-
+    if appearing_in_all_seen_so_far:
+        for rule in rules:
+            rule.left_side = [attribute_value_pair for attribute_value_pair in rule.left_side if attribute_value_pair not in appearing_in_all_seen_so_far]
+            rule.right_side = [attribute_value_pair for attribute_value_pair in rule.right_side if attribute_value_pair not in appearing_in_all_seen_so_far]
     return rules
 
 
@@ -56,28 +47,23 @@ def filter_non_values(rules):
     return rules
 
 
-def add_side_attributes_to_rules(rules):
-    rules_extended = []
+def transform_to_extended_rules(rules):
+    extended_rules = []
     for rule in rules:
-        rule_ext = ExtendedRule(rule.left_side, rule.right_side, rule.supports_of_left_side,
-                                rule.delta_supports_of_left_side, rule.supports, rule.delta_supports,
-                                rule.confidences, rule.delta_confidences)
-        rules_extended.append(rule_ext)
+        extended_rules.append(ExtendedRule(rule.left_side, rule.right_side, rule.supports_of_left_side,
+                                           rule.delta_supports_of_left_side, rule.supports, rule.delta_supports,
+                                           rule.confidences, rule.delta_confidences))
 
-    return rules_extended
+    return extended_rules
 
 
 def group_rules_by_length(rules):
-    groupings = []
-    # TODO: remove hardcoding here... >(
-    for i in range(10):
-        groupings.append([])
+    groupings = defaultdict(list)
 
     for rule in rules:
-        groupings[len(rule.all_sides())].append(rule)
+        groupings[len(rule.left_side + rule.right_side)].append(rule)
 
-    groupings_cleaned = [x for x in groupings if x != []]
-    return groupings_cleaned
+    return groupings
 
 
 def new_cluster_from_rule(rule):
@@ -115,14 +101,13 @@ def cluster_rules_hierarchically(length_groups):
     return hierarchical_clusters
 
 
-def compress_rules(rules):
-    rules = add_side_attributes_to_rules(rules)
-    rules = remove_allsame_attributes(rules)
-    # rules = filter_non_values(rules)
+def compress_rules(uncompressed_rules):
+    transformed_rules = transform_to_extended_rules(uncompressed_rules)
+    simplified_rules = remove_attribute_value_pairs_appearing_in_all_rules(transformed_rules)
 
-    rules = sorted(rules, key=lambda x: abs(x.delta_supports))
-    length_groups = group_rules_by_length(rules)
-    hierarchical_clusters = cluster_rules_hierarchically(length_groups)
+    sorted_rules = sorted(simplified_rules, key=lambda rule: abs(rule.delta_supports))
+    grouped_rules = group_rules_by_length(sorted_rules)
+    hierarchical_clusters = cluster_rules_hierarchically(grouped_rules)
 
     for cluster in hierarchical_clusters:
         cluster.calculate_max_support_and_confidence()
@@ -130,14 +115,3 @@ def compress_rules(rules):
     hierarchical_clusters = sorted(hierarchical_clusters, key=lambda x: x.max_abs_delta_supports,
                                    reverse=True)
     return hierarchical_clusters
-
-
-# if __name__ == '__main__':
-#     compress_rules()
-
-
-
-
-
-
-

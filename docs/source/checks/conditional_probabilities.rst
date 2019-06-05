@@ -29,7 +29,7 @@ Code
 ::
 
     from shift_detector.Detector import Detector
-    from shift_detector.checks.FrequentItemRulesCheck import FrequentItemsetCheck
+    from shift_detector.checks.FrequentItemRulesCheck import ConditionalProbabilitiesCheck
 
     data_set_1 = 'examples/shoes_first.csv'
     data_set_2 = 'examples/shoes_second.csv'
@@ -40,7 +40,7 @@ Code
         delimiter=','
     )
     detector.add_checks(
-        FrequentItemsetCheck()
+        ConditionalProbabilitiesCheck()
     )
 
     detector.run()
@@ -52,7 +52,7 @@ The code works as follows:
    which data sets you want to compare.
 2. Then, you specify in :meth:`~shift_detector.Detector.Detector.add_checks`
    which check you want to run: in this case
-   :class:`~shift_detector.checks.FrequentItemRulesCheck.FrequentItemsetCheck`.
+   :class:`~shift_detector.checks.FrequentItemRulesCheck.ConditionalProbabilitiesCheck`.
 3. Finally, you start the detector with
    :meth:`~shift_detector.Detector.Detector.run` and print the result with
    :meth:`~shift_detector.Detector.Detector.evaluate`.
