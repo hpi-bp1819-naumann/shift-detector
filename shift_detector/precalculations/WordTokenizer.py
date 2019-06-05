@@ -1,7 +1,7 @@
 import gensim
 from shift_detector.precalculations.Precalculation import Precalculation
 from shift_detector.Utils import ColumnType
-from nltk.corpus import stopwords
+from nltk.corpus import stopwords as nltk_stopwords
 
 
 class WordTokenizer(Precalculation):
@@ -9,19 +9,19 @@ class WordTokenizer(Precalculation):
     def __init__(self, stop_words='english'):
         self.stopwords = None
         if isinstance(stop_words, str):
-            if stop_words in stopwords.fileids():
-                self.stop_words = stopwords.words(stop_words)
+            if stop_words in nltk_stopwords.fileids():
+                self.stop_words = nltk_stopwords.words(stop_words)
             else:
                 raise Exception('The language you entered is not available')
         elif isinstance(stop_words, list):
             if all(isinstance(elem, str) for elem in stop_words):
                 for lang in stop_words:
-                    if lang not in stopwords.fileids():
+                    if lang not in nltk_stopwords.fileids():
                         raise Exception('At least one language you entered is not available')
                     if self.stopwords is None:
-                        self.stopwords = set(stopwords.words(lang))
+                        self.stopwords = set(nltk_stopwords.words(lang))
                     else:
-                        self.stopwords = self.stopwords.union(set(stopwords.words(lang)))
+                        self.stopwords = self.stopwords.union(set(nltk_stopwords.words(lang)))
         else:
             raise Exception('Please enter the language for your stopwords as a string or list of strings')
     
