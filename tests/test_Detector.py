@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 import pandas as pd
 
 from shift_detector.Detector import Detector
-from shift_detector.checks.DummyCheck import DummyCheck, DummyReport
+from shift_detector.checks.DummyCheck import DummyCheck
 
 
 class TestCreateDetector(unittest.TestCase):

@@ -4,14 +4,15 @@ from pandas import DataFrame
 
 from shift_detector.Utils import split_dataframes, ColumnType, shared_column_names, CATEGORICAL_MAX_RELATIVE_CARDINALITY
 
-MIN_DATA_SIZE = CATEGORICAL_MAX_RELATIVE_CARDINALITY * 100
+MIN_DATA_SIZE = int(CATEGORICAL_MAX_RELATIVE_CARDINALITY * 100)
 
 
 class InsufficientDataError(Exception):
 
-    def __init__(self, message, min_size):
+    def __init__(self, message, actual_size, expected_size):
         super().__init__(message)
-        self.min_size = min_size
+        self.actual_size = actual_size
+        self.expected_size = expected_size
 
 
 class Store:
@@ -20,9 +21,7 @@ class Store:
                  df1: DataFrame,
                  df2: DataFrame):
 
-        if len(df1) < MIN_DATA_SIZE or len(df2) < MIN_DATA_SIZE:
-            raise InsufficientDataError('The input data is insufficient for the column type heuristics to work.',
-                                        MIN_DATA_SIZE)
+        self.verify_min_data_size(min([len(df1), len(df2)]))
 
         self.columns = shared_column_names(df1, df2)
         self.df1 = df1[self.columns]
@@ -48,3 +47,12 @@ class Store:
         preprocessing = needed_preprocessing.process(self)
         self.preprocessings[needed_preprocessing] = preprocessing
         return preprocessing
+
+    @staticmethod
+    def verify_min_data_size(size):
+        if size < MIN_DATA_SIZE:
+            raise InsufficientDataError('The input data is insufficient for the column type heuristics to work. Only '
+                                        '{actual} row(s) were passed. Please pass at least {expected} rows.'.format(
+                                            actual=size,
+                                            expected=MIN_DATA_SIZE),
+                                        size, MIN_DATA_SIZE)

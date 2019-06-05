@@ -40,16 +40,16 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
                            ([3] * 2) +
                            ([4] * 0) +
                            ([5] * 1) +
-                           ([6] * 0) +
+                           ([6] * 2) +
                            ([8] * 3) +
-                           ([9] * 1))
+                           ([9] * 2))
         df2 = pd.DataFrame(([2] * 2) +
                            ([3] * 1) +
                            ([4] * 2) +
-                           ([5] * 0) +
+                           ([5] * 2) +
                            ([6] * 1) +
                            ([8] * 1) +
-                           ([9] * 0))
+                           ([9] * 1))
         store = Store(df1, df2)
         result = NumericalStatisticalCheck().run(store)
         self.assertEqual(0, len(result.significant_columns()))
@@ -80,8 +80,8 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
         self.assertEqual(1, len(result.significant_columns()))
 
     def test_compliance_with_detector(self):
-        df1 = pd.DataFrame([0])
-        df2 = pd.DataFrame([0])
+        df1 = pd.DataFrame([0] * 10)
+        df2 = pd.DataFrame([0] * 10)
         detector = Detector(df1=df1, df2=df2)
         detector.add_checks(NumericalStatisticalCheck())
         detector.run()
