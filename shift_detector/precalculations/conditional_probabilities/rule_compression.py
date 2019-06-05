@@ -2,18 +2,6 @@ from shift_detector.precalculations.conditional_probabilities.ExtendendRule impo
 from collections import defaultdict
 
 
-def printrule(rule):
-    # TODO, change due to new changes from support-left to support
-    if len(rule.left_side) > 0:
-        print(rule.left_side, '-->', rule.right_side)
-        print('supports: \t', rule.supports[0], ' - ', rule.supports[1], '=', rule.delta_supports)
-    else:
-        print('//rule has no left side')
-        print('() -->', rule.right_side)
-    print()
-    return
-
-
 def remove_attribute_value_pairs_appearing_in_all_rules(rules):
     if not rules:
         return []
@@ -32,18 +20,6 @@ def remove_attribute_value_pairs_appearing_in_all_rules(rules):
         for rule in rules:
             rule.left_side = [attribute_value_pair for attribute_value_pair in rule.left_side if attribute_value_pair not in appearing_in_all_seen_so_far]
             rule.right_side = [attribute_value_pair for attribute_value_pair in rule.right_side if attribute_value_pair not in appearing_in_all_seen_so_far]
-    return rules
-
-
-def true_if_no_attribute_none(rule):
-    for attribute in rule.all_sides():
-        if attribute[1] is None:
-            return False
-    return True
-
-
-def filter_non_values(rules):
-    rules = list(filter(true_if_no_attribute_none, rules))
     return rules
 
 

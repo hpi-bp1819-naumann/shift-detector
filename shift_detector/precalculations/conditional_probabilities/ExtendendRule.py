@@ -11,14 +11,11 @@ class ExtendedRule:
         self.confidences = confidences
         self.delta_confidences = delta_confidences
 
-    def all_sides(self):
-        return self.left_side + self.right_side
-
     def __str__(self):
-        result = ('{left_sides} ==> {right_sides} [SUPPORTS_OF_LEFT_SIDES: {supports_of_left_sides}, '
-                  'DELTA_SUPPORTS_OF_LEFT_SIDES: {delta_supports_of_left_sides}, SUPPORTS: {supports}, '
-                  'DELTA_SUPPORTS: {delta_supports}, CONFIDENCES: {confidences}, '
-                  'DELTA_CONFIDENCES: {delta_confidences}]').format(
+        return ('{left_sides} ==> {right_sides} [SUPPORTS_OF_LEFT_SIDES: {supports_of_left_sides}, '
+                'DELTA_SUPPORTS_OF_LEFT_SIDES: {delta_supports_of_left_sides}, SUPPORTS: {supports}, '
+                'DELTA_SUPPORTS: {delta_supports}, CONFIDENCES: {confidences}, '
+                'DELTA_CONFIDENCES: {delta_confidences}]').format(
             left_sides=', '.join('{}: {}'.format(l[0].upper(), l[1]) for l in self.left_side),
             right_sides='()' if not self.right_side else ', '.join(
                 '{}: {}'.format(l[0].upper(), l[1]) for l in self.right_side),
@@ -29,7 +26,6 @@ class ExtendedRule:
             confidences=self.confidences,
             delta_confidences=self.delta_confidences
         )
-        return result
 
 
 class RuleCluster:
