@@ -96,7 +96,7 @@ class GenericTextMetadataWithTokenizingAndLanguage(GenericTextMetadata):
         pass
 
     @abstractmethod
-    def metadata_function(self, words):
+    def metadata_function(self, language_and_words):
         pass
 
     def process(self, store):
