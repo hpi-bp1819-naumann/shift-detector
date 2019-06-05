@@ -7,7 +7,9 @@ from datawig.iterators import ImputerIterDf
 from datawig.utils import random_split
 
 from shift_detector.precalculations.Precalculation import Precalculation
-from datawig.utils import logger
+from datawig.utils import logger as datawig_logger
+from sklearn.utils import shuffle
+from sklearn.metrics import accuracy_score
 
 
 class DistinctionPrecalculation(Precalculation):
@@ -19,7 +21,7 @@ class DistinctionPrecalculation(Precalculation):
         self.num_epochs = num_epochs
         self.imputer = None
 
-        logger.setLevel("ERROR")
+        datawig_logger.setLevel("ERROR")
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
@@ -43,41 +45,49 @@ class DistinctionPrecalculation(Precalculation):
         df1 = store.df1[self.columns]
         df2 = store.df2[self.columns]
 
-        train_df, test_df = self.prepare_datasets(df1, df2)
+        df1_train, df1_test, df2_train, df2_test = self.prepare_dfs(df1, df2)
+
+        train_df = pd.concat([df1_train, df2_train], ignore_index=True)
+        test_df = pd.concat([df1_test, df2_test], ignore_index=True)
+
         self.imputer.fit(train_df, test_df, num_epochs=self.num_epochs)
 
         imputed = self.imputer.predict(test_df)
         y_true, y_pred = imputed[self.output_column], imputed[self.output_column + '_imputed']
 
+        base_accuracy, permuted_accuracies = self.calculate_permuted_accuracies(df1_train, df2_train, self.columns)
+
         return {
             'y_true': y_true,
             'y_pred': y_pred,
-            'relevant_columns': self.relevant_columns(self.columns, train_df)
+            'base_accuracy': base_accuracy,
+            'permuted_accuracies': permuted_accuracies
         }
 
-    def label_datasets(self, df1: pd.DataFrame, df2: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def label_dfs(self, df1: pd.DataFrame, df2: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
         Set labels of the first dataframe to 'A' and those of the second dataframe to 'B'
-        :param df1: first dataset
-        :param df2: second dataset
-        :return: tuple of labeled datasets
+        :param df1: first DataFrame
+        :param df2: second DataFrame
+        :return: tuple of labeled DataFrames
         """
         df1[self.output_column] = 'A'
         df2[self.output_column] = 'B'
 
         return df1, df2
 
-    def sample_datasets(self, df1: pd.DataFrame, df2: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    @staticmethod
+    def sample_dfs(df1: pd.DataFrame, df2: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
-        Sample datasets to length of shorter dataset
-        :param df1: first dataset
-        :param df2: second dataset
-        :return: tuple of sampled datasets
+        Sample DataFrames to length of shorter DataFrame
+        :param df1: first DataFrame
+        :param df2: second DataFrame
+        :return: tuple of sampled DataFrame
         """
         min_len = min(len(df1), len(df2))
         return df1.sample(n=min_len), df2.sample(n=min_len)
 
-    def prepare_datasets(self, df1: pd.DataFrame, df2: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def prepare_dfs(self, df1: pd.DataFrame, df2: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
         Create a train and a test dataset, in which the number number of tuples
         that come from the first and the number of those from the second dataset are equal
@@ -85,48 +95,61 @@ class DistinctionPrecalculation(Precalculation):
         :param df2: second dataset
         :return: tuple of train and test dataset
         """
-        df1, df2 = self.label_datasets(df1, df2)
-        df1_sampled, df2_sampled = self.sample_datasets(df1, df2)
+        df1, df2 = self.label_dfs(df1, df2)
+        df1_sampled, df2_sampled = self.sample_dfs(df1, df2)
 
         df1_train, df1_test = random_split(df1_sampled)
         df2_train, df2_test = random_split(df2_sampled)
 
-        train_df = pd.concat([df1_train, df2_train])
-        test_df = pd.concat([df1_test, df2_test])
+        return df1_train, df1_test, df2_train, df2_test
 
-        return train_df, test_df
+    def get_accuracy(self, df):
+        """
+        Predict the label for df and calculate the accuracy.
+        :param df: DataFrame
+        :return: accuracy
+        """
+        imputed = self.imputer.predict(df)
+        y_true, y_pred = imputed[self.output_column], imputed[self.output_column + '_imputed']
 
-    def get_loss(self, df):
-        iterator = ImputerIterDf(
-            data_frame=df,
-            data_columns=self.imputer.imputer.data_encoders,
-            label_columns=self.imputer.imputer.label_encoders,
-            batch_size=self.imputer.imputer.batch_size
-        )
-        return self.imputer.imputer.module.predict(iterator)[0].asnumpy().mean()
+        return accuracy_score(y_true, y_pred)
 
-    def loss_with_random_permutation(self, df, column):
-        losses = []
+    def permuted_accuracy(self, df1, df2, column):
+        """
+        Shuffle the column of both dfs and then switch it.
+        Calculate the accuracy for the new DataFrame.
+        Do this multiple times to receive a meaningful average accuracy.
+        :param df1: first DataFrame
+        :param df2: second DataFrame
+        :param column: the column that will be permuted
+        :return: averaged accuracy
+        """
+        accuracies = []
+        df = pd.concat([df1, df2], ignore_index=True)
+
         for _ in range(5):
-            df_permutation = df.copy().sort_values(self.output_column, ascending=True)
-            mid_row = int(df_permutation.size / 2)
+            col_rand1 = shuffle(df1[column])
+            col_rand2 = shuffle(df2[column])
 
-            first_rand_permutation = np.random.permutation(df_permutation[column][:mid_row].values)
-            second_rand_permutation = np.random.permutation(df_permutation[column][mid_row:].values)
+            col_rand = pd.concat([col_rand2, col_rand1], ignore_index=True)
+            df[column] = col_rand
 
-            df_permutation[column][:len(second_rand_permutation)] = second_rand_permutation
-            df_permutation[column][len(second_rand_permutation):] = first_rand_permutation
+            accuracy = self.get_accuracy(df)
+            accuracies.append(accuracy)
 
-            losses += [self.get_loss(df_permutation)]
-        return np.asarray(losses).mean()
+        return np.asarray(accuracies).mean()
 
-    def relevant_columns(self, columns, test_df, thresh_percentage=.01):
-        base_loss = self.get_loss(test_df)
-        relevant_columns = []
+    def calculate_permuted_accuracies(self, df1, df2, columns):
+        """
+        Calculate the base accuracy and the permuted accuracy for all columns.
+        :param df1: first DataFrame
+        :param df2: second DataFrame
+        :param columns: columns to calculate the permuted accuracy for
+        :return: base accuracy and the permuted accuracies as a dictionary from column to accuracy
+        """
+        df = pd.concat([df1, df2], ignore_index=True)
+        base_accuracy = self.get_accuracy(df)
 
-        for col in columns:
-            loss = self.loss_with_random_permutation(test_df, col)
-            if loss > base_loss * (1 + thresh_percentage):
-                relevant_columns += [col]
+        permuted_accuracies = {col: self.permuted_accuracy(df1, df2, col) for col in columns}
 
-        return relevant_columns
+        return base_accuracy, permuted_accuracies
