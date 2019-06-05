@@ -69,7 +69,7 @@ class TestFPGrowth(unittest.TestCase):
         data2 = [['exclusive 2', 2], ['common', 42]]
         df1 = pd.DataFrame(data1, columns=columns)
         df2 = pd.DataFrame(data2, columns=columns)
-        rules = fpgrowth.calculate_frequent_rules(df1, df2, 0, 0, 0, 0)
+        rules = fpgrowth.calculate_frequent_rules(df1, df2, 0.01, 0.15, 0, 0)
         Rule = namedtuple('Rule', ['left_side', 'right_side', 'supports_of_left_side', 'delta_supports_of_left_side',
                                    'supports', 'delta_supports', 'confidences', 'delta_confidences'])
         expected = [Rule(left_side=(('c1', 'common'),), right_side=(), supports_of_left_side=(0.5, 0.5),
