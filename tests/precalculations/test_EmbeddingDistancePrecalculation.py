@@ -50,3 +50,8 @@ class TestSorensenDicePrecalculation(unittest.TestCase):
     def test_join_and_normalize_vectors(self):
         ser1 = pd.Series([[7, 8, 9], [2, 3, 4], [0, 0, 0], [3, 5, 2]])
         self.assertEqual(self.te1.join_and_normalize_vectors(ser1), [3.0, 4.0, 3.75])
+
+    def test_error_on_small_dataframe(self):
+        df3 = pd.DataFrame({'col1': ['ab', 'hi', 'jk', 'lm', 'no', 'pq', 'rs', 'tu', 'vw', 'xy', '12', '34']})
+        store2 = Store(self.df1, df3)
+        self.assertRaises(ValueError, lambda: self.te2.process(store2))

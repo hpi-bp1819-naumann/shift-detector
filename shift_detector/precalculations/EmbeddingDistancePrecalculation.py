@@ -45,12 +45,14 @@ class EmbeddingDistancePrecalculation(Precalculation):
         :param store:
         :return: CheckResult
         """
-        # TODO: Catch Error when Dataset is to small (<20 entries) -> split results in empty set
 
         df1, df2 = store[TextEmbeddingPrecalculation(model=self.model, trained_model=self.trained_model)]
 
         df1a, df1b = random_split(df1, [0.95, 0.05], seed=11)           # Baseline for df1
         df2a, df2b = random_split(df2, [0.95, 0.05], seed=11)           # Baseline for df2
+
+        if df1a.empty or df1b.empty or df2a.empty or df2b.empty:
+            raise ValueError('Dataset to small for split ratio')
 
         result = {}
         for i in df1:
