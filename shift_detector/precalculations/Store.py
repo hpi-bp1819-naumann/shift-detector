@@ -2,8 +2,16 @@ import logging as logger
 
 from pandas import DataFrame
 
-from shift_detector.Utils import split_dataframes, ColumnType, shared_column_names
-from shift_detector.precalculations.Preprocessor import Preprocessor
+from shift_detector.Utils import split_dataframes, ColumnType, shared_column_names, CATEGORICAL_MAX_RELATIVE_CARDINALITY
+
+MIN_DATA_SIZE = CATEGORICAL_MAX_RELATIVE_CARDINALITY * 100
+
+
+class InsufficientDataError(Exception):
+
+    def __init__(self, message, min_size):
+        super().__init__(message)
+        self.min_size = min_size
 
 
 class Store:
@@ -11,6 +19,10 @@ class Store:
     def __init__(self,
                  df1: DataFrame,
                  df2: DataFrame):
+
+        if len(df1) < MIN_DATA_SIZE or len(df2) < MIN_DATA_SIZE:
+            raise InsufficientDataError('The input data is insufficient for the column type heuristics to work.',
+                                        MIN_DATA_SIZE)
 
         self.columns = shared_column_names(df1, df2)
         self.df1 = df1[self.columns]
