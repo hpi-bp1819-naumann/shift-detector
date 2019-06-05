@@ -36,33 +36,10 @@ class Detector:
         else:
             raise Exception("df2 is not a dataframe or a string")
 
-        self.checks_to_run = []
         self.check_reports = []
         self.store = Store(self.df1, self.df2)
 
         logger.info("Used columns: {}".format(', '.join(column_names(self.store.columns))))
-
-    @staticmethod
-    def detect(df1, df2, *checks, delimiter=','):
-        detector = Detector(df1, df2, delimiter)
-        detector.add_checks(checks)
-        detector.run()
-        detector.evaluate()
-        return detector
-
-    def add_checks(self, checks):
-        """
-        Add checks to the detector
-
-        :param checks: single or list of Checks
-        """
-        if isinstance(checks, Check):
-            checks_to_run = [checks]
-        elif isinstance(checks, list) and all(isinstance(check, Check) for check in checks):
-            checks_to_run = checks
-        else:
-            raise Exception("All elements in checks should be a Check")
-        self.checks_to_run += checks_to_run
 
     def run(self, *checks):
         """
@@ -70,8 +47,10 @@ class Detector:
         :param checks: checks to run
         """
         if not checks:
-            raise Exception("Please use the method add_checks to add checks, "
-                            "that should be executed, before calling run()")
+            raise Exception("Please include checks)")
+
+        if not all(isinstance(check, Check) for check in checks):
+            raise Exception("All elements in checks should be a Check")
 
         self.check_reports = [check.run(self.store) for check in checks]
 
