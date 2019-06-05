@@ -96,7 +96,7 @@ class GenericTextMetadataWithTokenizingAndLanguage(GenericTextMetadata):
         pass
 
     @abstractmethod
-    def metadata_function(self, language_and_words):
+    def metadata_function(self, language, words):
         pass
 
     def process(self, store):
@@ -111,11 +111,11 @@ class GenericTextMetadataWithTokenizingAndLanguage(GenericTextMetadata):
             temp_column2 = []
             for i in range(len(df1)):
                 if self.infer_language:
-                    temp_column1.append(self.metadata_function((lang1[column][i], df1[column][i])))
-                    temp_column2.append(self.metadata_function((lang2[column][i], df2[column][i])))
+                    temp_column1.append(self.metadata_function(lang1[column][i], df1[column][i]))
+                    temp_column2.append(self.metadata_function(lang2[column][i], df2[column][i]))
                 else:
-                    temp_column1.append(self.metadata_function((self.language, df1[column][i])))
-                    temp_column2.append(self.metadata_function((self.language, df2[column][i])))
+                    temp_column1.append(self.metadata_function(self.language, df1[column][i]))
+                    temp_column2.append(self.metadata_function(self.language, df2[column][i]))
             metadata1[column] = temp_column1
             metadata2[column] = temp_column2
         return metadata1, metadata2
@@ -211,21 +211,10 @@ class UnicodeBlocksMetadata(GenericTextMetadata):
 
     @staticmethod
     def unicode_block_histogram(text):
-
-        def block(character):
-            """ Return the Unicode block name for character, or None if character has no block.
-            from https://stackoverflow.com/questions/243831/unicode-block-of-a-character-in-python
-            :param character"""
-            assert isinstance(character, str) and len(character) == 1, repr(character)
-            cp = ord(character)
-            for start, end, name in UCBlist.blocks:
-                if start <= cp <= end:
-                    return name
-
         characters = defaultdict(int)
         for c in text:
-            category = block(c)
-            characters[category] += 1
+            block = UCBlist.block(c)
+            characters[block] += 1
         return characters
 
     def metadata_function(self, text):
@@ -297,10 +286,9 @@ class UnknownWordRatioMetadata(GenericTextMetadataWithTokenizingAndLanguage):
     def metadata_column_type(self) -> ColumnType:
         return ColumnType.numerical
 
-    def metadata_function(self, language_and_words):
+    def metadata_function(self, language, words):
         # pyspellchecker supports multiple languages including English, Spanish, German, French, and Portuguese
-        language = language_and_words[0]
-        words = language_and_words[1]
+
         try:
             spell = SpellChecker(language)
         except ValueError as error:
@@ -323,10 +311,8 @@ class StopwordRatioMetadata(GenericTextMetadataWithTokenizingAndLanguage):
     def metadata_column_type(self) -> ColumnType:
         return ColumnType.numerical
 
-    def metadata_function(self, language_and_words):
+    def metadata_function(self, language, words):
         # not working for every language
-        language = language_and_words[0]
-        words = language_and_words[1]
         stopword_count = 0
         try:
             stop = stopwords.words(languages.get(part1=language).name.lower())
@@ -463,7 +449,7 @@ class TextMetadata(Precalculation):
         return hash((self.__class__, self.text_metadata_types))
 
     def process(self, store):
-        df1, df2 = store[ColumnType.text]
+        df1, _ = store[ColumnType.text]
         metadata_names = sorted([mdtype.metadata_name() for mdtype in self.text_metadata_types])
         index = pd.MultiIndex.from_product([df1.columns, metadata_names], names=['column', 'metadata'])
         metadata1 = pd.DataFrame(columns=index)

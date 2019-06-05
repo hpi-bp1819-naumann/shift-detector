@@ -241,32 +241,32 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual(unique_words_ratio(empty), 0.0)
 
     def test_unknown_words(self):
-        correct_english = ('en', ['This', 'is', 'a', 'correct', 'sentence'])
-        incorrect_english = ('en', ['Thiis', 'is', 'an', 'incozyzyrrect', 'sentence'])
-        french = ('fr', ['Demain', 'dès', 'l’aube', 'à', 'l’heure', 'où', 'blanchit', 'la', 'campagne', 'Je', 'partirai', 'Vois', 'tu', 'je', 'sais', 'que', 'tu', 'm’attends', 'J’irai', 'par', 'la', 'forêt', 'j’irai', 'par', 'la', 'montagne', 'Je', 'ne', 'puis', 'demeurer', 'loin', 'de', 'toi', 'plus', 'longtemps'])
-        empty = ('en', [])
-        unsupported_language = ('so', ['Aqoonyahanada', 'caalamku', 'waxay', 'aad', 'ugu', 'murmaan', 'sidii', 'luuqadaha', 'aduunku', 'ku', 'bilaabmeem'])
+        correct_english = ['This', 'is', 'a', 'correct', 'sentence']
+        incorrect_english = ['Thiis', 'is', 'an', 'incozyzyrrect', 'sentence']
+        french = ['Demain', 'dès', 'l’aube', 'à', 'l’heure', 'où', 'blanchit', 'la', 'campagne', 'Je', 'partirai', 'Vois', 'tu', 'je', 'sais', 'que', 'tu', 'm’attends', 'J’irai', 'par', 'la', 'forêt', 'j’irai', 'par', 'la', 'montagne', 'Je', 'ne', 'puis', 'demeurer', 'loin', 'de', 'toi', 'plus', 'longtemps']
+        empty = []
+        unsupported_language = ['Aqoonyahanada', 'caalamku', 'waxay', 'aad', 'ugu', 'murmaan', 'sidii', 'luuqadaha', 'aduunku', 'ku', 'bilaabmeem']
         unknown_word_ratio = UnknownWordRatioMetadata().metadata_function
-        self.assertEqual(unknown_word_ratio(correct_english), 0.00)
-        self.assertEqual(unknown_word_ratio(incorrect_english), .4)
-        self.assertRaises(ValueError, unknown_word_ratio, language_and_words=unsupported_language)
-        self.assertAlmostEqual(unknown_word_ratio(french), 0.1142857, places=5)
-        self.assertEqual(unknown_word_ratio(empty), 00.00)
+        self.assertEqual(unknown_word_ratio('en', correct_english), 0.00)
+        self.assertEqual(unknown_word_ratio('en', incorrect_english), .4)
+        self.assertRaises(ValueError, unknown_word_ratio, language='so', words=unsupported_language)
+        self.assertAlmostEqual(unknown_word_ratio('fr', french), 0.1142857, places=5)
+        self.assertEqual(unknown_word_ratio('en', empty), 00.00)
 
     def test_stopwords(self):
-        no_stopwords = ('en', ['computer', 'calculates', 'math'])
-        only_stopwords = ('en', ['The', 'and', 'is', 'I', 'am'])
-        mixed = ('en', ['A', 'normal', 'sentence', 'has', 'both'])
-        french = ('fr', ['Demain', 'dès', 'l’aube', 'à', 'l’heure', 'où', 'blanchit', 'la', 'campagne', 'Je', 'partirai', 'Vois', 'tu', 'je', 'sais', 'que', 'tu', 'm’attends', 'J’irai', 'par', 'la', 'forêt', 'j’irai', 'par', 'la', 'montagne', 'Je', 'ne', 'puis', 'demeurer', 'loin', 'de', 'toi', 'plus', 'longtemps'])
-        empty = ('en', [])
-        unsupported_language = ('so', ['Aqoonyahanada', 'caalamku', 'waxay', 'aad', 'ugu', 'murmaan', 'sidii', 'luuqadaha', 'aduunku', 'ku', 'bilaabmeem'])
+        no_stopwords = ['computer', 'calculates', 'math']
+        only_stopwords = ['The', 'and', 'is', 'I', 'am']
+        mixed = ['A', 'normal', 'sentence', 'has', 'both']
+        french = ['Demain', 'dès', 'l’aube', 'à', 'l’heure', 'où', 'blanchit', 'la', 'campagne', 'Je', 'partirai', 'Vois', 'tu', 'je', 'sais', 'que', 'tu', 'm’attends', 'J’irai', 'par', 'la', 'forêt', 'j’irai', 'par', 'la', 'montagne', 'Je', 'ne', 'puis', 'demeurer', 'loin', 'de', 'toi', 'plus', 'longtemps']
+        empty = []
+        unsupported_language = ['Aqoonyahanada', 'caalamku', 'waxay', 'aad', 'ugu', 'murmaan', 'sidii', 'luuqadaha', 'aduunku', 'ku', 'bilaabmeem']
         stopword_ratio = StopwordRatioMetadata().metadata_function
-        self.assertEqual(stopword_ratio(no_stopwords), 0.0)
-        self.assertEqual(stopword_ratio(only_stopwords), 1.0)
-        self.assertEqual(stopword_ratio(mixed), 0.6)
-        self.assertAlmostEqual(stopword_ratio(french), 0.4285714, places=5)
-        self.assertEqual(stopword_ratio(empty), 0.0)
-        self.assertRaises(ValueError, stopword_ratio, language_and_words=unsupported_language)
+        self.assertEqual(stopword_ratio('en', no_stopwords), 0.0)
+        self.assertEqual(stopword_ratio('en', only_stopwords), 1.0)
+        self.assertEqual(stopword_ratio('en', mixed), 0.6)
+        self.assertAlmostEqual(stopword_ratio('fr', french), 0.4285714, places=5)
+        self.assertEqual(stopword_ratio('en', empty), 0.0)
+        self.assertRaises(ValueError, stopword_ratio, language='so', words=unsupported_language)
 
 
     def test_category(self):
