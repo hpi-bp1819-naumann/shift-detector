@@ -82,9 +82,9 @@ def split_dataframes(df1: pd.DataFrame, df2: pd.DataFrame, columns: List) -> Dic
     numerical_columns = [c for c in columns if is_numeric_dtype(df1[c])
                          and is_numeric_dtype(df2[c])]
     logger.info("Detected numerical columns: {}".format(", ".join(column_names(numerical_columns))))
-    remaining_columns = list(set(columns) - set(numerical_columns))
+    non_numerical = list(set(columns) - set(numerical_columns))
 
-    categorical_columns = [c for c in remaining_columns if is_categorical(df1[c]) and is_categorical(df2[c])]
+    categorical_columns = [c for c in non_numerical if is_categorical(df1[c]) and is_categorical(df2[c])]
     logger.info("Detected categorical columns: {}".format(", ".join(column_names(categorical_columns))))
 
     numeric_categorical_columns = [c for c in numerical_columns if is_categorical(df1[c]) and is_categorical(df2[c])]
@@ -92,7 +92,7 @@ def split_dataframes(df1: pd.DataFrame, df2: pd.DataFrame, columns: List) -> Dic
     all_categorical_columns = categorical_columns.copy()
     all_categorical_columns.extend(numeric_categorical_columns)
 
-    text_columns = list(set(columns) - set(numerical_columns) - set(categorical_columns))
+    text_columns = list(set(non_numerical) - set(categorical_columns))
     logger.info("Detected text columns: {}".format(", ".join(column_names(text_columns))))
 
     return {

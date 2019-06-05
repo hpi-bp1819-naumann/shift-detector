@@ -50,7 +50,8 @@ class Detector:
             raise Exception("Please include checks)")
 
         if not all(isinstance(check, Check) for check in checks):
-            raise Exception("All elements in checks should be a Check")
+            class_names = map(lambda c: c.__class__.__name__, checks)
+            raise Exception("All elements in checks should be a Check. Received: {}".format(', '.join(class_names)))
 
         self.check_reports = [check.run(self.store) for check in checks]
 
@@ -68,10 +69,20 @@ class Detector:
             for examined_column in report.examined_columns:
                 examined[examined_column] += 1
 
-        sorted_columns = sorted(((col, detected[col], examined[col]) for col in examined), key=lambda t: (-t[1], t[2]))
+        def sort_key(t):
+            """
+            Sort descending with respect to number of failed checks.
+            If two checks have the same number of failed, sort ascending
+            with respect to the number of number of executed checks.
+            """
+            _, num_detected, num_examined = t
 
-        df = pd.DataFrame(sorted_columns, columns=['Column', '# Checks Failed', '# Checks Executed'])
-        print(df, '\n')
+            return -num_detected, num_examined
+
+        sorted_summary = sorted(((col, detected[col], examined[col]) for col in examined), key=sort_key)
+
+        df_summary = pd.DataFrame(sorted_summary, columns=['Column', '# Checks Failed', '# Checks Executed'])
+        print(df_summary, '\n')
 
         print("DETAILS")
         for report in self.check_reports:

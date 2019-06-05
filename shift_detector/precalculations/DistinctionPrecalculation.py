@@ -128,16 +128,16 @@ class DistinctionPrecalculation(Precalculation):
         df = pd.concat([df1, df2], ignore_index=True)
 
         for _ in range(5):
-            col_rand1 = shuffle(df1[column])
-            col_rand2 = shuffle(df2[column])
+            df1_col_rand = shuffle(df1[column])
+            df2_col_rand = shuffle(df2[column])
 
-            col_rand = pd.concat([col_rand2, col_rand1], ignore_index=True)
+            col_rand = pd.concat([df2_col_rand, df1_col_rand], ignore_index=True)
             df[column] = col_rand
 
             accuracy = self.get_accuracy(df)
             accuracies.append(accuracy)
 
-        return np.asarray(accuracies).mean()
+        return np.array(accuracies).mean()
 
     def calculate_permuted_accuracies(self, df1, df2, columns):
         """
