@@ -205,14 +205,14 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
 
     def test_language_can_be_set(self):
         check = TextMetadataStatisticalCheck([UnknownWordRatioMetadata(), StopwordRatioMetadata()], language='fr')
-        md_with_lang = [mdtype for mdtype in check.metadata_preprocessor.text_metadata_types
+        md_with_lang = [mdtype for mdtype in check.metadata_precalculation.text_metadata_types
                         if type(mdtype) in [UnknownWordRatioMetadata, StopwordRatioMetadata]]
         for mdtype in md_with_lang:
             self.assertEqual('fr', mdtype.language)
 
     def test_infer_language_is_set(self):
         check = TextMetadataStatisticalCheck([UnknownWordRatioMetadata(), StopwordRatioMetadata()], infer_language=True)
-        md_with_lang = [mdtype for mdtype in check.metadata_preprocessor.text_metadata_types
+        md_with_lang = [mdtype for mdtype in check.metadata_precalculation.text_metadata_types
                         if type(mdtype) in [UnknownWordRatioMetadata, StopwordRatioMetadata]]
         for mdtype in md_with_lang:
             self.assertTrue(mdtype.infer_language)

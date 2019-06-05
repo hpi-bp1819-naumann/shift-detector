@@ -12,9 +12,9 @@ class StatisticalCheck(Check):
     :param sampling: whether or not to use sampling for the larger set if compared data sets have unequal sizes
     :param sampling_seed: seed to use for sampling, if sampling is enabled
     """
-    def __init__(self, significance=0.01, sampling=False, sampling_seed=None):
+    def __init__(self, significance=0.01, use_sampling=False, sampling_seed=None):
         self.significance = significance
-        self.sampling = sampling
+        self.use_sampling = use_sampling
         self.seed = sampling_seed
 
     def is_significant(self, p: float) -> bool:
@@ -91,8 +91,8 @@ class SimpleStatisticalCheck(StatisticalCheck):
             df1 = pd.concat([df1, columns1])
             df2 = pd.concat([df2, columns2])
         sample_size = min(len(df1), len(df2))
-        part1 = df1.sample(sample_size, random_state=self.seed) if self.sampling else df1
-        part2 = df2.sample(sample_size, random_state=self.seed) if self.sampling else df2
+        part1 = df1.sample(sample_size, random_state=self.seed) if self.use_sampling else df1
+        part2 = df2.sample(sample_size, random_state=self.seed) if self.use_sampling else df2
         for column in df1.columns:
             p = self.statistical_test(part1[column], part2[column])
             pvalues[column] = [p]
