@@ -10,13 +10,15 @@ from shift_detector.utils.ColumnManagement import ColumnType
 
 class TextMetadataStatisticalCheck(StatisticalCheck):
 
-    def __init__(self, text_metadata_types=None, language='en', infer_language=False, significance=0.01, sampling=False,
-                 sampling_seed=None):
-        super().__init__(significance, sampling, sampling_seed)
-        self.metadata_preprocessor = TextMetadata(text_metadata_types, language=language, infer_language=infer_language)
+    def __init__(self, text_metadata_types=None, language='en', infer_language=False, significance=0.01,
+                 use_sampling=False, sampling_seed=None):
+        super().__init__(significance, use_sampling, sampling_seed)
+        self.metadata_precalculation = TextMetadata(text_metadata_types, language=language,
+                                                    infer_language=infer_language)
 
     def significant_columns(self, pvalues):
-        return set(column for column in pvalues.columns.levels[0] if len(super(type(self), self).significant_columns(pvalues[column])) > 0)
+        return set(column for column in pvalues.columns.levels[0]
+                   if len(super(type(self), self).significant_columns(pvalues[column])) > 0)
 
     def significant_metadata(self, mdtype_pvalues):
         return super().significant_columns(mdtype_pvalues)
@@ -24,25 +26,31 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
     def explain(self, pvalues):
         explanation = {}
         for column in self.significant_columns(pvalues):
-            explanation[column] = 'One or more text metadata metrics on the column \'' + column + '\' are less likely to ' \
-                                  'be equally distributed across both data sets than the specified significance ' \
-                                  'level of alpha = ' + str(self.significance) + '.\n' + '\n'.join(self.significant_metadata(pvalues[column]))
+            explanation[column] = 'Text metadata metrics on column \'{column}\' are unlikely to be equally ' \
+                                  'distributed.\n{significant_metadata}'\
+                                  .format(
+                                    column=column,
+                                    significant_metadata='\n'.join(self.significant_metadata(pvalues[column]))
+                                  )
         return explanation
 
     def run(self, store) -> Report:
-        df1, df2 = store[self.metadata_preprocessor]
+        df1, df2 = store[self.metadata_precalculation]
         sample_size = min(len(df1), len(df2))
-        part1 = df1.sample(sample_size, random_state=self.seed) if self.sampling else df1
-        part2 = df2.sample(sample_size, random_state=self.seed) if self.sampling else df2
+        part1 = df1.sample(sample_size, random_state=self.seed) if self.use_sampling else df1
+        part2 = df2.sample(sample_size, random_state=self.seed) if self.use_sampling else df2
         pvalues = pd.DataFrame(columns=df1.columns, index=['pvalue'])
         for column in df1.columns.levels[0]:
-            for mdtype in self.metadata_preprocessor.text_metadata_types:
+            for mdtype in self.metadata_precalculation.text_metadata_types:
                 if mdtype.metadata_column_type() == ColumnType.categorical:
                     p = chi2_test(part1[(column, mdtype.metadata_name())], part2[(column, mdtype.metadata_name())])
                 elif mdtype.metadata_column_type() == ColumnType.numerical:
-                    p = kolmogorov_smirnov_test(part1[(column, mdtype.metadata_name())], part2[(column, mdtype.metadata_name())])
+                    p = kolmogorov_smirnov_test(part1[(column, mdtype.metadata_name())],
+                                                part2[(column, mdtype.metadata_name())])
                 else:
-                    raise ValueError('Metadata column type ', mdtype.metadata_column_type(),' of ', mdtype, ' is unknown. Should be numerical or categorical.')
+                    raise ValueError('Return column type {type} of {metadata} is unknown. '
+                                     'Should be numerical or categorical.'
+                                     .format(type=mdtype.metadata_column_type(), metadata=mdtype))
                 pvalues[(column, mdtype.metadata_name())] = [p]
         return Report(examined_columns=list(df1.columns.levels[0]),
                       shifted_columns=self.significant_columns(pvalues),
