@@ -16,7 +16,7 @@ Detector Object
 Checks
 ------
 
-Frequent Itemset
-++++++++++++++++
+Conditional Probabilities
++++++++++++++++++++++++++
 
-.. autoclass:: shift_detector.checks.FrequentItemRulesCheck.ConditionalProbabilitiesCheck
+.. autoclass:: shift_detector.checks.ConditionalProbabilitiesCheck.ConditionalProbabilitiesCheck

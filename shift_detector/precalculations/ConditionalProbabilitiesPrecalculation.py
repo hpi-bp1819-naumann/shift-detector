@@ -1,6 +1,6 @@
-from shift_detector.Utils import ColumnType
 from shift_detector.precalculations.Precalculation import Precalculation
 from shift_detector.precalculations.conditional_probabilities import fpgrowth
+from shift_detector.utils.ColumnManagement import ColumnType
 
 
 class ConditionalProbabilitiesPrecalculation(Precalculation):
@@ -15,7 +15,7 @@ class ConditionalProbabilitiesPrecalculation(Precalculation):
         df1, df2 = store[ColumnType.categorical]
         rules = fpgrowth.calculate_frequent_rules(df1, df2, self.min_support, self.min_confidence,
                                                   self.min_delta_supports, self.min_delta_confidences)
-        return rules, set(df1.columns)  # TODO: Why is this a set?
+        return rules, list(df1.columns)
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):

@@ -39,23 +39,19 @@ Code
         data_set_2,
         delimiter=','
     )
-    detector.add_checks(
+    detector.run(
         ConditionalProbabilitiesCheck()
     )
-
-    detector.run()
     detector.evaluate()
 
 The code works as follows:
 
 1. First, you create a :class:`~shift_detector.Detector.Detector` object to tell Morpheus
    which data sets you want to compare.
-2. Then, you specify in :meth:`~shift_detector.Detector.Detector.add_checks`
+2. Then, you specify in :meth:`~shift_detector.Detector.Detector.run`
    which check you want to run: in this case
    :class:`~shift_detector.checks.ConditionalProbabilitiesCheck.ConditionalProbabilitiesCheck`.
-3. Finally, you start the detector with
-   :meth:`~shift_detector.Detector.Detector.run` and print the result with
-   :meth:`~shift_detector.Detector.Detector.evaluate`.
+3. Finally, you print the result with :meth:`~shift_detector.Detector.Detector.evaluate`.
 
 Result
 ++++++
@@ -92,7 +88,7 @@ Parameters
 ----------
 
 :ref:`conditional_probabilities` provides several tuning knobs and adjustable
-thresholds that you can use to control (a) the computational complexity and
+thresholds that control (a) the computational complexity and
 (b) the size of the result:
 
 ``min_support``:
@@ -156,7 +152,7 @@ Algorithm
    use an absolute value for ``min_support``.
 3. Association rules exceeding ``min_support`` and ``min_confidence`` in both
    data sets can be compared directly. For each of those rule-pairs generate a
-   result rule of the form showed above as long as they meet the criteria of
+   result rule of the form showed above subject to the requirements of
    ``min_delta_supports`` and ``min_delta_confidences``.
 4. If a rule exceeds ``min_support`` and ``min_confidence`` in
    one data set but not in the other, we don't know if this rule does not appear in
@@ -164,6 +160,8 @@ Algorithm
    ``min_confidence``. We therefore scan both data sets one
    more time and count their appearances. This information at hand, we can
    generate the remaining result rules.
+5. The result rules are sorted according to the absolute values of delta_supports,
+   delta_supports_of_left_side and delta_confidences in decreasing order. 
 
 Notes
 +++++
@@ -191,22 +189,7 @@ The function ``generate_association_rules(...)`` is revised in the following way
    however be part of a correct result and are vital for our purposes. We therefore
    adapted the function to include those rules too.
 
-We feel very confident that the code is correct and reasonably fast:
-
-1. We included unit tests to verify that our implementation produces the correct
-   result for an example taken from [Agrawal1994]_.
-2. We compared the result produced by this implementation on a large production
-   data set with the result produced by an implementation of the Apriori algorithm
-   [Agrawal1994]_ we used previously. Both results were identical. This is a strong
-   indicator that either both results are false but in exactly the same way or both
-   results are correct. We think it's the latter.
-
-   * During this comparison we could confirm that FP-growth is both faster and
-     requires less memory than the Apriori algorithm as is also shown in [Han2000]_.
-     This is why we feel confident that FP-growth is the right choice for our
-     use case.
-
-As a last aside: we issued a `Pull Request <https://github.com/evandempsey/fp-growth/pull/17>`_
+We issued a `Pull Request <https://github.com/evandempsey/fp-growth/pull/17>`_
 for fp-growth_ containing our bug fixes.
 
 References
