@@ -23,7 +23,20 @@ def get_columns(rule):
 
 
 def to_string(rule):
-    return ''
+    return ('{left_sides} ==> {right_sides} [SUPPORTS_OF_LEFT_SIDES: {supports_of_left_sides}, '
+            'DELTA_SUPPORTS_OF_LEFT_SIDES: {delta_supports_of_left_sides}, SUPPORTS: {supports}, '
+            'DELTA_SUPPORTS: {delta_supports}, CONFIDENCES: {confidences}, '
+            'DELTA_CONFIDENCES: {delta_confidences}]').format(
+        left_sides=', '.join('{}: {}'.format(l[0].upper(), l[1]) for l in rule.left_side),
+        right_sides='()' if not rule.right_side else ', '.join(
+            '{}: {}'.format(r[0].upper(), r[1]) for r in rule.right_side),
+        supports_of_left_sides=rule.supports_of_left_side,
+        delta_supports_of_left_sides=rule.delta_supports_of_left_side,
+        supports=rule.supports,
+        delta_supports=rule.delta_supports,
+        confidences=rule.confidences,
+        delta_confidences=rule.delta_confidences
+    )
 
 
 def calculate_frequent_rules(df1, df2, min_support, min_confidence, min_delta_supports, min_delta_confidences):
