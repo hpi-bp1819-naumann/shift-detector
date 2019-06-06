@@ -4,9 +4,10 @@ from typing import List, Union
 
 import pandas as pd
 
-from shift_detector.Utils import read_from_csv, column_names
 from shift_detector.checks.Check import Check, Report
 from shift_detector.precalculations.Store import Store
+from shift_detector.utils.ColumnManagement import column_names
+from shift_detector.utils.DataIO import read_from_csv
 
 
 class Detector:

@@ -1,7 +1,7 @@
 from shift_detector.precalculations.Preprocessor import Preprocessor
 from enum import Enum
-from shift_detector.Utils import ColumnType
 from shift_detector.precalculations.Store import Store
+from shift_detector.utils.ColumnManagement import ColumnType
 
 
 class NGramType(Enum):
