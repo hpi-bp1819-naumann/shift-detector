@@ -2,6 +2,7 @@ from collections import defaultdict
 
 from shift_detector.checks.Check import Check, Report
 from shift_detector.precalculations.ConditionalProbabilitiesPrecalculation import ConditionalProbabilitiesPrecalculation
+from shift_detector.precalculations.conditional_probabilities.fpgrowth import get_columns, to_string
 
 
 class ConditionalProbabilitiesCheck(Check):
@@ -36,19 +37,19 @@ class ConditionalProbabilitiesCheck(Check):
         self.min_delta_confidences = min_delta_confidences
 
     def run(self, store):
-        """Compute conditional probabilities, compress them and return a report."""
-        compressed_rules, examined_columns = store[
+        """Compute conditional probabilities and return a report."""
+        rules, examined_columns = store[
             ConditionalProbabilitiesPrecalculation(self.min_support, self.min_confidence, self.min_delta_supports,
                                                    self.min_delta_confidences)]
 
         shifted_columns = set()
         explanation = defaultdict(list)
-        for i, compressed_rule in enumerate(compressed_rules):
+        for i, rule in enumerate(rules):
             if i == self.rule_limit:
                 break
-            columns = tuple(sorted(key for key, _ in compressed_rule.attributes))
+            columns = get_columns(rule)
             shifted_columns.add(columns)
 
-            explanation[', '.join(columns)].append(str(compressed_rule))
+            explanation[', '.join(columns)].append(to_string(rule))
 
         return Report(examined_columns, list(shifted_columns), explanation)

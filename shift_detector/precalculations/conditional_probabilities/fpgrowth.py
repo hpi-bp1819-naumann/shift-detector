@@ -18,6 +18,14 @@ class DataFrameIteratorAdapter:
         return len(self.df)
 
 
+def get_columns(rule):
+    return tuple(sorted(c for c, _ in rule.left_side + rule.right_side))
+
+
+def to_string(rule):
+    return ''
+
+
 def calculate_frequent_rules(df1, df2, min_support, min_confidence, min_delta_supports, min_delta_confidences):
     columns = df1.columns
     column_to_index = {c: i for i, c in enumerate(columns)}
@@ -111,4 +119,6 @@ def calculate_frequent_rules(df1, df2, min_support, min_confidence, min_delta_su
             if abs(candidate_rule.delta_supports) >= min_delta_supports and abs(
                     candidate_rule.delta_confidences) >= min_delta_confidences:
                 result.append(candidate_rule)
-    return result
+
+    return sorted(result, reverse=True, key=lambda r: (abs(r.delta_supports), abs(r.delta_supports_of_left_side),
+                                                       abs(r.delta_confidences)))

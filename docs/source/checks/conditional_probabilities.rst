@@ -143,10 +143,7 @@ Implementation
 Algorithm
 +++++++++
 
-:ref:`conditional_probabilities` proceeds in two phases:
-
-Rule Computation
-~~~~~~~~~~~~~~~~
+:ref:`conditional_probabilities` works as follows:
 
 1. Both data sets are transformed: each component of every tuple is replaced
    by an attribute-name, attribute-value pair. However, this transformation is
@@ -167,16 +164,6 @@ Rule Computation
    ``min_confidence``. We therefore scan both data sets one
    more time and count their appearances. This information at hand, we can
    generate the remaining result rules.
-
-Rule Compression
-~~~~~~~~~~~~~~~~
-
-The second phase works on the result of the first phase.
-
-1. All rules are grouped according to the number of attribute-name,
-   attribute-value pairs appearing in the rule.
-
-
 
 Notes
 +++++
