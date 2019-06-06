@@ -4,36 +4,39 @@ from shift_detector.precalculations.conditional_probabilities.ExtendendRule impo
 
 
 def remove_attribute_value_pairs_appearing_in_all_rules(rules):
-    if not rules:
-        return []
-
-    appearing_in_all_seen_so_far = set(rules[0].left_side + rules[0].right_side)
+    # TODO: remove this function.
+    appearing_in_all_seen_so_far = None
 
     for rule in rules:
-        not_appearing_in_this_rule = set()
-        for attribute_value_pair in appearing_in_all_seen_so_far:
-            if attribute_value_pair not in set(rule.left_side + rule.right_side):
-                not_appearing_in_this_rule.add(attribute_value_pair)
+        if not appearing_in_all_seen_so_far:
+            # initialize appearing_in_all_seen_so_far
+            appearing_in_all_seen_so_far = set(rule.left_side + rule.right_side)
+            continue
+        this_rule = set(rule.left_side + rule.right_side)
+        not_appearing_in_this_rule = set(attribute_value_pair for attribute_value_pair in appearing_in_all_seen_so_far
+                                         if attribute_value_pair not in this_rule)
 
         appearing_in_all_seen_so_far -= not_appearing_in_this_rule
 
     if appearing_in_all_seen_so_far:
+        simplified_rules = []
         for rule in rules:
             rule.left_side = [attribute_value_pair for attribute_value_pair in rule.left_side if
                               attribute_value_pair not in appearing_in_all_seen_so_far]
             rule.right_side = [attribute_value_pair for attribute_value_pair in rule.right_side if
                                attribute_value_pair not in appearing_in_all_seen_so_far]
-    return rules
+            if rule.left_side:
+                simplified_rules.append(rule)
+        return simplified_rules
+    else:
+        return rules
 
 
 def transform_to_extended_rules(rules):
-    extended_rules = []
-    for rule in rules:
-        extended_rules.append(ExtendedRule(rule.left_side, rule.right_side, rule.supports_of_left_side,
-                                           rule.delta_supports_of_left_side, rule.supports, rule.delta_supports,
-                                           rule.confidences, rule.delta_confidences))
-
-    return extended_rules
+    return [ExtendedRule(rule.left_side, rule.right_side, rule.supports_of_left_side,
+                         rule.delta_supports_of_left_side, rule.supports, rule.delta_supports,
+                         rule.confidences, rule.delta_confidences)
+            for rule in rules]
 
 
 def group_rules_by_length(rules):
@@ -42,7 +45,7 @@ def group_rules_by_length(rules):
     for rule in rules:
         groupings[len(rule.left_side + rule.right_side)].append(rule)
 
-    return [groupings[key] for key in sorted(groupings)]
+    return [groupings[group_length] for group_length in sorted(groupings)]
 
 
 def cluster_rules_hierarchically(grouped_rules):
@@ -61,9 +64,9 @@ def cluster_rules_hierarchically(grouped_rules):
 
 def compress_rules(uncompressed_rules):
     transformed_rules = transform_to_extended_rules(uncompressed_rules)
-    simplified_rules = remove_attribute_value_pairs_appearing_in_all_rules(transformed_rules)
+    # simplified_rules = remove_attribute_value_pairs_appearing_in_all_rules(transformed_rules)
 
-    grouped_rules = group_rules_by_length(simplified_rules)
+    grouped_rules = group_rules_by_length(transformed_rules)
     hierarchical_clusters = cluster_rules_hierarchically(grouped_rules)
 
     return sorted(hierarchical_clusters, key=lambda c: abs(c.rule.delta_supports),
