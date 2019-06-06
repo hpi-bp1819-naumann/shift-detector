@@ -41,5 +41,3 @@ class TestCountVectorizer(unittest.TestCase):
 
         assert_frame_equal(res1, pd.DataFrame([1]*9 + [0], columns=['col1']))
         assert_frame_equal(res2, pd.DataFrame([0]*9 + [1], columns=['col1']))
-
-

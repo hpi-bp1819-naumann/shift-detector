@@ -160,8 +160,10 @@ class TestLdaEmbedding(unittest.TestCase):
                         'Managed homogeneous concept',
                         'Integrated attitude-oriented model']
 
-        self.df1 = pd.DataFrame(self.poems)
-        self.df2 = pd.DataFrame(self.phrases)
+        self.df1 = pd.DataFrame(self.poems, columns=['text'])
+        print(self.df1['text'].shape)
+        self.df2 = pd.DataFrame(self.phrases, columns=['text'])
+        print(self.df2['text'].shape)
         self.store = Store(self.df1, self.df2)
 
     def test_exception_on_small_n(self):
@@ -175,7 +177,7 @@ class TestLdaEmbedding(unittest.TestCase):
 
     def test_process(self):
         res1, res2 = self.lda1.process(self.store)
-        self.assertTrue(res1['topic'], [1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1,
-                                        1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-                                        1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1,
-                                        1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1])
+        self.assertTrue(res1['topics poems'], [1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1,
+                                               1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+                                               1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1,
+                                               1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1])

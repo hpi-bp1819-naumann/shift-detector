@@ -163,8 +163,8 @@ class TestLdaCheck(unittest.TestCase):
                         'Managed homogeneous concept',
                         'Integrated attitude-oriented model']
 
-        self.df1 = pd.DataFrame(self.poems)
-        self.df2 = pd.DataFrame(self.phrases)
+        self.df1 = pd.DataFrame(self.poems, columns=['text'])
+        self.df2 = pd.DataFrame(self.phrases, columns=['text'])
         self.store = Store(self.df1, self.df2)
 
     def test_exception_on_small_n(self):

@@ -7,7 +7,7 @@ from shift_detector.Utils import ColumnType
 
 class CountVectorizer(Precalculation):
 
-    def __init__(self, stop_words='english', max_features=None):
+    def __init__(self, stop_words='english', max_features=None):  # potentially make min_df and max_df available
         self.stopwords = None
         self.max_features = None
         if isinstance(stop_words, str):
