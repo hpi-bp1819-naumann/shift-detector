@@ -5,7 +5,7 @@ from shift_detector.precalculations.Store import Store
 import pandas as pd
 
 
-class TestSorensenDicePrecalculations(unittest.TestCase):
+class TestSorensenDicePrecalculation(unittest.TestCase):
 
     def setUp(self):
         self.df1 = pd.DataFrame({'col1': ['ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef',

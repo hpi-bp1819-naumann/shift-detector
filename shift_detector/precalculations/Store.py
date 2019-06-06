@@ -2,7 +2,8 @@ import logging as logger
 
 from pandas import DataFrame
 
-from shift_detector.Utils import split_dataframes, ColumnType, shared_column_names, CATEGORICAL_MAX_RELATIVE_CARDINALITY
+from shift_detector.utils.ColumnManagement import split_dataframes, ColumnType, CATEGORICAL_MAX_RELATIVE_CARDINALITY
+from shift_detector.utils.DataIO import shared_column_names
 
 MIN_DATA_SIZE = int(CATEGORICAL_MAX_RELATIVE_CARDINALITY * 100)
 

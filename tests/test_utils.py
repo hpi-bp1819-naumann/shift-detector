@@ -2,7 +2,9 @@ import unittest
 
 import pandas as pd
 
-from shift_detector.Utils import ColumnType, shared_column_names, is_categorical, split_dataframes
+from shift_detector.utils.ColumnManagement import is_categorical, split_dataframes, ColumnType
+from shift_detector.utils.DataIO import shared_column_names
+from shift_detector.utils.UCBlist import block, blocks
 
 
 class TestUtils(unittest.TestCase):
@@ -10,9 +12,9 @@ class TestUtils(unittest.TestCase):
     def setUp(self):
         sales = {'brand': ["Jones LLC", "Alpha Co", "Blue Inc", "Blue Inc", "Alpha Co",
                            "Jones LLC", "Alpha Co", "Blue Inc", "Blue Inc", "Alpha Co",
-                           "Jones LLC"],
-                 'payment': [150, 200, 50, 10, 5, 150, 200, 50, 10, 5, 1],
-                 'description': ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"]}
+                           "Jones LLC"] * 10,
+                 'payment': [150, 200, 50, 10, 5, 150, 200, 50, 10, 5, 1] * 10,
+                 'description': ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"] * 10}
         self.df1 = pd.DataFrame.from_dict(sales)
         self.df2 = self.df1
 
@@ -56,3 +58,12 @@ class TestUtils(unittest.TestCase):
         self.assertListEqual(list(categorical_columns), list(['brand']))
         self.assertListEqual(list(all_categorical_columns), list(['brand', 'payment']))
         self.assertListEqual(list(text_columns), list(['description']))
+
+    def test_ucblist_block_function(self):
+        self.assertEqual('Basic Latin', block('L'))
+        self.assertEqual('CJK Unified Ideographs', block('中'))
+
+    def test_ucblist_blocks_dict(self):
+        self.assertEqual(300, len(blocks))
+        self.assertEqual((0, 127, 'Basic Latin'), blocks[0])
+        self.assertEqual((1048576, 1114111, 'Supplementary Private Use Area-B'), blocks[-1])
