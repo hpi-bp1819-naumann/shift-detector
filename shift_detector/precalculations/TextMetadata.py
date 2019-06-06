@@ -130,6 +130,7 @@ class TokenizeIntoWords(Precalculation):
         return hash(self.__class__)
 
     def tokenize_into_words(self, text):
+        text = text.lower()
         text = re.sub(r"-", ' ', text)
         text = re.sub(r"[^\w\s']", '', text)
         splitted = re.split(r'\W\s|\s', text)
@@ -319,7 +320,7 @@ class StopwordRatioMetadata(GenericTextMetadataWithTokenizingAndLanguage):
             if len(words) == 0:
                 return 0.0
             for word in words:
-                if word.lower() in stop:
+                if word in stop:
                     stopword_count += 1
             return stopword_count / len(words)
         except OSError as error:

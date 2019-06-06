@@ -26,10 +26,10 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
 
     def test_tokenize_into_words(self):
         md1, md2 = TokenizeIntoWords().process(self.store)
-        sol1_1 = ['Tell', 'me', 'not', 'in', 'mournful', 'numbers', 'Life', 'is', 'but', 'an', 'empty', 'dream', 'For', 'the', 'soul', 'is', 'dead', 'that', 'slumbers', 'And', 'things', 'are', 'not', 'what', 'they', 'seem']
-        sol1_2 = ['Life', 'is', 'real', 'Life', 'is', 'earnest', 'And', 'the', 'grave', 'is', 'not', 'its', 'goal', 'Dust', 'thou', 'art', 'to', 'dust', 'returnest', 'Was', 'not', 'spoken', 'of', 'the', 'soul']
-        sol2_1 = ['Front', 'line', 'leading', 'edge', 'website']
-        sol2_2 = ['Upgradable', 'upward', 'trending', 'software']
+        sol1_1 = ['tell', 'me', 'not', 'in', 'mournful', 'numbers', 'life', 'is', 'but', 'an', 'empty', 'dream', 'for', 'the', 'soul', 'is', 'dead', 'that', 'slumbers', 'and', 'things', 'are', 'not', 'what', 'they', 'seem']
+        sol1_2 = ['life', 'is', 'real', 'life', 'is', 'earnest', 'and', 'the', 'grave', 'is', 'not', 'its', 'goal', 'dust', 'thou', 'art', 'to', 'dust', 'returnest', 'was', 'not', 'spoken', 'of', 'the', 'soul']
+        sol2_1 = ['front', 'line', 'leading', 'edge', 'website']
+        sol2_2 = ['upgradable', 'upward', 'trending', 'software']
         solution1 = pd.DataFrame([[sol1_1], [sol1_2]], columns=['text'])
         solution2 = pd.DataFrame([[sol2_1], [sol2_2]], columns=['text'])
         assert_frame_equal(solution1, md1)
@@ -74,14 +74,14 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
 
     def test_distinct_words(self):
         md1, md2 = DistinctWordsRatioMetadata().process(self.store)
-        solution1 = pd.DataFrame([24/26, 20/25], columns=['text'])
+        solution1 = pd.DataFrame([24/26, 19/25], columns=['text'])
         solution2 = pd.DataFrame([1.0, 1.0], columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
     def test_unique_words(self):
         md1, md2 = UniqueWordsRatioMetadata().process(self.store)
-        solution1 = pd.DataFrame([22/26, 16/25], columns=['text'])
+        solution1 = pd.DataFrame([22/26, 14/25], columns=['text'])
         solution2 = pd.DataFrame([1.0, 1.0], columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
@@ -151,7 +151,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
         empty = ""
         punctuation = ".  , * (  \n \t [}"
         tokenize_into_words = TokenizeIntoWords().tokenize_into_words
-        self.assertEqual(tokenize_into_words(normal), ['This', 'is', "a'n", 'example', '12', '356', 'str', 'ing', 'test'])
+        self.assertEqual(tokenize_into_words(normal), ['this', 'is', "a'n", 'example', '12', '356', 'str', 'ing', 'test'])
         self.assertEqual(tokenize_into_words(empty), [])
         self.assertEqual(tokenize_into_words(punctuation), [])
 
@@ -255,11 +255,11 @@ class TestTextMetadataFunctions(unittest.TestCase):
 
     def test_stopwords(self):
         no_stopwords = ['computer', 'calculates', 'math']
-        only_stopwords = ['The', 'and', 'is', 'I', 'am']
-        mixed = ['A', 'normal', 'sentence', 'has', 'both']
-        french = ['Demain', 'dès', 'l’aube', 'à', 'l’heure', 'où', 'blanchit', 'la', 'campagne', 'Je', 'partirai', 'Vois', 'tu', 'je', 'sais', 'que', 'tu', 'm’attends', 'J’irai', 'par', 'la', 'forêt', 'j’irai', 'par', 'la', 'montagne', 'Je', 'ne', 'puis', 'demeurer', 'loin', 'de', 'toi', 'plus', 'longtemps']
+        only_stopwords = ['the', 'and', 'is', 'i', 'am']
+        mixed = ['a', 'normal', 'sentence', 'has', 'both']
+        french = ['demain', 'dès', 'l’aube', 'à', 'l’heure', 'où', 'blanchit', 'la', 'campagne', 'je', 'partirai', 'vois', 'tu', 'je', 'sais', 'que', 'tu', 'm’attends', 'j’irai', 'par', 'la', 'forêt', 'j’irai', 'par', 'la', 'montagne', 'je', 'ne', 'puis', 'demeurer', 'loin', 'de', 'toi', 'plus', 'longtemps']
         empty = []
-        unsupported_language = ['Aqoonyahanada', 'caalamku', 'waxay', 'aad', 'ugu', 'murmaan', 'sidii', 'luuqadaha', 'aduunku', 'ku', 'bilaabmeem']
+        unsupported_language = ['aqoonyahanada', 'caalamku', 'waxay', 'aad', 'ugu', 'murmaan', 'sidii', 'luuqadaha', 'aduunku', 'ku', 'bilaabmeem']
         stopword_ratio = StopwordRatioMetadata().metadata_function
         self.assertEqual(stopword_ratio('en', no_stopwords), 0.0)
         self.assertEqual(stopword_ratio('en', only_stopwords), 1.0)
@@ -267,7 +267,6 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertAlmostEqual(stopword_ratio('fr', french), 0.4285714, places=5)
         self.assertEqual(stopword_ratio('en', empty), 0.0)
         self.assertRaises(ValueError, stopword_ratio, language='so', words=unsupported_language)
-
 
     def test_category(self):
         html = "some text <p> some other text < br/ > more text"
