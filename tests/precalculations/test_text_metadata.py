@@ -350,3 +350,4 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual(pos_tags(normal), 'DET, ., NOUN, VERB')
         self.assertEqual(pos_tags(punctuation), '.')
         self.assertEqual(pos_tags(empty), '')
+        
