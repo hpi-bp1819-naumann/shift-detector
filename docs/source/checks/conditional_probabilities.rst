@@ -1,6 +1,6 @@
 .. _conditional_probabilities:
 
-Conditional probabilities
+Conditional Probabilities
 =========================
 
 Description
@@ -29,7 +29,7 @@ Code
 ::
 
     from shift_detector.Detector import Detector
-    from shift_detector.checks.FrequentItemRulesCheck import ConditionalProbabilitiesCheck
+    from shift_detector.checks.ConditionalProbabilitiesCheck import ConditionalProbabilitiesCheck
 
     data_set_1 = 'examples/shoes_first.csv'
     data_set_2 = 'examples/shoes_second.csv'
@@ -52,7 +52,7 @@ The code works as follows:
    which data sets you want to compare.
 2. Then, you specify in :meth:`~shift_detector.Detector.Detector.add_checks`
    which check you want to run: in this case
-   :class:`~shift_detector.checks.FrequentItemRulesCheck.ConditionalProbabilitiesCheck`.
+   :class:`~shift_detector.checks.ConditionalProbabilitiesCheck.ConditionalProbabilitiesCheck`.
 3. Finally, you start the detector with
    :meth:`~shift_detector.Detector.Detector.run` and print the result with
    :meth:`~shift_detector.Detector.Detector.evaluate`.
@@ -91,18 +91,19 @@ This tells you that:
 Parameters
 ----------
 
-:ref:`conditional_probabilities` provides two tuning knobs that you can use
-to control (a) the computational complexity and (b) the size of the result:
+:ref:`conditional_probabilities` provides several tuning knobs and adjustable
+thresholds that you can use to control (a) the computational complexity and
+(b) the size of the result:
 
 ``min_support``:
     This parameter expects a float between 0 and 1 and impacts both runtime
     and size of the result. :ref:`conditional_probabilities` only produces
     rules whose ``support_of_left_side`` and ``support`` exceed ``min_support``
-    in at least one data set.
+    in at least one of the two data sets.
 
     The lower you choose ``min_support`` the more resources are required during
     computation both in terms of memory and CPU.
-    The default value is ``0.01``. This means that :ref:`conditional_probabilities`
+    The default value is 0.01. This means that :ref:`conditional_probabilities`
     only considers values which appear in at least 1% of your tuples.
     By adjusting this parameter you can adjust the granularity of the comparison
     of the two data sets.
@@ -110,11 +111,31 @@ to control (a) the computational complexity and (b) the size of the result:
 ``min_confidence``:
     This parameter expects a float between 0 and 1 and impacts the size of the
     result. :ref:`conditional_probabilities` only produces rules whose
-    ``confidence`` exceeds ``min_confidence`` in at least one data set.
+    ``confidence`` exceeds ``min_confidence`` in at least one of the two data sets.
 
     The lower you choose ``min_confidence`` the more rules are generated.
-    The default value is ``0.15``. This means that the **conditional probability**
-    of a specific right side given a specific left side has to be at least 15%.
+    The default value is 0.15. This means that the **conditional probability**
+    of a right side given a left side has to be at least 15%.
+
+``rule_limit``:
+	This parameter expects an int and controls the maximum number of rules that are
+	printed as a result of executing :ref:`conditional_probabilities`.
+	The default value is 5. This means that the 5 most significant rules are printed.
+
+``min_delta_supports``:
+	This parameter expects a float between 0 and 1 and affects the granularity of the
+	comparison of the two data sets. Only rules whose support values exhibit an absolute
+	difference of more than ``min_delta_supports`` are considered during computation.
+	The default value is 0.05.
+
+``min_delta_confidences``:
+	This parameter expects a float between 0 and 1 and affects the granularity of the
+	comparison of the two data sets. Only rules whose confidence values exhibit an absolute
+	difference of more than ``min_delta_confidences`` are considered during computation.
+	The default value is 0.05.
+
+Please keep in mind that a rule has to satisfy **all** of the requirements above
+to appear in the result.
 
 Implementation
 --------------
@@ -122,7 +143,10 @@ Implementation
 Algorithm
 +++++++++
 
-:ref:`conditional_probabilities` works as follows:
+:ref:`conditional_probabilities` proceeds in two phases:
+
+Rule Computation
+~~~~~~~~~~~~~~~~
 
 1. Both data sets are transformed: each component of every tuple is replaced
    by an attribute-name, attribute-value pair. However, this transformation is
@@ -135,13 +159,24 @@ Algorithm
    use an absolute value for ``min_support``.
 3. Association rules exceeding ``min_support`` and ``min_confidence`` in both
    data sets can be compared directly. For each of those rule-pairs generate a
-   result rule of the form showed above.
+   result rule of the form showed above as long as they meet the criteria of
+   ``min_delta_supports`` and ``min_delta_confidences``.
 4. If a rule exceeds ``min_support`` and ``min_confidence`` in
    one data set but not in the other, we don't know if this rule does not appear in
    the other data set at all or just does not exceed ``min_support`` and/or
    ``min_confidence``. We therefore scan both data sets one
    more time and count their appearances. This information at hand, we can
    generate the remaining result rules.
+
+Rule Compression
+~~~~~~~~~~~~~~~~
+
+The second phase works on the result of the first phase.
+
+1. All rules are grouped according to the number of attribute-name,
+   attribute-value pairs appearing in the rule.
+
+
 
 Notes
 +++++
