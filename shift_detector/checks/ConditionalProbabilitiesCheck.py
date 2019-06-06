@@ -22,9 +22,9 @@ class ConditionalProbabilitiesCheck(Check):
         ``rule_limit`` rules are printed as a result of executing this check.
         The rules are sorted according to their significance.
     :param min_delta_supports: a float between 0 and 1. Association rules whose support
-        values exhibit a difference of less than ``min_delta_supports`` are pruned.
+        values exhibit an absolute difference of less than ``min_delta_supports`` are pruned.
     :param min_delta_confidences: a float between 0 and 1. Association rules whose confidence
-        values exhibit a difference of less than ``min_delta_confidences`` are pruned.
+        values exhibit an absolute difference of less than ``min_delta_confidences`` are pruned.
     """
 
     def __init__(self, min_support=0.01, min_confidence=0.15, rule_limit=5, min_delta_supports=0.05,
