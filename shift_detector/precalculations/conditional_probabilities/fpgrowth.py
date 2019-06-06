@@ -40,15 +40,16 @@ def calculate_frequent_rules(df1, df2, min_support, min_confidence, min_delta_su
     intersection = rules[0].keys() & rules[1].keys()
     # compare rules that exceed min support in both data sets
     for key in intersection:
-        rule = Rule(key.left_side, key.right_side, (rules[0][key].support_of_left_side,
-                                                    rules[1][key].support_of_left_side),
-                    (rules[0][key].support_of_left_side - rules[1][key].support_of_left_side),
-                    (rules[0][key].support, rules[1][key].support),
-                    (rules[0][key].support - rules[1][key].support),
-                    (rules[0][key].confidence, rules[1][key].confidence),
-                    (rules[0][key].confidence - rules[1][key].confidence))
-        if abs(rule.delta_supports) >= min_delta_supports and abs(rule.delta_confidences) >= min_delta_confidences:
-            result.append(rule)
+        candidate_rule = Rule(key.left_side, key.right_side, (rules[0][key].support_of_left_side,
+                                                              rules[1][key].support_of_left_side),
+                              (rules[0][key].support_of_left_side - rules[1][key].support_of_left_side),
+                              (rules[0][key].support, rules[1][key].support),
+                              (rules[0][key].support - rules[1][key].support),
+                              (rules[0][key].confidence, rules[1][key].confidence),
+                              (rules[0][key].confidence - rules[1][key].confidence))
+        if abs(candidate_rule.delta_supports) >= min_delta_supports and abs(
+                candidate_rule.delta_confidences) >= min_delta_confidences:
+            result.append(candidate_rule)
 
     def get_absolute_supports(exclusives, other_transactions):
         """Calculate and return absolute support of rules of `exclusives` in `other_transactions`"""
