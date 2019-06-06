@@ -31,7 +31,7 @@ class ExtendedRule:
 class RuleCluster:
 
     def __init__(self, rule):
-        self.attributes = set(rule.right_side + rule.left_side)
+        self.attributes = set(rule.left_side + rule.right_side)
         self.rule = rule
         self.sub_clusters = []
 
