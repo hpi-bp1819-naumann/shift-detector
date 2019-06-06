@@ -19,10 +19,10 @@ class TestSorensenDiceCheck(unittest.TestCase):
         self.report = SorensenDiceCheck(ngram_type=NGramType.character, n=3).run(self.store)
 
     def test_examined_columns(self):
-        self.assertEqual(self.report.examined_columns, {'col1'})
+        self.assertCountEqual(self.report.examined_columns, ['col1'])
 
     def test_shifted_columns(self):
-        self.assertEqual(self.report.shifted_columns, {'col1'})
+        self.assertCountEqual(self.report.shifted_columns, ['col1'])
 
     def test_explanation_existence(self):
         self.assertNotEqual(self.report.explanation, '')

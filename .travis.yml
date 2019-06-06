@@ -9,7 +9,7 @@ install:
   - pip3 install coverage
   - pip3 install -r requirements.txt
 script:
-  - python3 -m unittest discover
+  - python3 nltk_stopwords_download.py
   - coverage run --source shift_detector -m unittest discover
 after_success:
   - coveralls
