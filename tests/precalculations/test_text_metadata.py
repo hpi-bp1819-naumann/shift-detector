@@ -129,6 +129,13 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
     #    assert_frame_equal(solution1, md1)
     #    assert_frame_equal(solution2, md2)
 
+    def test_pos_tags(self):
+        md1, md2 = PartOfSpeechMetadata().process(self.store)
+        solution1 = pd.DataFrame(['NOUN, ., VERB, ADJ, ADP, PRON, ADV, CONJ, DET', 'NOUN, ., VERB, ADV, ADJ, DET, ADP, CONJ, PRON, PRT'], columns=['text'])
+        solution2 = pd.DataFrame(['NOUN, ADJ, VERB', 'ADJ, NOUN'], columns=['text'])
+        assert_frame_equal(solution1, md1)
+        assert_frame_equal(solution2, md2)
+
     def test_metadata_preprocessor(self):
         md1, md2 = self.store[TextMetadata(text_metadata_types=[NumWordsMetadata(), StopwordRatioMetadata(), UnicodeBlocksMetadata()])]
         index = pd.MultiIndex.from_product([['text'], ['num_words', 'stopword_ratio', 'unicode_blocks']], names=['column', 'metadata'])
@@ -324,7 +331,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertRaises(LangDetectException, language, text=punctuation)
         self.assertRaises(LangDetectException, language, text=empty)
 
-    def text_complexity(self):
+    def test_complexity(self):
         easy = "This is easy. This is a sentence. This has a big number."
         hard = "Quantum mechanics (QM; also known as quantum physics, quantum theory, the wave mechanical model, or matrix mechanics), including quantum field theory, is a fundamental theory in physics which describes nature at the smallest scales of energy levels of atoms and subatomic particles."
         punctuation = " . ,"
@@ -334,3 +341,12 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual(text_complexity(punctuation), 0.0)
         self.assertEqual(text_complexity(easy), text_complexity(easy))
         self.assertGreater(text_complexity(hard), text_complexity(easy))
+
+    def test_pos_tegs(self):
+        normal = 'This is a test.'
+        punctuation = " . ,"
+        empty = ''
+        pos_tags = PartOfSpeechMetadata().metadata_function
+        self.assertEqual(pos_tags(normal), 'DET, ., NOUN, VERB')
+        self.assertEqual(pos_tags(punctuation), '.')
+        self.assertEqual(pos_tags(empty), '')

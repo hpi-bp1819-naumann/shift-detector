@@ -6,6 +6,7 @@ from abc import abstractmethod
 from collections import defaultdict
 
 import pandas as pd
+import nltk
 # noinspection PyPackageRequirements
 from iso639 import languages
 from langdetect import detect, DetectorFactory
@@ -425,6 +426,30 @@ class ComplexityMetadata(GenericTextMetadata):
     def metadata_function(self, text):
         # works best for longer english texts. kinda works for other languages as well (not good though)
         return textstat.text_standard(text, True)
+
+
+class PartOfSpeechMetadata(GenericTextMetadata):
+
+    @staticmethod
+    def metadata_name() -> str:
+        return 'pos_tags'
+
+    def metadata_return_type(self) -> ColumnType:
+        return ColumnType.categorical
+
+    @staticmethod
+    def tag_histogram(text):
+        tokenized_text = nltk.word_tokenize(text)
+        tagged_text = nltk.pos_tag(tokenized_text)
+        simplified_tagged_text = [(word, nltk.map_tag('en-ptb', 'universal', tag)) for word, tag in tagged_text]
+        tagdict = defaultdict(int)
+        for word in simplified_tagged_text:
+            tagdict[word[1]] += 1
+        return tagdict
+
+    def metadata_function(self, text):
+        # works only for english texts.
+        return dictionary_to_sorted_string(self.tag_histogram(text))
 
 
 class TextMetadata(Precalculation):
