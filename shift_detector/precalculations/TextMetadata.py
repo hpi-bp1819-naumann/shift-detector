@@ -432,7 +432,7 @@ class PartOfSpeechMetadata(GenericTextMetadata):
 
     @staticmethod
     def metadata_name() -> str:
-        return 'pos_tags'
+        return 'part_of_speech_tags'
 
     def metadata_return_type(self) -> ColumnType:
         return ColumnType.categorical

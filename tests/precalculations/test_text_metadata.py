@@ -348,6 +348,6 @@ class TestTextMetadataFunctions(unittest.TestCase):
         punctuation = " . ,"
         empty = ''
         pos_tags = PartOfSpeechMetadata().metadata_function
-        self.assertEqual(pos_tags(normal), 'DET, ., NOUN, VERB')
-        self.assertEqual(pos_tags(punctuation), '.')
-        self.assertEqual(pos_tags(empty), '')
+        self.assertEqual('DET, ., NOUN, VERB', pos_tags(normal))
+        self.assertEqual('.', pos_tags(punctuation))
+        self.assertEqual('', pos_tags(empty))
