@@ -34,7 +34,7 @@ class GenericTextMetadata(Precalculation):
         pass
 
     @abstractmethod
-    def metadata_column_type(self) -> ColumnType:
+    def metadata_return_type(self) -> ColumnType:
         pass
 
     @abstractmethod
@@ -62,7 +62,7 @@ class GenericTextMetadataWithTokenizing(GenericTextMetadata):
         pass
 
     @abstractmethod
-    def metadata_column_type(self) -> ColumnType:
+    def metadata_return_type(self) -> ColumnType:
         pass
 
     @abstractmethod
@@ -92,7 +92,7 @@ class GenericTextMetadataWithTokenizingAndLanguage(GenericTextMetadata):
         pass
 
     @abstractmethod
-    def metadata_column_type(self) -> ColumnType:
+    def metadata_return_type(self) -> ColumnType:
         pass
 
     @abstractmethod
@@ -155,7 +155,7 @@ class NumCharsMetadata(GenericTextMetadata):
     def metadata_name() -> str:
         return 'num_chars'
 
-    def metadata_column_type(self) -> ColumnType:
+    def metadata_return_type(self) -> ColumnType:
         return ColumnType.numerical
 
     def metadata_function(self, text):
@@ -168,7 +168,7 @@ class RatioUppercaseLettersMetadata(GenericTextMetadata):
     def metadata_name() -> str:
         return 'ratio_upper'
 
-    def metadata_column_type(self) -> ColumnType:
+    def metadata_return_type(self) -> ColumnType:
         return ColumnType.numerical
 
     def metadata_function(self, text):
@@ -185,7 +185,7 @@ class UnicodeCategoriesMetadata(GenericTextMetadata):
     def metadata_name() -> str:
         return 'unicode_categories'
 
-    def metadata_column_type(self) -> ColumnType:
+    def metadata_return_type(self) -> ColumnType:
         return ColumnType.categorical
 
     @staticmethod
@@ -206,7 +206,7 @@ class UnicodeBlocksMetadata(GenericTextMetadata):
     def metadata_name() -> str:
         return 'unicode_blocks'
 
-    def metadata_column_type(self) -> ColumnType:
+    def metadata_return_type(self) -> ColumnType:
         return ColumnType.categorical
 
     @staticmethod
@@ -227,7 +227,7 @@ class NumWordsMetadata(GenericTextMetadataWithTokenizing):
     def metadata_name() -> str:
         return 'num_words'
 
-    def metadata_column_type(self) -> ColumnType:
+    def metadata_return_type(self) -> ColumnType:
         return ColumnType.numerical
 
     def metadata_function(self, words):
@@ -240,7 +240,7 @@ class DistinctWordsRatioMetadata(GenericTextMetadataWithTokenizing):
     def metadata_name() -> str:
         return 'distinct_words'
 
-    def metadata_column_type(self) -> ColumnType:
+    def metadata_return_type(self) -> ColumnType:
         return ColumnType.numerical
 
     def metadata_function(self, words):
@@ -259,7 +259,7 @@ class UniqueWordsRatioMetadata(GenericTextMetadataWithTokenizing):
     def metadata_name() -> str:
         return 'unique_words'
 
-    def metadata_column_type(self) -> ColumnType:
+    def metadata_return_type(self) -> ColumnType:
         return ColumnType.numerical
 
     def metadata_function(self, words):
@@ -283,7 +283,7 @@ class UnknownWordRatioMetadata(GenericTextMetadataWithTokenizingAndLanguage):
     def metadata_name() -> str:
         return 'unknown_word_ratio'
 
-    def metadata_column_type(self) -> ColumnType:
+    def metadata_return_type(self) -> ColumnType:
         return ColumnType.numerical
 
     def metadata_function(self, language, words):
@@ -308,7 +308,7 @@ class StopwordRatioMetadata(GenericTextMetadataWithTokenizingAndLanguage):
     def metadata_name() -> str:
         return 'stopword_ratio'
 
-    def metadata_column_type(self) -> ColumnType:
+    def metadata_return_type(self) -> ColumnType:
         return ColumnType.numerical
 
     def metadata_function(self, language, words):
@@ -334,7 +334,7 @@ class DelimiterTypeMetadata(GenericTextMetadata):
     def metadata_name() -> str:
         return 'delimiter_type'
 
-    def metadata_column_type(self) -> ColumnType:
+    def metadata_return_type(self) -> ColumnType:
         return ColumnType.categorical
 
     def metadata_function(self, text):
@@ -351,7 +351,7 @@ class NumPartsMetadata(GenericTextMetadata):
     def metadata_name() -> str:
         return 'num_parts'
 
-    def metadata_column_type(self) -> ColumnType:
+    def metadata_return_type(self) -> ColumnType:
         return ColumnType.numerical
 
     def metadata_function(self, text):
@@ -373,7 +373,7 @@ class LanguagePerParagraph(GenericTextMetadata):
     def metadata_name() -> str:
         return 'language'
 
-    def metadata_column_type(self) -> ColumnType:
+    def metadata_return_type(self) -> ColumnType:
         return ColumnType.categorical
 
     @staticmethod
@@ -405,7 +405,7 @@ class LanguageMetadata(GenericTextMetadata):
     def metadata_name() -> str:
         return 'language'
 
-    def metadata_column_type(self) -> ColumnType:
+    def metadata_return_type(self) -> ColumnType:
         return ColumnType.categorical
 
     def metadata_function(self, text):
@@ -419,7 +419,7 @@ class ComplexityMetadata(GenericTextMetadata):
     def metadata_name() -> str:
         return 'complexity'
 
-    def metadata_column_type(self) -> ColumnType:
+    def metadata_return_type(self) -> ColumnType:
         return ColumnType.numerical
 
     def metadata_function(self, text):

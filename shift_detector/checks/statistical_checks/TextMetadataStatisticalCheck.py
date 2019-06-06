@@ -42,15 +42,15 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
         pvalues = pd.DataFrame(columns=df1.columns, index=['pvalue'])
         for column in df1.columns.levels[0]:
             for mdtype in self.metadata_precalculation.text_metadata_types:
-                if mdtype.metadata_column_type() == ColumnType.categorical:
+                if mdtype.metadata_return_type() == ColumnType.categorical:
                     p = chi2_test(part1[(column, mdtype.metadata_name())], part2[(column, mdtype.metadata_name())])
-                elif mdtype.metadata_column_type() == ColumnType.numerical:
+                elif mdtype.metadata_return_type() == ColumnType.numerical:
                     p = kolmogorov_smirnov_test(part1[(column, mdtype.metadata_name())],
                                                 part2[(column, mdtype.metadata_name())])
                 else:
                     raise ValueError('Return column type {type} of {metadata} is unknown. '
                                      'Should be numerical or categorical.'
-                                     .format(type=mdtype.metadata_column_type(), metadata=mdtype))
+                                     .format(type=mdtype.metadata_return_type(), metadata=mdtype))
                 pvalues[(column, mdtype.metadata_name())] = [p]
         return Report(examined_columns=list(df1.columns.levels[0]),
                       shifted_columns=self.significant_columns(pvalues),
