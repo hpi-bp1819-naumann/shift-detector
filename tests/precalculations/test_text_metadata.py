@@ -342,7 +342,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual(text_complexity(easy), text_complexity(easy))
         self.assertGreater(text_complexity(hard), text_complexity(easy))
 
-    def test_pos_tegs(self):
+    def test_pos_tags(self):
         normal = 'This is a test.'
         punctuation = " . ,"
         empty = ''
