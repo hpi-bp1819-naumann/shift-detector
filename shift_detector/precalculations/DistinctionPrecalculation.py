@@ -3,13 +3,12 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 from datawig import SimpleImputer
-from datawig.iterators import ImputerIterDf
+from datawig.utils import logger as datawig_logger
 from datawig.utils import random_split
+from sklearn.metrics import accuracy_score
+from sklearn.utils import shuffle
 
 from shift_detector.precalculations.Precalculation import Precalculation
-from datawig.utils import logger as datawig_logger
-from sklearn.utils import shuffle
-from sklearn.metrics import accuracy_score
 
 
 class DistinctionPrecalculation(Precalculation):
@@ -26,11 +25,11 @@ class DistinctionPrecalculation(Precalculation):
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
-        return set(self.columns) == set(other.columns)
+        return set(self.columns) == set(other.columns) and self.num_epochs == other.num_epochs
 
     def __hash__(self):
-        items = sorted(self.columns) + [self.__class__]
-        return hash(tuple(items))
+        hash_items = sorted(self.columns) + [self.__class__, self.num_epochs]
+        return hash(tuple(hash_items))
 
     def process(self, store):
         """

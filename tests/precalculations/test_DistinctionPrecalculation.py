@@ -14,7 +14,7 @@ class TestCreateDetector(TestCase):
         self.df1 = DataFrame.from_dict(sales1)
         self.df2 = DataFrame.from_dict(sales2)
         self.store = Store(self.df1, self.df2)
-        self.precalculation = DistinctionPrecalculation(['shift', 'no_shift'])
+        self.precalculation = DistinctionPrecalculation(['shift', 'no_shift'], num_epochs=10)
 
     def test_process(self):
         calculation = self.precalculation.process(self.store)
@@ -39,8 +39,12 @@ class TestCreateDetector(TestCase):
             other_precalculation = DistinctionPrecalculation(['no_shift', 'shift'])
             self.assertEqual(self.precalculation, other_precalculation)
 
-        with self.subTest("Test inequality"):
-            other_precalculation = DistinctionPrecalculation(['no_shift'])
+        with self.subTest("Test inequality with other columns"):
+            other_precalculation = DistinctionPrecalculation(['no_shift'], num_epochs=10)
+            self.assertNotEqual(self.precalculation, other_precalculation)
+
+        with self.subTest("Test inequality with another number of epochs"):
+            other_precalculation = DistinctionPrecalculation(['no_shift', 'shift'], num_epochs=100)
             self.assertNotEqual(self.precalculation, other_precalculation)
 
         with self.subTest("Test inequality with another class"):
