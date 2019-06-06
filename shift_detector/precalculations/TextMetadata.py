@@ -436,11 +436,9 @@ class TextMetadata(Precalculation):
             self.text_metadata_types = frozenset(text_metadata_types)
         if infer_language or language != 'en':
             for mdtype in self.text_metadata_types:
-                try:
+                if isinstance(mdtype, GenericTextMetadataWithTokenizingAndLanguage):
                     mdtype.language = language
                     mdtype.infer_language = infer_language
-                except AttributeError:
-                    continue  # do nothing for types which do not accept a language as parameter
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.text_metadata_types == other.text_metadata_types

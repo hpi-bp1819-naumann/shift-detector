@@ -4,6 +4,7 @@ import pandas as pd
 
 from shift_detector.utils.ColumnManagement import is_categorical, split_dataframes, ColumnType
 from shift_detector.utils.DataIO import shared_column_names
+from shift_detector.utils.UCBlist import block, blocks
 
 
 class TestUtils(unittest.TestCase):
@@ -57,3 +58,12 @@ class TestUtils(unittest.TestCase):
         self.assertListEqual(list(categorical_columns), list(['brand']))
         self.assertListEqual(list(all_categorical_columns), list(['brand', 'payment']))
         self.assertListEqual(list(text_columns), list(['description']))
+
+    def test_ucblist_block_function(self):
+        self.assertEqual('Basic Latin', block('L'))
+        self.assertEqual('CJK Unified Ideographs', block('中'))
+
+    def test_ucblist_blocks_dict(self):
+        self.assertEqual(300, len(blocks))
+        self.assertEqual((0, 127, 'Basic Latin'), blocks[0])
+        self.assertEqual((1048576, 1114111, 'Supplementary Private Use Area-B'), blocks[-1])

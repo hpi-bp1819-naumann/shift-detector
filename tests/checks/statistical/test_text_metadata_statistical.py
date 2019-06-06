@@ -193,8 +193,7 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
         df1 = pd.DataFrame.from_dict({'text': ['This is a very important text. It contains information.']})
         df2 = pd.DataFrame.from_dict({'text': ['This is a very important text. It contains information.']})
         detector = Detector(df1=df1, df2=df2)
-        detector.add_checks(TextMetadataStatisticalCheck())
-        detector.run()
+        detector.run(TextMetadataStatisticalCheck())
         column_index = pd.MultiIndex.from_product([['text'], ['distinct_words', 'num_chars', 'num_words']],
                                                   names=['column', 'metadata'])
         solution = pd.DataFrame([[1.0, 1.0, 1.0]], columns=column_index, index=['pvalue'])

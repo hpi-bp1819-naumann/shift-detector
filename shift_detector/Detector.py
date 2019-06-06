@@ -1,4 +1,5 @@
 import logging as logger
+from collections import defaultdict
 from typing import List, Union
 
 import pandas as pd
@@ -36,48 +37,58 @@ class Detector:
         else:
             raise Exception("df2 is not a dataframe or a string")
 
-        self.checks_to_run = []
         self.check_reports = []
         self.store = Store(self.df1, self.df2)
 
-        logger.info("Used columns: {}".format(' '.join(column_names(self.store.columns))))
+        logger.info("Used columns: {}".format(', '.join(column_names(self.store.columns))))
 
-    def add_checks(self, checks):
+    def run(self, *checks):
         """
-        Add checks to the detector
+        Run the Detector with the checks to run.
+        :param checks: checks to run
+        """
+        if not checks:
+            raise Exception("Please include checks)")
 
-        :param checks: single or list of Checks
-        """
-        if isinstance(checks, Check):
-            checks_to_run = [checks]
-        elif isinstance(checks, list) and all(isinstance(check, Check) for check in checks):
-            checks_to_run = checks
-        else:
-            raise Exception("All elements in checks should be a Check")
-        self.checks_to_run += checks_to_run
+        if not all(isinstance(check, Check) for check in checks):
+            class_names = map(lambda c: c.__class__.__name__, checks)
+            raise Exception("All elements in checks should be a Check. Received: {}".format(', '.join(class_names)))
 
-    def run_checks(self) -> List[Report]:
-        """
-        Execute the checks to run.
-
-        :return: list of Reports that resulted from the checks
-        """
-        return [check.run(self.store) for check in self.checks_to_run]
-
-    def run(self):
-        """
-        Run the Detector.
-        """
-        if not self.checks_to_run:
-            raise Exception("Please use the method add_checks to add checks, "
-                            "that should be executed, before calling run()")
-
-        self.check_reports = self.run_checks()
+        self.check_reports = [check.run(self.store) for check in checks]
 
     def evaluate(self):
         """
         Evaluate the reports.
         """
-        print("EVALUATION")
+        print("OVERVIEW")
+        detected = defaultdict(int)
+        examined = defaultdict(int)
+
+        for report in self.check_reports:
+            for shifted_column in report.shifted_columns:
+                detected[shifted_column] += 1
+            for examined_column in report.examined_columns:
+                examined[examined_column] += 1
+
+        def sort_key(t):
+            """
+            Sort descending with respect to number of failed checks.
+            If two checks have the same number of failed, sort ascending
+            with respect to the number of number of executed checks.
+            """
+            _, num_detected, num_examined = t
+
+            return -num_detected, num_examined
+
+        sorted_summary = sorted(((col, detected[col], examined[col]) for col in examined), key=sort_key)
+
+        df_summary = pd.DataFrame(sorted_summary, columns=['Column', '# Checks Failed', '# Checks Executed'])
+        print(df_summary, '\n')
+
+        print("DETAILS")
         for report in self.check_reports:
             print(report)
+            '''
+            for fig in report.figures:
+                fig()
+            '''

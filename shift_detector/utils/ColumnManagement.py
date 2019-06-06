@@ -20,15 +20,19 @@ def is_categorical(col: pd.Series,
     a column is considered categorical (as opposed to a plain text column)
     if the relative cardinality is max_unique_fraction or less.
     :param col: pandas Series containing strings
-    :param n_samples: number of samples used for heuristic (default: 100)
+    :param n_samples: maximum sample size used for heuristic (default: 100) if series is shorter all values are used
     :param max_unique_fraction: maximum relative cardinality.
     :return: True if the column is categorical according to the heuristic
     """
 
-    n_samples = n_samples if len(col) >= n_samples else len(col)
-    sample = col.sample(n=n_samples).unique()
+    if len(col) >= n_samples:
+        sample = col.sample(n=n_samples)
+        unique_fraction = sample.unique().shape[0] / n_samples
+    else:
+        sample = col
+        unique_fraction = sample.unique().shape[0] / sample.shape[0]
 
-    return sample.shape[0] / n_samples <= max_unique_fraction
+    return unique_fraction <= max_unique_fraction
 
 
 def column_names(columns) -> List[str]:
@@ -54,20 +58,20 @@ def split_dataframes(df1: pd.DataFrame, df2: pd.DataFrame, columns: List) -> Dic
     }
     """
     numerical_columns = [c for c in columns if is_numeric_dtype(df1[c])
-                       and is_numeric_dtype(df2[c])]
-    logger.info("Assuming numerical columns: {}".format(", ".join(column_names(numerical_columns))))
-    remaining_columns = list(set(columns) - set(numerical_columns))
+                         and is_numeric_dtype(df2[c])]
+    logger.info("Detected numerical columns: {}".format(", ".join(column_names(numerical_columns))))
+    non_numerical = list(set(columns) - set(numerical_columns))
 
-    categorical_columns = [c for c in remaining_columns if is_categorical(df1[c]) and is_categorical(df2[c])]
-    logger.info("Assuming categorical columns: {}".format(", ".join(column_names(categorical_columns))))
+    categorical_columns = [c for c in non_numerical if is_categorical(df1[c]) and is_categorical(df2[c])]
+    logger.info("Detected categorical columns: {}".format(", ".join(column_names(categorical_columns))))
 
     numeric_categorical_columns = [c for c in numerical_columns if is_categorical(df1[c]) and is_categorical(df2[c])]
 
     all_categorical_columns = categorical_columns.copy()
     all_categorical_columns.extend(numeric_categorical_columns)
 
-    text_columns = list(set(columns) - set(numerical_columns) - set(categorical_columns))
-    logger.info("Assuming text columns: {}".format(", ".join(column_names(text_columns))))
+    text_columns = list(set(non_numerical) - set(categorical_columns))
+    logger.info("Detected text columns: {}".format(", ".join(column_names(text_columns))))
 
     return {
         ColumnType.numerical: (df1[numerical_columns], df2[numerical_columns]),
