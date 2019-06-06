@@ -43,7 +43,7 @@ class TestCreateDetector(unittest.TestCase):
 class TestDetector(unittest.TestCase):
 
     def setUp(self):
-        sales = {'brand': ['Jones LLC']}
+        sales = {'brand': ['Jones LLC'] * 10}
         self.df1 = pd.DataFrame.from_dict(sales)
         self.df2 = self.df1
 

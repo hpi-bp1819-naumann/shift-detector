@@ -9,50 +9,102 @@ from shift_detector.precalculations.Store import Store
 from shift_detector.precalculations.TextMetadata import *
 
 
-class TestTextMetadataPreprocessors(unittest.TestCase):
+class TestTextMetadataPrecalculations(unittest.TestCase):
 
     def setUp(self):
         poems = [
             'Tell me not, in mournful numbers,\nLife is but an empty dream!\nFor the soul is dead that slumbers,\nAnd things are not what they seem.',
-            'Life is real! Life is earnest!\nAnd the grave is not its goal;\nDust thou art, to dust returnest,\nWas not spoken of the soul.'
-        ]
-        phrases = [
-            'Front-line leading edge website',
-            'Upgradable upward-trending software'
-        ]
+            'Life is real! Life is earnest!\nAnd the grave is not its goal;\nDust thou art, to dust returnest,\nWas not spoken of the soul.',
+            'Not enjoyment, and not sorrow,\nIs our destined end or way;\nBut to act, that each tomorrow\nFind us farther than today.',
+            'So, gilded by the glow of youth,\nOur varied life looks fair and gay;\nAnd so remains the naked truth,\nWhen that false light is past away.',
+            'Fond dreamer! little does she know\nThe anxious toil, the suffering,\nThe blasted hopes, the burning woe,\nThe object of her joy will bring.',
+            'Trust no Future, howe’er pleasant!\nLet the dead Past bury its dead!\nAct,— act in the living Present!\nHeart within, and God o’erhead! ',
+            'They do not see how cruel Death\nComes on, their loving hearts to part:\nOne feels not now the gasping breath,\nThe rending of the earth-bound heart, --',
+            "Rapidly, merrily,\nLife's sunny hours flit by,\nGratefully, cheerily,\nEnjoy them as they fly !",
+            "It has neither a beginning nor an end\nYou can never predict where it will bend.",
+            'Life is a teacher, it will show you the way\nBut unless you live it...it will run away.']
+        phrases = ['Front-line leading edge website',
+                   'Upgradable upward-trending software',
+                   'Virtual tangible throughput',
+                   'Robust secondary open system',
+                   'Devolved multimedia knowledge user',
+                   'Self-enabling next generation capability',
+                   'Automated 3rd generation benchmark',
+                   'Switchable global info-mediaries',
+                   'Automated 24/7 alliance',
+                   'Robust logistical function']
         df1 = pd.DataFrame.from_dict({'text': poems})
         df2 = pd.DataFrame.from_dict({'text': phrases})
         self.store = Store(df1, df2)
 
     def test_tokenize_into_words(self):
         md1, md2 = TokenizeIntoWords().process(self.store)
-        sol1_1 = ['Tell', 'me', 'not', 'in', 'mournful', 'numbers', 'Life', 'is', 'but', 'an', 'empty', 'dream', 'For', 'the', 'soul', 'is', 'dead', 'that', 'slumbers', 'And', 'things', 'are', 'not', 'what', 'they', 'seem']
-        sol1_2 = ['Life', 'is', 'real', 'Life', 'is', 'earnest', 'And', 'the', 'grave', 'is', 'not', 'its', 'goal', 'Dust', 'thou', 'art', 'to', 'dust', 'returnest', 'Was', 'not', 'spoken', 'of', 'the', 'soul']
-        sol2_1 = ['Front', 'line', 'leading', 'edge', 'website']
-        sol2_2 = ['Upgradable', 'upward', 'trending', 'software']
-        solution1 = pd.DataFrame([[sol1_1], [sol1_2]], columns=['text'])
-        solution2 = pd.DataFrame([[sol2_1], [sol2_2]], columns=['text'])
+        sol1_words = [
+            [['Tell', 'me', 'not', 'in', 'mournful', 'numbers', 'Life', 'is', 'but', 'an', 'empty', 'dream', 'For',
+              'the', 'soul', 'is', 'dead', 'that', 'slumbers', 'And', 'things', 'are', 'not', 'what', 'they', 'seem']],
+            [['Life', 'is', 'real', 'Life', 'is', 'earnest', 'And', 'the', 'grave', 'is', 'not', 'its', 'goal', 'Dust',
+              'thou', 'art', 'to', 'dust', 'returnest', 'Was', 'not', 'spoken', 'of', 'the', 'soul']],
+            [['Not', 'enjoyment', 'and', 'not', 'sorrow', 'Is', 'our', 'destined', 'end', 'or', 'way', 'But', 'to',
+              'act', 'that', 'each', 'tomorrow', 'Find', 'us', 'farther', 'than', 'today']],
+            [['So', 'gilded', 'by', 'the', 'glow', 'of', 'youth', 'Our', 'varied', 'life', 'looks', 'fair',
+                        'and', 'gay', 'And', 'so', 'remains', 'the', 'naked', 'truth', 'When', 'that', 'false', 'light',
+                        'is', 'past', 'away']],
+            [['Fond', 'dreamer', 'little', 'does', 'she', 'know', 'The', 'anxious', 'toil', 'the',
+                        'suffering', 'The', 'blasted', 'hopes', 'the', 'burning', 'woe', 'The', 'object', 'of', 'her',
+                        'joy', 'will', 'bring']],
+            [['Trust', 'no', 'Future', 'howeer', 'pleasant', 'Let', 'the', 'dead', 'Past', 'bury', 'its',
+                        'dead', 'Act', 'act', 'in', 'the', 'living', 'Present', 'Heart', 'within', 'and', 'God',
+                        'oerhead']],
+            [['They', 'do', 'not', 'see', 'how', 'cruel', 'Death', 'Comes', 'on', 'their', 'loving', 'hearts',
+                        'to', 'part', 'One', 'feels', 'not', 'now', 'the', 'gasping', 'breath', 'The', 'rending', 'of',
+                        'the', 'earth', 'bound', 'heart']],
+            [['Rapidly', 'merrily', "Life's", 'sunny', 'hours', 'flit', 'by', 'Gratefully', 'cheerily',
+                        'Enjoy', 'them', 'as', 'they', 'fly']],
+            [['It', 'has', 'neither', 'a', 'beginning', 'nor', 'an', 'end', 'You', 'can', 'never', 'predict',
+                        'where', 'it', 'will', 'bend']],
+            [['Life', 'is', 'a', 'teacher', 'it', 'will', 'show', 'you', 'the', 'way', 'But', 'unless', 'you',
+                        'live', 'itit', 'will', 'run', 'away']]
+        ]
+        sol2_words = [
+            [['Front', 'line', 'leading', 'edge', 'website']],
+            [['Upgradable', 'upward', 'trending', 'software']],
+            [['Virtual', 'tangible', 'throughput']],
+            [['Robust', 'secondary', 'open', 'system']],
+            [['Devolved', 'multimedia', 'knowledge', 'user']],
+            [['Self', 'enabling', 'next', 'generation', 'capability']],
+            [['Automated', '3rd', 'generation', 'benchmark']],
+            [['Switchable', 'global', 'info', 'mediaries']],
+            [['Automated', '247', 'alliance']],
+            [['Robust', 'logistical', 'function']]
+        ]
+        solution1 = pd.DataFrame(sol1_words, columns=['text'])
+        solution2 = pd.DataFrame(sol2_words, columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
     def test_num_chars(self):
         md1, md2 = NumCharsMetadata().process(self.store)
-        solution1 = pd.DataFrame([132, 123], columns=['text'])
-        solution2 = pd.DataFrame([31, 35], columns=['text'])
+        solution1 = pd.DataFrame([132, 123, 117, 136, 137, 133, 149, 92, 79, 86], columns=['text'])
+        solution2 = pd.DataFrame([31, 35, 27, 28, 34, 40, 34, 32, 23, 26], columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
     def test_ratio_upper(self):
         md1, md2 = RatioUppercaseLettersMetadata().process(self.store)
-        solution1 = pd.DataFrame([0.0392156, 0.0537634], columns=['text'])
-        solution2 = pd.DataFrame([0.0370370, 0.03125], columns=['text'])
+        solution1 = pd.DataFrame([0.0392156, 0.0537634, 0.0439560, 0.0380952, 0.0370370, 0.08, 0.0434782, 0.0563380, 0.0317460, 0.03125], columns=['text'])
+        solution2 = pd.DataFrame([0.0370370, 0.03125, 0.04, 0.04, 0.0322580, 0.0277777, 0.0333333, 0.0344827, 0.0588235, 0.0416666], columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
     def test_unicode_categories(self):
         md1, md2 = UnicodeCategoriesMetadata().process(self.store)
-        solution1 = pd.DataFrame(['Ll, Zs, Po, Lu, Cc', 'Ll, Zs, Po, Lu, Cc'], columns=['text'])
-        solution2 = pd.DataFrame(['Ll, Zs, Lu, Pd', 'Ll, Zs, Lu, Pd'], columns=['text'])
+        solution1 = pd.DataFrame(['Ll, Zs, Po, Lu, Cc', 'Ll, Zs, Po, Lu, Cc', 'Ll, Zs, Po, Lu, Cc',
+                                  'Ll, Zs, Po, Lu, Cc', 'Ll, Zs, Po, Lu, Cc', 'Ll, Zs, Lu, Po, Cc, Pf, Pd',
+                                  'Ll, Zs, Lu, Po, Cc, Pd', 'Ll, Zs, Po, Lu, Cc', 'Ll, Zs, Lu, Cc, Po',
+                                  'Ll, Zs, Po, Lu, Cc'], columns=['text'])
+        solution2 = pd.DataFrame(['Ll, Zs, Lu, Pd', 'Ll, Zs, Lu, Pd', 'Ll, Zs, Lu', 'Ll, Zs, Lu', 'Ll, Zs, Lu',
+                                  'Ll, Zs, Lu, Pd', 'Ll, Zs, Lu, Nd', 'Ll, Zs, Lu, Pd', 'Ll, Nd, Zs, Lu, Po',
+                                  'Ll, Zs, Lu'], columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
@@ -60,64 +112,66 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
         md1, md2 = UnicodeBlocksMetadata().process(self.store)
         solution1 = pd.DataFrame([23, 22], columns=['text'])
         solution2 = pd.DataFrame([5, 4], columns=['text'])
-        solution1 = pd.DataFrame(['Basic Latin', 'Basic Latin'], columns=['text'])
-        solution2 = pd.DataFrame(['Basic Latin', 'Basic Latin'], columns=['text'])
+        solution1 = pd.DataFrame(['Basic Latin', 'Basic Latin', 'Basic Latin', 'Basic Latin', 'Basic Latin',
+                                  'Basic Latin, General Punctuation', 'Basic Latin', 'Basic Latin', 'Basic Latin',
+                                  'Basic Latin'], columns=['text'])
+        solution2 = pd.DataFrame(['Basic Latin'] * 10, columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
     def test_num_words(self):
         md1, md2 = NumWordsMetadata().process(self.store)
-        solution1 = pd.DataFrame([26, 25], columns=['text'])
-        solution2 = pd.DataFrame([5, 4], columns=['text'])
+        solution1 = pd.DataFrame([26, 25, 22, 27, 24, 23, 28, 14, 16, 18], columns=['text'])
+        solution2 = pd.DataFrame([5, 4, 3, 4, 4, 5, 4, 4, 3, 3], columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
     def test_distinct_words(self):
         md1, md2 = DistinctWordsRatioMetadata().process(self.store)
-        solution1 = pd.DataFrame([24/26, 20/25], columns=['text'])
-        solution2 = pd.DataFrame([1.0, 1.0], columns=['text'])
+        solution1 = pd.DataFrame([24/26, 20/25, 22/22, 26/27, 21/24, 21/23, 26/28, 14/14, 16/16, 16/18], columns=['text'])
+        solution2 = pd.DataFrame([1.0] * 10, columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
     def test_unique_words(self):
         md1, md2 = UniqueWordsRatioMetadata().process(self.store)
-        solution1 = pd.DataFrame([22/26, 16/25], columns=['text'])
-        solution2 = pd.DataFrame([1.0, 1.0], columns=['text'])
+        solution1 = pd.DataFrame([22/26, 16/25, 22/22, 25/27, 19/24, 19/23, 24/28, 14/14, 16/16, 14/18], columns=['text'])
+        solution2 = pd.DataFrame([1.0] * 10, columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
     def test_unknown_ratio(self):
         md1, md2 = UnknownWordRatioMetadata().process(self.store)
-        solution1 = pd.DataFrame([0.0, 0.04], columns=['text'])
-        solution2 = pd.DataFrame([0.2, 0.0], columns=['text'])
+        solution1 = pd.DataFrame([0.0, 0.04, 0.0, 0.0, 0.0, 0.0869565, 0.0, 0.0714285, 0.0, 0.0555555], columns=['text'])
+        solution2 = pd.DataFrame([0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.25, 0.0, 0.0], columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
     def test_stopword_ratio(self):
         md1, md2 = StopwordRatioMetadata().process(self.store)
-        solution1 = pd.DataFrame([0.576923, 0.48], columns=['text'])
-        solution2 = pd.DataFrame([0.0, 0.0], columns=['text'])
+        solution1 = pd.DataFrame([0.576923, 0.48, 0.5, 0.4444444, 0.4166666, 0.2608695, 0.4642857, 0.2857142, 0.625, 0.5], columns=['text'])
+        solution2 = pd.DataFrame([0.0] * 10, columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
     def test_delimiter_type(self):
         md1, md2 = DelimiterTypeMetadata().process(self.store)
-        solution1 = pd.DataFrame(['newline', 'newline'], columns=['text'])
-        solution2 = pd.DataFrame(['whitespace', 'whitespace'], columns=['text'])
+        solution1 = pd.DataFrame(['newline'] * 10, columns=['text'])
+        solution2 = pd.DataFrame(['whitespace'] * 10, columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
     def test_num_parts(self):
         md1, md2 = NumPartsMetadata().process(self.store)
-        solution1 = pd.DataFrame([4, 4], columns=['text'])
-        solution2 = pd.DataFrame([4, 3], columns=['text'])
+        solution1 = pd.DataFrame([4, 4, 4, 4, 4, 4, 4, 4, 2, 2], columns=['text'])
+        solution2 = pd.DataFrame([4, 3, 3, 4, 4, 4, 4, 3, 3, 3], columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
     def test_language(self):
         md1, md2 = LanguagePerParagraph().process(self.store)
-        solution1 = pd.DataFrame(['en', 'en'], columns=['text'])
-        solution2 = pd.DataFrame(['en', 'en'], columns=['text'])
+        solution1 = pd.DataFrame(['en'] * 10, columns=['text'])
+        solution2 = pd.DataFrame(['en'] * 10, columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
@@ -129,17 +183,19 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
     #    assert_frame_equal(solution1, md1)
     #    assert_frame_equal(solution2, md2)
 
-    def test_metadata_preprocessor(self):
+    def test_metadata_precalculation(self):
         md1, md2 = self.store[TextMetadata(text_metadata_types=[NumWordsMetadata(), StopwordRatioMetadata(), UnicodeBlocksMetadata()])]
         index = pd.MultiIndex.from_product([['text'], ['num_words', 'stopword_ratio', 'unicode_blocks']], names=['column', 'metadata'])
         solution1 = pd.DataFrame(columns=index)
         solution2 = pd.DataFrame(columns=index)
-        solution1[('text', 'num_words')] = [26, 25]
-        solution2[('text', 'num_words')] = [5, 4]
-        solution1[('text', 'stopword_ratio')] = [0.576923, 0.480000]
-        solution2[('text', 'stopword_ratio')] = [0.000000, 0.000000]
-        solution1[('text', 'unicode_blocks')] = ['Basic Latin', 'Basic Latin']
-        solution2[('text', 'unicode_blocks')] = ['Basic Latin', 'Basic Latin']
+        solution1[('text', 'num_words')] = [26, 25, 22, 27, 24, 23, 28, 14, 16, 18]
+        solution2[('text', 'num_words')] = [5, 4, 3, 4, 4, 5, 4, 4, 3, 3]
+        solution1[('text', 'stopword_ratio')] = [0.576923, 0.48, 0.5, 0.4444444, 0.4166666, 0.2608695, 0.4642857, 0.2857142, 0.625, 0.5]
+        solution2[('text', 'stopword_ratio')] = [0.0] * 10
+        solution1[('text', 'unicode_blocks')] = ['Basic Latin', 'Basic Latin', 'Basic Latin', 'Basic Latin',
+                                                 'Basic Latin', 'Basic Latin, General Punctuation', 'Basic Latin',
+                                                 'Basic Latin', 'Basic Latin', 'Basic Latin']
+        solution2[('text', 'unicode_blocks')] = ['Basic Latin'] * 10
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
