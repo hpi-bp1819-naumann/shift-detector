@@ -332,14 +332,16 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertRaises(LangDetectException, language, text=empty)
 
     def test_complexity(self):
-        easy = "This is easy. This is a sentence. This has a big number."
-        hard = "Quantum mechanics (QM; also known as quantum physics, quantum theory, the wave mechanical model, or matrix mechanics), including quantum field theory, is a fundamental theory in physics which describes nature at the smallest scales of energy levels of atoms and subatomic particles."
+        easy = "This is easy. This is a sentence. This has a small number."
+        #hard = "Quantum mechanics (QM; also known as quantum physics, quantum theory, the wave mechanical model, or matrix mechanics), including quantum field theory, is a fundamental theory in physics which describes nature at the smallest scales of energy levels of atoms and subatomic particles."
         punctuation = " . ,"
         empty = ""
+        german = "Dies ist ein einfacher Satz."
         text_complexity = ComplexityMetadata().metadata_function
-        self.assertEqual(text_complexity(empty), 0.0)
-        self.assertEqual(text_complexity(punctuation), 0.0)
-        self.assertEqual(text_complexity(easy), text_complexity(easy))
+        self.assertEqual(text_complexity('en', empty), 0.0)
+        self.assertEqual(text_complexity('en', punctuation), 0.0)
+        self.assertEqual(text_complexity('en', easy), text_complexity('en', easy))
+        self.assertRaises(ValueError, text_complexity, language='de', text=german)
         #Works in Travis for Python 3.6 but not for 3.5. 3.5 seems to not support the complexity metric.
         #self.assertGreater(text_complexity(hard), text_complexity(easy)) 
 
@@ -347,7 +349,9 @@ class TestTextMetadataFunctions(unittest.TestCase):
         normal = 'This is a test.'
         punctuation = " . ,"
         empty = ''
+        german = "Dies ist ein einfacher Satz."
         pos_tags = PartOfSpeechMetadata().metadata_function
-        self.assertEqual('DET, ., NOUN, VERB', pos_tags(normal))
-        self.assertEqual('.', pos_tags(punctuation))
-        self.assertEqual('', pos_tags(empty))
+        self.assertEqual('DET, ., NOUN, VERB', pos_tags('en', normal))
+        self.assertEqual('.', pos_tags('en', punctuation))
+        self.assertEqual('', pos_tags('en', empty))
+        self.assertRaises(ValueError, pos_tags, language='de', text=german)

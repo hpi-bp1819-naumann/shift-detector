@@ -122,6 +122,47 @@ class GenericTextMetadataWithTokenizingAndLanguage(GenericTextMetadata):
         return metadata1, metadata2
 
 
+class GenericTextMetadataWithLanguage(GenericTextMetadata):
+
+    def __init__(self, language='en', infer_language=False):
+        self.language = language
+        self.infer_language = infer_language
+
+    @staticmethod
+    @abstractmethod
+    def metadata_name() -> str:
+        pass
+
+    @abstractmethod
+    def metadata_return_type(self) -> ColumnType:
+        pass
+
+    @abstractmethod
+    def metadata_function(self, language, text):
+        pass
+
+    def process(self, store):
+        metadata1 = pd.DataFrame()
+        metadata2 = pd.DataFrame()
+        df1, df2 = store[ColumnType.text]
+        if self.infer_language:
+            lang1, lang2 = store[LanguageMetadata()]
+        for column in df1.columns:
+            logger.info(self.metadata_name() + ' analysis for ' + column)
+            temp_column1 = []
+            temp_column2 = []
+            for i in range(len(df1)):
+                if self.infer_language:
+                    temp_column1.append(self.metadata_function(lang1[column][i], df1[column][i]))
+                    temp_column2.append(self.metadata_function(lang2[column][i], df2[column][i]))
+                else:
+                    temp_column1.append(self.metadata_function(self.language, df1[column][i]))
+                    temp_column2.append(self.metadata_function(self.language, df2[column][i]))
+            metadata1[column] = temp_column1
+            metadata2[column] = temp_column2
+        return metadata1, metadata2
+
+
 class TokenizeIntoWords(Precalculation):
 
     def __eq__(self, other):
@@ -414,7 +455,7 @@ class LanguageMetadata(GenericTextMetadata):
         return detect(text)
 
 
-class ComplexityMetadata(GenericTextMetadata):
+class ComplexityMetadata(GenericTextMetadataWithLanguage):
 
     @staticmethod
     def metadata_name() -> str:
@@ -423,12 +464,16 @@ class ComplexityMetadata(GenericTextMetadata):
     def metadata_return_type(self) -> ColumnType:
         return ColumnType.numerical
 
-    def metadata_function(self, text):
-        # works best for longer english texts. kinda works for other languages as well (not good though)
-        return textstat.text_standard(text, True)
+    def metadata_function(self, language, text):
+        if language == 'en':
+            return textstat.text_standard(text, True)
+        else:
+            raise ValueError('The language ' +
+                             languages.get(part1=self.language).name.lower() +
+                             ' is not supported by ComplexityMetadata')
 
 
-class PartOfSpeechMetadata(GenericTextMetadata):
+class PartOfSpeechMetadata(GenericTextMetadataWithLanguage):
 
     @staticmethod
     def metadata_name() -> str:
@@ -447,9 +492,13 @@ class PartOfSpeechMetadata(GenericTextMetadata):
             tagdict[word[1]] += 1
         return tagdict
 
-    def metadata_function(self, text):
-        # works only for english texts.
-        return dictionary_to_sorted_string(self.tag_histogram(text))
+    def metadata_function(self, language, text):
+        if language == 'en':
+            return dictionary_to_sorted_string(self.tag_histogram(text))
+        else:
+            raise ValueError('The language ' +
+                             languages.get(part1=self.language).name.lower() +
+                             ' is not supported by PartOfSpeechMetadata')
 
 
 class TextMetadata(Precalculation):
