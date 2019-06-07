@@ -9,9 +9,10 @@ from shift_detector.precalculations.Store import Store, ColumnType
 
 class TextEmbeddingPrecalculation(Precalculation):
 
-    def __init__(self, model=None, trained_model=None):
+    def __init__(self, model=None, trained_model=None, agg=None):
         self.model = None
         self.trained_model = None
+        self.agg = agg
 
         if trained_model:
             self.trained_model = trained_model
@@ -49,7 +50,12 @@ class TextEmbeddingPrecalculation(Precalculation):
         return hash(tuple([self.model.__class__] + sorted(model_attributes)))
 
     def process_cell(self, cell):
-        ser = np.sum([self.trained_model.wv[word] for word in cell.lower().split()], axis=0)
+        ser = [self.trained_model.wv[word] for word in cell.lower().split()]
+
+        if self.agg == 'sum':
+            ser = np.sum(ser, axis=0)
+        elif self.agg == 'avg':
+            ser = np.mean(ser, axis=0)
 
         # return vector of zeros when cell was empty
         if type(ser) == np.float64:

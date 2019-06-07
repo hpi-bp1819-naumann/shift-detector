@@ -16,11 +16,11 @@ class TestTextEmbeddingPrecalculation(unittest.TestCase):
                                           'vw ', 'xy ', 'z1 ', '23 ', '45 ', '67 ', '89 ']})
         self.store = Store(df1, df2)
         ft1 = FastText(size=50, window=5, min_count=1, workers=4)
-        self.te1 = TextEmbeddingPrecalculation(model='word2vec')
-        self.te2 = TextEmbeddingPrecalculation(model='word2vec')
-        self.te3 = TextEmbeddingPrecalculation(model='fasttext')
-        self.te4 = TextEmbeddingPrecalculation(trained_model=ft1)
-        self.te5 = TextEmbeddingPrecalculation(trained_model=ft1)
+        self.te1 = TextEmbeddingPrecalculation(model='word2vec', agg='sum')
+        self.te2 = TextEmbeddingPrecalculation(model='word2vec', agg='sum')
+        self.te3 = TextEmbeddingPrecalculation(model='fasttext', agg='sum')
+        self.te4 = TextEmbeddingPrecalculation(trained_model=ft1, agg='sum')
+        self.te5 = TextEmbeddingPrecalculation(trained_model=ft1, agg='sum')
 
     def test_eq(self):
         self.assertEqual(self.te1, self.te2)
