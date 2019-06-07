@@ -2,6 +2,7 @@ import os
 from typing import Tuple, List
 
 import numpy as np
+from gensim.models import FastText
 from keras.callbacks import ModelCheckpoint, EarlyStopping, Callback
 from keras.layers import Dense
 from keras.layers import LSTM
@@ -99,7 +100,7 @@ class WordPredictionPrecalculation(Precalculation):
         return features, labels
 
     def create_callbacks(self):
-        callbacks: List[Callback] = []
+        callbacks = []
         callbacks += [ModelCheckpoint('model_checkpoints/model.h5', verbose=self.verbose,
                                       monitor='loss', save_best_only=True, mode='auto')]
         callbacks += [EarlyStopping(monitor='loss', patience=3, verbose=self.verbose,
