@@ -2,13 +2,13 @@ import pandas as pd
 from numbers import Number
 from sklearn.decomposition import LatentDirichletAllocation as LDA_skl
 from sklearn.feature_extraction.text import *
-from gensim.sklearn_api import LdaTransformer
-from gensim.corpora import Dictionary
+#from gensim.sklearn_api import LdaTransformer
+#from gensim.corpora import Dictionary
 import lda
 from copy import copy
 from shift_detector.precalculations.Precalculation import Precalculation
 from shift_detector.precalculations.CountVectorizer import CountVectorizer
-from shift_detector.precalculations.WordTokenizer import WordTokenizer
+#from shift_detector.precalculations.WordTokenizer import WordTokenizer
 
 from shift_detector.Utils import ColumnType
 
@@ -29,9 +29,9 @@ class LdaEmbedding(Precalculation):
             self.trained_model = trained_model
         elif lib == 'sklearn':
             self.model = LDA_skl(n_components=self.n_topics, max_iter=self.n_iter, random_state=self.random_state)
-        elif lib == 'gensim':
-            self.model = \
-                LdaTransformer(num_topics=self.n_topics, iterations=self.n_iter, random_state=self.random_state)
+        #elif lib == 'gensim':
+         #   self.model = \
+          #      LdaTransformer(num_topics=self.n_topics, iterations=self.n_iter, random_state=self.random_state)
         elif lib == 'lda':
             self.model = lda.LDA(n_topics=self.n_topics, n_iter=self.n_iter, random_state=self.random_state)
             # n_iter is only the amount of sample iterations, so it can be much higher than the iterations parameter of
@@ -70,6 +70,7 @@ class LdaEmbedding(Precalculation):
         inferred_vec1 = {}
         inferred_vec2 = {}
 
+        '''
         if self.lib == 'gensim':
             tokenized1, tokenized2 = store[WordTokenizer()]
 
@@ -94,16 +95,16 @@ class LdaEmbedding(Precalculation):
                 transformed2[col] = self.trained_model.transform(corpus2)
 
         else:
-            vectorized_train, vectorized_test = store[CountVectorizer()]
-            vectorized_merged = pd.concat([vectorized_train, vectorized_test], ignore_index=True)
+        '''
 
-            for col in col_names:
+        vectorized_train, vectorized_test = store[CountVectorizer()]
+        vectorized_merged = pd.concat([vectorized_train, vectorized_test], ignore_index=True)
 
-                if not self.trained_model:
-                    model = copy(self.model)
-                    model = model.fit(vectorized_merged[col])
-                    self.trained_model = model
-
+        for col in col_names:
+            if not self.trained_model:
+                model = copy(self.model)
+                model = model.fit(vectorized_merged[col])
+                self.trained_model = model
             transformed1[col] = self.trained_model.transform(vectorized_train[col])
             transformed2[col] = self.trained_model.transform(vectorized_test[col])
 
