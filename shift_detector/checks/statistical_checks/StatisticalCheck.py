@@ -96,7 +96,8 @@ class SimpleStatisticalCheck(StatisticalCheck):
         for column in df1.columns:
             p = self.statistical_test(part1[column], part2[column])
             pvalues[column] = [p]
-        return Report(examined_columns=list(df1.columns),
+        return Report("Statistical Check",
+                      examined_columns=list(df1.columns),
                       shifted_columns=self.significant_columns(pvalues),
                       explanation=self.explain(pvalues),
                       information={'test_results': pvalues})

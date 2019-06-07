@@ -88,7 +88,5 @@ class Detector:
         print("DETAILS")
         for report in self.check_reports:
             print(report)
-            '''
             for fig in report.figures:
                 fig()
-            '''
