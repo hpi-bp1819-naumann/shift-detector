@@ -18,9 +18,10 @@ class TestCreateDetector(TestCase):
 
     def test_init(self):
         with self.subTest("Test wrong columns"):
-            self.assertRaises(Exception, lambda: DistinctionPrecalculation(['shift', 0]))
+            self.assertRaises(TypeError, lambda: DistinctionPrecalculation(['shift', 0]))
 
         with self.subTest("Test wrong num epochs"):
+            self.assertRaises(Exception, lambda: DistinctionPrecalculation(columns=['shift'], num_epochs='wrong'))
             self.assertRaises(Exception, lambda: DistinctionPrecalculation(columns=['shift'], num_epochs=0))
 
     def test_process(self):

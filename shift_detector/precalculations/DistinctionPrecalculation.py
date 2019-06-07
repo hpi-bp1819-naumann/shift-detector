@@ -18,11 +18,15 @@ class DistinctionPrecalculation(Precalculation):
         if not isinstance(columns, Iterable) \
                 or any(not isinstance(column, str) for column in columns) \
                 or len(columns) < 1:
-            raise Exception("columns should be a list of strings. Received: {}".format(columns))
+            raise TypeError("columns should be a list of strings. Received: {}".format(columns))
         self.columns = columns
 
-        if not isinstance(num_epochs, int) or num_epochs < 1:
-            raise Exception("num_epochs should be an Integer greater than 0. Received instead:".format(num_epochs))
+        if not isinstance(num_epochs, int):
+            raise TypeError("num_epochs should be a Number. "
+                            "Received: {} ({})".format(num_epochs, num_epochs.__class__.__name__))
+        if num_epochs < 1:
+            raise ValueError("num_epochs should be greater than 0. "
+                             "Received: {}.".format(num_epochs))
         self.num_epochs = num_epochs
 
         self.output_column = '__shift_detector__dataset'
