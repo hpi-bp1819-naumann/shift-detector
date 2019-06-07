@@ -1,3 +1,8 @@
+iso-639
+nltk
+textstat
+pyspellchecker
+langdetect
 pandas
 numpy
 scipy
@@ -7,3 +12,4 @@ gensim
 sklearn
 lda
 nltk
+regex

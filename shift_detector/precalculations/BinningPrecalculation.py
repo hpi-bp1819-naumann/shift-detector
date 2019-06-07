@@ -1,9 +1,8 @@
 import pandas as pd
 from pandas import DataFrame
 
-from shift_detector.Utils import ColumnType
 from shift_detector.precalculations.Precalculation import Precalculation
-from shift_detector.Utils import is_categorical
+from shift_detector.utils.ColumnManagement import ColumnType, is_categorical
 
 
 class BinningPrecalculation(Precalculation):

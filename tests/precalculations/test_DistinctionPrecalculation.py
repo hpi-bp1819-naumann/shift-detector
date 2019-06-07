@@ -27,6 +27,17 @@ class TestCreateDetector(TestCase):
             shifted_columns = calculation['relevant_columns']
             self.assertCountEqual(shifted_columns, ['shift'])
 
+        with self.subTest("Test base accuracy"):
+            base_accuracy = calculation['base_accuracy']
+            self.assertEqual(base_accuracy, 1.)
+
+        with self.subTest("Test permuted accuracy"):
+            shift_permuted_accuracy = calculation['permuted_accuracies']['shift']
+            self.assertEqual(shift_permuted_accuracy, 0.)
+
+            no_shift_permuted_accuracy = calculation['permuted_accuracies']['no_shift']
+            self.assertEqual(no_shift_permuted_accuracy, 1.)
+
     def test_equal(self):
         with self.subTest("Test equality"):
             other_precalculation = DistinctionPrecalculation(['no_shift', 'shift'])
