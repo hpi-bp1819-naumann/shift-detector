@@ -31,7 +31,7 @@ class DistinctionCheck(Check):
         shifted_columns, explanation = self.detect_shifts(examined_columns, precalculation_result)
         information = self.information(precalculation_result)
 
-        return Report(examined_columns, shifted_columns, explanation, information)
+        return Report("Distinction Check", examined_columns, shifted_columns, explanation, information)
 
     def detect_shifts(self, examined_columns, result):
         shifted_columns = []
