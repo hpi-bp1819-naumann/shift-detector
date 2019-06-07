@@ -6,11 +6,10 @@ Distinction
 Description
 -----------
 
-This check investigates shifts between two data sets with the help of
-a machine learning.
+This check investigates shifts between two data sets with the help of machine learning.
 
 The result not only shows how good the model can distinguish the data sets.
-It also shows which columns the model looks at when trying to distinguish the data sets.
+It also shows which columns the model looks at when trying to distinguish between the data sets.
 These columns will contain a shift.
 
 Example
@@ -87,14 +86,15 @@ The above report can be read as follows:
 1. The examined columns are 'brand', 'payment', 'description'.
 2. The columns that contain a shift according to the distinction check are
    'payment' and 'description'.
-3. The accuracy when the column 'brand' was altered through our algorithm dropped
-   from 89,06% to 83,75%. Columns 'payment' and 'description' respectively.
-4. A report of the underlying machine learning. How good was it able to identify an
+3. The accuracy of the machine learning model when the column 'brand' was altered by the
+   algorithm_ dropped from 89,06% to 83,75%. The larger the difference between these two values,
+   the larger the shift in the column. Columns 'payment' and 'description' respectively.
+4. A report of the underlying machine learning model. How well was it able to identify an
    entry from the ``data_set_1``, ``data_set_2``, etc.
 
 This tells you that:
 
-1. That there is a significant shift in the two data set.
+1. There is a significant shift in the two data set.
 2. The column that is most responsible for the shift is 'description' and then
    'payment'. The column 'brand' does not fall under the threshold and is therefore
    not considered shifted.
@@ -102,7 +102,7 @@ This tells you that:
 Parameters
 ----------
 
-:ref:`distinction` provides the following parameter in order to improve
+:ref:`distinction` provides the following parameter in order to adjust
     the run time and the quality of the result:
 
 .. _columns:
@@ -123,6 +123,8 @@ Parameters
 
 Implementation
 --------------
+
+.. _algorithm:
 
 Algorithm
 +++++++++
