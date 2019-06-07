@@ -133,5 +133,4 @@ def calculate_frequent_rules(df1, df2, min_support, min_confidence, min_delta_su
                     candidate_rule.delta_confidences) >= min_delta_confidences:
                 result.append(candidate_rule)
 
-    return sorted(result, reverse=True, key=lambda r: (abs(r.delta_supports), abs(r.delta_supports_of_left_side),
-                                                       abs(r.delta_confidences)))
+    return sorted(result, reverse=True, key=lambda r: (abs(r.delta_supports), abs(r.delta_confidences)))
