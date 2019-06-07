@@ -2,6 +2,7 @@ import gensim
 from shift_detector.precalculations.Precalculation import Precalculation
 from shift_detector.Utils import ColumnType
 from nltk.corpus import stopwords as nltk_stopwords
+import re
 
 
 class WordTokenizer(Precalculation):
@@ -22,6 +23,8 @@ class WordTokenizer(Precalculation):
                         self.stopwords = set(nltk_stopwords.words(lang))
                     else:
                         self.stopwords = self.stopwords.union(set(nltk_stopwords.words(lang)))
+            else:
+                raise TypeError('The stop_words list has to contain strings only')
         else:
             raise Exception('Please enter the language for your stopwords as a string or list of strings')
     
@@ -36,16 +39,33 @@ class WordTokenizer(Precalculation):
         return hash(tuple([self.__class__] + sorted(self.stop_words)))
 
     def process(self, store):
-        train_texts, test_texts = store[ColumnType.text]
-        col_names = train_texts.columns
+        df1_texts, df2_texts = store[ColumnType.text]
+        col_names = df1_texts.columns
         processed1 = {}
         processed2 = {}
 
         for col in col_names:
-            # this may be wrong
-            processed1[col] = [[[word for word in gensim.utils.simple_preprocess(str(doc), deacc=True)
-                                if word not in self.stopwords] for doc in texts] for texts in train_texts[col]]
-            processed2[col] = [[[word for word in gensim.utils.simple_preprocess(str(doc), deacc=True)
-                                if word not in self.stopwords] for doc in texts] for texts in test_texts[col]]
+            tokenized1 = []
+            tokenized2 = []
+
+            for entry in df1_texts[col]:
+                wordlist = []
+                for word in re.sub(r"[^\w+\s]|\b[a-zA-Z]\b", ' ', entry).split():
+                    if word.lower() not in self.stop_words or '':
+                        if len(gensim.utils.simple_preprocess(word, deacc=True)) > 0:
+                            wordlist.append(gensim.utils.simple_preprocess(word, deacc=True).pop())
+                tokenized1.append(wordlist)
+
+            processed1[col] = tokenized1
+
+            for entry in df2_texts[col]:
+                wordlist = []
+                for word in re.sub(r"[^\w+\s]|\b[a-zA-Z]\b", ' ', entry).split():
+                    if word.lower() not in self.stop_words or '':
+                        if len(gensim.utils.simple_preprocess(word, deacc=True)) > 0:
+                            wordlist.append(gensim.utils.simple_preprocess(word, deacc=True).pop())
+                tokenized2.append(wordlist)
+
+            processed2[col] = tokenized2
 
         return processed1, processed2
