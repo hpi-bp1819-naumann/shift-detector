@@ -1,24 +1,36 @@
+from collections.abc import Iterable
 from typing import Tuple
 
 import numpy as np
 import pandas as pd
 from datawig import SimpleImputer
-from datawig.iterators import ImputerIterDf
+from datawig.utils import logger as datawig_logger
 from datawig.utils import random_split
+from sklearn.metrics import accuracy_score
+from sklearn.utils import shuffle
 
 from shift_detector.precalculations.Precalculation import Precalculation
-from datawig.utils import logger as datawig_logger
-from sklearn.utils import shuffle
-from sklearn.metrics import accuracy_score
 
 
 class DistinctionPrecalculation(Precalculation):
 
     def __init__(self, columns, num_epochs=10):
+        if not isinstance(columns, Iterable) \
+                or any(not isinstance(column, str) for column in columns) \
+                or len(columns) < 1:
+            raise TypeError("columns should be a list of strings. Received: {}".format(columns))
         self.columns = columns
+
+        if not isinstance(num_epochs, int):
+            raise TypeError("num_epochs should be a Number. "
+                            "Received: {} ({})".format(num_epochs, num_epochs.__class__.__name__))
+        if num_epochs < 1:
+            raise ValueError("num_epochs should be greater than 0. "
+                             "Received: {}.".format(num_epochs))
+        self.num_epochs = num_epochs
+
         self.output_column = '__shift_detector__dataset'
         self.output_path = 'tmp/basicChecks_params'
-        self.num_epochs = num_epochs
         self.imputer = None
 
         datawig_logger.setLevel("ERROR")
@@ -26,17 +38,21 @@ class DistinctionPrecalculation(Precalculation):
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
-        return set(self.columns) == set(other.columns)
+        return set(self.columns) == set(other.columns) and self.num_epochs == other.num_epochs
 
     def __hash__(self):
-        items = sorted(self.columns) + [self.__class__]
-        return hash(tuple(items))
+        hash_items = sorted(self.columns) + [self.__class__, self.num_epochs]
+        return hash(tuple(hash_items))
 
     def process(self, store):
         """
         Runs check on provided columns
         :return: result of the check
         """
+        if any(column not in store.columns for column in self.columns):
+            raise Exception("Not all defined columns are present in both data frames. "
+                            "Defined: {}. Actual: {}".format(self.columns, store.columns))
+
         self.imputer = SimpleImputer(
             input_columns=self.columns,
             output_column=self.output_column,
@@ -57,12 +73,14 @@ class DistinctionPrecalculation(Precalculation):
 
         base_accuracy, permuted_accuracies = self.calculate_permuted_accuracies(df1_train, df2_train, self.columns)
 
-        return {
+        result = {
             'y_true': y_true,
             'y_pred': y_pred,
             'base_accuracy': base_accuracy,
             'permuted_accuracies': permuted_accuracies
         }
+
+        return self.columns, result
 
     def label_dfs(self, df1: pd.DataFrame, df2: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """

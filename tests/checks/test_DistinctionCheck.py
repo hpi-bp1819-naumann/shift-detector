@@ -6,7 +6,7 @@ from shift_detector.checks.DistinctionCheck import DistinctionCheck
 from shift_detector.precalculations.Store import Store
 
 
-class TestCreateDetector(TestCase):
+class TestDistinctionCheck(TestCase):
 
     def setUp(self):
         sales1 = {'shift': ['A'] * 100, 'no_shift': ['C'] * 100}
@@ -15,6 +15,18 @@ class TestCreateDetector(TestCase):
         self.df2 = DataFrame.from_dict(sales2)
         self.store = Store(self.df1, self.df2)
         self.precalculation = DistinctionCheck()
+
+    def test_init(self):
+        with self.subTest("Test wrong columns"):
+            self.assertRaises(TypeError, lambda: DistinctionCheck(['shift', 0]))
+
+        with self.subTest("Test wrong num epochs"):
+            self.assertRaises(TypeError, lambda: DistinctionCheck(num_epochs='wrong'))
+            self.assertRaises(ValueError, lambda: DistinctionCheck(num_epochs=0))
+
+        with self.subTest("Test wrong relative threshold"):
+            self.assertRaises(TypeError, lambda: DistinctionCheck(relative_threshold='wrong'))
+            self.assertRaises(ValueError, lambda: DistinctionCheck(relative_threshold=-1))
 
     def test_run(self):
         report = self.precalculation.run(self.store)
