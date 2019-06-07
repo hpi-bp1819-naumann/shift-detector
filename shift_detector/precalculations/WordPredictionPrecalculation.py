@@ -1,9 +1,8 @@
 import os
-from typing import Tuple
+from typing import Tuple, List
 
 import numpy as np
-from gensim.models import FastText
-from keras.callbacks import ModelCheckpoint, EarlyStopping
+from keras.callbacks import ModelCheckpoint, EarlyStopping, Callback
 from keras.layers import Dense
 from keras.layers import LSTM
 from keras.models import Sequential
@@ -14,34 +13,43 @@ from shift_detector.precalculations.TextEmbeddingPrecalculation import TextEmbed
 
 class WordPredictionPrecalculation(Precalculation):
 
-    def __init__(self, ft_window_size=5, ft_size=100, lstm_window=5, num_epochs_predictor=10):
+    def __init__(self, column, ft_window_size=5, ft_size=100, lstm_window=5, num_epochs_predictor=10, verbose=1):
+        self.column = column
         self.ft_window_size = ft_window_size
         self.ft_size = ft_size
         self.lstm_window = lstm_window
         self.num_epochs_predictor = num_epochs_predictor
+        self.verbose = verbose
 
-        self.verbose = 1
+        if not isinstance(self.column, str):
+            raise ValueError('Column argument {} should be of type string. '
+                             'Received {}.'.format(self.column, type(self.column)))
+
+        if self.lstm_window < 1:
+            raise ValueError('Expected argument lstm_window to be > 0. '
+                             'Received {}.'.format(self.lstm_window))
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
-        return self.ft_window_size == other.ft_window_size \
+        return self.column == other.column \
+            and self.ft_window_size == other.ft_window_size \
             and self.ft_size == other.ft_size \
             and self.lstm_window == other.lstm_window
 
     def __hash__(self):
-        return hash((self.ft_window_size, self.ft_size, self.lstm_window))
+        return hash((self.column, self.ft_window_size, self.ft_size, self.lstm_window))
 
-    def process(self, store) -> dict:
+    def process(self, store) -> Tuple[float, float]:
         ft_model = FastText(size=self.ft_size, window=self.ft_window_size, min_count=1, workers=4)
         processed_df1, processed_df2 = store[TextEmbeddingPrecalculation(model=ft_model, agg=None)]
 
-        result = {}
-        for column in processed_df1.columns:
-            df1_prediction_loss, df2_prediction_loss = self.get_prediction_losses(processed_df1, processed_df2, column)
-            result[column] = df1_prediction_loss, df2_prediction_loss
+        if self.column not in processed_df1.columns:
+            raise ValueError('Column {} does not exist or is no textual column. '
+                             'Please pass one of [{}] instead.'.format(self.column, processed_df1.columns))
 
-        return result
+        df1_prediction_loss, df2_prediction_loss = self.get_prediction_losses(processed_df1, processed_df2, self.column)
+        return df1_prediction_loss, df2_prediction_loss
 
     def get_prediction_losses(self, processed_df1, processed_df2, column) -> Tuple[float, float]:
         processed_df1 = processed_df1[[column]]
@@ -79,23 +87,19 @@ class WordPredictionPrecalculation(Precalculation):
 
         for row in data:
             if row.shape[0] > self.lstm_window:
-                for start_idx in range(row.shape[0] - self.lstm_window - 1):
+                for start_idx in range(row.shape[0] - self.lstm_window):
                     end_idx = start_idx + self.lstm_window + 1
                     train_data += [row[start_idx:end_idx, :]]
 
         train_data = np.array(train_data)
-        print('train_data.shape: ', train_data.shape)
 
         features = train_data[:, :self.lstm_window, :]
         labels = train_data[:, self.lstm_window, :]
 
-        print(features.shape)
-        print(labels.shape)
-
         return features, labels
 
     def create_callbacks(self):
-        callbacks = []
+        callbacks: List[Callback] = []
         callbacks += [ModelCheckpoint('model_checkpoints/model.h5', verbose=self.verbose,
                                       monitor='loss', save_best_only=True, mode='auto')]
         callbacks += [EarlyStopping(monitor='loss', patience=3, verbose=self.verbose,
