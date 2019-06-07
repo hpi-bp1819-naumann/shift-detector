@@ -15,16 +15,29 @@ from shift_detector.Utils import ColumnType
 
 class LdaEmbedding(Precalculation):
 
-    def __init__(self, n_topics=20, n_iter=10, lib='sklearn', random_state=0, trained_model=None):
+    def __init__(self, n_topics=20, n_iter=10, lib='sklearn', random_state=0, cols=None, trained_model=None):
         self.model = None
         self.trained_model = None
-        if n_topics != 'auto':
-            self.n_topics = n_topics
         if n_topics < 2:
             raise ValueError('Number of topics has to be at least 2')
+        if n_topics != 'auto':
+            self.n_topics = n_topics
         self.n_iter = n_iter
-        self.lib = lib
-        self.random_state = random_state
+        if lib in ['sklearn', 'gensim', 'lda']:
+            self.lib = lib
+        else:
+            raise ValueError('The supported libraries are sklearn, gensim and lda')
+        if isinstance(random_state, int):
+            if random_state >= 0:
+                self.random_state = random_state
+            else:
+                raise ValueError('Random_state has to be positive')
+        else:
+            raise TypeError('Random_state has to be a integer')
+        if cols and (not isinstance(cols, list) or any(not isinstance(col, str) for col in cols)):
+            raise TypeError('Cols has to be list of strings')
+        else:
+            self.cols = cols
         if trained_model:
             self.trained_model = trained_model
         elif lib == 'sklearn':
@@ -42,9 +55,9 @@ class LdaEmbedding(Precalculation):
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             model_attributes = sorted([(k, v) for k, v in self.model.__dict__.items()
-                                       if isinstance(v, Number) or isinstance(v, str)])
+                                       if isinstance(v, Number) or isinstance(v, str) or isinstance(v, list)])
             other_model_attributes = sorted([(k, v) for k, v in other.model.__dict__.items()
-                                             if isinstance(v, Number) or isinstance(v, str)])
+                                             if isinstance(v, Number) or isinstance(v, str) or isinstance(v, list)])
             if isinstance(other.model, self.model.__class__) \
                     and model_attributes == other_model_attributes:
                 return True
@@ -54,12 +67,23 @@ class LdaEmbedding(Precalculation):
         if self.trained_model:
             return hash(([self.__class__, self.trained_model].extend(self.trained_model.__dict__.items())))
         else:
-            return hash((self.__class__, self.model.__class__, self.n_topics, self.n_iter, self.lib, self.random_state))
+            return hash(([self.__class__, self.model.__class__, self.n_topics,
+                          self.n_iter, self.lib, self.random_state].extend(self.cols)))
 
     def process(self, store):
 
         df1_texts, df2_texts = store[ColumnType.text]
-        col_names = df1_texts.columns
+        if self.cols is None:
+            col_names = df1_texts.columns
+        else:
+            if isinstance(self.cols, str):
+                if self.cols in df1_texts.columns:
+                    col_names = self.cols
+            else:
+                for col in self.cols:
+                    if col not in df1_texts.columns:
+                        raise ValueError('Given column is not contained in given datasets')
+                col_names = self.cols
 
         transformed1 = {}
         transformed2 = {}
