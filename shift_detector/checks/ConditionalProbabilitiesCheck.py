@@ -8,6 +8,7 @@ from shift_detector.precalculations.conditional_probabilities.fpgrowth import ge
 class ConditionalProbabilitiesCheck(Check):
     """
     The ConditionalProbabilitiesCheck object implements the conditional probabilities check.
+    See also :ref:`conditional_probabilities_parameters`.
 
     :param min_support: a float between 0 and 1. This parameter mainly impacts
         the runtime of the check. The lower ``min_support`` the more resources are

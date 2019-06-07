@@ -73,7 +73,7 @@ The above rule can be read as follows:
    are about black Nike shoes. This accounts to a difference of 23%.
 2. 3% of the tuples in ``data_set_1`` and 5% of the tuples in ``data_set_2``
    are about black Nike football shoes. This accounts to a difference of -2%.
-3. If a tuple is about black Nike shoes the **conditional probability** that
+3. If a tuple is about black Nike shoes the conditional probability that
    the category is football is 10% in ``data_set_1`` and 71% in ``data_set_2``.
    This accounts to a difference of -61%.
 
@@ -83,6 +83,8 @@ This tells you that:
    ``data_set_2``, however,
 2. the probability that a black Nike shoe is made for football is way higher
    in ``data_set_2`` than in ``data_set_1``.
+
+.. _conditional_probabilities_parameters:
 
 Parameters
 ----------
@@ -97,8 +99,8 @@ thresholds that control (a) the computational complexity and
     rules whose ``support_of_left_side`` and ``support`` exceed ``min_support``
     in at least one of the two data sets.
 
-    The lower you choose ``min_support`` the more resources are required during
-    computation both in terms of memory and CPU.
+    The lower you choose ``min_support`` the more resources are required
+    both in terms of memory and CPU.
     The default value is 0.01. This means that :ref:`conditional_probabilities`
     only considers values which appear in at least 1% of your tuples.
     By adjusting this parameter you can adjust the granularity of the comparison
@@ -110,7 +112,7 @@ thresholds that control (a) the computational complexity and
     ``confidence`` exceeds ``min_confidence`` in at least one of the two data sets.
 
     The lower you choose ``min_confidence`` the more rules are generated.
-    The default value is 0.15. This means that the **conditional probability**
+    The default value is 0.15. This means that the conditional probability
     of a right side given a left side has to be at least 15%.
 
 ``rule_limit``:
@@ -160,37 +162,8 @@ Algorithm
    ``min_confidence``. We therefore scan both data sets one
    more time and count their appearances. This information at hand, we can
    generate the remaining result rules.
-5. The result rules are sorted according to the absolute values of delta_supports,
-   delta_supports_of_left_side and delta_confidences in decreasing order. 
-
-Notes
-+++++
-
-We use the FP-growth algorithm as proposed in [Han2000]_ to compute all relevant
-conditional probabilities. The code is largely copied from fp-growth_.
-The function ``generate_association_rules(...)`` is revised in the following ways:
-
-1. A parameter called ``size`` is added to the *parameter list*.
-   It expects the total number of transactions used to construct the *FP-tree* and
-   is needed to compute relative support values.
-2. The return value is changed to a *dictionary* of the form
-   ``{(left_side, right_side): (support_of_left_side, support, confidence)}``.
-   ``support_of_left_side`` and ``support`` give the
-   percentage of tuples containing all attribute-value pairs from ``left_side``
-   alone and ``left_side`` and ``right_side`` combined.
-
-   * This additionally fixes a `bug
-     <https://github.com/evandempsey/fp-growth/issues/11>`_ present in fp-growth_:
-     if several rules have the same left side, fp-growth_ erroneously overwrites
-     those rules and returns only one rule. The revised function present in this
-     module does not contain this bug anymore.
-3. fp-growth_ does not `generate rules having an empty right side
-   <https://github.com/evandempsey/fp-growth/issues/6>`_. Those should
-   however be part of a correct result and are vital for our purposes. We therefore
-   adapted the function to include those rules too.
-
-We issued a `Pull Request <https://github.com/evandempsey/fp-growth/pull/17>`_
-for fp-growth_ containing our bug fixes.
+5. The result rules are sorted according to the absolute values of delta_supports
+   and delta_confidences in decreasing order.
 
 References
 ----------
@@ -203,4 +176,3 @@ References
    International Conference on Very Large Data Bases (VLDB '94), Jorge B. Bocca,
    Matthias Jarke, and Carlo Zaniolo (Eds.). Morgan Kaufmann Publishers Inc., San
    Francisco, CA, USA, 487-499.
-.. _fp-growth: https://github.com/evandempsey/fp-growth
