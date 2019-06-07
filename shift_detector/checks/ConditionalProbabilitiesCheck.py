@@ -1,5 +1,7 @@
 from collections import defaultdict
 
+import matplotlib.pyplot as plt
+
 from shift_detector.checks.Check import Check, Report
 from shift_detector.precalculations.ConditionalProbabilitiesPrecalculation import ConditionalProbabilitiesPrecalculation
 from shift_detector.precalculations.conditional_probabilities.fpgrowth import get_columns, to_string
@@ -52,4 +54,14 @@ class ConditionalProbabilitiesCheck(Check):
 
             explanation[', '.join(columns)].append(to_string(rule))
 
-        return Report(examined_columns, shifted_columns, explanation)
+        def plot_result():
+            x = [abs(rule.delta_supports) for rule in rules]
+            y = [abs(rule.delta_confidences) for rule in rules]
+            plt.scatter(x, y)
+            plt.title('Conditional Probabilities')
+            plt.xlabel('Absolute delta supports')
+            plt.ylabel('Absolute delta confidences')
+            plt.show()
+
+        return Report('Conditional Probabilities', examined_columns, shifted_columns, explanation,
+                      figures=[plot_result])
