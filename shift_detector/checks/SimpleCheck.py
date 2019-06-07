@@ -1,10 +1,11 @@
 import logging as logger
 from collections import defaultdict
-from copy import deepcopy
 
-from shift_detector.Utils import ColumnType
+import matplotlib.pyplot as plt
+
 from shift_detector.checks.Check import Check, Report
 from shift_detector.precalculations.SimplePrecalculation import SimplePrecalculation
+from shift_detector.utils.ColumnManagement import ColumnType
 
 
 class SimpleCheck(Check):
@@ -17,8 +18,10 @@ class SimpleCheck(Check):
                                               'completeness': 10, 'std': 10}
 
     def run(self, store):
+        logger.info("Execute Simple Check")
+        df1_numerical, df2_numerical = store[ColumnType.numerical]
         self.data = store[SimplePrecalculation()]
-        numerical_report = self.numerical_report()
+        numerical_report = self.numerical_report(df1_numerical, df2_numerical)
         categorical_report = self.categorical_report()
 
         return numerical_report + categorical_report
@@ -49,7 +52,7 @@ class SimpleCheck(Check):
 
         return metrics_difference_string
 
-    def numerical_report(self):
+    def numerical_report(self, df1, df2):
         numerical_comparison = self.data['numerical_comparison']
         examined_columns = set()
         shifted_columns = set()
@@ -64,9 +67,10 @@ class SimpleCheck(Check):
                 if abs(diff) > self.metrics_thresholds_percentage[metric]:
                     shifted_columns.add(column_name)
                     explanation[column_name] += "Metric: {} with Diff: {}\n".format(metric,
-                                                                                 self.difference_to_string(diff))
-                    # print('shift in column', column_name, '\t', metric, self.difference_to_string(diff))
-        return Report(examined_columns, shifted_columns, dict(explanation))
+                                                                                    self.difference_to_string(diff))
+
+        return SimpleReport(examined_columns, shifted_columns, dict(explanation),
+                            figures=[SimpleReport.numerical_plot(df1, df2)])
 
     def categorical_report(self):
         categorical_comparison = self.data['categorical_comparison']
@@ -90,5 +94,26 @@ class SimpleCheck(Check):
                     shifted_columns.add(column_name)
                     explanation[column_name] += "Attribute: {} with Diff: {}\n".format(attribute_name, diff)
 
-        return Report(examined_columns, shifted_columns, dict(explanation))
+        return SimpleReport(examined_columns, shifted_columns, dict(explanation))
 
+
+class SimpleReport(Report):
+
+    def __init__(self, examined_columns, shifted_columns, information={}, explanation={}, figures=[]):
+        super().__init__("Simple Check", examined_columns, shifted_columns, information, explanation, figures)
+
+    @staticmethod
+    def numerical_plot(df1, df2):
+        def custom_plot():
+            f = plt.figure(figsize=(20, 7))
+            num_columns = len(list(df1.columns))
+            for num, column in enumerate(list(df1.columns)):
+                a, b = df1[column], df2[column]
+                ax = f.add_subplot(1, num_columns, num + 1)
+
+                ax.boxplot([a, b])
+                ax.set_title(column)
+
+            plt.show()
+
+        return custom_plot
