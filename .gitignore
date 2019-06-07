@@ -136,3 +136,6 @@ config.py
 train_ascii.csv
 _trial_temp/
 tests/_trial_temp-1/
+
+# keras
+model_checkpoints

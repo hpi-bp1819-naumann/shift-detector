@@ -3,6 +3,9 @@ import pandas as pd
 from gensim.models import FastText, Word2Vec
 from numbers import Number
 from copy import copy
+
+from gensim.models.base_any2vec import BaseWordEmbeddingsModel
+
 from shift_detector.precalculations.Precalculation import Precalculation
 from shift_detector.precalculations.Store import Store, ColumnType
 
@@ -20,6 +23,9 @@ class TextEmbeddingPrecalculation(Precalculation):
             self.model = FastText(size=100, window=5, min_count=1, workers=4)
         elif model == 'word2vec':
             self.model = Word2Vec(size=100, window=5, min_count=1, workers=4)
+        elif isinstance(model, BaseWordEmbeddingsModel):
+            # TODO: make model's params size and window configurable through the constructor
+            self.model = model
         else:
             raise ValueError('Invalid model')
     
@@ -37,7 +43,9 @@ class TextEmbeddingPrecalculation(Precalculation):
                 other_model_attributes = sorted([(k, v) for k, v in other.model.__dict__.items()
                                                  if isinstance(v, Number) or isinstance(v, str)])
 
-                if isinstance(other.model, self.model.__class__) and model_attributes == other_model_attributes:
+                if isinstance(other.model, self.model.__class__) \
+                        and model_attributes == other_model_attributes \
+                        and self.agg == other.agg:
                     return True
         return False
 
@@ -47,7 +55,7 @@ class TextEmbeddingPrecalculation(Precalculation):
             return hash(self.trained_model)
         model_attributes = [(k, v) for k, v in self.model.__dict__.items()
                             if isinstance(v, Number) or isinstance(v, str)]
-        return hash(tuple([self.model.__class__] + sorted(model_attributes)))
+        return hash(tuple([self.model.__class__, self.agg] + sorted(model_attributes)))
 
     def process_cell(self, cell):
         ser = [self.trained_model.wv[word] for word in cell.lower().split()]
@@ -56,10 +64,16 @@ class TextEmbeddingPrecalculation(Precalculation):
             ser = np.sum(ser, axis=0)
         elif self.agg == 'avg':
             ser = np.mean(ser, axis=0)
+        else:
+            ser = np.array(ser)
 
         # return vector of zeros when cell was empty
         if type(ser) == np.float64:
-            ser = [0.0] * self.trained_model.vector_size
+            if self.agg is None:
+                ser = np.array([np.array([0.0] * self.trained_model.vector_size)])
+            else:
+                ser = np.array([0.0] * self.trained_model.vector_size)
+
         return ser
 
     def process(self, store: Store):
