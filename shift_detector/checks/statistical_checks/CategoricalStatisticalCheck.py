@@ -2,7 +2,7 @@ import pandas as pd
 from scipy import stats
 
 from shift_detector.checks.statistical_checks.StatisticalCheck import SimpleStatisticalCheck
-from shift_detector.Utils import ColumnType
+from shift_detector.utils.ColumnManagement import ColumnType
 
 
 def chi2_test(part1: pd.Series, part2: pd.Series):
@@ -14,6 +14,9 @@ def chi2_test(part1: pd.Series, part2: pd.Series):
 
 
 class CategoricalStatisticalCheck(SimpleStatisticalCheck):
+
+    def statistical_test_name(self) -> str:
+        return 'Chi^2-Test with Log-Likelihood (G-Test)'
 
     def store_keys(self):
         return [ColumnType.all_categorical]
