@@ -4,7 +4,7 @@ from gensim.models import FastText, Word2Vec
 from numbers import Number
 from copy import copy
 from shift_detector.precalculations.Precalculation import Precalculation
-from shift_detector.precalculations.Tokenizer import TokenizeIntoWords
+from shift_detector.precalculations.Tokenizer import TokenizeIntoLowerWordsPrecalculation
 from shift_detector.precalculations.Store import Store, ColumnType
 
 
@@ -58,9 +58,9 @@ class TextEmbeddingPrecalculation(Precalculation):
         return ser
 
     def process(self, store: Store):
-        df1, df2 = store[TokenizeIntoWords()]
+        df1_tokenized, df2_tokenized = store[TokenizeIntoLowerWordsPrecalculation()]
 
-        concatenated_ser = pd.concat([df1[i] for i in df1] + [df2[i] for i in df2])
+        concatenated_ser = pd.concat([df1_tokenized[i] for i in df1_tokenized] + [df2_tokenized[i] for i in df2_tokenized])
 
         if not self.trained_model:
             model = copy(self.model)
@@ -68,9 +68,9 @@ class TextEmbeddingPrecalculation(Precalculation):
             model.train(sentences=concatenated_ser, total_examples=len(concatenated_ser), epochs=10)
             self.trained_model = model
 
-        for column in df1:
-            df1[column] = df1[column].apply(self.process_cell)
-        for column in df2:
-            df2[column] = df2[column].apply(self.process_cell)
+        for column in df1_tokenized:
+            df1_tokenized[column] = df1_tokenized[column].apply(self.process_cell)
+        for column in df2_tokenized:
+            df2_tokenized[column] = df2_tokenized[column].apply(self.process_cell)
 
-        return df1, df2
+        return df1_tokenized, df2_tokenized

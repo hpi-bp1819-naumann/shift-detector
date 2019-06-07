@@ -4,7 +4,7 @@ import pandas as pd
 from shift_detector.precalculations.Precalculation import Precalculation
 from shift_detector.utils.ColumnManagement import ColumnType
 
-class TokenizeIntoWords(Precalculation):
+class TokenizeIntoLowerWordsPrecalculation(Precalculation):
 
     def __eq__(self, other):
         return isinstance(other, self.__class__)

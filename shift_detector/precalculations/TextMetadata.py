@@ -15,7 +15,7 @@ from spellchecker import SpellChecker
 from textstat import textstat
 
 from shift_detector.precalculations.Precalculation import Precalculation
-from shift_detector.precalculations.Tokenizer import TokenizeIntoWords
+from shift_detector.precalculations.Tokenizer import TokenizeIntoLowerWordsPrecalculation
 from shift_detector.utils import UCBlist
 from shift_detector.utils.ColumnManagement import ColumnType
 from shift_detector.utils.TextMetadataUtils import dictionary_to_sorted_string, delimiters
@@ -73,7 +73,7 @@ class GenericTextMetadataWithTokenizing(GenericTextMetadata):
     def process(self, store):
         metadata1 = pd.DataFrame()
         metadata2 = pd.DataFrame()
-        df1, df2 = store[TokenizeIntoWords()]
+        df1, df2 = store[TokenizeIntoLowerWordsPrecalculation()]
         for column in df1.columns:
             logger.info(self.metadata_name() + ' analysis for ' + column)
             metadata1[column] = [self.metadata_function(words) for words in df1[column]]
@@ -103,7 +103,7 @@ class GenericTextMetadataWithTokenizingAndLanguage(GenericTextMetadata):
     def process(self, store):
         metadata1 = pd.DataFrame()
         metadata2 = pd.DataFrame()
-        df1, df2 = store[TokenizeIntoWords()]
+        df1, df2 = store[TokenizeIntoLowerWordsPrecalculation()]
         if self.infer_language:
             lang1, lang2 = store[LanguageMetadata()]
         for column in df1.columns:
