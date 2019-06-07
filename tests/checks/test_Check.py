@@ -15,7 +15,7 @@ class TestReport(TestCase):
             'random information': 'cool information'
         }
 
-        self.report = Report(self.examined_columns, self.shifted_columns, self.explanation, self.information)
+        self.report = Report("Check", self.examined_columns, self.shifted_columns, self.explanation, self.information)
 
     def test_add(self):
         with self.subTest("Test inequality"):
@@ -31,7 +31,7 @@ class TestReport(TestCase):
             'random information': 'better information'
         }
 
-        other_report = Report(examined_columns, shifted_columns, explanation, information)
+        other_report = Report("", examined_columns, shifted_columns, explanation, information)
         res_report = self.report + other_report
 
         with self.subTest("Test examined Columns"):
@@ -55,7 +55,9 @@ class TestReport(TestCase):
         self.assertDictEqual(expected_explanation, actual_explanation)
 
     def test_str(self):
-        expected_msg = "Examined Columns: ['shift', 'no_shift']\n" \
+        print(self.report)
+        expected_msg = "Check\n" \
+                       "Examined Columns: ['shift', 'no_shift']\n" \
                        "Shifted Columns: ['shift']\n" \
                        "\n" \
                        "Column 'shift':\n" \
