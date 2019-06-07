@@ -146,15 +146,6 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
 
 class TestTextMetadataFunctions(unittest.TestCase):
 
-    def test_tokenize_into_words(self):
-        normal = "This. is a'n example, ,, 12  35,6  , st/r--ing    \n test."
-        empty = ""
-        punctuation = ".  , * (  \n \t [}"
-        tokenize_into_words = TokenizeIntoWords().tokenize_into_words
-        self.assertEqual(tokenize_into_words(normal), ['this', 'is', "a'n", 'example', '12', '356', 'str', 'ing', 'test'])
-        self.assertEqual(tokenize_into_words(empty), [])
-        self.assertEqual(tokenize_into_words(punctuation), [])
-
     def test_dictionary_to_sorted_string(self):
         many = {'a': 2, 'b': 5, 'c': 3, 'f': 5, 'd': 1, 'e': 5} 
         one = {'a': 100}

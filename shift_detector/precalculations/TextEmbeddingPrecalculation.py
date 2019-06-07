@@ -4,6 +4,7 @@ from gensim.models import FastText, Word2Vec
 from numbers import Number
 from copy import copy
 from shift_detector.precalculations.Precalculation import Precalculation
+from shift_detector.precalculations.Tokenizer import TokenizeIntoWords
 from shift_detector.precalculations.Store import Store, ColumnType
 
 
@@ -49,7 +50,7 @@ class TextEmbeddingPrecalculation(Precalculation):
         return hash(tuple([self.model.__class__] + sorted(model_attributes)))
 
     def process_cell(self, cell):
-        ser = np.sum([self.trained_model.wv[word] for word in cell.lower().split()], axis=0)
+        ser = np.sum([self.trained_model.wv[word] for word in cell], axis=0)
 
         # return vector of zeros when cell was empty
         if type(ser) == np.float64:
@@ -57,12 +58,9 @@ class TextEmbeddingPrecalculation(Precalculation):
         return ser
 
     def process(self, store: Store):
-        df1, df2 = store[ColumnType.text]
-        df1 = df1.copy().dropna()
-        df2 = df2.copy().dropna()
+        df1, df2 = store[TokenizeIntoWords()]
 
-        concatenated_ser = pd.concat([df1[i].str.lower().str.split() for i in df1] +
-                                     [df2[i].str.lower().str.split() for i in df2])
+        concatenated_ser = pd.concat([df1[i] for i in df1] + [df2[i] for i in df2])
 
         if not self.trained_model:
             model = copy(self.model)
