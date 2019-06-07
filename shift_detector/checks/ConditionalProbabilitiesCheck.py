@@ -51,4 +51,4 @@ class ConditionalProbabilitiesCheck(Check):
 
             explanation[', '.join(columns)].append(to_string(rule))
 
-        return Report(examined_columns, list(shifted_columns), explanation)
+        return Report(examined_columns, shifted_columns, explanation)
