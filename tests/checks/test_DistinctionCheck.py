@@ -18,10 +18,15 @@ class TestDistinctionCheck(TestCase):
 
     def test_init(self):
         with self.subTest("Test wrong columns"):
-            self.assertRaises(Exception, lambda: DistinctionCheck(['shift', 0]))
+            self.assertRaises(TypeError, lambda: DistinctionCheck(['shift', 0]))
 
         with self.subTest("Test wrong num epochs"):
-            self.assertRaises(Exception, lambda: DistinctionCheck(columns=['shift'], num_epochs=0))
+            self.assertRaises(TypeError, lambda: DistinctionCheck(num_epochs='wrong'))
+            self.assertRaises(ValueError, lambda: DistinctionCheck(num_epochs=0))
+
+        with self.subTest("Test wrong relative threshold"):
+            self.assertRaises(TypeError, lambda: DistinctionCheck(relative_threshold='wrong'))
+            self.assertRaises(ValueError, lambda: DistinctionCheck(relative_threshold=-1))
 
     def test_run(self):
         report = self.precalculation.run(self.store)

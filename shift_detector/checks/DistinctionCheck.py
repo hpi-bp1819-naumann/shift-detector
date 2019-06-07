@@ -1,5 +1,6 @@
 import logging as logger
 from collections.abc import Iterable
+from numbers import Number
 
 from sklearn.metrics import classification_report
 
@@ -11,14 +12,23 @@ class DistinctionCheck(Check):
 
     def __init__(self, columns=[], num_epochs=10, relative_threshold=.1):
         if columns and (not isinstance(columns, Iterable) or any(not isinstance(column, str) for column in columns)):
-            raise Exception("columns should be empty or a list of strings. Received: {}".format(columns))
+            raise TypeError("columns should be empty or a list of strings. Received: {}".format(columns))
         self.columns = columns
 
-        if not isinstance(num_epochs, int) or num_epochs < 1:
-            raise Exception("Num epochs should be an Integer greater than 0, but is {} instead:".format(num_epochs))
+        if not isinstance(num_epochs, int):
+            raise TypeError("num_epochs should be an Integer. Received: {} ({})".format(num_epochs,
+                                                                                        num_epochs.__class__.__name__))
+        if num_epochs < 1:
+            raise ValueError("num_epochs should be greater than 0. Received: {}.".format(num_epochs))
         self.num_epochs = num_epochs
 
-        self.relative_threshold = relative_threshold
+        if not isinstance(relative_threshold, Number):
+            raise TypeError("relative_threshold should be a Number. "
+                            "Received: {} ({})".format(relative_threshold, relative_threshold.__class__.__name__))
+        if not 0 <= relative_threshold <= 1:
+            raise ValueError("relative_threshold should be greater equal than 0 and smaller equal 1. "
+                             "Received: {}.".format(relative_threshold))
+        self.relative_threshold = float(relative_threshold)
 
     def run(self, store) -> Report:
         logger.info("Execute Distinction Check")
