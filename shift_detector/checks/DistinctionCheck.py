@@ -1,4 +1,5 @@
 import logging as logger
+from collections.abc import Iterable
 
 from sklearn.metrics import classification_report
 
@@ -9,8 +10,14 @@ from shift_detector.precalculations.DistinctionPrecalculation import Distinction
 class DistinctionCheck(Check):
 
     def __init__(self, columns=[], num_epochs=10, relative_threshold=.1):
+        if columns and (not isinstance(columns, Iterable) or any(not isinstance(column, str) for column in columns)):
+            raise Exception("columns should be empty or a list of strings. Received: {}".format(columns))
         self.columns = columns
+
+        if not isinstance(num_epochs, int) or num_epochs < 1:
+            raise Exception("Num epochs should be an Integer greater than 0, but is {} instead:".format(num_epochs))
         self.num_epochs = num_epochs
+
         self.relative_threshold = relative_threshold
 
     def run(self, store) -> Report:
@@ -19,9 +26,8 @@ class DistinctionCheck(Check):
         if not input_columns:
             input_columns = store.columns
 
-        precalculation_result = store[DistinctionPrecalculation(input_columns, self.num_epochs)]
+        examined_columns, precalculation_result = store[DistinctionPrecalculation(input_columns, self.num_epochs)]
 
-        examined_columns = input_columns
         shifted_columns, explanation = self.detect_shifts(examined_columns, precalculation_result)
         information = self.information(precalculation_result)
 

@@ -16,8 +16,19 @@ class TestCreateDetector(TestCase):
         self.store = Store(self.df1, self.df2)
         self.precalculation = DistinctionPrecalculation(['shift', 'no_shift'], num_epochs=10)
 
+    def test_init(self):
+        with self.subTest("Test wrong columns"):
+            self.assertRaises(Exception, lambda: DistinctionPrecalculation(['shift', 0]))
+
+        with self.subTest("Test wrong num epochs"):
+            self.assertRaises(Exception, lambda: DistinctionPrecalculation(columns=['shift'], num_epochs=0))
+
     def test_process(self):
-        calculation = self.precalculation.process(self.store)
+        examined_column, calculation = self.precalculation.process(self.store)
+
+        with self.subTest("Test examined column"):
+            self.assertCountEqual(examined_column, ['shift', 'no_shift'])
+
         with self.subTest("Test prediction"):
             y_true = calculation['y_true']
             y_pred = calculation['y_pred']
@@ -33,6 +44,10 @@ class TestCreateDetector(TestCase):
 
             no_shift_permuted_accuracy = calculation['permuted_accuracies']['no_shift']
             self.assertEqual(no_shift_permuted_accuracy, 1.)
+
+        with self.subTest("Test wrong columns"):
+            prec_wrong_columns = DistinctionPrecalculation(['wrong_column'], num_epochs=10)
+            self.assertRaises(Exception, lambda: prec_wrong_columns.process(self.store))
 
     def test_equal(self):
         with self.subTest("Test equality"):

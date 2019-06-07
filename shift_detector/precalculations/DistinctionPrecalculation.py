@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from typing import Tuple
 
 import numpy as np
@@ -14,10 +15,18 @@ from shift_detector.precalculations.Precalculation import Precalculation
 class DistinctionPrecalculation(Precalculation):
 
     def __init__(self, columns, num_epochs=10):
+        if not isinstance(columns, Iterable) \
+                or any(not isinstance(column, str) for column in columns) \
+                or len(columns) < 1:
+            raise Exception("columns should be a list of strings. Received: {}".format(columns))
         self.columns = columns
+
+        if not isinstance(num_epochs, int) or num_epochs < 1:
+            raise Exception("num_epochs should be an Integer greater than 0. Received instead:".format(num_epochs))
+        self.num_epochs = num_epochs
+
         self.output_column = '__shift_detector__dataset'
         self.output_path = 'tmp/basicChecks_params'
-        self.num_epochs = num_epochs
         self.imputer = None
 
         datawig_logger.setLevel("ERROR")
@@ -36,6 +45,10 @@ class DistinctionPrecalculation(Precalculation):
         Runs check on provided columns
         :return: result of the check
         """
+        if any(column not in store.columns for column in self.columns):
+            raise Exception("Not all defined columns are present in both data frames. "
+                            "Defined: {}. Actual: {}".format(self.columns, store.columns))
+
         self.imputer = SimpleImputer(
             input_columns=self.columns,
             output_column=self.output_column,
@@ -56,12 +69,14 @@ class DistinctionPrecalculation(Precalculation):
 
         base_accuracy, permuted_accuracies = self.calculate_permuted_accuracies(df1_train, df2_train, self.columns)
 
-        return {
+        result = {
             'y_true': y_true,
             'y_pred': y_pred,
             'base_accuracy': base_accuracy,
             'permuted_accuracies': permuted_accuracies
         }
+
+        return self.columns, result
 
     def label_dfs(self, df1: pd.DataFrame, df2: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
