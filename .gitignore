@@ -126,7 +126,7 @@ config.py
 # VS Code
 .vscode/
 
-# iOS Stuff
+# MacOS Stuff
 .DS_Store
 
 # CSV File
@@ -139,3 +139,5 @@ tests/_trial_temp-1/
 
 # keras
 model_checkpoints
+
+main.py
