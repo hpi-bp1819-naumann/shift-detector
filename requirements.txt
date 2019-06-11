@@ -9,5 +9,7 @@ numpy
 scipy
 sklearn
 datawig
+keras
+tensorflow
 gensim
 regex
