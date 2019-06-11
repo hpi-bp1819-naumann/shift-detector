@@ -14,6 +14,7 @@ class TestEmbeddingDistanceCheck(unittest.TestCase):
                                  'col2': ['ab', 'hi', 'jk', 'lm', 'no', 'pq', 'rs', 'tu', 'vw', 'xy',
                                           'z1', '23', '45', '67', '89', '10', '11', '12', '13', '14']
                                  })
+
         self.df2 = pd.DataFrame({'col1': ['ab', 'hi', 'jk', 'lm', 'no', 'pq', 'rs', 'tu', 'vw', 'xy',
                                           'z1', '23', '45', '67', '89', '10', '11', '12', '13', '14'],
                                  'col2': ['ab', 'hi', 'jk', 'lm', 'no', 'pq', 'rs', 'tu', 'vw', 'xy',
