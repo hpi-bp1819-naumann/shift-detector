@@ -8,6 +8,7 @@ Checks
     :maxdepth: 1
 
     conditional_probabilities
+    distinction
     guide
 
 
