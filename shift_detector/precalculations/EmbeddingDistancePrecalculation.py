@@ -42,7 +42,6 @@ class EmbeddingDistancePrecalculation(Precalculation):
 
         result = {}
         for i in df1:
-
             result[i] = (norm(self.sum_and_normalize_vectors(df1a[i]) - self.sum_and_normalize_vectors(df1b[i])),
                          norm(self.sum_and_normalize_vectors(df2a[i]) - self.sum_and_normalize_vectors(df2b[i])),
                          norm(self.sum_and_normalize_vectors(df1[i]) - self.sum_and_normalize_vectors(df2[i])))

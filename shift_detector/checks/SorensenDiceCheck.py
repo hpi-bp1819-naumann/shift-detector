@@ -21,14 +21,15 @@ class SorensenDiceCheck(Check):
         explanation = defaultdict(str)
 
         for column_name in data:
+            baseline1, baseline2, distance = data[column_name]
             explanation[column_name] = "\tBaseline in Dataset1: {}\n" \
                                        "\tBaseline in Dataset2: {}\n" \
                                        "\tSorensen Dice Coefficient between Datasets: {}"\
-                .format(data[column_name][0], data[column_name][1], data[column_name][2])
+                .format(baseline1, baseline2, distance)
 
-            if (abs(data[column_name][0] - data[column_name][1]) > 0.1 or
-                    abs(data[column_name][0] - data[column_name][2]) > 0.1 or
-                    abs(data[column_name][1] - data[column_name][2]) > 0.1):
+            if (abs(baseline1 - baseline2) > 0.1 or
+                    distance - baseline1 < 0.1 or
+                    distance - baseline2 < 0.1):
                 shifted_columns.add(column_name)
 
         return Report("Sorensen Dice Check", examined_columns, shifted_columns, dict(explanation))
