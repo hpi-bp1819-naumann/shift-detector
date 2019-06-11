@@ -2,10 +2,11 @@ import logging as logger
 from collections import defaultdict
 
 import matplotlib.pyplot as plt
+import numpy as np
 
-from shift_detector.checks.check import Check, Report
-from shift_detector.precalculations.simple_precalculation import SimplePrecalculation
-from shift_detector.utils.column_management import ColumnType
+from shift_detector.checks.Check import Check, Report
+from shift_detector.precalculations.SimplePrecalculation import SimplePrecalculation
+from shift_detector.utils.ColumnManagement import ColumnType
 
 
 class SimpleCheck(Check):
@@ -21,8 +22,7 @@ class SimpleCheck(Check):
         logger.info("Execute Simple Check")
         df1_numerical, df2_numerical = store[ColumnType.numerical]
         self.data = store[SimplePrecalculation()]
-        numerical_report = self.numerical_report(df1_numerical, df2_numerical,
-                                                 store.column_names(ColumnType.numerical))
+        numerical_report = self.numerical_report(df1_numerical, df2_numerical)
         categorical_report = self.categorical_report()
 
         return numerical_report + categorical_report
@@ -53,7 +53,7 @@ class SimpleCheck(Check):
 
         return metrics_difference_string
 
-    def numerical_report(self, df1, df2, columns):
+    def numerical_report(self, df1, df2):
         numerical_comparison = self.data['numerical_comparison']
         examined_columns = set()
         shifted_columns = set()
@@ -71,17 +71,21 @@ class SimpleCheck(Check):
                                                                                     self.difference_to_string(diff))
 
         return SimpleReport(examined_columns, shifted_columns, dict(explanation),
-                            figures=[SimpleReport.numerical_plot(df1, df2, columns)])
+                            figures=[SimpleReport.numerical_plot(df1, df2)])
 
     def categorical_report(self):
         categorical_comparison = self.data['categorical_comparison']
         examined_columns = set()
         shifted_columns = set()
         explanation = defaultdict(str)
+        plot_infos = []
 
         for column_name, attribute in categorical_comparison.items():
             examined_columns.add(column_name)
 
+            bar_df1 = []
+            bar_df2 = []
+            attribute_names = []
             for attribute_name, attribute_values in attribute.items():
 
                 if 'df1' not in attribute_values:
@@ -91,11 +95,22 @@ class SimpleCheck(Check):
                     attribute_values['df2'] = 0
 
                 diff = attribute_values['df1'] - attribute_values['df2']
+
+                bar_df1.append(attribute_values['df1'])
+                bar_df2.append(attribute_values['df2'])
+                attribute_names.append(attribute_name)
+
+                print('here we have value ', attribute_values['df1'], attribute_values['df2'], 'wich a diff in ',
+                      column_name, ' in attribute ', attribute_name)
+
                 if diff > self.categorical_threshold:
                     shifted_columns.add(column_name)
                     explanation[column_name] += "Attribute: {} with Diff: {}\n".format(attribute_name, diff)
 
-        return SimpleReport(examined_columns, shifted_columns, dict(explanation))
+            plot_infos.append((bar_df1, bar_df2, attribute_names, column_name))
+
+        return SimpleReport(examined_columns, shifted_columns, dict(explanation),
+                            figures=[SimpleReport.categorical_plot(plot_infos)])
 
 
 class SimpleReport(Report):
@@ -104,17 +119,52 @@ class SimpleReport(Report):
         super().__init__("Simple Check", examined_columns, shifted_columns, information, explanation, figures)
 
     @staticmethod
-    def numerical_plot(df1, df2, columns):
+    def numerical_plot(df1, df2):
         def custom_plot():
             f = plt.figure(figsize=(20, 7))
-            num_columns = len(columns)
-            for num, column in enumerate(columns):
+            num_columns = len(list(df1.columns))
+            for num, column in enumerate(list(df1.columns)):
                 a, b = df1[column], df2[column]
-                ax = f.add_subplot(1, num_columns, num + 1)
+                ax = f.add_subplot(1, num_columns, num+1)
 
                 ax.boxplot([a, b])
                 ax.set_title(column)
 
             plt.show()
+        return custom_plot
+
+    @staticmethod
+    def categorical_plot(plot_infos):
+
+        def custom_plot():
+            f = plt.figure(figsize=(20, 7))
+            num_columns = len(list(plot_infos))
+
+            for i, plot_info in enumerate(list(plot_infos)):
+                bars1, bars2, attribute_names, column_name = plot_info[0], plot_info[1], plot_info[2], plot_info[3]
+
+                subplot = f.add_subplot(1, num_columns, i+1)
+
+                # set width of bar
+                bar_width = 0.25
+
+                # Set position of bar on X axis
+                r1 = np.arange(len(bars1))
+                r2 = [x + bar_width for x in r1]
+
+                # Make the plot
+                subplot.bar(r1, bars1, color='red', width=bar_width, edgecolor='white', label='DS1')
+                subplot.bar(r2, bars2, color='blue', width=bar_width, edgecolor='white', label='DS2')
+
+                # Add xticks on the middle of the group bars
+                subplot.set_xlabel('attribute', fontweight='bold')
+                subplot.set_xticks(np.arange(len(attribute_names))+bar_width/2)
+                subplot.set_xticklabels(attribute_names)
+
+                # Create legend & Show graphic
+                subplot.legend()
+
+            f.show()
 
         return custom_plot
+
