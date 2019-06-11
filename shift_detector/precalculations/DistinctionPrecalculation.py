@@ -105,7 +105,8 @@ class DistinctionPrecalculation(Precalculation):
         min_len = min(len(df1), len(df2))
         return df1.sample(n=min_len), df2.sample(n=min_len)
 
-    def prepare_dfs(self, df1: pd.DataFrame, df2: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def prepare_dfs(self, df1: pd.DataFrame, df2: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame,
+                                                                         pd.DataFrame, pd.DataFrame]:
         """
         Create a train and a test dataset, in which the number number of tuples
         that come from the first and the number of those from the second dataset are equal
