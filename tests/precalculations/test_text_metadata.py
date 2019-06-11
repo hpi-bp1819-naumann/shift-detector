@@ -13,8 +13,10 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
 
     def setUp(self):
         poems = [
-            'Tell me not, in mournful numbers,\nLife is but an empty dream!\nFor the soul is dead that slumbers,\nAnd things are not what they seem.',
-            'Life is real! Life is earnest!\nAnd the grave is not its goal;\nDust thou art, to dust returnest,\nWas not spoken of the soul.'
+            'Tell me not, in mournful numbers,\nLife is but an empty dream!\nFor the soul is dead that slumbers,\n'
+            'And things are not what they seem.',
+            'Life is real! Life is earnest!\nAnd the grave is not its goal;\nDust thou art, to dust returnest,\n'
+            'Was not spoken of the soul.'
         ]
         phrases = [
             'Front-line leading edge website',
@@ -111,7 +113,7 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
         assert_frame_equal(solution2, md2)
 
     # seems to be dependent on the machine: travis gets different results
-    #def test_complexity(self):
+    # def test_complexity(self):
     #    md1, md2 = ComplexityMetadata().process(self.store)
     #    solution1 = pd.DataFrame([5.0, 3.0], columns=['text'])
     #    solution2 = pd.DataFrame([0.0, 13.0], columns=['text'])
@@ -119,8 +121,11 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
     #    assert_frame_equal(solution2, md2)
 
     def test_metadata_preprocessor(self):
-        md1, md2 = self.store[TextMetadata(text_metadata_types=[NumWordsMetadata(), StopwordRatioMetadata(), UnicodeBlocksMetadata()])]
-        index = pd.MultiIndex.from_product([['text'], ['num_words', 'stopword_ratio', 'unicode_blocks']], names=['column', 'metadata'])
+        md1, md2 = self.store[TextMetadata(text_metadata_types=[NumWordsMetadata(),
+                                                                StopwordRatioMetadata(),
+                                                                UnicodeBlocksMetadata()])]
+        index = pd.MultiIndex.from_product([['text'], ['num_words', 'stopword_ratio', 'unicode_blocks']],
+                                           names=['column', 'metadata'])
         solution1 = pd.DataFrame(columns=index)
         solution2 = pd.DataFrame(columns=index)
         solution1[('text', 'num_words')] = [26, 25]
@@ -136,7 +141,7 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
 class TestTextMetadataFunctions(unittest.TestCase):
 
     def test_dictionary_to_sorted_string(self):
-        many = {'a': 2, 'b': 5, 'c': 3, 'f': 5, 'd': 1, 'e': 5} 
+        many = {'a': 2, 'b': 5, 'c': 3, 'f': 5, 'd': 1, 'e': 5}
         one = {'a': 100}
         empty = {}
         self.assertEqual(TmUtils.dictionary_to_sorted_string(many), "b, e, f, c, a, d")
@@ -169,20 +174,30 @@ class TestTextMetadataFunctions(unittest.TestCase):
 
     def test_unicode_category(self):
         lower = "justlowerletters"
-        different = "\n \u0600 \uF8FF \uDB80 Hi \u02B7 \u0C99 \u1F8D \u094A \uA670 ∑ ´ 42 \u2169 ‚·°‡ﬁ›‹€⁄¡™£¢∞§¶•ªº‘«»æ…ÆÚ˘¯≤≤≥ ,;' "
+        different = "\n \u0600 \uF8FF \uDB80 Hi \u02B7 \u0C99 \u1F8D \u094A \uA670 ∑ ´ 42"\
+                    " \u2169 ‚·°‡ﬁ›‹€⁄¡™£¢∞§¶•ªº‘«»æ…ÆÚ˘¯≤≤≥ ,;' "
         empty = ""
         unicode_category_histogram = UnicodeCategoriesMetadata().unicode_category_histogram
         self.assertEqual(unicode_category_histogram(lower), {'Ll': 16})
-        self.assertEqual(unicode_category_histogram(different), {'Cc': 1, 'Zs': 16, 'Cf': 1, 'Co': 1, 'Cs': 1, 'Lu': 3, 'Ll': 3, 'Lm': 1, 'Lo': 3, 'Lt': 1, 'Mc': 1, 'Me': 1, 'Sm': 6, 'Sk': 3, 'Nd': 2, 'Nl': 1, 'Ps': 1, 'Po': 10, 'So': 2, 'Pf': 2, 'Pi': 3, 'Sc': 3})
+        self.assertEqual(unicode_category_histogram(different),
+                         {'Cc': 1, 'Zs': 16, 'Cf': 1, 'Co': 1, 'Cs': 1, 'Lu': 3, 'Ll': 3, 'Lm': 1, 'Lo': 3,
+                          'Lt': 1, 'Mc': 1, 'Me': 1, 'Sm': 6, 'Sk': 3, 'Nd': 2, 'Nl': 1, 'Ps': 1, 'Po': 10,
+                          'So': 2, 'Pf': 2, 'Pi': 3, 'Sc': 3})
         self.assertEqual(unicode_category_histogram(empty), {})
 
     def test_unicode_block(self):
         latin = "Latin Letters! *with punctuation,!./ and numbers 983"
-        different = "\n \u0600 \uF8FF \uDB80 Hi \u02B7 \u0C99 \u1F8D \u094A \uA670 ∑ ´ 42 \u2169 ‚·°‡ﬁ›‹€⁄¡™£¢∞§¶•ªº‘«»æ…ÆÚ˘¯≤≤≥ ,;' "
+        different = "\n \u0600 \uF8FF \uDB80 Hi \u02B7 \u0C99 \u1F8D \u094A \uA670 ∑ ´ 42"\
+                    " \u2169 ‚·°‡ﬁ›‹€⁄¡™£¢∞§¶•ªº‘«»æ…ÆÚ˘¯≤≤≥ ,;' "
         empty = ""
         unicode_block_histogram = UnicodeBlocksMetadata().unicode_block_histogram
         self.assertEqual(unicode_block_histogram(latin), {'Basic Latin': 52})
-        self.assertEqual(unicode_block_histogram(different), {'Basic Latin': 24, 'Arabic': 1, 'Private Use Area': 1, 'High Private Use Surrogates': 1, 'Spacing Modifier Letters': 2, 'Kannada': 1, 'Greek Extended': 1, 'Devanagari': 1, 'Cyrillic Extended-B': 1, 'Mathematical Operators': 5, 'Latin-1 Supplement': 16, 'Number Forms': 1, 'General Punctuation': 8, 'Alphabetic Presentation Forms': 1, 'Currency Symbols': 1, 'Letterlike Symbols': 1})
+        self.assertEqual(unicode_block_histogram(different),
+                         {'Basic Latin': 24, 'Arabic': 1, 'Private Use Area': 1, 'High Private Use Surrogates': 1,
+                          'Spacing Modifier Letters': 2, 'Kannada': 1, 'Greek Extended': 1, 'Devanagari': 1,
+                          'Cyrillic Extended-B': 1, 'Mathematical Operators': 5, 'Latin-1 Supplement': 16,
+                          'Number Forms': 1, 'General Punctuation': 8, 'Alphabetic Presentation Forms': 1,
+                          'Currency Symbols': 1, 'Letterlike Symbols': 1})
         self.assertEqual(unicode_block_histogram(empty), {})
 
     def test_num_words(self):
@@ -223,9 +238,12 @@ class TestTextMetadataFunctions(unittest.TestCase):
     def test_unknown_words(self):
         correct_english = ['This', 'is', 'a', 'correct', 'sentence']
         incorrect_english = ['Thiis', 'is', 'an', 'incozyzyrrect', 'sentence']
-        french = ['Demain', 'dès', 'l’aube', 'à', 'l’heure', 'où', 'blanchit', 'la', 'campagne', 'Je', 'partirai', 'Vois', 'tu', 'je', 'sais', 'que', 'tu', 'm’attends', 'J’irai', 'par', 'la', 'forêt', 'j’irai', 'par', 'la', 'montagne', 'Je', 'ne', 'puis', 'demeurer', 'loin', 'de', 'toi', 'plus', 'longtemps']
+        french = ['Demain', 'dès', 'l’aube', 'à', 'l’heure', 'où', 'blanchit', 'la', 'campagne', 'Je', 'partirai',
+                  'Vois', 'tu', 'je', 'sais', 'que', 'tu', 'm’attends', 'J’irai', 'par', 'la', 'forêt', 'j’irai', 'par',
+                  'la', 'montagne', 'Je', 'ne', 'puis', 'demeurer', 'loin', 'de', 'toi', 'plus', 'longtemps']
         empty = []
-        unsupported_language = ['Aqoonyahanada', 'caalamku', 'waxay', 'aad', 'ugu', 'murmaan', 'sidii', 'luuqadaha', 'aduunku', 'ku', 'bilaabmeem']
+        unsupported_language = ['Aqoonyahanada', 'caalamku', 'waxay', 'aad', 'ugu', 'murmaan', 'sidii', 'luuqadaha',
+                                'aduunku', 'ku', 'bilaabmeem']
         unknown_word_ratio = UnknownWordRatioMetadata().metadata_function
         self.assertEqual(unknown_word_ratio('en', correct_english), 0.00)
         self.assertEqual(unknown_word_ratio('en', incorrect_english), .4)
@@ -237,9 +255,12 @@ class TestTextMetadataFunctions(unittest.TestCase):
         no_stopwords = ['computer', 'calculates', 'math']
         only_stopwords = ['the', 'and', 'is', 'i', 'am']
         mixed = ['a', 'normal', 'sentence', 'has', 'both']
-        french = ['demain', 'dès', 'l’aube', 'à', 'l’heure', 'où', 'blanchit', 'la', 'campagne', 'je', 'partirai', 'vois', 'tu', 'je', 'sais', 'que', 'tu', 'm’attends', 'j’irai', 'par', 'la', 'forêt', 'j’irai', 'par', 'la', 'montagne', 'je', 'ne', 'puis', 'demeurer', 'loin', 'de', 'toi', 'plus', 'longtemps']
+        french = ['demain', 'dès', 'l’aube', 'à', 'l’heure', 'où', 'blanchit', 'la', 'campagne', 'je', 'partirai',
+                  'vois', 'tu', 'je', 'sais', 'que', 'tu', 'm’attends', 'j’irai', 'par', 'la', 'forêt', 'j’irai', 'par',
+                  'la', 'montagne', 'je', 'ne', 'puis', 'demeurer', 'loin', 'de', 'toi', 'plus', 'longtemps']
         empty = []
-        unsupported_language = ['aqoonyahanada', 'caalamku', 'waxay', 'aad', 'ugu', 'murmaan', 'sidii', 'luuqadaha', 'aduunku', 'ku', 'bilaabmeem']
+        unsupported_language = ['aqoonyahanada', 'caalamku', 'waxay', 'aad', 'ugu', 'murmaan', 'sidii', 'luuqadaha',
+                                'aduunku', 'ku', 'bilaabmeem']
         stopword_ratio = StopwordRatioMetadata().metadata_function
         self.assertEqual(stopword_ratio('en', no_stopwords), 0.0)
         self.assertEqual(stopword_ratio('en', only_stopwords), 1.0)
@@ -291,7 +312,9 @@ class TestTextMetadataFunctions(unittest.TestCase):
         englishTypos = "Thhis is a nirnal sentense. Lanquage detecction is esay."
         german = "Dies ist ein einfacher Satz. Kurz und knackig."
         englishgerman = "Dieser Text ist zum Teil deutsch. <br> Part of this text is in english"
-        multipleLanguages = "Dieser Text ist zum Teil deutsch. \n Part of this text is in english. \n there actually is some french coming. \n Ce n'est pas anglais. \n No puedo hablar español. \n Beberapa bahasa untuk diuji."
+        multipleLanguages = "Dieser Text ist zum Teil deutsch. \n Part of this text is in english. \n "\
+                            "there actually is some french coming. \n Ce n'est pas anglais. \n "\
+                            "No puedo hablar español. \n Beberapa bahasa untuk diuji."
         punctuation = " . ,"
         empty = ""
         language = LanguagePerParagraph().detect_languages
@@ -305,7 +328,9 @@ class TestTextMetadataFunctions(unittest.TestCase):
 
     def text_complexity(self):
         easy = "This is easy. This is a sentence. This has a big number."
-        hard = "Quantum mechanics (QM; also known as quantum physics, quantum theory, the wave mechanical model, or matrix mechanics), including quantum field theory, is a fundamental theory in physics which describes nature at the smallest scales of energy levels of atoms and subatomic particles."
+        hard = "Quantum mechanics (QM; also known as quantum physics, quantum theory, the wave mechanical model, "\
+               "or matrix mechanics), including quantum field theory, is a fundamental theory in physics which "\
+               "describes nature at the smallest scales of energy levels of atoms and subatomic particles."
         punctuation = " . ,"
         empty = ""
         text_complexity = ComplexityMetadata().metadata_function

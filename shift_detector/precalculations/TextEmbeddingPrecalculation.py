@@ -22,7 +22,7 @@ class TextEmbeddingPrecalculation(Precalculation):
             self.model = Word2Vec(size=100, window=5, min_count=1, workers=4)
         else:
             raise ValueError('Invalid model')
-    
+
     def __eq__(self, other):
         """Overrides the default implementation"""
         if isinstance(other, self.__class__):
@@ -60,7 +60,8 @@ class TextEmbeddingPrecalculation(Precalculation):
     def process(self, store: Store):
         df1_tokenized, df2_tokenized = store[TokenizeIntoLowerWordsPrecalculation()]
 
-        concatenated_ser = pd.concat([df1_tokenized[i] for i in df1_tokenized] + [df2_tokenized[i] for i in df2_tokenized])
+        concatenated_ser = pd.concat([df1_tokenized[i] for i in df1_tokenized] +
+                                     [df2_tokenized[i] for i in df2_tokenized])
 
         if not self.trained_model:
             model = copy(self.model)
