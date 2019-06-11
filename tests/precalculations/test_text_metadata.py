@@ -122,7 +122,9 @@ class TestTextMetadataPreprocessors(unittest.TestCase):
 
     def test_pos_tags(self):
         md1, md2 = PartOfSpeechMetadata().process(self.store)
-        solution1 = pd.DataFrame(['NOUN, ., VERB, ADJ, ADP, PRON, ADV, CONJ, DET', 'NOUN, ., VERB, ADV, ADJ, DET, ADP, CONJ, PRON, PRT'], columns=['text'])
+        solution1 = pd.DataFrame(['NOUN, ., VERB, ADJ, ADP, PRON, ADV, CONJ, DET', 'NOUN, ., VERB, ADV, '
+                                  'ADJ, DET, ADP, CONJ, PRON, PRT'],
+                                 columns=['text'])
         solution2 = pd.DataFrame(['NOUN, ADJ, VERB', 'ADJ, NOUN'], columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
@@ -347,7 +349,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual(text_complexity('en', easy), text_complexity('en', easy))
         self.assertRaises(ValueError, text_complexity, language='de', text=german)
         # Works in Travis for Python 3.6 but not for 3.5. 3.5 seems to not support the complexity metric.
-        # self.assertGreater(text_complexity(hard), text_complexity(easy)) 
+        # self.assertGreater(text_complexity(hard), text_complexity(easy))
 
     def test_pos_tags(self):
         normal = 'This is a test.'
