@@ -138,6 +138,6 @@ _trial_temp/
 tests/_trial_temp-1/
 
 # keras
-model_checkpoints
+wordPredictionCheck_model_checkpoints
 
 main.py

@@ -45,7 +45,7 @@ class WordPredictionPrecalculation(Precalculation):
 
     def process(self, store) -> Tuple[float, float]:
 
-        if self.column not in store[ColumnType.text]:
+        if self.column not in store[ColumnType.text][0].columns:
             raise ValueError('Column {} does not exist or is no textual column. '
                              'Please pass one of [{}] instead.'.format(self.column, store[ColumnType.text]))
 
