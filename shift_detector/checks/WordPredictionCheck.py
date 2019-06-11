@@ -1,24 +1,42 @@
+import logging as logger
+from collections.abc import Iterable
 from typing import List
 
 from shift_detector.checks.Check import Check, Report
 from shift_detector.precalculations.WordPredictionPrecalculation import WordPredictionPrecalculation
 from shift_detector.utils.ColumnManagement import ColumnType
 
-import logging as logger
-
 
 class WordPredictionCheck(Check):
 
-    def __init__(self, columns=None, ft_window_size=5, ft_size=100, lstm_window=5, relative_thresh=0.2):
+    def __init__(self, columns=None, ft_window_size=5, ft_size=100, lstm_window=5, relative_thresh=.8):
         self.columns = columns
         self.relative_thresh = relative_thresh
         self.ft_window_size = ft_window_size
         self.ft_size = ft_size
         self.lstm_window = lstm_window
 
-        if self.relative_thresh >= .0:
+        if columns and (not isinstance(columns, Iterable) or any(not isinstance(column, str) for column in columns)):
+            raise TypeError("columns should be empty or a list of strings. Received: {}".format(columns))
+
+        def is_numeric(value):
+            return isinstance(value, float) or isinstance(value, int)
+
+        if not is_numeric(self.relative_thresh):
+            raise TypeError('Expected argument relative_thresh to be of types [float, int]. '
+                            'Received {}.'.format(self.relative_thresh.__class__.__name__))
+
+        if self.relative_thresh <= .0:
             raise ValueError('Expected argument relative_thresh to be >= 0. '
                              'Received {}.'.format(self.relative_thresh))
+
+        if not isinstance(self.lstm_window, int):
+            raise TypeError('Expected argument lstm_window to be of type int. '
+                            'Received {}.'.format(self.lstm_window.__class__.__name__))
+
+        if self.lstm_window < 1:
+            raise ValueError('Expected argument lstm_window to be >= 1 '
+                             'Received {}.'.format(self.lstm_window))
 
     def run(self, store) -> Report:
 
@@ -38,7 +56,7 @@ class WordPredictionCheck(Check):
         examined_columns = self.columns
         shifted_columns, explanation = self.detect_shifts(examined_columns, result)
 
-        return Report(examined_columns, shifted_columns, explanation)
+        return Report("WordPredictionCheck", examined_columns, shifted_columns, explanation)
 
     def detect_shifts(self, examined_columns: List[str], result: dict):
         shifted_columns = []
