@@ -68,11 +68,12 @@ class TextEmbeddingPrecalculation(Precalculation):
             ser = np.array(ser)
 
         # return vector of zeros when cell was empty
-        if type(ser) == np.float64:
-            if self.agg is None:
-                ser = np.array([np.array([0.0] * self.trained_model.vector_size)])
-            else:
-                ser = np.array([0.0] * self.trained_model.vector_size)
+        if self.agg is None and ser.shape == (0,):
+            # create 2D vector of shape (1, vector_size)
+            ser = np.array([np.array([0.0] * self.trained_model.vector_size)])
+        elif self.agg is not None and type(ser) == np.float64:
+            # create 1D vector of shape (vector_size)
+            ser = np.array([0.0] * self.trained_model.vector_size)
 
         return ser
 
