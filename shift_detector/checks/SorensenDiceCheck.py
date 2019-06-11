@@ -1,7 +1,9 @@
+import logging as logger
 from collections import defaultdict
+
 from shift_detector.checks.Check import Check, Report
-from shift_detector.precalculations.SorensenDicePrecalculation import SorensenDicePrecalculations
 from shift_detector.precalculations.NGram import NGramType
+from shift_detector.precalculations.SorensenDicePrecalculation import SorensenDicePrecalculations
 
 
 class SorensenDiceCheck(Check):
@@ -11,6 +13,7 @@ class SorensenDiceCheck(Check):
         self.n = n
 
     def run(self, store):
+        logger.info("Execute Sorensen Dice Check")
         data = store[SorensenDicePrecalculations(ngram_type=self.ngram_type, n=self.n)]
 
         examined_columns = set(data.keys())
@@ -28,4 +31,4 @@ class SorensenDiceCheck(Check):
                     data[column_name][2] - data[column_name][1] < 0.1):
                 shifted_columns.add(column_name)
 
-        return Report(examined_columns, shifted_columns, dict(explanation))
+        return Report("Sorensen Dice Check", examined_columns, shifted_columns, dict(explanation))

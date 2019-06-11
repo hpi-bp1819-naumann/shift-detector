@@ -5,21 +5,25 @@ from itertools import chain
 
 class Report:
 
-    def __init__(self, examined_columns, shifted_columns, explanation=dict(), information=dict()):
-        self.examined_columns = examined_columns
-        self.shifted_columns = shifted_columns
+    def __init__(self, check_name, examined_columns, shifted_columns, explanation={}, information={}, figures=[]):
+        self.check_name = check_name
+        self.examined_columns = list(examined_columns)
+        self.shifted_columns = list(shifted_columns)
         self.explanation = explanation
         self.information = information
+        self.figures = figures
 
     def __add__(self, other):
         if not isinstance(other, Report):
             raise Exception('Tried to add class of type {} to Report'.format(other.__class__))
 
-        self.examined_columns = set(self.examined_columns).union(other.examined_columns)
-        self.shifted_columns = set(self.shifted_columns).union(other.shifted_columns)
+        self.examined_columns = list(set(self.examined_columns).union(other.examined_columns))
+        self.shifted_columns = list(set(self.shifted_columns).union(other.shifted_columns))
 
         self.explanation = self.__sum_dicts(self.explanation, other.explanation)
         self.information = self.__sum_dicts(self.information, other.information)
+
+        self.figures += other.figures
 
         return self
 
@@ -34,37 +38,37 @@ class Report:
 
         return res_dict
 
+    def explanation_str(self):
+        msg = ""
+        for column, explanation in self.explanation.items():
+            msg += "Column '{}':\n{}\n".format(column, explanation)
+        return msg
+
+    def information_str(self):
+        msg = ""
+        for tag, information in self.information.items():
+            msg += "'{}':\n{}\n".format(tag, information)
+        return msg
+
     def __str__(self):
         msg = ""
+        msg += "{}\n".format(self.check_name)
         msg += "Examined Columns: {}\n".format(self.examined_columns)
         msg += "Shifted Columns: {}\n\n".format(self.shifted_columns)
 
-        for column, explanation in self.explanation.items():
-            msg += "Column '{}':\n{}\n".format(column, explanation)
-
-        for tag, information in self.information.items():
-            msg += "'{}':\n{}\n".format(tag, information)
+        msg += self.explanation_str()
+        msg += self.information_str()
 
         return msg
-
-
-class DeprecatedReport(metaclass=ABCMeta):
-
-    @abstractmethod
-    def print_report(self):
-        """
-        Print the report.
-        """
-        pass
 
 
 class Check(metaclass=ABCMeta):
 
     @abstractmethod
-    def run(self, store) -> Report:
+    def run(self, store):
         """
         Run the check.
         :param store:
-        :return: Report
+        :return: Anything
         """
         pass
