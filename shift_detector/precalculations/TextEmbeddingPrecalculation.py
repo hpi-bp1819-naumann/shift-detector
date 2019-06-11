@@ -59,7 +59,7 @@ class TextEmbeddingPrecalculation(Precalculation):
         return hash(tuple([self.model.__class__, self.agg] + sorted(model_attributes)))
 
     def process_cell(self, cell):
-        ser = [self.trained_model.wv[word] for word in cell.lower().split()]
+        ser = [self.trained_model.wv[word] for word in cell]
 
         if self.agg == 'sum':
             ser = np.sum(ser, axis=0)
