@@ -21,7 +21,7 @@ class TestSorensenDicePrecalculation(unittest.TestCase):
 
     def test_result(self):
         self.assertEqual(len(self.result), 1)
-        self.assertEqual(self.result['col1'], (1.0, 0.0, (2 / 20) / 7))   # ngrams get normalized during join
+        self.assertEqual((1.0, 0.0, (2 / 20) / 7), self.result['col1'])   # ngrams get normalized during join
 
     def test_eq(self):
         sd1 = SorensenDicePrecalculations(ngram_type=NGramType.character, n=3)
