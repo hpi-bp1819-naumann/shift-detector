@@ -13,16 +13,42 @@ class TestTextMetadataPrecalculations(unittest.TestCase):
 
     def setUp(self):
         poems = [
-            'Tell me not, in mournful numbers,\nLife is but an empty dream!\nFor the soul is dead that slumbers,\nAnd things are not what they seem.',
-            'Life is real! Life is earnest!\nAnd the grave is not its goal;\nDust thou art, to dust returnest,\nWas not spoken of the soul.',
-            'Not enjoyment, and not sorrow,\nIs our destined end or way;\nBut to act, that each tomorrow\nFind us farther than today.',
-            'So, gilded by the glow of youth,\nOur varied life looks fair and gay;\nAnd so remains the naked truth,\nWhen that false light is past away.',
-            'Fond dreamer! little does she know\nThe anxious toil, the suffering,\nThe blasted hopes, the burning woe,\nThe object of her joy will bring.',
-            'Trust no Future, howe’er pleasant!\nLet the dead Past bury its dead!\nAct,— act in the living Present!\nHeart within, and God o’erhead! ',
-            'They do not see how cruel Death\nComes on, their loving hearts to part:\nOne feels not now the gasping breath,\nThe rending of the earth-bound heart, --',
-            "Rapidly, merrily,\nLife's sunny hours flit by,\nGratefully, cheerily,\nEnjoy them as they fly !",
-            "It has neither a beginning nor an end\nYou can never predict where it will bend.",
-            'Life is a teacher, it will show you the way\nBut unless you live it...it will run away.']
+            'Tell me not, in mournful numbers,\n'
+            'Life is but an empty dream!\n'
+            'For the soul is dead that slumbers,\n'
+            'And things are not what they seem.',
+            'Life is real! Life is earnest!\n'
+            'And the grave is not its goal;\n'
+            'Dust thou art, to dust returnest,\n'
+            'Was not spoken of the soul.',
+            'Not enjoyment, and not sorrow,\n'
+            'Is our destined end or way;\n'
+            'But to act, that each tomorrow\n'
+            'Find us farther than today.',
+            'So, gilded by the glow of youth,\n'
+            'Our varied life looks fair and gay;\n'
+            'And so remains the naked truth,\n'
+            'When that false light is past away.',
+            'Fond dreamer! little does she know\n'
+            'The anxious toil, the suffering,\n'
+            'The blasted hopes, the burning woe,\n'
+            'The object of her joy will bring.',
+            'Trust no Future, howe’er pleasant!\n'
+            'Let the dead Past bury its dead!\n'
+            'Act,— act in the living Present!\n'
+            'Heart within, and God o’erhead! ',
+            'They do not see how cruel Death\n'
+            'Comes on, their loving hearts to part:\n'
+            'One feels not now the gasping breath,\n'
+            'The rending of the earth-bound heart, --',
+            "Rapidly, merrily,\n"
+            "Life's sunny hours flit by,\n"
+            "Gratefully, cheerily,\n"
+            "Enjoy them as they fly !",
+            "It has neither a beginning nor an end\n"
+            "You can never predict where it will bend.",
+            'Life is a teacher, it will show you the way\n'
+            'But unless you live it...it will run away.']
         phrases = ['Front-line leading edge website',
                    'Upgradable upward-trending software',
                    'Virtual tangible throughput',
@@ -91,8 +117,10 @@ class TestTextMetadataPrecalculations(unittest.TestCase):
 
     def test_ratio_upper(self):
         md1, md2 = RatioUppercaseLettersMetadata().process(self.store)
-        solution1 = pd.DataFrame([0.0392156, 0.0537634, 0.0439560, 0.0380952, 0.0370370, 0.08, 0.0434782, 0.0563380, 0.0317460, 0.03125], columns=['text'])
-        solution2 = pd.DataFrame([0.0370370, 0.03125, 0.04, 0.04, 0.0322580, 0.0277777, 0.0333333, 0.0344827, 0.0588235, 0.0416666], columns=['text'])
+        solution1 = pd.DataFrame([0.0392156, 0.0537634, 0.0439560, 0.0380952, 0.0370370, 0.08, 0.0434782, 0.0563380,
+                                  0.0317460, 0.03125], columns=['text'])
+        solution2 = pd.DataFrame([0.0370370, 0.03125, 0.04, 0.04, 0.0322580, 0.0277777, 0.0333333, 0.0344827,
+                                  0.0588235, 0.0416666], columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
@@ -128,28 +156,32 @@ class TestTextMetadataPrecalculations(unittest.TestCase):
 
     def test_distinct_words(self):
         md1, md2 = DistinctWordsRatioMetadata().process(self.store)
-        solution1 = pd.DataFrame([24/26, 20/25, 22/22, 26/27, 21/24, 21/23, 26/28, 14/14, 16/16, 16/18], columns=['text'])
+        solution1 = pd.DataFrame([24/26, 20/25, 22/22, 26/27, 21/24, 21/23, 26/28, 14/14, 16/16, 16/18],
+                                 columns=['text'])
         solution2 = pd.DataFrame([1.0] * 10, columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
     def test_unique_words(self):
         md1, md2 = UniqueWordsRatioMetadata().process(self.store)
-        solution1 = pd.DataFrame([22/26, 16/25, 22/22, 25/27, 19/24, 19/23, 24/28, 14/14, 16/16, 14/18], columns=['text'])
+        solution1 = pd.DataFrame([22/26, 16/25, 22/22, 25/27, 19/24, 19/23, 24/28, 14/14, 16/16, 14/18],
+                                 columns=['text'])
         solution2 = pd.DataFrame([1.0] * 10, columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
     def test_unknown_ratio(self):
         md1, md2 = UnknownWordRatioMetadata().process(self.store)
-        solution1 = pd.DataFrame([0.0, 0.04, 0.0, 0.0, 0.0, 0.0869565, 0.0, 0.0714285, 0.0, 0.0555555], columns=['text'])
+        solution1 = pd.DataFrame([0.0, 0.04, 0.0, 0.0, 0.0, 0.0869565, 0.0, 0.0714285, 0.0, 0.0555555],
+                                 columns=['text'])
         solution2 = pd.DataFrame([0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.25, 0.0, 0.0], columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
 
     def test_stopword_ratio(self):
         md1, md2 = StopwordRatioMetadata().process(self.store)
-        solution1 = pd.DataFrame([0.576923, 0.48, 0.5, 0.4444444, 0.4166666, 0.2608695, 0.4642857, 0.2857142, 0.625, 0.5], columns=['text'])
+        solution1 = pd.DataFrame([0.576923, 0.48, 0.5, 0.4444444, 0.4166666, 0.2608695, 0.4642857, 0.2857142, 0.625,
+                                  0.5], columns=['text'])
         solution2 = pd.DataFrame([0.0] * 10, columns=['text'])
         assert_frame_equal(solution1, md1)
         assert_frame_equal(solution2, md2)
@@ -184,13 +216,16 @@ class TestTextMetadataPrecalculations(unittest.TestCase):
     #    assert_frame_equal(solution2, md2)
 
     def test_metadata_precalculation(self):
-        md1, md2 = self.store[TextMetadata(text_metadata_types=[NumWordsMetadata(), StopwordRatioMetadata(), UnicodeBlocksMetadata()])]
-        index = pd.MultiIndex.from_product([['text'], ['num_words', 'stopword_ratio', 'unicode_blocks']], names=['column', 'metadata'])
+        md1, md2 = self.store[TextMetadata(text_metadata_types=[NumWordsMetadata(), StopwordRatioMetadata(),
+                                                                UnicodeBlocksMetadata()])]
+        index = pd.MultiIndex.from_product([['text'], ['num_words', 'stopword_ratio', 'unicode_blocks']],
+                                           names=['column', 'metadata'])
         solution1 = pd.DataFrame(columns=index)
         solution2 = pd.DataFrame(columns=index)
         solution1[('text', 'num_words')] = [26, 25, 22, 27, 24, 23, 28, 14, 16, 18]
         solution2[('text', 'num_words')] = [5, 4, 3, 4, 4, 5, 4, 4, 3, 3]
-        solution1[('text', 'stopword_ratio')] = [0.576923, 0.48, 0.5, 0.4444444, 0.4166666, 0.2608695, 0.4642857, 0.2857142, 0.625, 0.5]
+        solution1[('text', 'stopword_ratio')] = [0.576923, 0.48, 0.5, 0.4444444, 0.4166666, 0.2608695, 0.4642857,
+                                                 0.2857142, 0.625, 0.5]
         solution2[('text', 'stopword_ratio')] = [0.0] * 10
         solution1[('text', 'unicode_blocks')] = ['Basic Latin', 'Basic Latin', 'Basic Latin', 'Basic Latin',
                                                  'Basic Latin', 'Basic Latin, General Punctuation', 'Basic Latin',
@@ -207,7 +242,8 @@ class TestTextMetadataFunctions(unittest.TestCase):
         empty = ""
         punctuation = ".  , * (  \n \t [}"
         tokenize_into_words = TokenizeIntoWords().tokenize_into_words
-        self.assertEqual(tokenize_into_words(normal), ['This', 'is', "a'n", 'example', '12', '356', 'str', 'ing', 'test'])
+        self.assertEqual(tokenize_into_words(normal), ['This', 'is', "a'n", 'example', '12', '356', 'str', 'ing',
+                                                       'test'])
         self.assertEqual(tokenize_into_words(empty), [])
         self.assertEqual(tokenize_into_words(punctuation), [])
 
@@ -245,20 +281,33 @@ class TestTextMetadataFunctions(unittest.TestCase):
 
     def test_unicode_category(self):
         lower = "justlowerletters"
-        different = "\n \u0600 \uF8FF \uDB80 Hi \u02B7 \u0C99 \u1F8D \u094A \uA670 ∑ ´ 42 \u2169 ‚·°‡ﬁ›‹€⁄¡™£¢∞§¶•ªº‘«»æ…ÆÚ˘¯≤≤≥ ,;' "
+        different = "\n \u0600 \uF8FF \uDB80 Hi \u02B7 \u0C99 \u1F8D \u094A \uA670 ∑ ´ 42 \u2169 " \
+                    "‚·°‡ﬁ›‹€⁄¡™£¢∞§¶•ªº‘«»æ…ÆÚ˘¯≤≤≥ ,;' "
         empty = ""
         unicode_category_histogram = UnicodeCategoriesMetadata().unicode_category_histogram
         self.assertEqual(unicode_category_histogram(lower), {'Ll': 16})
-        self.assertEqual(unicode_category_histogram(different), {'Cc': 1, 'Zs': 16, 'Cf': 1, 'Co': 1, 'Cs': 1, 'Lu': 3, 'Ll': 3, 'Lm': 1, 'Lo': 3, 'Lt': 1, 'Mc': 1, 'Me': 1, 'Sm': 6, 'Sk': 3, 'Nd': 2, 'Nl': 1, 'Ps': 1, 'Po': 10, 'So': 2, 'Pf': 2, 'Pi': 3, 'Sc': 3})
+        self.assertEqual(unicode_category_histogram(different), {'Cc': 1, 'Zs': 16, 'Cf': 1, 'Co': 1, 'Cs': 1, 'Lu': 3,
+                                                                 'Ll': 3, 'Lm': 1, 'Lo': 3, 'Lt': 1, 'Mc': 1, 'Me': 1,
+                                                                 'Sm': 6, 'Sk': 3, 'Nd': 2, 'Nl': 1, 'Ps': 1, 'Po': 10,
+                                                                 'So': 2, 'Pf': 2, 'Pi': 3, 'Sc': 3})
         self.assertEqual(unicode_category_histogram(empty), {})
 
     def test_unicode_block(self):
         latin = "Latin Letters! *with punctuation,!./ and numbers 983"
-        different = "\n \u0600 \uF8FF \uDB80 Hi \u02B7 \u0C99 \u1F8D \u094A \uA670 ∑ ´ 42 \u2169 ‚·°‡ﬁ›‹€⁄¡™£¢∞§¶•ªº‘«»æ…ÆÚ˘¯≤≤≥ ,;' "
+        different = "\n \u0600 \uF8FF \uDB80 Hi \u02B7 \u0C99 \u1F8D \u094A \uA670 ∑ ´ 42 \u2169 " \
+                    "‚·°‡ﬁ›‹€⁄¡™£¢∞§¶•ªº‘«»æ…ÆÚ˘¯≤≤≥ ,;' "
         empty = ""
         unicode_block_histogram = UnicodeBlocksMetadata().unicode_block_histogram
         self.assertEqual(unicode_block_histogram(latin), {'Basic Latin': 52})
-        self.assertEqual(unicode_block_histogram(different), {'Basic Latin': 24, 'Arabic': 1, 'Private Use Area': 1, 'High Private Use Surrogates': 1, 'Spacing Modifier Letters': 2, 'Kannada': 1, 'Greek Extended': 1, 'Devanagari': 1, 'Cyrillic Extended-B': 1, 'Mathematical Operators': 5, 'Latin-1 Supplement': 16, 'Number Forms': 1, 'General Punctuation': 8, 'Alphabetic Presentation Forms': 1, 'Currency Symbols': 1, 'Letterlike Symbols': 1})
+        self.assertEqual(unicode_block_histogram(different), {'Basic Latin': 24, 'Arabic': 1, 'Private Use Area': 1,
+                                                              'High Private Use Surrogates': 1,
+                                                              'Spacing Modifier Letters': 2, 'Kannada': 1,
+                                                              'Greek Extended': 1, 'Devanagari': 1,
+                                                              'Cyrillic Extended-B': 1, 'Mathematical Operators': 5,
+                                                              'Latin-1 Supplement': 16, 'Number Forms': 1,
+                                                              'General Punctuation': 8,
+                                                              'Alphabetic Presentation Forms': 1,
+                                                              'Currency Symbols': 1, 'Letterlike Symbols': 1})
         self.assertEqual(unicode_block_histogram(empty), {})
 
     def test_num_words(self):
@@ -299,9 +348,12 @@ class TestTextMetadataFunctions(unittest.TestCase):
     def test_unknown_words(self):
         correct_english = ['This', 'is', 'a', 'correct', 'sentence']
         incorrect_english = ['Thiis', 'is', 'an', 'incozyzyrrect', 'sentence']
-        french = ['Demain', 'dès', 'l’aube', 'à', 'l’heure', 'où', 'blanchit', 'la', 'campagne', 'Je', 'partirai', 'Vois', 'tu', 'je', 'sais', 'que', 'tu', 'm’attends', 'J’irai', 'par', 'la', 'forêt', 'j’irai', 'par', 'la', 'montagne', 'Je', 'ne', 'puis', 'demeurer', 'loin', 'de', 'toi', 'plus', 'longtemps']
+        french = ['Demain', 'dès', 'l’aube', 'à', 'l’heure', 'où', 'blanchit', 'la', 'campagne', 'Je', 'partirai',
+                  'Vois', 'tu', 'je', 'sais', 'que', 'tu', 'm’attends', 'J’irai', 'par', 'la', 'forêt', 'j’irai',
+                  'par', 'la', 'montagne', 'Je', 'ne', 'puis', 'demeurer', 'loin', 'de', 'toi', 'plus', 'longtemps']
         empty = []
-        unsupported_language = ['Aqoonyahanada', 'caalamku', 'waxay', 'aad', 'ugu', 'murmaan', 'sidii', 'luuqadaha', 'aduunku', 'ku', 'bilaabmeem']
+        unsupported_language = ['Aqoonyahanada', 'caalamku', 'waxay', 'aad', 'ugu', 'murmaan', 'sidii', 'luuqadaha',
+                                'aduunku', 'ku', 'bilaabmeem']
         unknown_word_ratio = UnknownWordRatioMetadata().metadata_function
         self.assertEqual(unknown_word_ratio('en', correct_english), 0.00)
         self.assertEqual(unknown_word_ratio('en', incorrect_english), .4)
@@ -313,9 +365,12 @@ class TestTextMetadataFunctions(unittest.TestCase):
         no_stopwords = ['computer', 'calculates', 'math']
         only_stopwords = ['The', 'and', 'is', 'I', 'am']
         mixed = ['A', 'normal', 'sentence', 'has', 'both']
-        french = ['Demain', 'dès', 'l’aube', 'à', 'l’heure', 'où', 'blanchit', 'la', 'campagne', 'Je', 'partirai', 'Vois', 'tu', 'je', 'sais', 'que', 'tu', 'm’attends', 'J’irai', 'par', 'la', 'forêt', 'j’irai', 'par', 'la', 'montagne', 'Je', 'ne', 'puis', 'demeurer', 'loin', 'de', 'toi', 'plus', 'longtemps']
+        french = ['Demain', 'dès', 'l’aube', 'à', 'l’heure', 'où', 'blanchit', 'la', 'campagne', 'Je', 'partirai',
+                  'Vois', 'tu', 'je', 'sais', 'que', 'tu', 'm’attends', 'J’irai', 'par', 'la', 'forêt', 'j’irai',
+                  'par', 'la', 'montagne', 'Je', 'ne', 'puis', 'demeurer', 'loin', 'de', 'toi', 'plus', 'longtemps']
         empty = []
-        unsupported_language = ['Aqoonyahanada', 'caalamku', 'waxay', 'aad', 'ugu', 'murmaan', 'sidii', 'luuqadaha', 'aduunku', 'ku', 'bilaabmeem']
+        unsupported_language = ['Aqoonyahanada', 'caalamku', 'waxay', 'aad', 'ugu', 'murmaan', 'sidii', 'luuqadaha',
+                                'aduunku', 'ku', 'bilaabmeem']
         stopword_ratio = StopwordRatioMetadata().metadata_function
         self.assertEqual(stopword_ratio('en', no_stopwords), 0.0)
         self.assertEqual(stopword_ratio('en', only_stopwords), 1.0)
@@ -368,7 +423,9 @@ class TestTextMetadataFunctions(unittest.TestCase):
         englishTypos = "Thhis is a nirnal sentense. Lanquage detecction is esay."
         german = "Dies ist ein einfacher Satz. Kurz und knackig."
         englishgerman = "Dieser Text ist zum Teil deutsch. <br> Part of this text is in english"
-        multipleLanguages = "Dieser Text ist zum Teil deutsch. \n Part of this text is in english. \n there actually is some french coming. \n Ce n'est pas anglais. \n No puedo hablar español. \n Beberapa bahasa untuk diuji."
+        multipleLanguages = "Dieser Text ist zum Teil deutsch. \n Part of this text is in english. \n there actually " \
+                            "is some french coming. \n Ce n'est pas anglais. \n No puedo hablar español. \n Beberapa " \
+                            "bahasa untuk diuji."
         punctuation = " . ,"
         empty = ""
         language = LanguagePerParagraph().detect_languages
@@ -382,7 +439,9 @@ class TestTextMetadataFunctions(unittest.TestCase):
 
     def text_complexity(self):
         easy = "This is easy. This is a sentence. This has a big number."
-        hard = "Quantum mechanics (QM; also known as quantum physics, quantum theory, the wave mechanical model, or matrix mechanics), including quantum field theory, is a fundamental theory in physics which describes nature at the smallest scales of energy levels of atoms and subatomic particles."
+        hard = "Quantum mechanics (QM; also known as quantum physics, quantum theory, the wave mechanical model, or " \
+               "matrix mechanics), including quantum field theory, is a fundamental theory in physics which " \
+               "describes nature at the smallest scales of energy levels of atoms and subatomic particles."
         punctuation = " . ,"
         empty = ""
         text_complexity = ComplexityMetadata().metadata_function
