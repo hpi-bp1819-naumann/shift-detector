@@ -45,7 +45,7 @@ class ConditionalProbabilitiesCheck(Check):
         explanation = defaultdict(list)
         for i, compressed_rule in enumerate(compressed_rules):
             if i == self.rule_limit:
-                break
+                break # TODO
             columns = tuple(sorted(key for key, _ in compressed_rule.attributes))
             shifted_columns.add(columns)
 

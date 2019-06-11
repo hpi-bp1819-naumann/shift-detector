@@ -5,7 +5,7 @@ from pandas import DataFrame
 from shift_detector.checks.ConditionalProbabilitiesCheck import ConditionalProbabilitiesCheck
 from shift_detector.precalculations.Store import Store
 
-
+# TODO
 class TestConditionalProbabilitiesCheck(TestCase):
 
     def setUp(self):

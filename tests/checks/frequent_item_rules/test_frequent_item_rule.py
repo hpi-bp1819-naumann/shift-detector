@@ -4,7 +4,7 @@ from shift_detector.precalculations.conditional_probabilities.ExtendendRule impo
 from collections import namedtuple
 import copy
 
-
+# TODO
 class TestRuleCluster(unittest.TestCase):
 
     def setUp(self):

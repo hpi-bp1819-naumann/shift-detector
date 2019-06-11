@@ -2,7 +2,7 @@ from collections import defaultdict
 
 from shift_detector.precalculations.conditional_probabilities.ExtendendRule import ExtendedRule, RuleCluster
 
-
+# TODO
 def remove_attribute_value_pairs_appearing_in_all_rules(rules):
     # TODO: remove this function.
     appearing_in_all_seen_so_far = None
