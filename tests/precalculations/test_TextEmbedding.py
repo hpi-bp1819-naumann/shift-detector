@@ -49,13 +49,13 @@ class TestTextEmbeddingPrecalculation(unittest.TestCase):
             df1, df2 = self.te1.process(self.store)
             for column in df1:
                 for field in df1[column]:
-                    self.assertEqual(len(field), 100)
+                    self.assertEqual(100, len(field))
 
         with self.subTest('Test avg'):
             df1, df2 = self.w2v_avg1.process(self.store)
             for column in df1:
                 for field in df1[column]:
-                    self.assertEqual(len(field), 100)
+                    self.assertEqual(100, len(field))
 
         with self.subTest('Test no agg'):
             df1, df2 = self.ft_no_agg.process(self.store)
@@ -64,4 +64,4 @@ class TestTextEmbeddingPrecalculation(unittest.TestCase):
                     if not field.shape[0] >= 1:
                         print(field.shape)
                     self.assertTrue(field.shape[0] >= 1)
-                    self.assertEqual(field.shape[1], self.ft1.vector_size)
+                    self.assertEqual(self.ft1.vector_size, field.shape[1])

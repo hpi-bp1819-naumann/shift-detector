@@ -1,5 +1,6 @@
 import logging as logger
 from collections.abc import Iterable
+from numbers import Number
 from typing import List
 
 from shift_detector.checks.Check import Check, Report
@@ -19,10 +20,7 @@ class WordPredictionCheck(Check):
         if columns and (not isinstance(columns, Iterable) or any(not isinstance(column, str) for column in columns)):
             raise TypeError("columns should be empty or a list of strings. Received: {}".format(columns))
 
-        def is_numeric(value):
-            return isinstance(value, float) or isinstance(value, int)
-
-        if not is_numeric(self.relative_thresh):
+        if not isinstance(self.relative_thresh, Number):
             raise TypeError('Expected argument relative_thresh to be of types [float, int]. '
                             'Received {}.'.format(self.relative_thresh.__class__.__name__))
 
@@ -41,9 +39,7 @@ class WordPredictionCheck(Check):
     def run(self, store) -> Report:
 
         if self.columns is None:
-            df1_columns = set(store[ColumnType.text][0].columns)
-            df2_columns = set(store[ColumnType.text][1].columns)
-            self.columns = list(df1_columns.intersection(df2_columns))
+            self.columns = store[ColumnType.text]
             logger.info('Automatically selected columns [{}] to be tested by WordPredictionCheck'.format(self.columns))
 
         result = {}

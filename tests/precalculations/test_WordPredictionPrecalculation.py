@@ -7,12 +7,15 @@ from shift_detector.precalculations.Store import Store
 from shift_detector.precalculations.WordPredictionPrecalculation import WordPredictionPrecalculation
 
 
-class TestCreateDetector(TestCase):
+class TestWordPredictionPrecalculation(TestCase):
 
     def setUp(self):
+        # create alphabet list: ['a', 'b', ..., 'z']
         alphabet = [chr(letter) for letter in range(ord('a'), ord('z')+1)]
 
         col = []
+        # creates lists of size 7 with consecutive letters from the alphabet
+        # result: ['a b c d e f g', 'b c d e f g h', ...]
         for idx in range(len(alphabet) - 7):
             col.append(' '.join(alphabet[idx:idx+7]))
 
@@ -22,16 +25,17 @@ class TestCreateDetector(TestCase):
         self.df2 = DataFrame.from_dict(data2)
         self.store = Store(self.df1, self.df2)
         self.precalculation_shift = WordPredictionPrecalculation('shift')
-        self.precalculation_noShift = WordPredictionPrecalculation('no_shift')
+        self.precalculation_no_shift = WordPredictionPrecalculation('no_shift')
 
         np.random.seed(1)
 
     def test_process(self):
         with self.subTest("Test losses"):
             df1_prediction_loss, df2_prediction_loss = self.precalculation_shift.process(self.store)
-            self.assertTrue(df2_prediction_loss > df1_prediction_loss * 1.3)
+            min_loss_diff = df1_prediction_loss * .3
+            self.assertTrue(df2_prediction_loss > df1_prediction_loss + min_loss_diff)
 
-            df1_prediction_loss, df2_prediction_loss = self.precalculation_noShift.process(self.store)
+            df1_prediction_loss, df2_prediction_loss = self.precalculation_no_shift.process(self.store)
             self.assertTrue(df2_prediction_loss <= df1_prediction_loss)
 
     def test_equal(self):
@@ -40,19 +44,19 @@ class TestCreateDetector(TestCase):
             self.assertEqual(self.precalculation_shift, other_precalculation)
 
             other_precalculation = WordPredictionPrecalculation('no_shift')
-            self.assertEqual(self.precalculation_noShift, other_precalculation)
+            self.assertEqual(self.precalculation_no_shift, other_precalculation)
 
         with self.subTest("Test inequality"):
             other_precalculation = WordPredictionPrecalculation('no_shift')
             self.assertNotEqual(self.precalculation_shift, other_precalculation)
 
             other_precalculation = WordPredictionPrecalculation('shift')
-            self.assertNotEqual(self.precalculation_noShift, other_precalculation)
+            self.assertNotEqual(self.precalculation_no_shift, other_precalculation)
 
         with self.subTest("Test inequality with another class"):
             other = "Not a WordPredictionPrecalculation"
             self.assertNotEqual(self.precalculation_shift, other)
-            self.assertNotEqual(self.precalculation_noShift, other)
+            self.assertNotEqual(self.precalculation_no_shift, other)
 
     def test_hash(self):
         with self.subTest("Test hash equality"):
@@ -60,11 +64,11 @@ class TestCreateDetector(TestCase):
             self.assertEqual(self.precalculation_shift.__hash__(), other_precalculation.__hash__())
 
             other_precalculation = WordPredictionPrecalculation('no_shift')
-            self.assertEqual(self.precalculation_noShift.__hash__(), other_precalculation.__hash__())
+            self.assertEqual(self.precalculation_no_shift.__hash__(), other_precalculation.__hash__())
 
         with self.subTest("Test hash inequality"):
             other_precalculation = WordPredictionPrecalculation('no_shift')
             self.assertNotEqual(self.precalculation_shift.__hash__(), other_precalculation.__hash__())
 
             other_precalculation = WordPredictionPrecalculation('shift')
-            self.assertNotEqual(self.precalculation_noShift.__hash__(), other_precalculation.__hash__())
+            self.assertNotEqual(self.precalculation_no_shift.__hash__(), other_precalculation.__hash__())

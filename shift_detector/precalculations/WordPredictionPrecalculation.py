@@ -10,11 +10,12 @@ from keras.models import Sequential
 
 from shift_detector.precalculations.Precalculation import Precalculation
 from shift_detector.precalculations.TextEmbeddingPrecalculation import TextEmbeddingPrecalculation
+from shift_detector.utils.ColumnManagement import ColumnType
 
 
 class WordPredictionPrecalculation(Precalculation):
 
-    def __init__(self, column, ft_window_size=5, ft_size=100, lstm_window=5, num_epochs_predictor=10, verbose=1):
+    def __init__(self, column, ft_window_size=5, ft_size=100, lstm_window=5, num_epochs_predictor=100, verbose=1):
         self.column = column
         self.ft_window_size = ft_window_size
         self.ft_size = ft_size
@@ -36,18 +37,20 @@ class WordPredictionPrecalculation(Precalculation):
         return self.column == other.column \
             and self.ft_window_size == other.ft_window_size \
             and self.ft_size == other.ft_size \
-            and self.lstm_window == other.lstm_window
+            and self.lstm_window == other.lstm_window \
+            and self.num_epochs_predictor == other.num_epochs_predictor
 
     def __hash__(self):
-        return hash((self.column, self.ft_window_size, self.ft_size, self.lstm_window))
+        return hash((self.column, self.ft_window_size, self.ft_size, self.lstm_window, self.num_epochs_predictor))
 
     def process(self, store) -> Tuple[float, float]:
+
+        if self.column not in store[ColumnType.text]:
+            raise ValueError('Column {} does not exist or is no textual column. '
+                             'Please pass one of [{}] instead.'.format(self.column, store[ColumnType.text]))
+
         ft_model = FastText(size=self.ft_size, window=self.ft_window_size, min_count=1, workers=4)
         processed_df1, processed_df2 = store[TextEmbeddingPrecalculation(model=ft_model, agg=None)]
-
-        if self.column not in processed_df1.columns:
-            raise ValueError('Column {} does not exist or is no textual column. '
-                             'Please pass one of [{}] instead.'.format(self.column, processed_df1.columns))
 
         df1_prediction_loss, df2_prediction_loss = self.get_prediction_losses(processed_df1, processed_df2, self.column)
         return df1_prediction_loss, df2_prediction_loss
@@ -101,13 +104,15 @@ class WordPredictionPrecalculation(Precalculation):
 
     def create_callbacks(self):
         callbacks = []
-        callbacks += [ModelCheckpoint('model_checkpoints/model.h5', verbose=self.verbose,
+        dir = 'wordPredictionCheck_model_checkpoints'
+
+        callbacks += [ModelCheckpoint(dir + '/model.h5', verbose=self.verbose,
                                       monitor='loss', save_best_only=True, mode='auto')]
         callbacks += [EarlyStopping(monitor='loss', patience=3, verbose=self.verbose,
                                     mode='auto', restore_best_weights=True)]
 
-        if not os.path.exists('model_checkpoints'):
-            os.mkdir('model_checkpoints')
+        if not os.path.exists(dir):
+            os.mkdir(dir)
 
         return callbacks
 
