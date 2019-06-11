@@ -4,6 +4,7 @@ import pandas as pd
 from shift_detector.precalculations.Precalculation import Precalculation
 from shift_detector.utils.ColumnManagement import ColumnType
 
+
 class TokenizeIntoLowerWordsPrecalculation(Precalculation):
 
     def __eq__(self, other):
@@ -12,6 +13,7 @@ class TokenizeIntoLowerWordsPrecalculation(Precalculation):
     def __hash__(self):
         return hash(self.__class__)
 
+    @staticmethod
     def tokenize_into_words(self, text):
         text = text.lower()
         text = re.sub(r"-", ' ', text)

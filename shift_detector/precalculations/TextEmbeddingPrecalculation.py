@@ -4,8 +4,8 @@ from gensim.models import FastText, Word2Vec
 from numbers import Number
 from copy import copy
 from shift_detector.precalculations.Precalculation import Precalculation
-from shift_detector.precalculations.Tokenizer import TokenizeIntoLowerWordsPrecalculation
-from shift_detector.precalculations.Store import Store, ColumnType
+from shift_detector.precalculations.TextPreprocessor import TokenizeIntoLowerWordsPrecalculation
+from shift_detector.precalculations.Store import Store
 
 
 class TextEmbeddingPrecalculation(Precalculation):

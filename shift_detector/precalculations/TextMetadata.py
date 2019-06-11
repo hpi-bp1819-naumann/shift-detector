@@ -15,7 +15,7 @@ from spellchecker import SpellChecker
 from textstat import textstat
 
 from shift_detector.precalculations.Precalculation import Precalculation
-from shift_detector.precalculations.Tokenizer import TokenizeIntoLowerWordsPrecalculation
+from shift_detector.precalculations.TextPreprocessor import TokenizeIntoLowerWordsPrecalculation
 from shift_detector.utils import UCBlist
 from shift_detector.utils.ColumnManagement import ColumnType
 from shift_detector.utils.TextMetadataUtils import dictionary_to_sorted_string, delimiters
@@ -288,11 +288,11 @@ class StopwordRatioMetadata(GenericTextMetadataWithTokenizingAndLanguage):
         # not working for every language
         stopword_count = 0
         try:
-            stop = stopwords.words(languages.get(part1=language).name.lower())
+            stopwords_for_language_lower = stopwords.words(languages.get(part1=language).name.lower())
             if len(words) == 0:
                 return 0.0
             for word in words:
-                if word in stop:
+                if word in stopwords_for_language_lower:
                     stopword_count += 1
             return stopword_count / len(words)
         except OSError as error:

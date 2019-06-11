@@ -9,11 +9,11 @@ class TestTextEmbeddingPrecalculation(unittest.TestCase):
 
     def setUp(self):
         df1 = pd.DataFrame({'col1': ['ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef',
-                                          'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef',
-                                          'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef',
-                                          'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef', '']})
+                                     'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef',
+                                     'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef',
+                                     'ab cd ef', 'ab cd ef', 'ab cd ef', 'ab cd ef', '']})
         df2 = pd.DataFrame({'col1': ['ab ', 'hi ', 'jk ', 'lm ', 'no ', 'pq ', 'rs ', 'tu ',
-                                          'vw ', 'xy ', 'z1 ', '23 ', '45 ', '67 ', '89 ']})
+                                     'vw ', 'xy ', 'z1 ', '23 ', '45 ', '67 ', '89 ']})
         self.store = Store(df1, df2)
         ft1 = FastText(size=50, window=5, min_count=1, workers=4)
         self.te1 = TextEmbeddingPrecalculation(model='word2vec')
