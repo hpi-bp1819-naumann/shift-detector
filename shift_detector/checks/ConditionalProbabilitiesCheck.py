@@ -65,6 +65,8 @@ class ConditionalProbabilitiesCheck(Check):
             plt.title('Conditional Probabilities')
             plt.xlabel('Absolute delta supports')
             plt.ylabel('Absolute delta confidences')
+            plt.xticks([i/10 for i in range(0, 11)])
+            plt.yticks([i / 10 for i in range(0, 11)])
             plt.show()
 
         return Report('Conditional Probabilities', examined_columns, shifted_columns, explanation,
