@@ -1,6 +1,6 @@
 from copy import deepcopy
 from shift_detector.precalculations.Precalculation import Precalculation
-from shift_detector.Utils import ColumnType
+from shift_detector.utils.ColumnManagement import ColumnType
 
 
 class SimplePrecalculation(Precalculation):

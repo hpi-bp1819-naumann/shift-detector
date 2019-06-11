@@ -123,6 +123,9 @@ config.py
 # IntelliJ
 .idea/
 
+# VS Code
+.vscode/
+
 # iOS Stuff
 .DS_Store
 

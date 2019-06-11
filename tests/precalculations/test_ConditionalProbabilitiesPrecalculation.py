@@ -5,6 +5,7 @@ from itertools import chain, combinations
 import pandas as pd
 
 from shift_detector.precalculations.conditional_probabilities import fpgrowth, pyfpgrowth_core
+from shift_detector.precalculations.ConditionalProbabilitiesPrecalculation import ConditionalProbabilitiesPrecalculation
 
 # Todo
 class TestFPGrowth(unittest.TestCase):
@@ -118,6 +119,15 @@ class TestFPGrowth(unittest.TestCase):
                          delta_supports_of_left_side=-0.5, supports=(0.0, 0.5), delta_supports=-0.5,
                          confidences=(0.0, 1.0), delta_confidences=-1.0)]
         self.assertCountEqual(rules, expected)
+
+    def test_equal_and_hash(self):
+        a = ConditionalProbabilitiesPrecalculation(0.5, 0.4, 0.3, 0.2)
+        b = ConditionalProbabilitiesPrecalculation(0.5, 0.4, 0.3, 0.2)
+        c = ConditionalProbabilitiesPrecalculation(0.5, 0.5, 0.5, 0.5)
+        self.assertEqual(a, b)
+        self.assertNotEqual(a, c)
+        self.assertEqual(hash(a), hash(b))
+        self.assertNotEqual(hash(a), hash(c))
 
 
 if __name__ == '__main__':

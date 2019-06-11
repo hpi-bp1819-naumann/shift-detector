@@ -1,6 +1,13 @@
+matplotlib
+iso-639
+nltk
+textstat
+pyspellchecker
+langdetect
 pandas
 numpy
 scipy
 sklearn
 datawig
 gensim
+regex
