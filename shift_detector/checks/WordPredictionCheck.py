@@ -39,7 +39,7 @@ class WordPredictionCheck(Check):
     def run(self, store) -> Report:
 
         if self.columns is None:
-            self.columns = store[ColumnType.text]
+            self.columns = list(store[ColumnType.text][0].columns)
             logger.info('Automatically selected columns [{}] to be tested by WordPredictionCheck'.format(self.columns))
 
         result = {}

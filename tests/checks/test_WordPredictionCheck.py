@@ -20,7 +20,7 @@ class TestWordPredictionCheck(TestCase):
         self.df1 = DataFrame.from_dict(data1)
         self.df2 = DataFrame.from_dict(data2)
         self.store = Store(self.df1, self.df2)
-        self.precalculation = WordPredictionCheck(columns=['shift', 'no_shift'], relative_thresh=.3)
+        self.check = WordPredictionCheck(relative_thresh=.3)
 
     def test_init(self):
         with self.subTest("Test wrong columns"):
@@ -36,7 +36,10 @@ class TestWordPredictionCheck(TestCase):
             self.assertRaises(ValueError, lambda: WordPredictionCheck(lstm_window=0))
 
     def test_run(self):
-        report = self.precalculation.run(self.store)
+        report = self.check.run(self.store)
+
+        with self.subTest("Test setting columns"):
+            self.assertTrue(set(report.examined_columns) == set(self.store.columns))
 
         with self.subTest("Test shifted columns"):
             self.assertCountEqual(report.shifted_columns, ['shift'])
