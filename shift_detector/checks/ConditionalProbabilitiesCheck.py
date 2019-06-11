@@ -41,18 +41,22 @@ class ConditionalProbabilitiesCheck(Check):
 
     def run(self, store):
         rules, examined_columns = store[
-            ConditionalProbabilitiesPrecalculation(self.min_support, self.min_confidence, self.min_delta_supports,
-                                                   self.min_delta_confidences)]
+            ConditionalProbabilitiesPrecalculation(self.min_support, self.min_confidence)]
 
         shifted_columns = set()
         explanation = defaultdict(list)
-        for i, rule in enumerate(rules):
-            if i == self.rule_limit:
+        count = 0
+        for rule in rules:
+            if count == self.rule_limit:
                 break
-            columns = get_columns(rule)
-            shifted_columns.add(columns)
 
-            explanation[', '.join(columns)].append(to_string(rule))
+            if abs(rule.delta_supports) >= self.min_delta_supports and abs(
+                    rule.delta_confidences) >= self.min_delta_confidences:
+                columns = get_columns(rule)
+                shifted_columns.add(columns)
+                explanation[', '.join(columns)].append(to_string(rule))
+
+                count += 1
 
         def plot_result():
             x = [abs(rule.delta_supports) for rule in rules]
