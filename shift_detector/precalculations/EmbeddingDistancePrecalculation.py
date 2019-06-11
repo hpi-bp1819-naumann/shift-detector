@@ -32,7 +32,7 @@ class EmbeddingDistancePrecalculation(Precalculation):
         :return: CheckResult
         """
 
-        df1, df2 = store[TextEmbeddingPrecalculation(model=self.model, trained_model=self.trained_model)]
+        df1, df2 = store[TextEmbeddingPrecalculation(model=self.model, trained_model=self.trained_model, agg='sum')]
 
         df1a, df1b = random_split(df1, [0.95, 0.05])           # Baseline for df1
         df2a, df2b = random_split(df2, [0.95, 0.05])           # Baseline for df2
