@@ -28,4 +28,4 @@ class EmbeddingDistanceCheck(Check):
                     or abs(data[column_name][1] - data[column_name][2]) > data[column_name][1] * 3):
                 shifted_columns.add(column_name)
 
-        return Report(examined_columns, shifted_columns, dict(explanation))
+        return Report("Embedding Distance Check", examined_columns, shifted_columns, dict(explanation))
