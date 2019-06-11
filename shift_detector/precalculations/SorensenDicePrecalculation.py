@@ -71,8 +71,8 @@ class SorensenDicePrecalculations(Precalculation):
         df1a, df1b = random_split(df1, [0.95, 0.05], seed=11)           # Baseline for df1
         df2a, df2b = random_split(df2, [0.95, 0.05], seed=11)           # Baseline for df2
 
-        if df1a.empty or df1b.empty or df2a.empty or df2b.empty:
-            raise ValueError('Dataset to small for split ratio or n to big')
+        if df1b.empty or df2b.empty:
+            raise ValueError('Dataset to small for split ratio or n={} to big'.format(self.n))
 
         result = {}
         for i in df1:
