@@ -1,4 +1,5 @@
 import logging as logger
+import math
 from typing import List
 
 import pandas as pd
@@ -33,3 +34,12 @@ def shared_column_names(df1: pd.DataFrame, df2: pd.DataFrame) -> List[str]:
         shared_columns = df1_columns
 
     return list(shared_columns)
+
+
+def smart_round(n, min_digits=2):
+    if n == 0:
+        return 0
+    digits = int(-math.floor(math.log10(abs(n))))
+    if digits < min_digits:
+        digits = min_digits
+    return round(n, digits)
