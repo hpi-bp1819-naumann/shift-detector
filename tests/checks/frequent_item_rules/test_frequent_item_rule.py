@@ -1,10 +1,11 @@
+import copy
 import unittest
+from collections import namedtuple
+
 from shift_detector.precalculations.conditional_probabilities import rule_compression
 from shift_detector.precalculations.conditional_probabilities.ExtendendRule import ExtendedRule, RuleCluster
-from collections import namedtuple
-import copy
 
-# TODO
+
 class TestRuleCluster(unittest.TestCase):
 
     def setUp(self):
@@ -176,8 +177,3 @@ class TestFrequentItemRule(unittest.TestCase):
         self.assertEqual(len(compressed_rules), 2)
         self.assertEqual(len(compressed_rules[0].subcluster), 0)
         self.assertEqual(len(compressed_rules[1].subcluster), 2)
-
-
-
-
-

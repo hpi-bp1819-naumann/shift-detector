@@ -4,10 +4,10 @@ from itertools import chain, combinations
 
 import pandas as pd
 
-from shift_detector.precalculations.conditional_probabilities import fpgrowth, pyfpgrowth_core
 from shift_detector.precalculations.ConditionalProbabilitiesPrecalculation import ConditionalProbabilitiesPrecalculation
+from shift_detector.precalculations.conditional_probabilities import fpgrowth, pyfpgrowth_core
 
-# Todo
+
 class TestFPGrowth(unittest.TestCase):
     def test_find_frequent_patterns(self):
         transactions = [
