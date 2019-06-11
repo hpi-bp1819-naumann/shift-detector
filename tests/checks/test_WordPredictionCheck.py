@@ -6,7 +6,7 @@ from shift_detector.checks.WordPredictionCheck import WordPredictionCheck
 from shift_detector.precalculations.Store import Store
 
 
-class TestDistinctionCheck(TestCase):
+class TestWordPredictionCheck(TestCase):
 
     def setUp(self):
         alphabet = [chr(letter) for letter in range(ord('a'), ord('z')+1)]
