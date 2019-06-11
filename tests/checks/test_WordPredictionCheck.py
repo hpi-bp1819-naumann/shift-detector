@@ -39,10 +39,10 @@ class TestWordPredictionCheck(TestCase):
         report = self.check.run(self.store)
 
         with self.subTest("Test setting columns"):
-            self.assertTrue(set(report.examined_columns) == set(self.store.columns))
+            self.assertCountEqual(['shift', 'no_shift'], report.examined_columns)
 
         with self.subTest("Test shifted columns"):
-            self.assertCountEqual(report.shifted_columns, ['shift'])
+            self.assertCountEqual(['shift'], report.shifted_columns)
 
         with self.subTest("Test examined columns"):
-            self.assertCountEqual(report.examined_columns, ['shift', 'no_shift'])
+            self.assertCountEqual(['shift', 'no_shift'], report.examined_columns)
