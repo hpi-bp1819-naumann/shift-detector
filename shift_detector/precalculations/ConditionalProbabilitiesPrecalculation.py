@@ -4,7 +4,6 @@ from shift_detector.precalculations.BinningPrecalculation import BinningPrecalcu
 from shift_detector.precalculations.Precalculation import Precalculation
 from shift_detector.precalculations.conditional_probabilities import fpgrowth
 from shift_detector.utils.ColumnManagement import ColumnType
-from shift_detector.precalculations.conditional_probabilities import rule_compression
 
 
 class ConditionalProbabilitiesPrecalculation(Precalculation):
@@ -20,9 +19,8 @@ class ConditionalProbabilitiesPrecalculation(Precalculation):
         df1 = pd.concat([df1_cat, df1_num], axis=1)
         df2 = pd.concat([df2_cat, df2_num], axis=1)
 
-        uncompressed_rules = fpgrowth.calculate_frequent_rules(df1, df2, self.min_support, self.min_confidence)
-        compressed_rules = rule_compression.compress_rules(uncompressed_rules)
-        return compressed_rules, list(df1.columns)
+        rules = fpgrowth.calculate_frequent_rules(df1, df2, self.min_support, self.min_confidence)
+        return rules, list(df1.columns)
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):

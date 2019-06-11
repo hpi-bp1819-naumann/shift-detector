@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 from shift_detector.checks.Check import Check, Report
 from shift_detector.precalculations.ConditionalProbabilitiesPrecalculation import ConditionalProbabilitiesPrecalculation
-from shift_detector.precalculations.conditional_probabilities.fpgrowth import get_columns, to_string
+from shift_detector.precalculations.conditional_probabilities import rule_compression
 
 
 class ConditionalProbabilitiesCheck(Check):
@@ -40,17 +40,23 @@ class ConditionalProbabilitiesCheck(Check):
         self.min_delta_confidences = float(min_delta_confidences)
 
     def run(self, store):
-        compressed_rules, examined_columns = store[
+        rules, examined_columns = store[
             ConditionalProbabilitiesPrecalculation(self.min_support, self.min_confidence)]
+
+        reduced_rules = [rule for rule in rules if abs(rule.delta_supports) >= self.min_delta_supports and abs(
+            rule.delta_confidences) >= self.min_delta_confidences]
+
+        compressed_rules = rule_compression.compress_rules(reduced_rules)
 
         shifted_columns = set()
         explanation = defaultdict(list)
         for i, compressed_rule in enumerate(compressed_rules):
             if i == self.rule_limit:
-                break # TODO
-            columns = get_columns(rule)
+                break
+            columns = tuple(sorted(key for key, _ in compressed_rule.attributes))
             shifted_columns.add(columns)
-            explanation[', '.join(columns)].append(to_string(rule))
+
+            explanation[', '.join(columns)].append(str(compressed_rule))
 
         def plot_result():
             x = [abs(rule.delta_supports) for rule in rules]
@@ -59,7 +65,7 @@ class ConditionalProbabilitiesCheck(Check):
             plt.title('Conditional Probabilities')
             plt.xlabel('Absolute delta supports')
             plt.ylabel('Absolute delta confidences')
-            plt.xticks([i/10 for i in range(0, 11)])
+            plt.xticks([i / 10 for i in range(0, 11)])
             plt.yticks([i / 10 for i in range(0, 11)])
             plt.show()
 
