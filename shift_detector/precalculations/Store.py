@@ -53,7 +53,5 @@ class Store:
     def verify_min_data_size(size):
         if size < MIN_DATA_SIZE:
             raise InsufficientDataError('The input data is insufficient for the column type heuristics to work. Only '
-                                        '{actual} row(s) were passed. Please pass at least {expected} rows.'.format(
-                                            actual=size,
-                                            expected=MIN_DATA_SIZE),
-                                        size, MIN_DATA_SIZE)
+                                        '{actual} row(s) were passed. Please pass at least {expected} rows.'
+                                        .format(actual=size, expected=MIN_DATA_SIZE), size, MIN_DATA_SIZE)
