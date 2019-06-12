@@ -38,10 +38,10 @@ class Store:
     def __getitem__(self, needed_preprocessing) -> DataFrame:
         if isinstance(needed_preprocessing, ColumnType):
             return self.splitted_dfs[needed_preprocessing]
-
+        '''
         if not isinstance(needed_preprocessing, Precalculation):
             raise Exception("Needed Preprocessing must be of type Precalculation or ColumnType")
-
+        '''
         if needed_preprocessing in self.preprocessings:
             logger.info("Use already existing Precalculation")
             return self.preprocessings[needed_preprocessing]
@@ -51,14 +51,16 @@ class Store:
         self.preprocessings[needed_preprocessing] = preprocessing
         return preprocessing
 
-    def columns(self, *column_types):
+    def column_names(self, *column_types):
         if not column_types:
             return self.shared_columns
 
         if any([not isinstance(column_type, ColumnType) for column_type in column_types]):
             raise TypeError("column_types should be empty or of type ColumnType.")
 
-        return list({self.type_to_columns[column_type] for column_type in column_types})
+        multi_columns = [self.type_to_columns[column_type] for column_type in column_types]
+        flattened = {column for columns in multi_columns for column in columns}
+        return list(flattened)
 
     @staticmethod
     def verify_min_data_size(size):
