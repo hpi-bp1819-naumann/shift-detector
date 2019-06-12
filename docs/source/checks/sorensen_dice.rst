@@ -1,7 +1,7 @@
 .. _sorensen_dice:
 
-Sørensen Dice Check
-===================
+Sørensen Dice
+=============
 
 Description
 -----------
@@ -14,7 +14,7 @@ The check can only operate on textual data.
 Example
 -------
 
-This section shows you how to use the :ref:`sorensen_dice` and interpret its result.
+This section shows you how to use :ref:`sorensen_dice` and interpret its result.
 
 Code
 ++++
@@ -49,7 +49,7 @@ The code works as follows:
 Result
 ++++++
 
-The :ref:`sorensen_dice` produces the following output:
+:ref:`sorensen_dice` produces the following output:
 
 ::
 
@@ -57,9 +57,9 @@ The :ref:`sorensen_dice` produces the following output:
     Examined Columns: ['item_name', 'description']
     Shifted Columns: ['item_name', 'description']
     Column 'item_name':
-        Baseline in Dataset1: 0.882309312885565
-        Baseline in Dataset2: 0.5019683426891977
-        Sorensen Dice Coefficient between Datasets: 0.5455459906424186
+        Baseline in Dataset1: 0.882
+        Baseline in Dataset2: 0.501
+        Sorensen Dice Coefficient between Datasets: 0.545
     Column 'description':
         Baseline in Dataset1: 0.9355557653895485
         Baseline in Dataset2: 0.5669534250708042
@@ -70,11 +70,11 @@ Interpretation
 
 The above report can be read as follows:
 
-1. The examined columns are 'describtion' and 'item_name"
+1. The examined columns are 'description' and 'item_name"
 2. The columns that contain a shift according to the Sørensen Dice Check are 'item_name' and 'description'
-3. The similarity of the item names within Dataset1 is at 0.88
-4. The similarity of the item names within Dataset1 is at 0.50
-5. The similarity of Dataset1 and Dataset2 in the column 'item_name' is at 0.55
+3. The similarity of the item names within Dataset1 is at 0.882
+4. The similarity of the item names within Dataset2 is at 0.501
+5. The similarity of Dataset1 and Dataset2 in the column 'item_name' is at 0.545
 
 
 Parameters

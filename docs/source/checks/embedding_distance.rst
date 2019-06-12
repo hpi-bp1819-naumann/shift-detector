@@ -1,7 +1,7 @@
 .. _embedding_distance:
 
-Embedding Distance Check
-========================
+Embedding Distance
+==================
 
 Description
 -----------
@@ -9,12 +9,12 @@ Description
 This check calculates the distance between text embeddings, that are generated using machine learning.
 The higher the distance, the more different are the datasets.
 
-The check can only perform on textual data.
+The check only works on textual data.
 
 Example
 -------
 
-This section shows you how to use the :ref:`sorensen_dice` and interpret its result.
+This section shows you how to use :ref:`sorensen_dice` and interpret its result.
 
 Code
 ++++
@@ -57,13 +57,13 @@ The :ref:`embedding_distance` produces the following output:
     Examined Columns: ['description', 'item_name']
     Shifted Columns: ['description', 'item_name']
     Column 'description':
-        Baseline in Dataset1: 13.44699995973585
-        Baseline in Dataset2: 219.18951398006072
-        Distance between Datasets: 235.40477612612688
+        Baseline in Dataset1: 13.447
+        Baseline in Dataset2: 219.189
+        Distance between Datasets: 235.404
     Column 'item_name':
-        Baseline in Dataset1: 2.412908786586799
-        Baseline in Dataset2: 25.60348965092579
-        Distance between Datasets: 50.208628450592876
+        Baseline in Dataset1: 2.412
+        Baseline in Dataset2: 25.603
+        Distance between Datasets: 50.208
 
 Interpretation
 ++++++++++++++
@@ -73,7 +73,7 @@ The above report can be read as follows:
 1. The examined columns are 'describtion' and 'item_name"
 2. The columns that contain a shift according to the Sørensen Dice Check are 'description' and 'item_name'
 3. The distance between the items within Dataset1 is at 13.447 in the column 'description'
-4. The distance between the items within Dataset2 is at 219.19 in the column 'description'
+4. The distance between the items within Dataset2 is at 219.189 in the column 'description'
 5. The similarity of Dataset1 and Dataset2 in the column 'description' is at 235.405
 
 
@@ -99,7 +99,7 @@ Algorithm
 
 1. A machine learning model is trained on all texts of the examined column.
 2. For each word in the examined column an embedding is calculated using the machine learning model.
-3. All embeddings of a column of a dataset are added and devided by their overall quantity
+3. All embeddings of a column of a dataset are added and divided by their overall quantity.
 4. The euclidean distance between the two resulting embeddings (one for each dataset and column) is calculated. 
 
 Notes
