@@ -1,4 +1,3 @@
-import copy
 import unittest
 from collections import namedtuple
 
@@ -46,4 +45,3 @@ class TestRuleCompression(unittest.TestCase):
         compressed_rules = rule_compression.compress_rules([self.rule_a, self.rule_b, self.rule_c])
         self.assertEqual(len(compressed_rules), 2)
         self.assertGreaterEqual(compressed_rules[0].rule.delta_supports, compressed_rules[1].rule.delta_supports)
-

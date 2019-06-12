@@ -3,7 +3,7 @@ from unittest import TestCase
 from pandas import DataFrame
 
 from shift_detector.checks.conditional_probabilities_check import ConditionalProbabilitiesCheck
-from shift_detector.precalculations.Store import Store
+from shift_detector.precalculations.store import Store
 
 
 class TestConditionalProbabilitiesCheck(TestCase):
