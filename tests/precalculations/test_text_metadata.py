@@ -8,7 +8,7 @@ from langdetect.lang_detect_exception import LangDetectException
 from shift_detector.precalculations.store import Store
 from shift_detector.precalculations.text_metadata import *
 
-import tests.utils.test_data as td
+import tests.test_data as td
 
 
 class TestTextMetadataPrecalculations(unittest.TestCase):
