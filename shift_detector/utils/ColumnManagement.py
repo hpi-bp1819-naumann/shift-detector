@@ -81,3 +81,41 @@ def split_dataframes(df1: pd.DataFrame, df2: pd.DataFrame, columns: List) -> Dic
         ColumnType.all_categorical: (df1[all_categorical_columns], df2[all_categorical_columns]),
         ColumnType.text: (df1[text_columns], df2[text_columns])
     }
+
+
+def detect_column_types(df1, df2, columns):
+    """
+    Split df1 and df2 in different dataframes related to type of the column.
+    The column types are numeric, categorical and text.
+    :param df1: first dataframe
+    :param df2: second dataframe
+    :param columns: the columns that both dataframes contain
+    :return: dictionary that maps the column types to the respective columns
+    {
+        ColumnType: [column1, ...],
+        ...
+    }
+    """
+    numerical_columns = [c for c in columns if is_numeric_dtype(df1[c])
+                         and is_numeric_dtype(df2[c])]
+    logger.info("Detected numerical columns: {}".format(", ".join(column_names(numerical_columns))))
+    non_numerical = list(set(columns) - set(numerical_columns))
+
+    categorical_columns = [c for c in non_numerical if is_categorical(df1[c]) and is_categorical(df2[c])]
+    logger.info("Detected categorical columns: {}".format(", ".join(column_names(categorical_columns))))
+
+    numeric_categorical_columns = [c for c in numerical_columns if is_categorical(df1[c]) and is_categorical(df2[c])]
+
+    all_categorical_columns = categorical_columns.copy()
+    all_categorical_columns.extend(numeric_categorical_columns)
+
+    text_columns = list(set(non_numerical) - set(categorical_columns))
+    logger.info("Detected text columns: {}".format(", ".join(column_names(text_columns))))
+
+    return {
+        ColumnType.numerical: numerical_columns,
+        ColumnType.categorical: categorical_columns,
+        ColumnType.all_categorical: all_categorical_columns,
+        ColumnType.text: text_columns
+    }
+
