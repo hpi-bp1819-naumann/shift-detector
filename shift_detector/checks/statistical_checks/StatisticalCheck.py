@@ -75,13 +75,23 @@ class SimpleStatisticalCheck(StatisticalCheck):
         :param pvalues: dataframe with the test result of each column
         :return: dictionary of column-explanation-pairs
         """
-        explanation = {}
+        explanations = {}
         for column in self.significant_columns(pvalues):
-            explanation[column] = 'The probability for equal distribution of the column ' + str(column) + \
+            explanations[column] = 'The probability for equal distribution of the column ' + str(column) + \
                                   ' in both datasets is p = ' + str(pvalues[column]) + ', which is lower than the' \
                                   'specified significance level of alpha = ' + str(self.significance) + '. The ' \
                                   'statistical test performed was ' + self.statistical_test_name() + '.'
-        return explanation
+        return explanations
+
+    @abstractmethod
+    def column_figure(self, column, df1, df2):
+        pass
+
+    def column_figures(self, significant_columns, df1, df2):
+        plot_functions = []
+        for column in significant_columns:
+            plot_functions.append(lambda col=column: self.column_figure(col, df1, df2))
+        return plot_functions
 
     def run(self, store) -> Report:
         pvalues = pd.DataFrame(index=['pvalue'])
@@ -96,8 +106,10 @@ class SimpleStatisticalCheck(StatisticalCheck):
         for column in df1.columns:
             p = self.statistical_test(part1[column], part2[column])
             pvalues[column] = [p]
+        significant_columns = self.significant_columns(pvalues)
         return Report("Statistical Check",
                       examined_columns=list(df1.columns),
-                      shifted_columns=self.significant_columns(pvalues),
+                      shifted_columns=significant_columns,
                       explanation=self.explain(pvalues),
-                      information={'test_results': pvalues})
+                      information={'test_results': pvalues},
+                      figures=self.column_figures(significant_columns, part1, part2))
