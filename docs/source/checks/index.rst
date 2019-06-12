@@ -9,6 +9,7 @@ Checks
 
     conditional_probabilities
     distinction
+    sorensen_dice
     guide
 
 
