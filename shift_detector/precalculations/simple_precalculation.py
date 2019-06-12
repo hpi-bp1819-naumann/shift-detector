@@ -52,8 +52,8 @@ class SimplePrecalculation(Precalculation):
                 numerical_comparison[column]['completeness'][df_name] = len(column_droppedna) / len(df1[column])
 
                 numerical_comparison[column]['uniqueness'][df_name] = len(df.groupby(column)
-                                                                    .filter(lambda x: len(x) == 1)) / \
-                                                                    len(column_droppedna)
+                                                                          .filter(lambda x: len(x) == 1)) / \
+                                                                          len(column_droppedna)
         return numerical_comparison
 
     @staticmethod

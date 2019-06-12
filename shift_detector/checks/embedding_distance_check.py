@@ -22,10 +22,10 @@ class EmbeddingDistanceCheck(Check):
                                        "\tDistance between Datasets: {}"\
                 .format(data[column_name][0], data[column_name][1], data[column_name][2])
 
-            if (abs(data[column_name][0] - data[column_name][1]) > data[column_name][0] * 3
-                    or abs(data[column_name][0] - data[column_name][1]) > data[column_name][1] * 3
-                    or abs(data[column_name][0] - data[column_name][2]) > data[column_name][0] * 3
-                    or abs(data[column_name][1] - data[column_name][2]) > data[column_name][1] * 3):
+            if (abs(data[column_name][0] - data[column_name][1]) > data[column_name][0] * 3 or
+                    abs(data[column_name][0] - data[column_name][1]) > data[column_name][1] * 3 or
+                    abs(data[column_name][0] - data[column_name][2]) > data[column_name][0] * 3 or
+                    abs(data[column_name][1] - data[column_name][2]) > data[column_name][1] * 3):
                 shifted_columns.add(column_name)
 
         return Report("Embedding Distance Check", examined_columns, shifted_columns, dict(explanation))

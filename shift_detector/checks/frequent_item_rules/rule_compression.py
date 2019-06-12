@@ -133,10 +133,3 @@ def compress_rules(rules):
 
 # if __name__ == '__main__':
 #     compress_rules()
-
-
-
-
-
-
-

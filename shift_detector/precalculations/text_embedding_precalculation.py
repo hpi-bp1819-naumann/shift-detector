@@ -28,7 +28,7 @@ class TextEmbeddingPrecalculation(Precalculation):
             self.model = model
         else:
             raise ValueError('Invalid model')
-    
+
     def __eq__(self, other):
         """Overrides the default implementation"""
         if isinstance(other, self.__class__):

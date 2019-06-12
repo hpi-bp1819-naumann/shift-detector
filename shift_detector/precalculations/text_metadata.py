@@ -387,7 +387,8 @@ class DelimiterTypeMetadata(GenericTextMetadata):
 
 
 class NumPartsMetadata(GenericTextMetadata):
-    # Calculates the delimiter of the text and then splits the text by its delimiter to calculate the number of parts in the text
+    # Calculates the delimiter of the text and then splits the text by its delimiter
+    # to calculate the number of parts in the text
 
     @staticmethod
     def metadata_name() -> str:
@@ -405,7 +406,7 @@ class NumPartsMetadata(GenericTextMetadata):
 
 
 class LanguagePerParagraph(GenericTextMetadata):
-    # Depending on the texts delimiter splits the text into parts and calculates the language for each part. 
+    # Depending on the texts delimiter splits the text into parts and calculates the language for each part.
     # Returns a string with the languages, sorted by their frequency
 
     def __init__(self, seed=0):
