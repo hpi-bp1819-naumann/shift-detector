@@ -2,11 +2,11 @@ import unittest
 
 from pandas.util.testing import assert_frame_equal
 
-import shift_detector.utils.TextMetadataUtils as TmUtils
+import shift_detector.utils.text_metadata_utils as TmUtils
 from langdetect.lang_detect_exception import LangDetectException
 
-from shift_detector.precalculations.Store import Store
-from shift_detector.precalculations.TextMetadata import *
+from shift_detector.precalculations.store import Store
+from shift_detector.precalculations.text_metadata import *
 
 import tests.utils.test_data as td
 
