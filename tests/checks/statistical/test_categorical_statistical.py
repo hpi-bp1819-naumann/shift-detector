@@ -3,9 +3,9 @@ import unittest
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
 
-from shift_detector.Detector import Detector
-from shift_detector.checks.statistical_checks.CategoricalStatisticalCheck import chi2_test, CategoricalStatisticalCheck
-from shift_detector.precalculations.Store import Store
+from shift_detector.detector import Detector
+from shift_detector.checks.statistical_checks.categorical_statistical_check import chi2_test, CategoricalStatisticalCheck
+from shift_detector.precalculations.store import Store
 
 
 class TestCategoricalStatisticalCheck(unittest.TestCase):
