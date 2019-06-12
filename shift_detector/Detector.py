@@ -41,7 +41,7 @@ class Detector:
         self.check_reports = []
         self.store = Store(self.df1, self.df2)
 
-        logger.info("Used columns: {}".format(', '.join(column_names(self.store.columns()))))
+        logger.info("Used columns: {}".format(', '.join(column_names(self.store.column_names()))))
 
     def run(self, *checks):
         """
