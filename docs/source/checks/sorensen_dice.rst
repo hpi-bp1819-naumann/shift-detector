@@ -49,7 +49,7 @@ The code works as follows:
 Result
 ++++++
 
-The Sørensen Dice Check produces the following output:
+The :ref:`sorensen_dice` produces the following output:
 
 ::
 
@@ -73,7 +73,7 @@ The above report can be read as follows:
 1. The examined columns are 'describtion' and 'item_name"
 2. The columns that contain a shift according to the Sørensen Dice Check are 'item_name' and 'description'
 3. The similarity of the item names within Dataset1 is at 0.88
-4. The similarity if the item names within Dataset1 is at 0.50
+4. The similarity of the item names within Dataset1 is at 0.50
 5. The similarity of Dataset1 and Dataset2 in the column 'item_name' is at 0.55
 
 
