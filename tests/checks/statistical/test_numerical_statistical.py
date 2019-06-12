@@ -3,10 +3,10 @@ import unittest
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
 
-from shift_detector.Detector import Detector
-from shift_detector.checks.statistical_checks.NumericalStatisticalCheck import kolmogorov_smirnov_test, \
+from shift_detector.detector import Detector
+from shift_detector.checks.statistical_checks.numerical_statistical_check import kolmogorov_smirnov_test, \
     NumericalStatisticalCheck
-from shift_detector.precalculations.Store import Store
+from shift_detector.precalculations.store import Store
 
 
 class TestCategoricalStatisticalCheck(unittest.TestCase):
@@ -40,16 +40,16 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
                            ([3] * 2) +
                            ([4] * 0) +
                            ([5] * 1) +
-                           ([6] * 0) +
+                           ([6] * 2) +
                            ([8] * 3) +
-                           ([9] * 1))
+                           ([9] * 2))
         df2 = pd.DataFrame(([2] * 2) +
                            ([3] * 1) +
                            ([4] * 2) +
-                           ([5] * 0) +
+                           ([5] * 2) +
                            ([6] * 1) +
                            ([8] * 1) +
-                           ([9] * 0))
+                           ([9] * 1))
         store = Store(df1, df2)
         result = NumericalStatisticalCheck().run(store)
         self.assertEqual(1, len(result.examined_columns))
@@ -84,8 +84,8 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
         self.assertEqual(1, len(result.explanation))
 
     def test_compliance_with_detector(self):
-        df1 = pd.DataFrame([0])
-        df2 = pd.DataFrame([0])
+        df1 = pd.DataFrame([0] * 10)
+        df2 = pd.DataFrame([0] * 10)
         detector = Detector(df1=df1, df2=df2)
         detector.run(NumericalStatisticalCheck())
         self.assertEqual(1, len(detector.check_reports[0].examined_columns))
