@@ -18,24 +18,13 @@ class DataFrameIteratorAdapter:
         return len(self.df)
 
 
-def get_columns(rule):
-    return tuple(sorted(c for c, _ in rule.left_side + rule.right_side))
-
-
 def to_string(rule):
-    return ('{left_sides} ==> {right_sides} [SUPPORTS_OF_LEFT_SIDES: {supports_of_left_sides}, '
-            'DELTA_SUPPORTS_OF_LEFT_SIDES: {delta_supports_of_left_sides}, SUPPORTS: {supports}, '
-            'DELTA_SUPPORTS: {delta_supports}, CONFIDENCES: {confidences}, '
-            'DELTA_CONFIDENCES: {delta_confidences}]').format(
-        left_sides=', '.join('{}: {}'.format(l[0].upper(), l[1]) for l in rule.left_side),
-        right_sides='()' if not rule.right_side else ', '.join(
-            '{}: {}'.format(r[0].upper(), r[1]) for r in rule.right_side),
-        supports_of_left_sides=rule.supports_of_left_side,
-        delta_supports_of_left_sides=rule.delta_supports_of_left_side,
-        supports=rule.supports,
-        delta_supports=rule.delta_supports,
-        confidences=rule.confidences,
-        delta_confidences=rule.delta_confidences
+    return '{left_sides} => {right_sides} [SOLS: ({sols}), S: ({supports}), C: ({confidences})]'.format(
+        left_sides=', '.join(f'{lhs}: {rhs}' for lhs, rhs in rule.left_side),
+        right_sides='()' if not rule.right_side else ', '.join(f'{lhs}: {rhs}' for lhs, rhs in rule.right_side),
+        sols=', '.join(f'{val:.0%}' for val in rule.supports_of_left_side),
+        supports=', '.join(f'{val:.0%}' for val in rule.supports),
+        confidences=', '.join(f'{val:.0%}' for val in rule.confidences)
     )
 
 
@@ -124,4 +113,4 @@ def calculate_frequent_rules(df1, df2, min_support, min_confidence):
                 (confidence, rules[1][key].confidence), (confidence - rules[1][key].confidence)
             ))
 
-    return sorted(result, reverse=True, key=lambda r: (abs(r.delta_supports), abs(r.delta_confidences)))
+    return result

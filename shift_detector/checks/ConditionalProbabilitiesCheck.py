@@ -10,7 +10,7 @@ from shift_detector.precalculations.conditional_probabilities import rule_compre
 class ConditionalProbabilitiesCheck(Check):
     """
     The ConditionalProbabilitiesCheck object implements the conditional probabilities check.
-    See also :ref:`conditional_probabilities_parameters`.
+    For more information about its parameters see also :ref:`conditional_probabilities_parameters`.
 
     :param min_support: a float between 0 and 1. This parameter mainly impacts
         the runtime of the check. The lower ``min_support`` the more resources are
@@ -21,9 +21,9 @@ class ConditionalProbabilitiesCheck(Check):
         rules are printed as a result of executing this check. The rules are sorted
         according to their significance.
     :param min_delta_supports: a float between 0 and 1. Rules whose support
-        values exhibit an absolute difference of less than ``min_delta_supports`` are pruned.
+        values exhibit an absolute difference of less than ``min_delta_supports`` are not printed.
     :param min_delta_confidences: a float between 0 and 1. Rules whose confidence
-        values exhibit an absolute difference of less than ``min_delta_confidences`` are pruned.
+        values exhibit an absolute difference of less than ``min_delta_confidences`` are not printed.
     """
 
     def __init__(self, min_support=0.01, min_confidence=0.15, rule_limit=5, min_delta_supports=0.05,
@@ -43,10 +43,10 @@ class ConditionalProbabilitiesCheck(Check):
         rules, examined_columns = store[
             ConditionalProbabilitiesPrecalculation(self.min_support, self.min_confidence)]
 
-        reduced_rules = [rule for rule in rules if abs(rule.delta_supports) >= self.min_delta_supports and abs(
-            rule.delta_confidences) >= self.min_delta_confidences]
+        pruned_rules = (rule for rule in rules if abs(rule.delta_supports) >= self.min_delta_supports and abs(
+            rule.delta_confidences) >= self.min_delta_confidences)
 
-        compressed_rules = rule_compression.compress_rules(reduced_rules)
+        compressed_rules = rule_compression.compress_rules(pruned_rules)
 
         shifted_columns = set()
         explanation = defaultdict(list)

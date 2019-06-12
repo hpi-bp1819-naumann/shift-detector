@@ -70,7 +70,7 @@ class TestFPGrowth(unittest.TestCase):
         data2 = [['exclusive 2', 2], ['common', 42]]
         df1 = pd.DataFrame(data1, columns=columns)
         df2 = pd.DataFrame(data2, columns=columns)
-        rules = fpgrowth.calculate_frequent_rules(df1, df2, 0.01, 0.15, 0, 0)
+        rules = fpgrowth.calculate_frequent_rules(df1, df2, 0.01, 0.15)
         Rule = namedtuple('Rule', ['left_side', 'right_side', 'supports_of_left_side', 'delta_supports_of_left_side',
                                    'supports', 'delta_supports', 'confidences', 'delta_confidences'])
         expected = [Rule(left_side=(('c1', 'common'),), right_side=(), supports_of_left_side=(0.5, 0.5),
@@ -121,9 +121,9 @@ class TestFPGrowth(unittest.TestCase):
         self.assertCountEqual(rules, expected)
 
     def test_equal_and_hash(self):
-        a = ConditionalProbabilitiesPrecalculation(0.5, 0.4, 0.3, 0.2)
-        b = ConditionalProbabilitiesPrecalculation(0.5, 0.4, 0.3, 0.2)
-        c = ConditionalProbabilitiesPrecalculation(0.5, 0.5, 0.5, 0.5)
+        a = ConditionalProbabilitiesPrecalculation(0.5, 0.4)
+        b = ConditionalProbabilitiesPrecalculation(0.5, 0.4)
+        c = ConditionalProbabilitiesPrecalculation(0.5, 0.5)
         self.assertEqual(a, b)
         self.assertNotEqual(a, c)
         self.assertEqual(hash(a), hash(b))
