@@ -3,10 +3,10 @@ import unittest
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
 
-from shift_detector.Detector import Detector
-from shift_detector.checks.statistical_checks.NumericalStatisticalCheck import kolmogorov_smirnov_test, \
+from shift_detector.detector import Detector
+from shift_detector.checks.statistical_checks.numerical_statistical_check import kolmogorov_smirnov_test, \
     NumericalStatisticalCheck
-from shift_detector.precalculations.Store import Store
+from shift_detector.precalculations.store import Store
 
 
 class TestCategoricalStatisticalCheck(unittest.TestCase):
