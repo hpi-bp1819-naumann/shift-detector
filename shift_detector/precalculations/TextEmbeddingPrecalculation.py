@@ -82,7 +82,7 @@ class TextEmbeddingPrecalculation(Precalculation):
         df1_tokenized, df2_tokenized = store[TokenizeIntoLowerWordsPrecalculation()]
 
         concatenated_ser = pd.concat([df1_tokenized[i] for i in df1_tokenized] +
-                                     [df2_tokenized[i] for i in df2_tokenized]) # This is not working
+                                     [df2_tokenized[i] for i in df2_tokenized])
 
         if not self.trained_model:
             model = copy(self.model)
@@ -90,9 +90,11 @@ class TextEmbeddingPrecalculation(Precalculation):
             model.train(sentences=concatenated_ser, total_examples=len(concatenated_ser), epochs=10)
             self.trained_model = model
 
+        df1_embedding = pd.DataFrame()
+        df2_embedding = pd.DataFrame()
         for column in df1_tokenized:
-            df1_tokenized[column] = df1_tokenized[column].apply(self.process_cell)
+            df1_embedding[column] = df1_tokenized[column].apply(self.process_cell)
         for column in df2_tokenized:
-            df2_tokenized[column] = df2_tokenized[column].apply(self.process_cell)
+            df2_embedding[column] = df2_tokenized[column].apply(self.process_cell)
 
-        return df1_tokenized, df2_tokenized
+        return df1_embedding, df2_embedding
