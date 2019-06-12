@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from shift_detector.precalculations.conditional_probabilities.ExtendendRule import RuleCluster
+from shift_detector.precalculations.conditional_probabilities.RuleCluster import RuleCluster
 
 
 def group_rules_by_length(rules):
@@ -19,7 +19,7 @@ def cluster_rules_hierarchically(grouped_rules):
             highest_support_super_cluster = max((cluster for cluster in clusters if cluster.is_super_cluster_of(rule)),
                                                 key=lambda c: abs(c.rule.delta_supports), default=None)
             if highest_support_super_cluster:
-                highest_support_super_cluster.sub_clusters.append(rule)
+                highest_support_super_cluster.sub_rules.append(rule)
             else:
                 clusters.append(RuleCluster(rule))
 

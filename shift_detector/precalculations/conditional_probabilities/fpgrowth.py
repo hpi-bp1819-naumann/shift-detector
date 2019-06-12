@@ -19,9 +19,9 @@ class DataFrameIteratorAdapter:
 
 
 def to_string(rule):
-    return '{left_sides} => {right_sides} [SOLS: ({sols}), S: ({supports}), C: ({confidences})]'.format(
-        left_sides=', '.join(f'{lhs}: {rhs}' for lhs, rhs in rule.left_side),
-        right_sides='()' if not rule.right_side else ', '.join(f'{lhs}: {rhs}' for lhs, rhs in rule.right_side),
+    return '{left_sides} => {right_sides} [SLS: ({sols}), S: ({supports}), C: ({confidences})]'.format(
+        left_sides=', '.join(f'{attr}: {val}' for attr, val in rule.left_side),
+        right_sides='()' if not rule.right_side else ', '.join(f'{attr}: {val}' for attr, val in rule.right_side),
         sols=', '.join(f'{val:.0%}' for val in rule.supports_of_left_side),
         supports=', '.join(f'{val:.0%}' for val in rule.supports),
         confidences=', '.join(f'{val:.0%}' for val in rule.confidences)

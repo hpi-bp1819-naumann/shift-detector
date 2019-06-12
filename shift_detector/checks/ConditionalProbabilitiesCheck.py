@@ -7,9 +7,14 @@ from shift_detector.precalculations.ConditionalProbabilitiesPrecalculation impor
 from shift_detector.precalculations.conditional_probabilities import rule_compression
 
 
+class ConditionalProbabilitiesReport(Report):
+    def explanation_str(self):
+        return '\n\n'.join('{}'.format('\n'.join(rules)) for rules in self.explanation.values())
+
+
 class ConditionalProbabilitiesCheck(Check):
     """
-    The ConditionalProbabilitiesCheck object implements the conditional probabilities check.
+    The ConditionalProbabilitiesCheck object implements the :ref:`conditional_probabilities` check.
     For more information about its parameters see also :ref:`conditional_probabilities_parameters`.
 
     :param min_support: a float between 0 and 1. This parameter mainly impacts
@@ -53,7 +58,7 @@ class ConditionalProbabilitiesCheck(Check):
         for i, compressed_rule in enumerate(compressed_rules):
             if i == self.rule_limit:
                 break
-            columns = tuple(sorted(key for key, _ in compressed_rule.attributes))
+            columns = tuple(sorted(attribute for attribute, _ in compressed_rule.attribute_value_pairs))
             shifted_columns.add(columns)
 
             explanation[', '.join(columns)].append(str(compressed_rule))
@@ -69,5 +74,5 @@ class ConditionalProbabilitiesCheck(Check):
             plt.yticks([i / 10 for i in range(0, 11)])
             plt.show()
 
-        return Report('Conditional Probabilities', examined_columns, shifted_columns, explanation,
-                      figures=[plot_result])
+        return ConditionalProbabilitiesReport('Conditional Probabilities', examined_columns, shifted_columns,
+                                              explanation, figures=[plot_result])

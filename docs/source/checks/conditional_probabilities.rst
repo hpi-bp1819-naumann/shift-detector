@@ -56,13 +56,14 @@ The code works as follows:
 Result
 ++++++
 
-:ref:`conditional_probabilities` produces a set of rules::
+:ref:`conditional_probabilities` produces a set of so called rule clusters::
 
-    MAKE: Nike, COLOR: black ==> CATEGORY: football
-    [SUPPORTS_OF_LEFT_SIDES: (0.3, 0.07), DELTA_SUPPORTS_OF_LEFT_SIDES: 0.23,
-    SUPPORTS: (0.03, 0.05), DELTA_SUPPORTS: -0.02, CONFIDENCES: (0.1, 0.71),
-    DELTA_CONFIDENCES: -0.61]
+    [make: Nike, color: black, category: football]
+    make: Nike, color: black ==> category: football [SLS: (30%, 7%), S: (3%, 5%), C: (10%, 71%)]
+    delta_support: 2%, number of sub-rules: 13
     ...
+
+.. image:: ../images/conditional_probabilities.png
 
 Interpretation
 ++++++++++++++
