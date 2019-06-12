@@ -6,6 +6,7 @@ from sklearn.metrics import classification_report
 
 from shift_detector.checks.Check import Check, Report
 from shift_detector.precalculations.DistinctionPrecalculation import DistinctionPrecalculation
+from shift_detector.utils.DataIO import smart_round
 
 
 class DistinctionCheck(Check):
@@ -48,11 +49,13 @@ class DistinctionCheck(Check):
         explanation = {}
 
         base_accuracy = result['base_accuracy']
+        rounded_base_accuracy = smart_round(base_accuracy, 4)
         permuted_accuracies = result['permuted_accuracies']
 
         for column in examined_columns:
             accuracy = permuted_accuracies[column]
-            explanation[column] = "{} -> {}".format(base_accuracy, accuracy)
+            rounded_accuracy = smart_round(accuracy, 4)
+            explanation[column] = "{} -> {}".format(rounded_base_accuracy, rounded_accuracy)
             if accuracy < base_accuracy * (1 - self.relative_threshold):
                 shifted_columns.append(column)
 
@@ -68,6 +71,6 @@ class DistinctionCheck(Check):
 
         information = dict()
         information['Classification Report'] = report
-        information['F1 score df1'] = classification["A"]["f1-score"]
-        information['F1 score df2'] = classification["B"]["f1-score"]
+        information['F1 score df1'] = smart_round(classification["A"]["f1-score"], 4)
+        information['F1 score df2'] = smart_round(classification["B"]["f1-score"], 4)
         return information

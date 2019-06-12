@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from shift_detector.utils.ColumnManagement import ColumnType
 from shift_detector.checks.Check import Check, Report
 from shift_detector.precalculations.SimplePrecalculation import SimplePrecalculation
+from shift_detector.utils.DataIO import smart_round
 
 
 class SimpleCheck(Check):
@@ -46,7 +47,8 @@ class SimpleCheck(Check):
 
     @staticmethod
     def difference_to_string(metrics_difference):
-        metrics_difference_string = str(metrics_difference) + ' %'
+        rounded_metrics_difference = smart_round(metrics_difference)
+        metrics_difference_string = str(rounded_metrics_difference) + ' %'
         if metrics_difference > 0:
             metrics_difference_string = '+' + metrics_difference_string
 
@@ -66,8 +68,8 @@ class SimpleCheck(Check):
 
                 if abs(diff) > self.metrics_thresholds_percentage[metric]:
                     shifted_columns.add(column_name)
-                    explanation[column_name] += "Metric: {} with Diff: {}\n".format(metric,
-                                                                                    self.difference_to_string(diff))
+                    str_diff = self.difference_to_string(diff)
+                    explanation[column_name] += "Metric: {} with Diff: {}\n".format(metric, str_diff)
 
         return SimpleReport(examined_columns, shifted_columns, dict(explanation),
                             figures=[SimpleReport.numerical_plot(df1, df2)])
@@ -92,7 +94,8 @@ class SimpleCheck(Check):
                 diff = attribute_values['df1'] - attribute_values['df2']
                 if diff > self.categorical_threshold:
                     shifted_columns.add(column_name)
-                    explanation[column_name] += "Attribute: {} with Diff: {}\n".format(attribute_name, diff)
+                    str_diff = self.difference_to_string(diff)
+                    explanation[column_name] += "Attribute: {} with Diff: {}\n".format(attribute_name, str_diff)
 
         return SimpleReport(examined_columns, shifted_columns, dict(explanation))
 

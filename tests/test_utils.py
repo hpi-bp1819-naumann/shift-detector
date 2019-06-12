@@ -3,7 +3,7 @@ import unittest
 import pandas as pd
 
 from shift_detector.utils.ColumnManagement import is_categorical, split_dataframes, ColumnType
-from shift_detector.utils.DataIO import shared_column_names
+from shift_detector.utils.DataIO import shared_column_names, smart_round
 from shift_detector.utils.UCBlist import block, blocks
 
 
@@ -67,3 +67,9 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(300, len(blocks))
         self.assertEqual((0, 127, 'Basic Latin'), blocks[0])
         self.assertEqual((1048576, 1114111, 'Supplementary Private Use Area-B'), blocks[-1])
+
+    def test_smart_round(self):
+        nums = [0.41, 0.093, 0.002, 1.59, 0.0079, 0.080, 0.375, 0, 10.1, -0.061]
+
+        rounded_nums = [smart_round(num) for num in nums]
+        self.assertEqual([0.41, 0.09, 0.002, 1.59, 0.008, 0.08, 0.38, 0, 10.1, -0.06], rounded_nums)
