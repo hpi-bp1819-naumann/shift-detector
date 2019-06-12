@@ -4,8 +4,8 @@ import mock
 
 from pandas import DataFrame
 
-from shift_detector.checks.SimpleCheck import SimpleCheck
-from shift_detector.precalculations.Store import Store
+from shift_detector.checks.simple_check import SimpleCheck
+from shift_detector.precalculations.store import Store
 
 
 class TestSimpleCheck(TestCase):
@@ -43,8 +43,8 @@ class TestSimpleCheck(TestCase):
 
     def test_run_numerical(self):
         with self.subTest("Test precalculation"):
-            numbers1 = {'cool_numbers': [1, 2, 3, 4]}
-            numbers2 = {'cool_numbers': [1, 2, 3, 6]}
+            numbers1 = {'cool_numbers': [1, 2, 3, 4]*10}
+            numbers2 = {'cool_numbers': [1, 2, 3, 6]*10}
             self.df1 = DataFrame.from_dict(numbers1)
             self.df2 = DataFrame.from_dict(numbers2)
             self.store = Store(self.df1, self.df2)
@@ -79,8 +79,7 @@ class TestSimpleCheck(TestCase):
             self.check.data = {'numerical_comparison': {'column': {'metric_name': {'df1': 0, 'df2': 12.4}}}}
             self.assertEqual(self.check.relative_metric_difference('column', 'metric_name'), 0)
 
-
-    @mock.patch('shift_detector.checks.SimpleCheck.plt')
+    @mock.patch('shift_detector.checks.simple_check.plt')
     def test_numerical_plots_work(self, mock_plt):
         self.assertFalse(mock_plt.figure.called)
 
@@ -92,7 +91,7 @@ class TestSimpleCheck(TestCase):
         self.assertTrue(mock_plt.figure().add_subplot.called)
         self.assertTrue(mock_plt.show.called)
 
-    @mock.patch('shift_detector.checks.SimpleCheck.plt')
+    @mock.patch('shift_detector.checks.simple_check.plt')
     def test_categorical_plots_work(self, mock_plt):
         self.assertFalse(mock_plt.figure.called)
 

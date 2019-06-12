@@ -4,11 +4,10 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 import numpy as np
 
-from shift_detector.checks.Check import Check, Report
-from shift_detector.precalculations.SimplePrecalculation import SimplePrecalculation
-from shift_detector.utils.ColumnManagement import ColumnType
+from shift_detector.checks.check import Check, Report
+from shift_detector.precalculations.simple_precalculation import SimplePrecalculation
+from shift_detector.utils.column_management import ColumnType
 
-import os
 
 class SimpleCheck(Check):
 
