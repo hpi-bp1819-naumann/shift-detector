@@ -1,8 +1,8 @@
 import re
 import pandas as pd
 
-from shift_detector.precalculations.Precalculation import Precalculation
-from shift_detector.utils.ColumnManagement import ColumnType
+from shift_detector.precalculations.precalculation import Precalculation
+from shift_detector.utils.column_management import ColumnType
 
 
 class TokenizeIntoLowerWordsPrecalculation(Precalculation):
