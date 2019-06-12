@@ -3,10 +3,10 @@ import unittest
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
 
-from shift_detector.Detector import Detector
-from shift_detector.checks.statistical_checks.TextMetadataStatisticalCheck import TextMetadataStatisticalCheck
-from shift_detector.precalculations.Store import Store
-from shift_detector.precalculations.TextMetadata import NumCharsMetadata, NumWordsMetadata, DistinctWordsRatioMetadata, \
+from shift_detector.detector import Detector
+from shift_detector.checks.statistical_checks.text_metadata_statistical_check import TextMetadataStatisticalCheck
+from shift_detector.precalculations.store import Store
+from shift_detector.precalculations.text_metadata import NumCharsMetadata, NumWordsMetadata, DistinctWordsRatioMetadata, \
     LanguagePerParagraph, UnknownWordRatioMetadata, StopwordRatioMetadata
 
 
