@@ -173,6 +173,6 @@ class TestLdaCheck(unittest.TestCase):
     def test_run(self):
         report = self.lda_report1.run(self.store)
 
-        self.assertTrue(report.explanation['Topic 0 diff'] == -23.0)
-        self.assertTrue(report.explanation['Topic 1 diff'] == 23.0)
+        self.assertTrue(report.explanation['Topic 0 diff in column text'] == -23.0)
+        self.assertTrue(report.explanation['Topic 1 diff in column text'] == 23.0)
 

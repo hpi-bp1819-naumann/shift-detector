@@ -9,6 +9,9 @@ class TestLdaEmbedding(unittest.TestCase):
     def setUp(self):
         self.lda1 = LdaEmbedding(n_topics=2, n_iter=1, random_state=2)
         self.lda2 = LdaEmbedding(n_topics=2, n_iter=1, random_state=2)
+        self.lda3 = LdaEmbedding(n_topics=2, n_iter=1, random_state=2, cols=['text'])
+        self.lda4 = LdaEmbedding(n_topics=2, n_iter=1, random_state=2, cols=['text'])
+        self.lda5 = LdaEmbedding(n_topics=2, n_iter=1, random_state=2, cols=['text', 'abc'])
 
         self.poems = [
             'Tell me not, in mournful numbers,\nLife is but an empty dream!\nFor the soul is dead that slumbers,\nAnd things are not what they seem.',
@@ -161,9 +164,7 @@ class TestLdaEmbedding(unittest.TestCase):
                         'Integrated attitude-oriented model']
 
         self.df1 = pd.DataFrame(self.poems, columns=['text'])
-        print(self.df1['text'].shape)
         self.df2 = pd.DataFrame(self.phrases, columns=['text'])
-        print(self.df2['text'].shape)
         self.store = Store(self.df1, self.df2)
 
     def test_exception_on_small_n(self):
@@ -174,10 +175,12 @@ class TestLdaEmbedding(unittest.TestCase):
 
     def test_hash(self):
         self.assertEqual(hash(self.lda1), hash(self.lda2))
+        self.assertEqual(hash(self.lda3), hash(self.lda4))
+        self.assertNotEqual(hash(self.lda4), hash(self.lda5))
 
     def test_process(self):
         res1, res2 = self.lda1.process(self.store)
-        self.assertTrue(res1['topics poems'], [1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1,
-                                               1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-                                               1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1,
-                                               1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1])
+        self.assertTrue(res1['topics text'].equals(pd.Series([0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+                                                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
+                                                              0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0,
+                                                              0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0])))

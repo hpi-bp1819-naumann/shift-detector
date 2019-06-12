@@ -1,14 +1,16 @@
 import gensim
+import pandas as pd
 from shift_detector.precalculations.Precalculation import Precalculation
-from shift_detector.Utils import ColumnType
+from shift_detector.utils.ColumnManagement import ColumnType
 from nltk.corpus import stopwords as nltk_stopwords
 import re
 
 
 class WordTokenizer(Precalculation):
 
-    def __init__(self, stop_words='english'):
+    def __init__(self, stop_words='english', cols=None):
         self.stopwords = None
+        self.cols = None
         if isinstance(stop_words, str):
             if stop_words in nltk_stopwords.fileids():
                 self.stop_words = nltk_stopwords.words(stop_words)
@@ -27,20 +29,40 @@ class WordTokenizer(Precalculation):
                 raise TypeError('The stop_words list has to contain strings only')
         else:
             raise Exception('Please enter the language for your stopwords as a string or list of strings')
+        if cols and (not isinstance(cols, list) or any(not isinstance(col, str) for col in cols)):
+            raise TypeError('Cols has to be list of strings')
+        else:
+            self.cols = cols
     
     def __eq__(self, other):
         """Overrides the default implementation"""
-        if isinstance(other, self.__class__) and self.stop_words == other.stop_words:
+        if isinstance(other, self.__class__) and self.stop_words == other.stop_words and self.cols == other.cols:
             return True
         return False
 
     def __hash__(self):
         """Overrides the default implementation"""
-        return hash(tuple([self.__class__] + sorted(self.stop_words)))
+        if self.cols:
+            hash_list = [self.__class__]
+            hash_list.extend(sorted(self.stop_words)).extend(self.cols)
+            return hash(tuple(hash_list))
+        else:
+            hash_list = [self.__class__]
+            hash_list.extend(sorted(self.stop_words))
+            return hash(tuple(hash_list))
 
     def process(self, store):
         df1_texts, df2_texts = store[ColumnType.text]
-        col_names = df1_texts.columns
+        if self.cols is None:
+            col_names = df1_texts.columns
+        else:
+            if isinstance(self.cols, str):
+                if self.cols in df1_texts.columns:
+                    col_names = self.cols
+            else:
+                for col in self.cols:
+                    if col not in df1_texts.columns:
+                        raise ValueError('Given column is not contained in given datasets')
         processed1 = {}
         processed2 = {}
 
@@ -68,4 +90,4 @@ class WordTokenizer(Precalculation):
 
             processed2[col] = tokenized2
 
-        return processed1, processed2
+        return pd.DataFrame.from_dict(processed1), pd.DataFrame.from_dict(processed2)

@@ -9,8 +9,7 @@ from copy import copy
 from shift_detector.precalculations.Precalculation import Precalculation
 from shift_detector.precalculations.CountVectorizer import CountVectorizer
 from shift_detector.precalculations.WordTokenizer import WordTokenizer
-
-from shift_detector.Utils import ColumnType
+from shift_detector.utils.ColumnManagement import ColumnType
 
 
 class LdaEmbedding(Precalculation):
@@ -18,6 +17,7 @@ class LdaEmbedding(Precalculation):
     def __init__(self, n_topics=20, n_iter=10, lib='sklearn', random_state=0, cols=None, trained_model=None):
         self.model = None
         self.trained_model = None
+        self.cols = None
         if n_topics < 2:
             raise ValueError('Number of topics has to be at least 2')
         if n_topics != 'auto':
@@ -59,16 +59,26 @@ class LdaEmbedding(Precalculation):
             other_model_attributes = sorted([(k, v) for k, v in other.model.__dict__.items()
                                              if isinstance(v, Number) or isinstance(v, str) or isinstance(v, list)])
             if isinstance(other.model, self.model.__class__) \
-                    and model_attributes == other_model_attributes:
+                    and model_attributes == other_model_attributes and self.cols == other.cols:
                 return True
         return False
 
     def __hash__(self):
         if self.trained_model:
-            return hash(([self.__class__, self.trained_model].extend(self.trained_model.__dict__.items())))
+            trained_hash_list = [self.__class__, self.trained_model.__class__]
+            for item in self.trained_model.__dict__.items():
+                if not item[0] == 'components_' and not item[0] == 'exp_dirichlet_component_':
+                    # dirty fix I know, ndarrays are not hashable
+                    trained_hash_list.extend(item)
+            return hash(tuple(trained_hash_list))
+        elif self.cols:
+            hash_list = [self.__class__, self.model.__class__, self.n_topics,
+                         self.n_iter, self.random_state]
+            hash_list.extend(self.cols)
+            return hash(tuple(hash_list))
         else:
-            return hash(([self.__class__, self.model.__class__, self.n_topics,
-                          self.n_iter, self.lib, self.random_state].extend(self.cols)))
+            return hash(tuple([self.__class__, self.model.__class__, self.n_topics,
+                               self.n_iter, self.random_state]))
 
     def process(self, store):
 
@@ -85,21 +95,21 @@ class LdaEmbedding(Precalculation):
                         raise ValueError('Given column is not contained in given datasets')
                 col_names = self.cols
 
+        topic_labels = []
+        for col in col_names:
+            topic_labels.append('topics ' + col)
+
         transformed1 = {}
         transformed2 = {}
 
-        topics1 = pd.DataFrame()
-        topics2 = pd.DataFrame()
-
-        inferred_vec1 = {}
-        inferred_vec2 = {}
+        topics1 = pd.DataFrame(index=df1_texts.index, columns=topic_labels)
+        topics2 = pd.DataFrame(index=df2_texts.index, columns=topic_labels)
 
         if self.lib == 'gensim':
-            tokenized1, tokenized2 = store[WordTokenizer()]
+            tokenized1, tokenized2 = store[WordTokenizer(cols=self.cols)]
+            tokenized_merged = pd.concat([tokenized1, tokenized2], ignore_index=True)
 
             for col in col_names:
-
-                tokenized_merged = tokenized1[col] + tokenized2[col]
 
                 dict_merged = Dictionary(tokenized_merged)
                 dict1 = Dictionary(tokenized1[col])
@@ -118,31 +128,29 @@ class LdaEmbedding(Precalculation):
                 transformed2[col] = self.trained_model.transform(corpus2)
 
         else:
-            vectorized_train, vectorized_test = store[CountVectorizer()]
-            vectorized_merged = pd.concat([vectorized_train, vectorized_test], ignore_index=True)
+            vectorized1, vectorized2 = store[CountVectorizer(cols=self.cols)]
+            vectorized_merged = dict(vectorized1, **vectorized2)
 
             for col in col_names:
-
                 if not self.trained_model:
                     model = copy(self.model)
                     model = model.fit(vectorized_merged[col])
                     self.trained_model = model
+                transformed1[col] = self.trained_model.transform(vectorized1[col])
+                transformed2[col] = self.trained_model.transform(vectorized2[col])
 
-            transformed1[col] = self.trained_model.transform(vectorized_train[col])
-            transformed2[col] = self.trained_model.transform(vectorized_test[col])
-
-        for col in col_names:
+        for i, col in enumerate(col_names):
+            vec1 = [0] * len(transformed1[col])
+            vec2 = [0] * len(transformed2[col])
             # infer topics for train_df
-            for i in range(len(transformed1[col])):
+            for j in range(len(transformed1[col])):
                 # take always the topic with the highest probability
-                inferred_vec1[col][i] = transformed1[col][i].argmax()
-
+                vec1[j] = transformed1[col][j].argmax()
+            topics1[topic_labels[i]] = vec1
             # infer topics for test_df
-            for i in range(len(transformed2[col])):
+            for k in range(len(transformed2[col])):
                 # take always the topic with the highest probability
-                inferred_vec2[col][i] = transformed2[col][i].argmax()
-
-            topics1['topics ' + col] = inferred_vec1[col]
-            topics2['topics ' + col] = inferred_vec2[col]
+                vec2[k] = transformed2[col][k].argmax()
+            topics2[topic_labels[i]] = vec2
 
         return topics1, topics2
