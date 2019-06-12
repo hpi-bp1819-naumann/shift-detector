@@ -73,23 +73,23 @@ class TestTextMetadataPrecalculations(unittest.TestCase):
             [['Not', 'enjoyment', 'and', 'not', 'sorrow', 'Is', 'our', 'destined', 'end', 'or', 'way', 'But', 'to',
               'act', 'that', 'each', 'tomorrow', 'Find', 'us', 'farther', 'than', 'today']],
             [['So', 'gilded', 'by', 'the', 'glow', 'of', 'youth', 'Our', 'varied', 'life', 'looks', 'fair',
-                        'and', 'gay', 'And', 'so', 'remains', 'the', 'naked', 'truth', 'When', 'that', 'false', 'light',
-                        'is', 'past', 'away']],
+              'and', 'gay', 'And', 'so', 'remains', 'the', 'naked', 'truth', 'When', 'that', 'false', 'light',
+              'is', 'past', 'away']],
             [['Fond', 'dreamer', 'little', 'does', 'she', 'know', 'The', 'anxious', 'toil', 'the',
-                        'suffering', 'The', 'blasted', 'hopes', 'the', 'burning', 'woe', 'The', 'object', 'of', 'her',
-                        'joy', 'will', 'bring']],
+              'suffering', 'The', 'blasted', 'hopes', 'the', 'burning', 'woe', 'The', 'object', 'of', 'her',
+              'joy', 'will', 'bring']],
             [['Trust', 'no', 'Future', 'howeer', 'pleasant', 'Let', 'the', 'dead', 'Past', 'bury', 'its',
-                        'dead', 'Act', 'act', 'in', 'the', 'living', 'Present', 'Heart', 'within', 'and', 'God',
-                        'oerhead']],
+              'dead', 'Act', 'act', 'in', 'the', 'living', 'Present', 'Heart', 'within', 'and', 'God',
+              'oerhead']],
             [['They', 'do', 'not', 'see', 'how', 'cruel', 'Death', 'Comes', 'on', 'their', 'loving', 'hearts',
-                        'to', 'part', 'One', 'feels', 'not', 'now', 'the', 'gasping', 'breath', 'The', 'rending', 'of',
-                        'the', 'earth', 'bound', 'heart']],
+              'to', 'part', 'One', 'feels', 'not', 'now', 'the', 'gasping', 'breath', 'The', 'rending', 'of',
+              'the', 'earth', 'bound', 'heart']],
             [['Rapidly', 'merrily', "Life's", 'sunny', 'hours', 'flit', 'by', 'Gratefully', 'cheerily',
-                        'Enjoy', 'them', 'as', 'they', 'fly']],
+              'Enjoy', 'them', 'as', 'they', 'fly']],
             [['It', 'has', 'neither', 'a', 'beginning', 'nor', 'an', 'end', 'You', 'can', 'never', 'predict',
-                        'where', 'it', 'will', 'bend']],
+              'where', 'it', 'will', 'bend']],
             [['Life', 'is', 'a', 'teacher', 'it', 'will', 'show', 'you', 'the', 'way', 'But', 'unless', 'you',
-                        'live', 'itit', 'will', 'run', 'away']]
+              'live', 'itit', 'will', 'run', 'away']]
         ]
         sol2_words = [
             [['Front', 'line', 'leading', 'edge', 'website']],
@@ -208,7 +208,7 @@ class TestTextMetadataPrecalculations(unittest.TestCase):
         assert_frame_equal(solution2, md2)
 
     # seems to be dependent on the machine: travis gets different results
-    #def test_complexity(self):
+    # def test_complexity(self):
     #    md1, md2 = ComplexityMetadata().process(self.store)
     #    solution1 = pd.DataFrame([5.0, 3.0], columns=['text'])
     #    solution2 = pd.DataFrame([0.0, 13.0], columns=['text'])
@@ -220,8 +220,8 @@ class TestTextMetadataPrecalculations(unittest.TestCase):
         solution1 = pd.DataFrame(['NOUN, ., VERB, ADJ, ADP, PRON, ADV, CONJ, DET',
                                   'NOUN, ., VERB, ADV, ADJ, DET, ADP, CONJ, PRON, PRT'], columns=['text'])
         solution2 = pd.DataFrame(['NOUN, ADJ, VERB', 'ADJ, NOUN'], columns=['text'])
-        assert_frame_equal(solution1, md1.iloc[:2,:])
-        assert_frame_equal(solution2, md2.iloc[:2,:])
+        assert_frame_equal(solution1, md1.iloc[:2, :])
+        assert_frame_equal(solution2, md2.iloc[:2, :])
 
     def test_metadata_precalculation(self):
         md1, md2 = self.store[TextMetadata(text_metadata_types=[NumWordsMetadata(), StopwordRatioMetadata(),
@@ -256,7 +256,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual(tokenize_into_words(punctuation), [])
 
     def test_dictionary_to_sorted_string(self):
-        many = {'a': 2, 'b': 5, 'c': 3, 'f': 5, 'd': 1, 'e': 5} 
+        many = {'a': 2, 'b': 5, 'c': 3, 'f': 5, 'd': 1, 'e': 5}
         one = {'a': 100}
         empty = {}
         self.assertEqual(TmUtils.dictionary_to_sorted_string(many), "b, e, f, c, a, d")
@@ -386,7 +386,6 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertAlmostEqual(stopword_ratio('fr', french), 0.4285714, places=5)
         self.assertEqual(stopword_ratio('en', empty), 0.0)
         self.assertRaises(ValueError, stopword_ratio, language='so', words=unsupported_language)
-
 
     def test_category(self):
         html = "some text <p> some other text < br/ > more text"
