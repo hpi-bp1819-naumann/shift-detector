@@ -1,5 +1,5 @@
-from shift_detector.Detector import Detector
-from shift_detector.checks.SimpleCheck import SimpleCheck
+from shift_detector.detector import Detector
+from shift_detector.checks.simple_check import SimpleCheck
 
 # Starting via console:
 # python3 main.py --train ./train_ascii.csv --test ./audits_ascii.csv --sep  ";"

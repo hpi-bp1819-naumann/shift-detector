@@ -3,7 +3,7 @@ import unittest
 from pandas.util.testing import assert_frame_equal
 
 from shift_detector.precalculations.Store import Store
-from shift_detector.precalculations.TextPreprocessor import *
+from shift_detector.precalculations.text_preprocessor import *
 
 
 class TestTextPreprocessorFunctions(unittest.TestCase):
