@@ -46,7 +46,8 @@ class GenericTextMetadata(Precalculation):
         metadata1 = pd.DataFrame()
         metadata2 = pd.DataFrame()
         df1, df2 = store[ColumnType.text]
-        for column in df1.columns:
+        columns = store.column_names(ColumnType.text)
+        for column in columns:
             clean1 = df1[column].dropna()
             clean2 = df2[column].dropna()
             logger.info(self.metadata_name() + ' analysis for ' + column)
@@ -104,9 +105,10 @@ class GenericTextMetadataWithTokenizingAndLanguage(GenericTextMetadata):
         metadata1 = pd.DataFrame()
         metadata2 = pd.DataFrame()
         df1, df2 = store[TokenizeIntoWords()]
+        columns = store.column_names(ColumnType.text)
         if self.infer_language:
             lang1, lang2 = store[LanguageMetadata()]
-        for column in df1.columns:
+        for column in columns:
             logger.info(self.metadata_name() + ' analysis for ' + column)
             temp_column1 = []
             temp_column2 = []
@@ -145,9 +147,10 @@ class GenericTextMetadataWithLanguage(GenericTextMetadata):
         metadata1 = pd.DataFrame()
         metadata2 = pd.DataFrame()
         df1, df2 = store[ColumnType.text]
+        columns = store.column_names(ColumnType.text)
         if self.infer_language:
             lang1, lang2 = store[LanguageMetadata()]
-        for column in df1.columns:
+        for column in columns:
             logger.info(self.metadata_name() + ' analysis for ' + column)
             temp_column1 = []
             temp_column2 = []
@@ -183,7 +186,8 @@ class TokenizeIntoWords(Precalculation):
         tokenized1 = pd.DataFrame()
         tokenized2 = pd.DataFrame()
         df1, df2 = store[ColumnType.text]
-        for column in df1.columns:
+        columns = store.column_names(ColumnType.text)
+        for column in columns:
             clean1 = df1[column].dropna()
             clean2 = df2[column].dropna()
             tokenized1[column] = [self.tokenize_into_words(text) for text in clean1]
@@ -522,13 +526,15 @@ class TextMetadata(Precalculation):
 
     def process(self, store):
         df1, _ = store[ColumnType.text]
+        columns = store.column_names(ColumnType.text)
+
         metadata_names = sorted([mdtype.metadata_name() for mdtype in self.text_metadata_types])
-        index = pd.MultiIndex.from_product([df1.columns, metadata_names], names=['column', 'metadata'])
+        index = pd.MultiIndex.from_product([columns, metadata_names], names=['column', 'metadata'])
         metadata1 = pd.DataFrame(columns=index)
         metadata2 = pd.DataFrame(columns=index)
         for metadata_type in self.text_metadata_types:
             md1, md2 = store[metadata_type]
-            for column in df1.columns:
+            for column in columns:
                 metadata1[(column, metadata_type.metadata_name())] = md1[column]
                 metadata2[(column, metadata_type.metadata_name())] = md2[column]
         return metadata1, metadata2

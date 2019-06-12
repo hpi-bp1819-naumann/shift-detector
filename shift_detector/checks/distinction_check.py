@@ -34,7 +34,7 @@ class DistinctionCheck(Check):
         logger.info("Execute Distinction Check")
         input_columns = self.columns
         if not input_columns:
-            input_columns = store.columns
+            input_columns = store.column_names()
 
         examined_columns, precalculation_result = store[DistinctionPrecalculation(input_columns, self.num_epochs)]
 

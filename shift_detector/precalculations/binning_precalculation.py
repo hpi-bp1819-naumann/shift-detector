@@ -26,6 +26,7 @@ class BinningPrecalculation(Precalculation):
         :return: The binned version of numerical columns
         """
         df1_numerical, df2_numerical = store[ColumnType.numerical]
+        columns = store.column_names(ColumnType.numerical)
 
         df1_size = len(df1_numerical)
         df2_size = len(df2_numerical)
@@ -33,7 +34,7 @@ class BinningPrecalculation(Precalculation):
         dfs = pd.concat([df1_numerical, df2_numerical])
         dfs_binned = DataFrame()
 
-        for column_name in list(df1_numerical.columns):
+        for column_name in columns:
             column = dfs[column_name]
             if is_categorical(column):
                 dfs_binned[column_name] = column

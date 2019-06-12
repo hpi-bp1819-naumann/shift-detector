@@ -1,10 +1,11 @@
 import logging as logger
 from collections import defaultdict
-from typing import List, Union
+from typing import Union
 
 import pandas as pd
+from IPython.display import display
 
-from shift_detector.checks.check import Check, Report
+from shift_detector.checks.check import Check
 from shift_detector.precalculations.store import Store
 from shift_detector.utils.column_management import column_names
 from shift_detector.utils.data_io import read_from_csv
@@ -40,7 +41,7 @@ class Detector:
         self.check_reports = []
         self.store = Store(self.df1, self.df2)
 
-        logger.info("Used columns: {}".format(', '.join(column_names(self.store.columns))))
+        logger.info("Used columns: {}".format(', '.join(column_names(self.store.column_names()))))
 
     def run(self, *checks):
         """
@@ -83,7 +84,7 @@ class Detector:
         sorted_summary = sorted(((col, detected[col], examined[col]) for col in examined), key=sort_key)
 
         df_summary = pd.DataFrame(sorted_summary, columns=['Column', '# Checks Failed', '# Checks Executed'])
-        print(df_summary, '\n')
+        display(df_summary)
 
         print("DETAILS")
         for report in self.check_reports:
