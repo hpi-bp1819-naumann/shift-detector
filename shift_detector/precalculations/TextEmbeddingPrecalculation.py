@@ -81,8 +81,8 @@ class TextEmbeddingPrecalculation(Precalculation):
     def process(self, store: Store):
         df1_tokenized, df2_tokenized = store[TokenizeIntoLowerWordsPrecalculation()]
 
-        concatenated_ser = pd.concat([df1_tokenized[i] for i in df1] +
-                                     [df2_tokenized[i] for i in df2]) # This is not working
+        concatenated_ser = pd.concat([df1_tokenized[i] for i in df1_tokenized] +
+                                     [df2_tokenized[i] for i in df2_tokenized]) # This is not working
 
         if not self.trained_model:
             model = copy(self.model)
