@@ -23,7 +23,8 @@ class Detector:
     def __init__(self,
                  df1: Union[pd.DataFrame, str],
                  df2: Union[pd.DataFrame, str],
-                 delimiter=','):
+                 delimiter=',',
+                 **custom_column_types):
         if type(df1) is pd.DataFrame:
             self.df1 = df1
         elif type(df1) is str:
@@ -39,7 +40,7 @@ class Detector:
             raise Exception("df2 is not a dataframe or a string")
 
         self.check_reports = []
-        self.store = Store(self.df1, self.df2)
+        self.store = Store(self.df1, self.df2, custom_column_types)
 
         logger.info("Used columns: {}".format(', '.join(column_names(self.store.column_names()))))
 

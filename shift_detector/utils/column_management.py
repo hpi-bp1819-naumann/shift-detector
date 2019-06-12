@@ -11,7 +11,6 @@ CATEGORICAL_MAX_RELATIVE_CARDINALITY = 0.1  # maximum ratio of distinct values i
 class ColumnType(Enum):
     numerical = 'numerical'
     categorical = 'categorical'
-    low_cardinal_numerical = 'low_cardinal_numerical'  # a subset of numerical that is also categorical
     text = 'text'
 
 
@@ -76,7 +75,6 @@ def detect_column_types(df1, df2, columns):
     return {
         ColumnType.numerical: numerical_columns,
         ColumnType.categorical: categorical_columns,
-        ColumnType.low_cardinal_numerical: low_cardinal_numerical_columns,
         ColumnType.text: text_columns
     }
 

@@ -19,7 +19,7 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
         return 'Chi^2-Test with Log-Likelihood (G-Test)'
 
     def store_keys(self):
-        return [ColumnType.categorical, ColumnType.low_cardinal_numerical]
+        return [ColumnType.categorical]
 
     def statistical_test(self, part1: pd.Series, part2: pd.Series) -> float:
         return chi2_test(part1, part2)

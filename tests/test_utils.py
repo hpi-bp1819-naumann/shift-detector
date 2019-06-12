@@ -51,12 +51,10 @@ class TestUtils(unittest.TestCase):
 
         numerical_columns = column_type_to_column_names[ColumnType.numerical]
         categorical_columns = column_type_to_column_names[ColumnType.categorical]
-        low_cardinal_numerical_columns = column_type_to_column_names[ColumnType.low_cardinal_numerical]
         text_columns = column_type_to_column_names[ColumnType.text]
 
         self.assertCountEqual(['payment'], numerical_columns)
         self.assertCountEqual(['brand'], categorical_columns)
-        self.assertCountEqual(['payment'], low_cardinal_numerical_columns)
         self.assertCountEqual(['description'], text_columns)
 
     def test_ucblist_block_function(self):
