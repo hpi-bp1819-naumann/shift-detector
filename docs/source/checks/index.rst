@@ -9,6 +9,8 @@ Checks
 
     conditional_probabilities
     distinction
+    sorensen_dice
+    embedding_distance
     guide
 
 
