@@ -4,6 +4,8 @@ import logging as logger
 import pandas as pd
 from pandas.core.dtypes.common import is_numeric_dtype
 
+CATEGORICAL_MAX_RELATIVE_CARDINALITY = 0.1  # maximum ratio of distinct values in a categorical column
+
 
 class ColumnType(Enum):
     numerical = 'numerical'
@@ -14,7 +16,7 @@ class ColumnType(Enum):
 
 def is_categorical(col: pd.Series,
                    n_samples: int = 100,
-                   max_unique_fraction: float = 0.1) -> bool:
+                   max_unique_fraction: float = CATEGORICAL_MAX_RELATIVE_CARDINALITY) -> bool:
     """
     A heuristic to check whether a column is categorical:
     a column is considered categorical (as opposed to a plain text column)

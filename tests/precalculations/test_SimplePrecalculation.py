@@ -23,10 +23,6 @@ class TestSimplePrecalculation(unittest.TestCase):
         self.store_numerical = Store(numerical_df_1, numerical_df_2)
         self.store_categorical = Store(categorical_df_1, categorical_df_2)
 
-    def test_run_with_empty_dataframes(self):
-        empty_store = Store(pd.DataFrame([]), pd.DataFrame([]))
-        self.assertEqual({'categorical_comparison': {}, 'numerical_comparison': {}}, self.precalculation.process(empty_store))
-
     def test_minmax_metrics(self):
         comparison_numeric = self.precalculation.process(self.store_numerical)['numerical_comparison']
 
@@ -45,14 +41,17 @@ class TestSimplePrecalculation(unittest.TestCase):
         self.assertEqual(comparison_numeric['col_3']['max']['df2'], 99)
 
     def test_quartile_metrics(self):
-        numerical_df_1 = pd.DataFrame([[0], [1], [2], [3], [4]], columns=['col_1'])
-        numerical_df_2 = pd.DataFrame([[1], [3]], columns=['col_1'])
+        numerical_df_1 = pd.DataFrame(list(range(12)), columns=['col_1'])
+        numerical_df_2 = pd.DataFrame(list(range(1, 20, 2)), columns=['col_1'])
         new_numerical_store = Store(numerical_df_1, numerical_df_2)
 
         comparison_numeric = self.precalculation.process(new_numerical_store)['numerical_comparison']
-        self.assertEqual(comparison_numeric['col_1']['quartile_1']['df1'], 1)
-        self.assertEqual(comparison_numeric['col_1']['quartile_3']['df1'], 3)
-        self.assertEqual(comparison_numeric['col_1']['median']['df1'], 2)
+        self.assertAlmostEqual(comparison_numeric['col_1']['quartile_1']['df1'], numerical_df_1['col_1'].quantile(.25))
+        self.assertEqual(comparison_numeric['col_1']['quartile_3']['df1'], numerical_df_1['col_1'].quantile(.75))
+        self.assertEqual(comparison_numeric['col_1']['median']['df1'], numerical_df_1['col_1'].quantile(.5))
+        self.assertAlmostEqual(comparison_numeric['col_1']['quartile_1']['df2'], numerical_df_2['col_1'].quantile(.25))
+        self.assertEqual(comparison_numeric['col_1']['quartile_3']['df2'], numerical_df_2['col_1'].quantile(.75))
+        self.assertEqual(comparison_numeric['col_1']['median']['df2'], numerical_df_2['col_1'].quantile(.5))
 
     def test_mean_std(self):
         comparison_numeric = self.precalculation.process(self.store_numerical)['numerical_comparison']

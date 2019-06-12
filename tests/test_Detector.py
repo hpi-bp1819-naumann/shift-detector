@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 import pandas as pd
 
 from shift_detector.Detector import Detector
-from shift_detector.checks.DummyCheck import DummyCheck, DummyReport
+from shift_detector.checks.DummyCheck import DummyCheck
 
 
 class TestCreateDetector(unittest.TestCase):
@@ -43,7 +43,7 @@ class TestCreateDetector(unittest.TestCase):
 class TestDetector(unittest.TestCase):
 
     def setUp(self):
-        sales = {'brand': ['Jones LLC']}
+        sales = {'brand': ['Jones LLC'] * 10}
         self.df1 = pd.DataFrame.from_dict(sales)
         self.df2 = self.df1
 
