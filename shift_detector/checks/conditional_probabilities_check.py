@@ -2,9 +2,10 @@ from collections import defaultdict
 
 import matplotlib.pyplot as plt
 
-from shift_detector.checks.Check import Check, Report
-from shift_detector.precalculations.ConditionalProbabilitiesPrecalculation import ConditionalProbabilitiesPrecalculation
+from shift_detector.checks.check import Check, Report
 from shift_detector.precalculations.conditional_probabilities import rule_compression
+from shift_detector.precalculations.conditional_probabilities_precalculation import \
+    ConditionalProbabilitiesPrecalculation
 
 
 class ConditionalProbabilitiesReport(Report):

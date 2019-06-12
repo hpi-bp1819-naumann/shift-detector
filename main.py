@@ -1,4 +1,4 @@
-from shift_detector.checks.ConditionalProbabilitiesCheck import ConditionalProbabilitiesCheck
+from shift_detector.checks.conditional_probabilities_check import ConditionalProbabilitiesCheck
 from shift_detector.detector import Detector
 
 if __name__ == "__main__":

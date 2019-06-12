@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from shift_detector.precalculations.conditional_probabilities.RuleCluster import RuleCluster
+from shift_detector.precalculations.conditional_probabilities.rule_cluster import RuleCluster
 
 
 def group_rules_by_length(rules):

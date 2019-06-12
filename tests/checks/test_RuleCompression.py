@@ -3,7 +3,7 @@ import unittest
 from collections import namedtuple
 
 from shift_detector.precalculations.conditional_probabilities import rule_compression
-from shift_detector.precalculations.conditional_probabilities.RuleCluster import RuleCluster
+from shift_detector.precalculations.conditional_probabilities.rule_cluster import RuleCluster
 
 
 class TestRuleCompression(unittest.TestCase):

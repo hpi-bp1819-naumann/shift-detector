@@ -1,9 +1,9 @@
 import pandas as pd
 
-from shift_detector.precalculations.BinningPrecalculation import BinningPrecalculation
-from shift_detector.precalculations.Precalculation import Precalculation
+from shift_detector.precalculations.binning_precalculation import BinningPrecalculation
 from shift_detector.precalculations.conditional_probabilities import fpgrowth
-from shift_detector.utils.ColumnManagement import ColumnType
+from shift_detector.precalculations.precalculation import Precalculation
+from shift_detector.utils.column_management import ColumnType
 
 
 class ConditionalProbabilitiesPrecalculation(Precalculation):

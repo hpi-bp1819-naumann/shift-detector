@@ -14,9 +14,9 @@ class RuleCluster:
             rule.delta_supports) <= abs(self.rule.delta_supports)
 
     def __str__(self):
-        attribute_string = ', '.join(f'{attribute[0]}: {attribute[1]}' for attribute in self.attribute_value_pairs)
-        return_str = f'[{attribute_string}]\n'
+        attribute_string = ', '.join('{a[0]}: {a[1]}'.format(a=attribute) for attribute in self.attribute_value_pairs)
+        return_str = '[{}]\n'.format(attribute_string)
         return_str += fpgrowth.to_string(self.rule) + '\n'
-        return_str += (f'delta_support: {abs(self.rule.delta_supports):.0%}, '
-                       f'number of sub-rules: {len(self.sub_rules)}\n')
+        return_str += 'delta_support: {:.0%}, number of sub-rules: {}\n'.format(abs(self.rule.delta_supports),
+                                                                                len(self.sub_rules))
         return return_str
