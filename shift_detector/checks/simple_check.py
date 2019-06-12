@@ -86,22 +86,14 @@ class SimpleCheck(Check):
             bar_df1 = []
             bar_df2 = []
             attribute_names = []
+
             for attribute_name, attribute_values in attribute.items():
-
-                if 'df1' not in attribute_values:
-                    attribute_values['df1'] = 0
-
-                if 'df2' not in attribute_values:
-                    attribute_values['df2'] = 0
 
                 diff = attribute_values['df1'] - attribute_values['df2']
 
                 bar_df1.append(attribute_values['df1'])
                 bar_df2.append(attribute_values['df2'])
                 attribute_names.append(attribute_name)
-
-                print('here we have value ', attribute_values['df1'], attribute_values['df2'], 'wich a diff in ',
-                      column_name, ' in attribute ', attribute_name)
 
                 if diff > self.categorical_threshold:
                     shifted_columns.add(column_name)
@@ -145,23 +137,16 @@ class SimpleReport(Report):
 
                 subplot = f.add_subplot(1, num_columns, i+1)
 
-                # set width of bar
                 bar_width = 0.25
-
-                # Set position of bar on X axis
                 r1 = np.arange(len(bars1))
                 r2 = [x + bar_width for x in r1]
 
-                # Make the plot
                 subplot.bar(r1, bars1, color='red', width=bar_width, edgecolor='white', label='DS1')
                 subplot.bar(r2, bars2, color='blue', width=bar_width, edgecolor='white', label='DS2')
 
-                # Add xticks on the middle of the group bars
-                subplot.set_xlabel('attribute', fontweight='bold')
+                subplot.set_xlabel('attribute-values', fontweight='bold')
                 subplot.set_xticks(np.arange(len(attribute_names))+bar_width/2)
                 subplot.set_xticklabels(attribute_names)
-
-                # Create legend & Show graphic
                 subplot.legend()
 
             f.show()
