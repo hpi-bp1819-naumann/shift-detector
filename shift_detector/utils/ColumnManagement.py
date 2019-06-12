@@ -1,6 +1,7 @@
-from enum import Enum
-from typing import List, Dict
 import logging as logger
+from enum import Enum
+from typing import List
+
 import pandas as pd
 from pandas.core.dtypes.common import is_numeric_dtype
 
@@ -10,7 +11,7 @@ CATEGORICAL_MAX_RELATIVE_CARDINALITY = 0.1  # maximum ratio of distinct values i
 class ColumnType(Enum):
     numerical = 'numerical'
     categorical = 'categorical'
-    all_categorical = 'all_categorical'  # categorical and numeric-categorical
+    low_cardinal_numerical = 'low_cardinal_numerical'  # a subset of numerical that is also categorical
     text = 'text'
 
 
@@ -67,10 +68,7 @@ def detect_column_types(df1, df2, columns):
     categorical_columns = [c for c in non_numerical if is_categorical(df1[c]) and is_categorical(df2[c])]
     logger.info("Detected categorical columns: {}".format(", ".join(column_names(categorical_columns))))
 
-    numeric_categorical_columns = [c for c in numerical_columns if is_categorical(df1[c]) and is_categorical(df2[c])]
-
-    all_categorical_columns = categorical_columns.copy()
-    all_categorical_columns.extend(numeric_categorical_columns)
+    low_cardinal_numerical_columns = [c for c in numerical_columns if is_categorical(df1[c]) and is_categorical(df2[c])]
 
     text_columns = list(set(non_numerical) - set(categorical_columns))
     logger.info("Detected text columns: {}".format(", ".join(column_names(text_columns))))
@@ -78,7 +76,7 @@ def detect_column_types(df1, df2, columns):
     return {
         ColumnType.numerical: numerical_columns,
         ColumnType.categorical: categorical_columns,
-        ColumnType.all_categorical: all_categorical_columns,
+        ColumnType.low_cardinal_numerical: low_cardinal_numerical_columns,
         ColumnType.text: text_columns
     }
 

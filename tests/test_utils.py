@@ -51,13 +51,13 @@ class TestUtils(unittest.TestCase):
 
         numerical_columns = column_type_to_column_names[ColumnType.numerical]
         categorical_columns = column_type_to_column_names[ColumnType.categorical]
-        all_categorical_columns = column_type_to_column_names[ColumnType.all_categorical]
+        low_cardinal_numerical_columns = column_type_to_column_names[ColumnType.low_cardinal_numerical]
         text_columns = column_type_to_column_names[ColumnType.text]
 
-        self.assertListEqual(list(numerical_columns), list(['payment']))
-        self.assertListEqual(list(categorical_columns), list(['brand']))
-        self.assertListEqual(list(all_categorical_columns), list(['brand', 'payment']))
-        self.assertListEqual(list(text_columns), list(['description']))
+        self.assertCountEqual(['payment'], numerical_columns)
+        self.assertCountEqual(['brand'], categorical_columns)
+        self.assertCountEqual(['payment'], low_cardinal_numerical_columns)
+        self.assertCountEqual(['description'], text_columns)
 
     def test_ucblist_block_function(self):
         self.assertEqual('Basic Latin', block('L'))
