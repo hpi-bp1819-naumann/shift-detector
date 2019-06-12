@@ -55,7 +55,7 @@ class TestFPGrowth(unittest.TestCase):
         data = [[1, 2], [3, 4]]
         columns = ['a', 'b']
         df = pd.DataFrame(data, columns=columns)
-        it = fp_growth.DataFrameIteratorAdapter(df)
+        it = fpgrowth.DataFrameIteratorAdapter(df)
         self.assertEqual(len(it), 2)
         for i, t in enumerate(it):
             with self.subTest():
