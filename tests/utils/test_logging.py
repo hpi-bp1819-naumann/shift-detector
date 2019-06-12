@@ -2,7 +2,7 @@ import unittest
 
 import pandas as pd
 
-from shift_detector.Detector import Detector
+from shift_detector.detector import Detector
 
 
 class TestLogging(unittest.TestCase):

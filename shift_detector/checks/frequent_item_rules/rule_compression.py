@@ -1,4 +1,4 @@
-from shift_detector.checks.frequent_item_rules.ExtendendRule import ExtendedRule, RuleCluster
+from shift_detector.checks.frequent_item_rules.extended_rule import ExtendedRule, RuleCluster
 # from shift_detector.checks.frequent_item_rules import fpgrowth
 
 
