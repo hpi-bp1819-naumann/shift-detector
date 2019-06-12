@@ -8,6 +8,7 @@ from shift_detector.checks.Check import Check, Report
 from shift_detector.precalculations.SimplePrecalculation import SimplePrecalculation
 from shift_detector.utils.ColumnManagement import ColumnType
 
+import os
 
 class SimpleCheck(Check):
 
@@ -35,8 +36,7 @@ class SimpleCheck(Check):
             return 0
         # TODO: think about comparison if base value is 0
         if metric_in_df1 == 0:
-            logger.warning('column', column, '\t \t', metric_name,
-                           ': no comparison of distance possible, division by zero')
+            logger.warning('column {} \t \t {}: no comparison of distance possible, division by zero'.format(column, metric_name))
             return 0
 
         relative_difference = (metric_in_df2 / metric_in_df1 - 1) * 100
@@ -64,6 +64,7 @@ class SimpleCheck(Check):
 
             for metric in metrics:
                 diff = self.relative_metric_difference(column_name, metric)
+                diff = round(diff, 2)
 
                 if abs(diff) > self.metrics_thresholds_percentage[metric]:
                     shifted_columns.add(column_name)
@@ -144,6 +145,7 @@ class SimpleReport(Report):
                 subplot.bar(r1, bars1, color='red', width=bar_width, edgecolor='white', label='DS1')
                 subplot.bar(r2, bars2, color='blue', width=bar_width, edgecolor='white', label='DS2')
 
+                subplot.title.set_text(column_name)
                 subplot.set_xlabel('attribute-values', fontweight='bold')
                 subplot.set_xticks(np.arange(len(attribute_names))+bar_width/2)
                 subplot.set_xticklabels(attribute_names)
