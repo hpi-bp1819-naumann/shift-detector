@@ -19,7 +19,7 @@ class TestStore(unittest.TestCase):
         df1 = df2 = pd.DataFrame.from_dict(sales)
 
         with self.subTest("Successful initialisation"):
-            Store(df1, df2, {'brand': ColumnType.numerical})
+            Store(df1, df2, {'description': ColumnType.categorical})
 
         with self.subTest("Exception when no dict is passed as custom_column_types"):
             self.assertRaises(TypeError, lambda: Store(df1, df2, 'no_dict'))
