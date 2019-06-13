@@ -21,7 +21,8 @@ class SimpleCheck(Check):
         logger.info("Execute Simple Check")
         df1_numerical, df2_numerical = store[ColumnType.numerical]
         self.data = store[SimplePrecalculation()]
-        numerical_report = self.numerical_report(df1_numerical, df2_numerical)
+        numerical_report = self.numerical_report(df1_numerical, df2_numerical,
+                                                 store.column_names(ColumnType.numerical))
         categorical_report = self.categorical_report()
 
         return numerical_report + categorical_report
@@ -52,7 +53,7 @@ class SimpleCheck(Check):
 
         return metrics_difference_string
 
-    def numerical_report(self, df1, df2):
+    def numerical_report(self, df1, df2, columns):
         numerical_comparison = self.data['numerical_comparison']
         examined_columns = set()
         shifted_columns = set()
@@ -70,7 +71,7 @@ class SimpleCheck(Check):
                                                                                     self.difference_to_string(diff))
 
         return SimpleReport(examined_columns, shifted_columns, dict(explanation),
-                            figures=[SimpleReport.numerical_plot(df1, df2)])
+                            figures=[SimpleReport.numerical_plot(df1, df2, columns)])
 
     def categorical_report(self):
         categorical_comparison = self.data['categorical_comparison']
@@ -103,11 +104,11 @@ class SimpleReport(Report):
         super().__init__("Simple Check", examined_columns, shifted_columns, information, explanation, figures)
 
     @staticmethod
-    def numerical_plot(df1, df2):
+    def numerical_plot(df1, df2, columns):
         def custom_plot():
             f = plt.figure(figsize=(20, 7))
-            num_columns = len(list(df1.columns))
-            for num, column in enumerate(list(df1.columns)):
+            num_columns = len(columns)
+            for num, column in enumerate(columns):
                 a, b = df1[column], df2[column]
                 ax = f.add_subplot(1, num_columns, num + 1)
 

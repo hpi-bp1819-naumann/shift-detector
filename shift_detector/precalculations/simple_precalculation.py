@@ -15,20 +15,22 @@ class SimplePrecalculation(Precalculation):
         df1_numerical, df2_numerical = store[ColumnType.numerical]
         df1_categorical, df2_categorical = store[ColumnType.categorical]
 
-        numerical_comparison = self.compare_numerical_columns(df1_numerical, df2_numerical)
-        categorical_comparison = self.compare_categorical_columns(df1_categorical, df2_categorical, store.columns)
+        numerical_comparison = self.compare_numerical_columns(df1_numerical, df2_numerical,
+                                                              store.column_names(ColumnType.numerical))
+        categorical_comparison = self.compare_categorical_columns(df1_categorical, df2_categorical,
+                                                                  store.column_names(ColumnType.categorical))
         combined_comparisons = {'categorical_comparison': categorical_comparison,
                                 'numerical_comparison': numerical_comparison}
         return combined_comparisons
 
     @staticmethod
-    def compare_numerical_columns(df1, df2):
+    def compare_numerical_columns(df1, df2, columns):
         numerical_comparison = dict()
         empty_metrics_dict = {'mean': {}, 'median': {}, 'min': {}, 'max': {}, 'quartile_1': {}, 'quartile_3': {},
                               'uniqueness': {}, 'num_distinct': {}, 'completeness': {}, 'std': {}}
 
         for df_name, df in [('df1', df1), ('df2', df2)]:
-            for column in df.columns:
+            for column in columns:
                 if df_name == 'df1':
                     numerical_comparison[column] = deepcopy(empty_metrics_dict)
                 elif not numerical_comparison.get(column):
@@ -60,7 +62,7 @@ class SimplePrecalculation(Precalculation):
     def compare_categorical_columns(df1, df2, columns):
         category_comparison = {}
 
-        for column in list(df1.columns):
+        for column in columns:
             category_comparison[column] = {}
             attribute_ratios_df1 = df1[column].value_counts(normalize=True).to_dict()
             # category_comparison[column]['df1'] = {}
