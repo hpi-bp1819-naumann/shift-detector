@@ -52,7 +52,8 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
                                      'Should be numerical or categorical.'
                                      .format(type=mdtype.metadata_return_type(), metadata=mdtype))
                 pvalues[(column, mdtype.metadata_name())] = [p]
-        return Report(examined_columns=list(df1.columns.levels[0]),
+        return Report("Text Metadata Check",
+                      examined_columns=list(df1.columns.levels[0]),
                       shifted_columns=self.significant_columns(pvalues),
                       explanation=self.explain(pvalues),
                       information={'test_results': pvalues})

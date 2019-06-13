@@ -1,3 +1,4 @@
+matplotlib
 iso-639
 nltk
 textstat
@@ -9,7 +10,7 @@ scipy
 sklearn
 datawig
 gensim
+regex
 sklearn
 lda
 nltk
-regex

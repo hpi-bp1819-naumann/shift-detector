@@ -1,15 +1,15 @@
+import gensim
 import pandas as pd
 from shift_detector.precalculations.Precalculation import Precalculation
-from nltk.corpus import stopwords as nltk_stopwords
-from sklearn.feature_extraction.text import CountVectorizer as CountVectorizer_sklearn
 from shift_detector.utils.ColumnManagement import ColumnType
+from nltk.corpus import stopwords as nltk_stopwords
+import re
 
 
-class CountVectorizer(Precalculation):
+class WordTokenizer(Precalculation):
 
-    def __init__(self, stop_words='english', max_features=None, cols=None):  # potentially make min_df and max_df available
+    def __init__(self, stop_words='english', cols=None):
         self.stopwords = None
-        self.max_features = None
         self.cols = None
         if isinstance(stop_words, str):
             if stop_words in nltk_stopwords.fileids():
@@ -28,39 +28,31 @@ class CountVectorizer(Precalculation):
             else:
                 raise TypeError('The stop_words list has to contain strings only')
         else:
-            raise TypeError('Please enter the language for your stopwords as a string or list of strings')
-        if max_features is not None:
-            if isinstance(max_features, int):
-                if max_features > 0:
-                    self.max_features = max_features
-                else:
-                    raise ValueError('Max_features has to be at least 1')
-            else:
-                raise TypeError('Max_features has to be an int')
+            raise Exception('Please enter the language for your stopwords as a string or list of strings')
         if cols and (not isinstance(cols, list) or any(not isinstance(col, str) for col in cols)):
             raise TypeError('Cols has to be list of strings')
         else:
             self.cols = cols
-        self.vectorizer = CountVectorizer_sklearn(stop_words=self.stopwords, max_features=self.max_features)
-
+    
     def __eq__(self, other):
         """Overrides the default implementation"""
-        if isinstance(other, self.__class__) and self.stop_words == other.stop_words \
-                and self.max_features == other.max_features and self.cols == other.cols:  # does that work?
+        if isinstance(other, self.__class__) and self.stop_words == other.stop_words and self.cols == other.cols:
             return True
         return False
 
     def __hash__(self):
         """Overrides the default implementation"""
-        hash_list = [self.__class__, self.max_features]
-        hash_list.extend(self.stop_words)
         if self.cols:
-            hash_list.extend(self.cols)
-        return hash(tuple(hash_list))
+            hash_list = [self.__class__]
+            hash_list.extend(sorted(self.stop_words)).extend(self.cols)
+            return hash(tuple(hash_list))
+        else:
+            hash_list = [self.__class__]
+            hash_list.extend(sorted(self.stop_words))
+            return hash(tuple(hash_list))
 
     def process(self, store):
         df1_texts, df2_texts = store[ColumnType.text]
-        merged_texts = pd.concat([df1_texts, df2_texts], ignore_index=True)
         if self.cols is None:
             col_names = df1_texts.columns
         else:
@@ -71,15 +63,31 @@ class CountVectorizer(Precalculation):
                 for col in self.cols:
                     if col not in df1_texts.columns:
                         raise ValueError('Given column is not contained in given datasets')
-                col_names = self.cols
-
-        dict_of_sparse_matrices1 = {}
-        dict_of_sparse_matrices2 = {}
+        processed1 = {}
+        processed2 = {}
 
         for col in col_names:
-            count_vec = self.vectorizer
-            count_vec = count_vec.fit(merged_texts[col])
-            dict_of_sparse_matrices1[col] = count_vec.transform(df1_texts[col]).A.astype(int)
-            # you can also leave the last part and you get a sparse matrix that is much more memory efficient
-            dict_of_sparse_matrices2[col] = count_vec.transform(df2_texts[col]).A.astype(int)
-        return dict_of_sparse_matrices1, dict_of_sparse_matrices2
+            tokenized1 = []
+            tokenized2 = []
+
+            for entry in df1_texts[col]:
+                wordlist = []
+                for word in re.sub(r"[^\w+\s]|\b[a-zA-Z]\b", ' ', entry).split():
+                    if word.lower() not in self.stop_words or '':
+                        if len(gensim.utils.simple_preprocess(word, deacc=True)) > 0:
+                            wordlist.append(gensim.utils.simple_preprocess(word, deacc=True).pop())
+                tokenized1.append(wordlist)
+
+            processed1[col] = tokenized1
+
+            for entry in df2_texts[col]:
+                wordlist = []
+                for word in re.sub(r"[^\w+\s]|\b[a-zA-Z]\b", ' ', entry).split():
+                    if word.lower() not in self.stop_words or '':
+                        if len(gensim.utils.simple_preprocess(word, deacc=True)) > 0:
+                            wordlist.append(gensim.utils.simple_preprocess(word, deacc=True).pop())
+                tokenized2.append(wordlist)
+
+            processed2[col] = tokenized2
+
+        return pd.DataFrame.from_dict(processed1), pd.DataFrame.from_dict(processed2)
