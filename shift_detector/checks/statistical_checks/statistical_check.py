@@ -62,12 +62,12 @@ class SimpleStatisticalCheck(StatisticalCheck):
         pass
 
     @abstractmethod
-    def data_to_process(self):
+    def data_to_process(self, store):
         """
         Receive the data to run on.
         :return: Processed df1, df2 and the columns
         """
-        return []
+        return pd.DataFrame(), pd.DataFrame(), []
 
     def explain(self, pvalues):
         """

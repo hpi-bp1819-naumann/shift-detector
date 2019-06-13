@@ -1,5 +1,6 @@
 import logging as logger
 
+import pandas as pd
 from pandas import DataFrame
 
 from shift_detector.utils.column_management import detect_column_types, ColumnType, CATEGORICAL_MAX_RELATIVE_CARDINALITY
@@ -90,6 +91,7 @@ class Store:
                 # apply custom column type
                 if column in custom_column_to_column_type:
                     custom_column_type = custom_column_to_column_type[column]
+                    self.__change_column_type(column, custom_column_type)
                     column_to_column_type[column] = custom_column_type
                 else:
                     column_to_column_type[column] = column_type
@@ -105,3 +107,16 @@ class Store:
             new_column_type_to_columns[column_type].append(column)
 
         self.type_to_columns = new_column_type_to_columns
+
+    def __change_column_type(self, column, new_column_type):
+        if new_column_type == ColumnType.numerical:
+            try:
+                self.df1[column] = pd.to_numeric(self.df1[column])
+                self.df2[column] = pd.to_numeric(self.df2[column])
+            except Exception as e:
+                raise Exception("An error occurred during the conversion of column '{}' to the new column type '{}'. "
+                                "{}".format(column, new_column_type.name, str(e)))
+
+        elif new_column_type == ColumnType.categorical or new_column_type == ColumnType.text:
+            self.df1[column] = self.df1[column].astype(str)
+            self.df2[column] = self.df2[column].astype(str)
