@@ -1,5 +1,5 @@
 import unittest
-from shift_detector.precalculations.LdaEmbedding import LdaEmbedding
+from shift_detector.precalculations.lda_embedding import LdaEmbedding
 from shift_detector.precalculations.Store import Store
 import pandas as pd
 

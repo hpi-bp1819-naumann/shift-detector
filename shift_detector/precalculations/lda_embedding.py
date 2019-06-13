@@ -6,10 +6,10 @@ from sklearn.feature_extraction.text import *
 #from gensim.corpora import Dictionary
 import lda
 from copy import copy
-from shift_detector.precalculations.Precalculation import Precalculation
-from shift_detector.precalculations.CountVectorizer import CountVectorizer
-from shift_detector.precalculations.WordTokenizer import WordTokenizer
-from shift_detector.utils.ColumnManagement import ColumnType
+from shift_detector.precalculations.precalculation import Precalculation
+from shift_detector.precalculations.count_vectorizer import CountVectorizer
+from shift_detector.precalculations.word_tokenizer import WordTokenizer
+from shift_detector.utils.column_management import ColumnType
 
 
 class LdaEmbedding(Precalculation):
