@@ -1,17 +1,17 @@
 import unittest
-from shift_detector.precalculations.LdaEmbedding import LdaEmbedding
+from shift_detector.precalculations.lda_embedding import LdaEmbedding
+from shift_detector.checks.lda_check import LdaCheck
 from shift_detector.precalculations.Store import Store
 import pandas as pd
 
 
-class TestLdaEmbedding(unittest.TestCase):
+class TestLdaCheck(unittest.TestCase):
 
     def setUp(self):
-        self.lda1 = LdaEmbedding(n_topics=2, n_iter=1, random_state=2)
-        self.lda2 = LdaEmbedding(n_topics=2, n_iter=1, random_state=2)
-        self.lda3 = LdaEmbedding(n_topics=2, n_iter=1, random_state=2, cols=['text'])
-        self.lda4 = LdaEmbedding(n_topics=2, n_iter=1, random_state=2, cols=['text'])
-        self.lda5 = LdaEmbedding(n_topics=2, n_iter=1, random_state=2, cols=['text', 'abc'])
+        self.lda_report1 = LdaCheck(significance=10)
+        self.lda_report2 = LdaCheck(significance=10)
+
+        self.lda = LdaEmbedding(n_topics=2, n_iter=1, random_state=2)
 
         self.poems = [
             'Tell me not, in mournful numbers,\nLife is but an empty dream!\nFor the soul is dead that slumbers,\nAnd things are not what they seem.',
@@ -168,19 +168,11 @@ class TestLdaEmbedding(unittest.TestCase):
         self.store = Store(self.df1, self.df2)
 
     def test_exception_on_small_n(self):
-        self.assertRaises(ValueError, lambda: LdaEmbedding(n_topics=0))
+        self.assertRaises(ValueError, lambda: LdaCheck(significance=0))
 
-    def test_eq(self):
-        self.assertTrue(self.lda1 == self.lda2)
+    def test_run(self):
+        report = self.lda_report1.run(self.store)
 
-    def test_hash(self):
-        self.assertEqual(hash(self.lda1), hash(self.lda2))
-        self.assertEqual(hash(self.lda3), hash(self.lda4))
-        self.assertNotEqual(hash(self.lda4), hash(self.lda5))
+        self.assertTrue(report.explanation['Topic 0 diff in column text'] == -23.0)
+        self.assertTrue(report.explanation['Topic 1 diff in column text'] == 23.0)
 
-    def test_process(self):
-        res1, res2 = self.lda1.process(self.store)
-        self.assertTrue(res1['topics text'].equals(pd.Series([0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
-                                                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
-                                                              0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0,
-                                                              0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0])))

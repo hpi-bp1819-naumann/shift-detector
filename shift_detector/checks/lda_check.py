@@ -1,7 +1,7 @@
 import numpy as np
-from shift_detector.checks.Check import Check, Report
-from shift_detector.precalculations.LdaEmbedding import LdaEmbedding
-from shift_detector.utils.ColumnManagement import ColumnType
+from shift_detector.checks.check import Check, Report
+from shift_detector.precalculations.lda_embedding import LdaEmbedding
+from shift_detector.utils.column_management import ColumnType
 from collections import Counter
 
 

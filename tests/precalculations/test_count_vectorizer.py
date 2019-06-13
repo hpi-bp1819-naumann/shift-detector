@@ -1,5 +1,5 @@
 import unittest
-from shift_detector.precalculations.CountVectorizer import CountVectorizer
+from shift_detector.precalculations.count_vectorizer import CountVectorizer
 from shift_detector.precalculations.Store import Store
 import pandas as pd
 import numpy as np
