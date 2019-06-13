@@ -6,24 +6,38 @@ from pandas.util.testing import assert_frame_equal
 from shift_detector.detector import Detector
 from shift_detector.checks.statistical_checks.text_metadata_statistical_check import TextMetadataStatisticalCheck
 from shift_detector.precalculations.store import Store
-from shift_detector.precalculations.text_metadata import NumCharsMetadata, NumWordsMetadata, DistinctWordsRatioMetadata, \
-    LanguagePerParagraph, UnknownWordRatioMetadata, StopwordRatioMetadata
+from shift_detector.precalculations.text_metadata import NumCharsMetadata, NumWordsMetadata, \
+    DistinctWordsRatioMetadata, LanguagePerParagraph, UnknownWordRatioMetadata, StopwordRatioMetadata
 
 
 class TestTextMetadataStatisticalCheck(unittest.TestCase):
 
     def setUp(self):
         self.poems = [
-            'Tell me not, in mournful numbers,\nLife is but an empty dream!\nFor the soul is dead that slumbers,\nAnd things are not what they seem.',
-            'Life is real! Life is earnest!\nAnd the grave is not its goal;\nDust thou art, to dust returnest,\nWas not spoken of the soul.',
-            'Not enjoyment, and not sorrow,\nIs our destined end or way;\nBut to act, that each to-morrow\nFind us farther than to-day.',
-            'Art is long, and Time is fleeting,\nAnd our hearts, though stout and brave,\nStill, like muffled drums, are beating\nFuneral marches to the grave.',
-            'In the world’s broad field of battle,\nIn the bivouac of Life,\nBe not like dumb, driven cattle!\nBe a hero in the strife! ',
-            'Trust no Future, howe’er pleasant!\nLet the dead Past bury its dead!\nAct,— act in the living Present!\nHeart within, and God o’erhead! ',
-            'LIFE, believe, is not a dream\nSo dark as sages say;\nOft a little morning rain\nForetells a pleasant day.\nSometimes there are clouds of gloom,\nBut these are transient all;\nIf the shower will make the roses bloom,\nO why lament its fall ? ',
+            'Tell me not, in mournful numbers,\nLife is but an empty dream!\nFor the soul is dead that slumbers,\n'
+            'And things are not what they seem.',
+            'Life is real! Life is earnest!\nAnd the grave is not its goal;\nDust thou art, to dust returnest,\n'
+            'Was not spoken of the soul.',
+            'Not enjoyment, and not sorrow,\nIs our destined end or way;\nBut to act, that each to-morrow\n'
+            'Find us farther than to-day.',
+            'Art is long, and Time is fleeting,\nAnd our hearts, though stout and brave,\n'
+            'Still, like muffled drums, are beating\nFuneral marches to the grave.',
+            'In the world’s broad field of battle,\nIn the bivouac of Life,\nBe not like dumb, driven cattle!\n'
+            'Be a hero in the strife! ',
+            'Trust no Future, howe’er pleasant!\nLet the dead Past bury its dead!\n'
+            'Act,— act in the living Present!\nHeart within, and God o’erhead! ',
+            'LIFE, believe, is not a dream\nSo dark as sages say;\nOft a little morning rain\n'
+            'Foretells a pleasant day.\nSometimes there are clouds of gloom,\nBut these are transient all;\n'
+            'If the shower will make the roses bloom,\nO why lament its fall ? ',
             "Rapidly, merrily,\nLife's sunny hours flit by,\nGratefully, cheerily,\nEnjoy them as they fly !",
-            "What though Death at times steps in\nAnd calls our Best away ?\nWhat though sorrow seems to win,\nO'er hope, a heavy sway ?\nYet hope again elastic springs,\nUnconquered, though she fell;\nStill buoyant are her golden wings,\nStill strong to bear us well.\nManfully, fearlessly,\nThe day of trial bear,\nFor gloriously, victoriously,\nCan courage quell despair ! ",
-            'When sinks my heart in hopeless gloom,\nAnd life can shew no joy for me;\nAnd I behold a yawning tomb,\nWhere bowers and palaces should be;\nIn vain you talk of morbid dreams;\nIn vain you gaily smiling say,\nThat what to me so dreary seems,\nThe healthy mind deems bright and gay.']
+            "What though Death at times steps in\nAnd calls our Best away ?\nWhat though sorrow seems to win,\n"
+            "O'er hope, a heavy sway ?\nYet hope again elastic springs,\nUnconquered, though she fell;\n"
+            "Still buoyant are her golden wings,\nStill strong to bear us well.\nManfully, fearlessly,\n"
+            "The day of trial bear,\nFor gloriously, victoriously,\nCan courage quell despair ! ",
+            'When sinks my heart in hopeless gloom,\nAnd life can shew no joy for me;\n'
+            'And I behold a yawning tomb,\nWhere bowers and palaces should be;\n'
+            'In vain you talk of morbid dreams;\nIn vain you gaily smiling say,\nThat what to me so dreary seems,\n'
+            'The healthy mind deems bright and gay.']
         self.phrases = ['Front-line leading edge website',
                         'Upgradable upward-trending software',
                         'Virtual tangible throughput',

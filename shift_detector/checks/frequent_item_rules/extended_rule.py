@@ -53,4 +53,3 @@ class RuleCluster:
         print('max_delta_support: ', self.max_abs_delta_support_left, '\t max_delta_confidence:',
               self.max_abs_delta_confidence, '\t number of subrules:', len(self.subcluster))
         print('\n')
-
