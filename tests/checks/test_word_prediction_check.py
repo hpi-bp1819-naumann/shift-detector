@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+import numpy as np
 from pandas import DataFrame
 
 from shift_detector.checks.word_prediction_check import WordPredictionCheck
@@ -21,6 +22,8 @@ class TestWordPredictionCheck(TestCase):
         self.df2 = DataFrame.from_dict(data2)
         self.store = Store(self.df1, self.df2)
         self.check = WordPredictionCheck(relative_thresh=.3)
+
+        np.random.seed(1)
 
     def test_init(self):
         with self.subTest("Test wrong columns"):
