@@ -7,7 +7,7 @@ from copy import copy
 from gensim.models.base_any2vec import BaseWordEmbeddingsModel
 
 from shift_detector.precalculations.precalculation import Precalculation
-from shift_detector.precalculations.text_preprocessor import TokenizeIntoLowerWordsPrecalculation
+from shift_detector.precalculations.text_precalculation import TokenizeIntoLowerWordsPrecalculation
 from shift_detector.precalculations.store import Store
 
 

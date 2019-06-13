@@ -16,7 +16,7 @@ from spellchecker import SpellChecker
 from textstat import textstat
 
 from shift_detector.precalculations.precalculation import Precalculation
-from shift_detector.precalculations.text_preprocessor import TokenizeIntoLowerWordsPrecalculation
+from shift_detector.precalculations.text_precalculation import TokenizeIntoLowerWordsPrecalculation
 from shift_detector.utils import ucb_list
 from shift_detector.utils.column_management import ColumnType
 from shift_detector.utils.text_metadata_utils import dictionary_to_sorted_string, delimiters
