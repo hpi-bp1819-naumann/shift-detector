@@ -1,17 +1,15 @@
 import unittest
-from shift_detector.precalculations.lda_embedding import LdaEmbedding
 from shift_detector.checks.lda_check import LdaCheck
 from shift_detector.precalculations.store import Store
 import pandas as pd
+import math
 
 
 class TestLdaCheck(unittest.TestCase):
 
     def setUp(self):
-        self.lda_report1 = LdaCheck(significance=10)
-        self.lda_report2 = LdaCheck(significance=10)
-
-        self.lda = LdaEmbedding(n_topics=2, n_iter=1, random_state=2)
+        self.lda_report1 = LdaCheck(significance=10, n_topics=2, n_iter=1, random_state=2)
+        self.lda_report2 = LdaCheck(significance=10, n_topics=2, n_iter=1, random_state=2)
 
         self.poems = [
             'Tell me not, in mournful numbers,\nLife is but an empty dream!\nFor the soul is dead that slumbers,\nAnd things are not what they seem.',
@@ -173,6 +171,6 @@ class TestLdaCheck(unittest.TestCase):
     def test_run(self):
         report = self.lda_report1.run(self.store)
 
-        self.assertTrue(report.explanation['Topic 0 diff in column text'] == -23.0)
-        self.assertTrue(report.explanation['Topic 1 diff in column text'] == 23.0)
+        self.assertTrue(math.isclose(report.explanation['Topic 0 diff in column text'], 39.2))
+        self.assertTrue(math.isclose(report.explanation['Topic 1 diff in column text'], -39.2))
 

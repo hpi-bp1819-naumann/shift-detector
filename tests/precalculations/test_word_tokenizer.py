@@ -6,9 +6,9 @@ import pandas as pd
 class TestWordTokenizer(unittest.TestCase):
 
     def setUp(self):
-        self.token1 = WordTokenizer(stop_words='english')
-        self.token2 = WordTokenizer(stop_words='english')
-        self.token3 = WordTokenizer(stop_words='french')
+        self.token1 = WordTokenizer(cols='col1', stop_words='english')
+        self.token2 = WordTokenizer(cols='col1', stop_words='english')
+        self.token3 = WordTokenizer(cols='col1', stop_words='french')
 
         self.df1 = pd.DataFrame({'col1':
                                 ['duck, duck, duck, duck, duck, \
@@ -30,9 +30,9 @@ class TestWordTokenizer(unittest.TestCase):
         self.assertFalse(self.token1 == self.token3)
 
     def test_exception_for_stop_words(self):
-        self.assertRaises(Exception, lambda: WordTokenizer(stop_words='abcd'))
-        self.assertRaises(Exception, lambda: WordTokenizer(stop_words=['english', ' abcd']))
-        self.assertRaises(TypeError, lambda: WordTokenizer(stop_words=['english', 42]))
+        self.assertRaises(Exception, lambda: WordTokenizer(cols='', stop_words='abcd'))
+        self.assertRaises(Exception, lambda: WordTokenizer(cols='', stop_words=['english', ' abcd']))
+        self.assertRaises(TypeError, lambda: WordTokenizer(cols='', stop_words=['english', 42]))
 
     def test_hash(self):
         self.assertEqual(hash(self.token1), hash(self.token2))

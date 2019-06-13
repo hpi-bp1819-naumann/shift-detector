@@ -7,7 +7,7 @@ from shift_detector.utils.column_management import ColumnType
 
 class CountVectorizer(Precalculation):
 
-    def __init__(self, stop_words='english', max_features=None, cols=None):
+    def __init__(self, cols, stop_words='english', max_features=None):
         # potentially make min_df and max_df available
         self.stopwords = None
         self.max_features = None
@@ -38,41 +38,42 @@ class CountVectorizer(Precalculation):
                     raise ValueError('Max_features has to be at least 1')
             else:
                 raise TypeError('Max_features has to be an int')
-        if cols and (not isinstance(cols, list) or any(not isinstance(col, str) for col in cols)):
-            raise TypeError('Cols has to be list of strings')
+        if cols is not None:
+            if isinstance(cols, list) and all(isinstance(col, str) for col in cols) or isinstance(cols, str):
+                self.cols = cols
+            else:
+                raise TypeError('Cols has to be list of strings or a single string')
         else:
-            self.cols = cols
+            raise ValueError('You have to specify which columns you want to vectorize')
+
         self.vectorizer = CountVectorizer_sklearn(stop_words=self.stopwords, max_features=self.max_features)
 
     def __eq__(self, other):
         """Overrides the default implementation"""
         if isinstance(other, self.__class__) and self.stop_words == other.stop_words \
-                and self.max_features == other.max_features and self.cols == other.cols:  # does that work?
+                and self.max_features == other.max_features and self.cols == other.cols:
             return True
         return False
 
     def __hash__(self):
         """Overrides the default implementation"""
         hash_list = [self.__class__, self.max_features]
-        hash_list.extend(self.stop_words)
-        if self.cols:
-            hash_list.extend(self.cols)
+        hash_list.extend(sorted(self.stop_words))
+        hash_list.extend(self.cols)
         return hash(tuple(hash_list))
 
     def process(self, store):
         df1_texts, df2_texts = store[ColumnType.text]
         merged_texts = pd.concat([df1_texts, df2_texts], ignore_index=True)
-        if self.cols is None:
-            col_names = df1_texts.columns
+
+        if isinstance(self.cols, str):
+            if self.cols in df1_texts.columns:
+                col_names = [self.cols]
         else:
-            if isinstance(self.cols, str):
-                if self.cols in df1_texts.columns:
-                    col_names = self.cols
-            else:
-                for col in self.cols:
-                    if col not in df1_texts.columns:
-                        raise ValueError('Given column is not contained in given datasets')
-                col_names = self.cols
+            for col in self.cols:
+                if col not in df1_texts.columns:
+                    raise ValueError('Given column is not contained in given datasets')
+            col_names = self.cols
 
         dict_of_sparse_matrices1 = {}
         dict_of_sparse_matrices2 = {}
