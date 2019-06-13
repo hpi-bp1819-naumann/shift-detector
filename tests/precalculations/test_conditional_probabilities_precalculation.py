@@ -4,7 +4,9 @@ from itertools import chain, combinations
 
 import pandas as pd
 
-from shift_detector.checks.frequent_item_rules import fp_growth, pyfpgrowth_core
+from shift_detector.precalculations.conditional_probabilities import fpgrowth, pyfpgrowth_core
+from shift_detector.precalculations.conditional_probabilities_precalculation import \
+    ConditionalProbabilitiesPrecalculation
 
 
 class TestFPGrowth(unittest.TestCase):
@@ -53,7 +55,7 @@ class TestFPGrowth(unittest.TestCase):
         data = [[1, 2], [3, 4]]
         columns = ['a', 'b']
         df = pd.DataFrame(data, columns=columns)
-        it = fp_growth.DataFrameIteratorAdapter(df)
+        it = fpgrowth.DataFrameIteratorAdapter(df)
         self.assertEqual(len(it), 2)
         for i, t in enumerate(it):
             with self.subTest():
@@ -69,7 +71,7 @@ class TestFPGrowth(unittest.TestCase):
         data2 = [['exclusive 2', 2], ['common', 42]]
         df1 = pd.DataFrame(data1, columns=columns)
         df2 = pd.DataFrame(data2, columns=columns)
-        rules = fp_growth.calculate_frequent_rules(df1, df2)
+        rules = fpgrowth.calculate_frequent_rules(df1, df2, 0.01, 0.15)
         Rule = namedtuple('Rule', ['left_side', 'right_side', 'supports_of_left_side', 'delta_supports_of_left_side',
                                    'supports', 'delta_supports', 'confidences', 'delta_confidences'])
         expected = [Rule(left_side=(('c1', 'common'),), right_side=(), supports_of_left_side=(0.5, 0.5),
@@ -118,6 +120,15 @@ class TestFPGrowth(unittest.TestCase):
                          delta_supports_of_left_side=-0.5, supports=(0.0, 0.5), delta_supports=-0.5,
                          confidences=(0.0, 1.0), delta_confidences=-1.0)]
         self.assertCountEqual(rules, expected)
+
+    def test_equal_and_hash(self):
+        a = ConditionalProbabilitiesPrecalculation(0.5, 0.4)
+        b = ConditionalProbabilitiesPrecalculation(0.5, 0.4)
+        c = ConditionalProbabilitiesPrecalculation(0.5, 0.5)
+        self.assertEqual(a, b)
+        self.assertNotEqual(a, c)
+        self.assertEqual(hash(a), hash(b))
+        self.assertNotEqual(hash(a), hash(c))
 
 
 if __name__ == '__main__':
