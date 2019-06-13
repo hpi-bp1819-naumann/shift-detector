@@ -25,14 +25,20 @@ class TestWordTokenizer(unittest.TestCase):
 
         self.store = Store(self.df1, self.df2)
 
+    def test_exception_for_cols(self):
+        self.assertRaises(TypeError, lambda: WordTokenizer())
+        self.assertRaises(TypeError, lambda: WordTokenizer(cols=None))
+        self.assertRaises(TypeError, lambda: WordTokenizer(cols=42))
+
+    def test_exception_for_stop_words(self):
+        self.assertRaises(ValueError, lambda: WordTokenizer(cols='col1', stop_words=['english', 'abcd']))
+        self.assertRaises(ValueError, lambda: WordTokenizer(cols='', stop_words='abcd'))
+        self.assertRaises(ValueError, lambda: WordTokenizer(cols='', stop_words=['english', ' abcd']))
+        self.assertRaises(TypeError, lambda: WordTokenizer(cols='', stop_words=['english', 42]))
+
     def test_eq(self):
         self.assertTrue(self.token1 == self.token2)
         self.assertFalse(self.token1 == self.token3)
-
-    def test_exception_for_stop_words(self):
-        self.assertRaises(Exception, lambda: WordTokenizer(cols='', stop_words='abcd'))
-        self.assertRaises(Exception, lambda: WordTokenizer(cols='', stop_words=['english', ' abcd']))
-        self.assertRaises(TypeError, lambda: WordTokenizer(cols='', stop_words=['english', 42]))
 
     def test_hash(self):
         self.assertEqual(hash(self.token1), hash(self.token2))
@@ -40,17 +46,18 @@ class TestWordTokenizer(unittest.TestCase):
     def test_process(self):
         res1, res2 = self.token1.process(self.store)
 
-        pd.testing.assert_frame_equal(res1, pd.DataFrame.from_dict({'col1':  [['duck', 'duck', 'duck', 'duck', 'duck',
-                                                                               'duck', 'duck', 'duck', 'duck',
-                                                                               'goose']]*9 +
-                                                                              [['goose', 'goose', 'goose', 'goose',
-                                                                               'goose', 'goose', 'goose', 'goose',
-                                                                               'goose', 'duck']]
+        pd.testing.assert_frame_equal(res1, pd.DataFrame.from_dict({'col1':
+                                                                    [['duck', 'duck', 'duck', 'duck', 'duck',
+                                                                      'duck', 'duck', 'duck', 'duck', 'goose']]*9 +
+                                                                    [['goose', 'goose', 'goose', 'goose', 'goose',
+                                                                      'goose', 'goose', 'goose', 'goose', 'duck']]
                                                                     }))
 
-        pd.testing.assert_frame_equal(res2, pd.DataFrame.from_dict({'col1': [['goose', 'goose', 'goose', 'goose',
-                                                                              'goose', 'goose', 'goose', 'goose',
-                                                                              'goose', 'duck']]*9 +
-                                                                             [['duck', 'duck', 'duck', 'duck', 'duck',
-                                                                              'duck', 'duck', 'duck', 'duck', 'goose']]
+        pd.testing.assert_frame_equal(res2, pd.DataFrame.from_dict({'col1':
+                                                                    [['goose', 'goose', 'goose', 'goose', 'goose',
+                                                                      'goose', 'goose', 'goose', 'goose', 'duck']]*9 +
+                                                                    [['duck', 'duck', 'duck', 'duck', 'duck',
+                                                                      'duck', 'duck', 'duck', 'duck', 'goose']]
                                                                     }))
+
+

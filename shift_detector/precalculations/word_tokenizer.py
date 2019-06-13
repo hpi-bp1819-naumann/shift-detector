@@ -15,11 +15,11 @@ class WordTokenizer(Precalculation):
             if stop_words in nltk_stopwords.fileids():
                 self.stop_words = nltk_stopwords.words(stop_words)
             else:
-                raise Exception('The language you entered is not available')
+                raise ValueError('The language you entered is not available')
         elif isinstance(stop_words, list) and all(isinstance(elem, str) for elem in stop_words):
                 for lang in stop_words:
                     if lang not in nltk_stopwords.fileids():
-                        raise Exception('At least one language you entered is not available')
+                        raise ValueError('At least one language you entered is not available')
                     if self.stopwords is None:
                         self.stopwords = set(nltk_stopwords.words(lang))
                     else:
@@ -33,7 +33,7 @@ class WordTokenizer(Precalculation):
             else:
                 raise TypeError('Cols has to be list of strings or a single string')
         else:
-            raise ValueError('You have to specify which columns you want to tokenize')
+            raise TypeError('You have to specify which columns you want to tokenize')
 
     def __eq__(self, other):
         """Overrides the default implementation"""
