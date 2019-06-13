@@ -180,8 +180,3 @@ class TestFrequentItemRule(unittest.TestCase):
         self.assertEqual(len(compressed_rules), 2)
         self.assertEqual(len(compressed_rules[0].subcluster), 0)
         self.assertEqual(len(compressed_rules[1].subcluster), 2)
-
-
-
-
-

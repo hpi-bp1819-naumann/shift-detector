@@ -59,8 +59,7 @@ def detect_column_types(df1, df2, columns):
         ...
     }
     """
-    numerical_columns = [c for c in columns if is_numeric_dtype(df1[c])
-                         and is_numeric_dtype(df2[c])]
+    numerical_columns = [c for c in columns if is_numeric_dtype(df1[c]) and is_numeric_dtype(df2[c])]
     logger.info("Detected numerical columns: {}".format(", ".join(column_names(numerical_columns))))
     non_numerical = list(set(columns) - set(numerical_columns))
 

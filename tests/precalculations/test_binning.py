@@ -51,4 +51,3 @@ class TestBinningPrecalculation(TestCase):
 
             self.assertEqual(1, len(df1_binned_expected_values))
             self.assertEqual(1, len(df2_binned_expected_values))
-

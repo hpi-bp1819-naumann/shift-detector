@@ -16,6 +16,7 @@ from spellchecker import SpellChecker
 from textstat import textstat
 
 from shift_detector.precalculations.precalculation import Precalculation
+from shift_detector.precalculations.text_precalculation import TokenizeIntoLowerWordsPrecalculation
 from shift_detector.utils import ucb_list
 from shift_detector.utils.column_management import ColumnType
 from shift_detector.utils.text_metadata_utils import dictionary_to_sorted_string, delimiters
@@ -74,7 +75,7 @@ class GenericTextMetadataWithTokenizing(GenericTextMetadata):
     def process(self, store):
         metadata1 = pd.DataFrame()
         metadata2 = pd.DataFrame()
-        df1, df2 = store[TokenizeIntoWords()]
+        df1, df2 = store[TokenizeIntoLowerWordsPrecalculation()]
         for column in df1.columns:
             logger.info(self.metadata_name() + ' analysis for ' + column)
             metadata1[column] = [self.metadata_function(words) for words in df1[column]]
@@ -104,7 +105,7 @@ class GenericTextMetadataWithTokenizingAndLanguage(GenericTextMetadata):
     def process(self, store):
         metadata1 = pd.DataFrame()
         metadata2 = pd.DataFrame()
-        df1, df2 = store[TokenizeIntoWords()]
+        df1, df2 = store[TokenizeIntoLowerWordsPrecalculation()]
         columns = store.column_names(ColumnType.text)
         if self.infer_language:
             lang1, lang2 = store[LanguageMetadata()]
@@ -165,36 +166,7 @@ class GenericTextMetadataWithLanguage(GenericTextMetadata):
             metadata2[column] = temp_column2
         return metadata1, metadata2
 
-
-class TokenizeIntoWords(Precalculation):
-
-    def __eq__(self, other):
-        return isinstance(other, self.__class__)
-
-    def __hash__(self):
-        return hash(self.__class__)
-
-    def tokenize_into_words(self, text):
-        text = re.sub(r"-", ' ', text)
-        text = re.sub(r"[^\w\s']", '', text)
-        splitted = re.split(r'\W\s|\s', text)
-        while '' in splitted:
-            splitted.remove('')
-        return splitted
-
-    def process(self, store):
-        tokenized1 = pd.DataFrame()
-        tokenized2 = pd.DataFrame()
-        df1, df2 = store[ColumnType.text]
-        columns = store.column_names(ColumnType.text)
-        for column in columns:
-            clean1 = df1[column].dropna()
-            clean2 = df2[column].dropna()
-            tokenized1[column] = [self.tokenize_into_words(text) for text in clean1]
-            tokenized2[column] = [self.tokenize_into_words(text) for text in clean2]
-        return tokenized1, tokenized2
-
-
+      
 class NumCharsMetadata(GenericTextMetadata):
 
     @staticmethod
@@ -361,11 +333,11 @@ class StopwordRatioMetadata(GenericTextMetadataWithTokenizingAndLanguage):
         # not working for every language
         stopword_count = 0
         try:
-            stop = stopwords.words(languages.get(part1=language).name.lower())
+            stopwords_for_language_lower = stopwords.words(languages.get(part1=language).name.lower())
             if len(words) == 0:
                 return 0.0
             for word in words:
-                if word.lower() in stop:
+                if word in stopwords_for_language_lower:
                     stopword_count += 1
             return stopword_count / len(words)
         except OSError as error:
@@ -391,7 +363,8 @@ class DelimiterTypeMetadata(GenericTextMetadata):
 
 
 class NumPartsMetadata(GenericTextMetadata):
-    # Calculates the delimiter of the text and then splits the text by its delimiter to calculate the number of parts in the text
+    # Calculates the delimiter of the text and then splits the text by its delimiter
+    # to calculate the number of parts in the text
 
     @staticmethod
     def metadata_name() -> str:
@@ -409,7 +382,7 @@ class NumPartsMetadata(GenericTextMetadata):
 
 
 class LanguagePerParagraph(GenericTextMetadata):
-    # Depending on the texts delimiter splits the text into parts and calculates the language for each part. 
+    # Depending on the texts delimiter splits the text into parts and calculates the language for each part.
     # Returns a string with the languages, sorted by their frequency
 
     def __init__(self, seed=0):

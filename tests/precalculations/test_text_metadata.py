@@ -20,51 +20,6 @@ class TestTextMetadataPrecalculations(unittest.TestCase):
         df2 = pd.DataFrame.from_dict({'text': phrases})
         self.store = Store(df1, df2)
 
-    def test_tokenize_into_words(self):
-        md1, md2 = TokenizeIntoWords().process(self.store)
-        sol1_words = [
-            [['Tell', 'me', 'not', 'in', 'mournful', 'numbers', 'Life', 'is', 'but', 'an', 'empty', 'dream', 'For',
-              'the', 'soul', 'is', 'dead', 'that', 'slumbers', 'And', 'things', 'are', 'not', 'what', 'they', 'seem']],
-            [['Life', 'is', 'real', 'Life', 'is', 'earnest', 'And', 'the', 'grave', 'is', 'not', 'its', 'goal', 'Dust',
-              'thou', 'art', 'to', 'dust', 'returnest', 'Was', 'not', 'spoken', 'of', 'the', 'soul']],
-            [['Not', 'enjoyment', 'and', 'not', 'sorrow', 'Is', 'our', 'destined', 'end', 'or', 'way', 'But', 'to',
-              'act', 'that', 'each', 'tomorrow', 'Find', 'us', 'farther', 'than', 'today']],
-            [['So', 'gilded', 'by', 'the', 'glow', 'of', 'youth', 'Our', 'varied', 'life', 'looks', 'fair',
-              'and', 'gay', 'And', 'so', 'remains', 'the', 'naked', 'truth', 'When', 'that', 'false', 'light',
-              'is', 'past', 'away']],
-            [['Fond', 'dreamer', 'little', 'does', 'she', 'know', 'The', 'anxious', 'toil', 'the',
-              'suffering', 'The', 'blasted', 'hopes', 'the', 'burning', 'woe', 'The', 'object', 'of', 'her',
-              'joy', 'will', 'bring']],
-            [['Trust', 'no', 'Future', 'howeer', 'pleasant', 'Let', 'the', 'dead', 'Past', 'bury', 'its',
-              'dead', 'Act', 'act', 'in', 'the', 'living', 'Present', 'Heart', 'within', 'and', 'God',
-              'oerhead']],
-            [['They', 'do', 'not', 'see', 'how', 'cruel', 'Death', 'Comes', 'on', 'their', 'loving', 'hearts',
-              'to', 'part', 'One', 'feels', 'not', 'now', 'the', 'gasping', 'breath', 'The', 'rending', 'of',
-              'the', 'earth', 'bound', 'heart']],
-            [['Rapidly', 'merrily', "Life's", 'sunny', 'hours', 'flit', 'by', 'Gratefully', 'cheerily',
-              'Enjoy', 'them', 'as', 'they', 'fly']],
-            [['It', 'has', 'neither', 'a', 'beginning', 'nor', 'an', 'end', 'You', 'can', 'never', 'predict',
-              'where', 'it', 'will', 'bend']],
-            [['Life', 'is', 'a', 'teacher', 'it', 'will', 'show', 'you', 'the', 'way', 'But', 'unless', 'you',
-              'live', 'itit', 'will', 'run', 'away']]
-        ]
-        sol2_words = [
-            [['Front', 'line', 'leading', 'edge', 'website']],
-            [['Upgradable', 'upward', 'trending', 'software']],
-            [['Virtual', 'tangible', 'throughput']],
-            [['Robust', 'secondary', 'open', 'system']],
-            [['Devolved', 'multimedia', 'knowledge', 'user']],
-            [['Self', 'enabling', 'next', 'generation', 'capability']],
-            [['Automated', '3rd', 'generation', 'benchmark']],
-            [['Switchable', 'global', 'info', 'mediaries']],
-            [['Automated', '247', 'alliance']],
-            [['Robust', 'logistical', 'function']]
-        ]
-        solution1 = pd.DataFrame(sol1_words, columns=['text'])
-        solution2 = pd.DataFrame(sol2_words, columns=['text'])
-        assert_frame_equal(solution1, md1)
-        assert_frame_equal(solution2, md2)
-
     def test_num_chars(self):
         md1, md2 = NumCharsMetadata().process(self.store)
         solution1 = pd.DataFrame([132, 123, 117, 136, 137, 133, 149, 92, 79, 86], columns=['text'])
@@ -113,7 +68,7 @@ class TestTextMetadataPrecalculations(unittest.TestCase):
 
     def test_distinct_words(self):
         md1, md2 = DistinctWordsRatioMetadata().process(self.store)
-        solution1 = pd.DataFrame([24/26, 20/25, 22/22, 26/27, 21/24, 21/23, 26/28, 14/14, 16/16, 16/18],
+        solution1 = pd.DataFrame([24/26, 19/25, 21/22, 24/27, 20/24, 20/23, 25/28, 14/14, 15/16, 16/18],
                                  columns=['text'])
         solution2 = pd.DataFrame([1.0] * 10, columns=['text'])
         assert_frame_equal(solution1, md1)
@@ -121,7 +76,7 @@ class TestTextMetadataPrecalculations(unittest.TestCase):
 
     def test_unique_words(self):
         md1, md2 = UniqueWordsRatioMetadata().process(self.store)
-        solution1 = pd.DataFrame([22/26, 16/25, 22/22, 25/27, 19/24, 19/23, 24/28, 14/14, 16/16, 14/18],
+        solution1 = pd.DataFrame([22/26, 14/25, 20/22, 21/27, 19/24, 17/23, 23/28, 14/14, 14/16, 14/18],
                                  columns=['text'])
         solution2 = pd.DataFrame([1.0] * 10, columns=['text'])
         assert_frame_equal(solution1, md1)
@@ -201,16 +156,6 @@ class TestTextMetadataPrecalculations(unittest.TestCase):
 
 
 class TestTextMetadataFunctions(unittest.TestCase):
-
-    def test_tokenize_into_words(self):
-        normal = "This. is a'n example, ,, 12  35,6  , st/r--ing    \n test."
-        empty = ""
-        punctuation = ".  , * (  \n \t [}"
-        tokenize_into_words = TokenizeIntoWords().tokenize_into_words
-        self.assertEqual(tokenize_into_words(normal), ['This', 'is', "a'n", 'example', '12', '356', 'str', 'ing',
-                                                       'test'])
-        self.assertEqual(tokenize_into_words(empty), [])
-        self.assertEqual(tokenize_into_words(punctuation), [])
 
     def test_dictionary_to_sorted_string(self):
         many = {'a': 2, 'b': 5, 'c': 3, 'f': 5, 'd': 1, 'e': 5}
@@ -328,13 +273,13 @@ class TestTextMetadataFunctions(unittest.TestCase):
 
     def test_stopwords(self):
         no_stopwords = ['computer', 'calculates', 'math']
-        only_stopwords = ['The', 'and', 'is', 'I', 'am']
-        mixed = ['A', 'normal', 'sentence', 'has', 'both']
-        french = ['Demain', 'dès', 'l’aube', 'à', 'l’heure', 'où', 'blanchit', 'la', 'campagne', 'Je', 'partirai',
-                  'Vois', 'tu', 'je', 'sais', 'que', 'tu', 'm’attends', 'J’irai', 'par', 'la', 'forêt', 'j’irai',
-                  'par', 'la', 'montagne', 'Je', 'ne', 'puis', 'demeurer', 'loin', 'de', 'toi', 'plus', 'longtemps']
+        only_stopwords = ['the', 'and', 'is', 'i', 'am']
+        mixed = ['a', 'normal', 'sentence', 'has', 'both']
+        french = ['demain', 'dès', 'l’aube', 'à', 'l’heure', 'où', 'blanchit', 'la', 'campagne', 'je', 'partirai',
+                  'vois', 'tu', 'je', 'sais', 'que', 'tu', 'm’attends', 'j’irai', 'par', 'la', 'forêt', 'j’irai',
+                  'par', 'la', 'montagne', 'je', 'ne', 'puis', 'demeurer', 'loin', 'de', 'toi', 'plus', 'longtemps']
         empty = []
-        unsupported_language = ['Aqoonyahanada', 'caalamku', 'waxay', 'aad', 'ugu', 'murmaan', 'sidii', 'luuqadaha',
+        unsupported_language = ['aqoonyahanada', 'caalamku', 'waxay', 'aad', 'ugu', 'murmaan', 'sidii', 'luuqadaha',
                                 'aduunku', 'ku', 'bilaabmeem']
         stopword_ratio = StopwordRatioMetadata().metadata_function
         self.assertEqual(stopword_ratio('en', no_stopwords), 0.0)
@@ -403,9 +348,9 @@ class TestTextMetadataFunctions(unittest.TestCase):
 
     def test_complexity(self):
         easy = "This is easy. This is a sentence. This has a small number."
-        # hard = "Quantum mechanics (QM; also known as quantum physics, quantum theory, the wave mechanical model, or
-        # matrix mechanics), including quantum field theory, is a fundamental theory in physics which describes nature
-        # at the smallest scales of energy levels of atoms and subatomic particles."
+        # hard = "Quantum mechanics (QM; also known as quantum physics, quantum theory, the wave mechanical model, "\
+        #       "or matrix mechanics), including quantum field theory, is a fundamental theory in physics which "\
+        #       "describes nature at the smallest scales of energy levels of atoms and subatomic particles."
         punctuation = " . ,"
         empty = ""
         german = "Dies ist ein einfacher Satz."
