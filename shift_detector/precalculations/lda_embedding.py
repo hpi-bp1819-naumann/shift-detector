@@ -47,7 +47,7 @@ class LdaEmbedding(Precalculation):
             # n_iter is only the amount of sample iterations, so it can be much higher than the iterations parameter of
             # the other models without sacrificing performance
         else:
-            raise Exception('No LDA library defined')
+            raise ValueError('Please enter one of the supported libraries: "sklearn", "gensim" or "lda"')
         if cols is not None:
             if isinstance(cols, list) and all(isinstance(col, str) for col in cols) or isinstance(cols, str):
                 self.cols = cols
@@ -119,12 +119,11 @@ class LdaEmbedding(Precalculation):
             tokenized_merged = pd.concat([tokenized1, tokenized2], ignore_index=True)
 
             for col in col_names:
-
-                dict_merged = Dictionary(tokenized_merged)
+                dict_merged = Dictionary(tokenized_merged[col])
                 dict1 = Dictionary(tokenized1[col])
                 dict2 = Dictionary(tokenized2[col])
 
-                corpus_merged = [dict_merged.doc2bow(line) for line in tokenized_merged]
+                corpus_merged = [dict_merged.doc2bow(line) for line in tokenized_merged[col]]
                 corpus1 = [dict1.doc2bow(line) for line in tokenized1[col]]
                 corpus2 = [dict2.doc2bow(line) for line in tokenized2[col]]
 
