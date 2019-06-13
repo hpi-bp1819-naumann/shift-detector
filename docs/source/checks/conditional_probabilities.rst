@@ -142,7 +142,12 @@ Implementation
 Algorithm
 +++++++++
 
-:ref:`conditional_probabilities` works as follows:
+:ref:`conditional_probabilities` proceeds in two phases:
+
+Rule Computation
+################
+
+In the first phase,
 
 1. Both data sets are transformed: each component of every tuple is replaced
    by an attribute-name, attribute-value pair. However, this transformation is
@@ -154,17 +159,21 @@ Algorithm
    expect ``floats`` between 0 and 1, whereas [Han2000]_ and [Agrawal1994]_
    use an absolute value for ``min_support``.
 3. Association rules exceeding ``min_support`` and ``min_confidence`` in both
-   data sets can be compared directly. For each of those rule-pairs generate a
-   result rule of the form showed above subject to the requirements of
-   ``min_delta_supports`` and ``min_delta_confidences``.
+   data sets can be compared directly. For each of those rule-pairs generate an
+   intermediate result rule similar to the form showed above.
 4. If a rule exceeds ``min_support`` and ``min_confidence`` in
    one data set but not in the other, we don't know if this rule does not appear in
    the other data set at all or just does not exceed ``min_support`` and/or
    ``min_confidence``. We therefore scan both data sets one
    more time and count their appearances. This information at hand, we can
-   generate the remaining result rules.
-5. The result rules are sorted according to the absolute values of delta_supports
-   and delta_confidences in decreasing order.
+   generate the remaining intermediate result rules.
+5. The intermediate result rules are filtered for those exceeding
+   ``min_delta_supports`` and ``min_delta_confidences``.
+
+Rule Compression
+################
+
+The second phase
 
 References
 ----------
