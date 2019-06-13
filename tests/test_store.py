@@ -42,10 +42,10 @@ class TestStore(unittest.TestCase):
                           df2=pd.DataFrame(list(range(20))))
 
     def test_apply_custom_column_types(self):
-        sales = {'to_numerical': ['a', '200', '50', '10', '5', '150', '200', '50', '10', '5', '1'] * 10,
-                 'to_text': ['150', '200', '50', '10', '5', 150, 200, 50, 10, 5, 1] * 10,
-                 'to_categorical': [150, 200, 50, 10, 5, 150, 200, 50, 10, 5, 1] * 10}
-        df1 = df2 = pd.DataFrame.from_dict(sales)
+        data = {'to_numerical': ['150', '200', '50', '10', '5', '150', '200', '50', '10', '5', '1'] * 10,
+                'to_text': ['150', '200', '50', '10', '5', 150, 200, 50, 10, 5, 1] * 10,
+                'to_categorical': [150, 200, 50, 10, 5, 150, 200, 50, 10, 5, 1] * 10}
+        df1 = df2 = pd.DataFrame.from_dict(data)
 
         custom_column_types = {
             'to_numerical': ColumnType.numerical,
@@ -74,6 +74,16 @@ class TestStore(unittest.TestCase):
             self.assertTrue(is_string_dtype(store.df1['to_text']))
             self.assertTrue(store.df1['to_text'].equals(pd.Series(['150', '200', '50', '10', '5',
                                                                           '150', '200', '50', '10', '5', '1'] * 10)))
+
+    def test_change_column_type(self):
+        data = {'to_numerical': ['a', '200', '50', '10', '5', '150', '200', '50', '10', '5', '1'] * 10}
+        df1 = df2 = pd.DataFrame.from_dict(data)
+        custom_column_types = {
+            'to_numerical': ColumnType.numerical
+        }
+
+        with self.subTest("Exception when trying to convert non-numerical column to numerical"):
+            self.assertRaises(Exception, lambda: Store(df1, df2, custom_column_types))
 
     def test_column_names(self):
         sales = {'brand': ["Jones LLC", "Alpha Co", "Blue Inc", "Blue Inc", "Alpha Co",
