@@ -62,10 +62,10 @@ class SimpleStatisticalCheck(StatisticalCheck):
         pass
 
     @abstractmethod
-    def store_keys(self):
+    def data_to_process(self):
         """
-        Returns a list of store keys to retrieve the data with all required precalculations.
-        :return: List[ColumnType or Precalculation]
+        Receive the data to run on.
+        :return: Processed df1, df2 and the columns
         """
         return []
 
@@ -86,10 +86,7 @@ class SimpleStatisticalCheck(StatisticalCheck):
     def run(self, store) -> Report:
         pvalues = pd.DataFrame(index=['pvalue'])
 
-        columns = store.column_names(*self.store_keys())
-
-        df1 = store.df1[columns]
-        df2 = store.df2[columns]
+        df1, df2, columns = self.data_to_process(store)
 
         sample_size = min(len(df1), len(df2))
         part1 = df1.sample(sample_size, random_state=self.seed) if self.use_sampling else df1
