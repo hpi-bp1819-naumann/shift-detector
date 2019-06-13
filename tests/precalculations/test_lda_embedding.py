@@ -7,11 +7,11 @@ import pandas as pd
 class TestLdaEmbedding(unittest.TestCase):
 
     def setUp(self):
-        self.lda1 = LdaEmbedding(n_topics=2, n_iter=1, random_state=2)
-        self.lda2 = LdaEmbedding(n_topics=2, n_iter=1, random_state=2)
-        self.lda3 = LdaEmbedding(n_topics=2, n_iter=1, random_state=2, cols=['text'])
-        self.lda4 = LdaEmbedding(n_topics=2, n_iter=1, random_state=2, cols=['text'])
-        self.lda5 = LdaEmbedding(n_topics=2, n_iter=1, random_state=2, cols=['text', 'abc'])
+        self.lda1 = LdaEmbedding(cols=['text'], n_topics=2, n_iter=1, random_state=2)
+        self.lda2 = LdaEmbedding(cols=['text'], n_topics=2, n_iter=1, random_state=2)
+        self.lda3 = LdaEmbedding(cols=['text'], n_topics=2, n_iter=1, random_state=2)
+        self.lda4 = LdaEmbedding(cols=['text'], n_topics=2, n_iter=1, random_state=2)
+        self.lda5 = LdaEmbedding(cols=['text', 'abc'], n_topics=2, n_iter=1, random_state=2)
 
         self.poems = [
             'Tell me not, in mournful numbers,\nLife is but an empty dream!\nFor the soul is dead that slumbers,\nAnd things are not what they seem.',
@@ -168,7 +168,7 @@ class TestLdaEmbedding(unittest.TestCase):
         self.store = Store(self.df1, self.df2)
 
     def test_exception_on_small_n(self):
-        self.assertRaises(ValueError, lambda: LdaEmbedding(n_topics=0))
+        self.assertRaises(ValueError, lambda: LdaEmbedding(cols='', n_topics=0))
 
     def test_eq(self):
         self.assertTrue(self.lda1 == self.lda2)
