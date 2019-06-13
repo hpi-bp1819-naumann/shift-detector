@@ -1,14 +1,14 @@
 import unittest
 import pandas as pd
-from shift_detector.precalculations.DefaultEmbedding import DefaultEmbedding
+from shift_detector.precalculations.text_embedding_precalculation import TextEmbeddingPrecalculation
 
 
 class TestDefault(unittest.TestCase):
 
     def setUp(self):
         self.n = 5
-        self.ng1 = DefaultEmbedding()
-        self.ng2 = DefaultEmbedding()
+        self.ng1 = TextEmbeddingPrecalculation()
+        self.ng2 = TextEmbeddingPrecalculation()
         self.ser1 = pd.Series(['Hello World', 'Foo Bar Baz'])
         self.ser2 = pd.Series(['TestText1', 'TestText2'])
 
