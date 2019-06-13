@@ -1,8 +1,10 @@
 import unittest
+
+import pandas as pd
+
 from shift_detector.checks.sorensen_dice_check import SorensenDiceCheck
 from shift_detector.precalculations.n_gram import NGramType
 from shift_detector.precalculations.store import Store
-import pandas as pd
 
 
 class TestSorensenDiceCheck(unittest.TestCase):

@@ -3,9 +3,9 @@ from collections import defaultdict
 
 import matplotlib.pyplot as plt
 
-from shift_detector.utils.column_management import ColumnType
 from shift_detector.checks.check import Check, Report
 from shift_detector.precalculations.simple_precalculation import SimplePrecalculation
+from shift_detector.utils.column_management import ColumnType
 
 
 class SimpleCheck(Check):
@@ -110,10 +110,11 @@ class SimpleReport(Report):
             num_columns = len(columns)
             for num, column in enumerate(columns):
                 a, b = df1[column], df2[column]
-                ax = f.add_subplot(1, num_columns, num+1)
+                ax = f.add_subplot(1, num_columns, num + 1)
 
                 ax.boxplot([a, b])
                 ax.set_title(column)
 
             plt.show()
+
         return custom_plot
