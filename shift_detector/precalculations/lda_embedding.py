@@ -14,7 +14,8 @@ from shift_detector.utils.column_management import ColumnType
 
 class LdaEmbedding(Precalculation):
 
-    def __init__(self, n_topics=20, n_iter=10, lib='sklearn', random_state=0, cols=None, trained_model=None):
+    def __init__(self, cols, n_topics=20, n_iter=10, lib='sklearn', random_state=0, trained_model=None,
+                 stop_words='english', max_features=None):
         self.model = None
         self.trained_model = None
         self.cols = None
@@ -34,10 +35,6 @@ class LdaEmbedding(Precalculation):
                 raise ValueError('Random_state has to be positive')
         else:
             raise TypeError('Random_state has to be a integer')
-        if cols and (not isinstance(cols, list) or any(not isinstance(col, str) for col in cols)):
-            raise TypeError('Cols has to be list of strings')
-        else:
-            self.cols = cols
         if trained_model:
             self.trained_model = trained_model
         elif lib == 'sklearn':
@@ -51,6 +48,15 @@ class LdaEmbedding(Precalculation):
             # the other models without sacrificing performance
         else:
             raise Exception('No LDA library defined')
+        if cols is not None:
+            if isinstance(cols, list) and all(isinstance(col, str) for col in cols) or isinstance(cols, str):
+                self.cols = cols
+            else:
+                raise TypeError('Cols has to be list of strings or a single string')
+        else:
+            raise ValueError('You have to specify which columns you want to vectorize')
+        self.stop_words = stop_words
+        self.max_features = max_features
     
     def __eq__(self, other):
         if isinstance(other, self.__class__):
@@ -59,7 +65,8 @@ class LdaEmbedding(Precalculation):
             other_model_attributes = sorted([(k, v) for k, v in other.model.__dict__.items()
                                              if isinstance(v, Number) or isinstance(v, str) or isinstance(v, list)])
             if isinstance(other.model, self.model.__class__) \
-                    and model_attributes == other_model_attributes and self.cols == other.cols:
+                    and model_attributes == other_model_attributes and self.cols == other.cols \
+                    and self.stop_words == other.stop_words and self.max_features == other.max_features:
                 return True
         return False
 
@@ -73,8 +80,9 @@ class LdaEmbedding(Precalculation):
             return hash(tuple(trained_hash_list))
         elif self.cols:
             hash_list = [self.__class__, self.model.__class__, self.n_topics,
-                         self.n_iter, self.random_state]
+                         self.n_iter, self.random_state, self.max_features]
             hash_list.extend(self.cols)
+            hash_list.extend(self.stop_words)
             return hash(tuple(hash_list))
         else:
             return hash(tuple([self.__class__, self.model.__class__, self.n_topics,
@@ -85,6 +93,7 @@ class LdaEmbedding(Precalculation):
         df1_texts, df2_texts = store[ColumnType.text]
         if self.cols is None:
             col_names = df1_texts.columns
+            self.cols = col_names
         else:
             if isinstance(self.cols, str):
                 if self.cols in df1_texts.columns:
@@ -106,7 +115,7 @@ class LdaEmbedding(Precalculation):
         topics2 = pd.DataFrame(index=df2_texts.index, columns=topic_labels)
 
         if self.lib == 'gensim':
-            tokenized1, tokenized2 = store[WordTokenizer(cols=self.cols)]
+            tokenized1, tokenized2 = store[WordTokenizer(stop_words=self.stop_words, cols=self.cols)]
             tokenized_merged = pd.concat([tokenized1, tokenized2], ignore_index=True)
 
             for col in col_names:
@@ -128,7 +137,8 @@ class LdaEmbedding(Precalculation):
                 transformed2[col] = self.trained_model.transform(corpus2)
 
         else:
-            vectorized1, vectorized2 = store[CountVectorizer(cols=self.cols)]
+            vectorized1, vectorized2 = store[CountVectorizer(stop_words=self.stop_words, max_features=self.max_features,
+                                                             cols=self.cols)]
             vectorized_merged = dict(vectorized1, **vectorized2)
 
             for col in col_names:
