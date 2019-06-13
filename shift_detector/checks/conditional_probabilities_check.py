@@ -49,10 +49,10 @@ class ConditionalProbabilitiesCheck(Check):
         rules, examined_columns = store[
             ConditionalProbabilitiesPrecalculation(self.min_support, self.min_confidence)]
 
-        pruned_rules = (rule for rule in rules if abs(rule.delta_supports) >= self.min_delta_supports and abs(
+        filtered_rules = (rule for rule in rules if abs(rule.delta_supports) >= self.min_delta_supports and abs(
             rule.delta_confidences) >= self.min_delta_confidences)
 
-        compressed_rules = rule_compression.compress_rules(pruned_rules)
+        compressed_rules = rule_compression.compress_and_sort_rules(filtered_rules)
 
         shifted_columns = set()
         explanation = defaultdict(list)

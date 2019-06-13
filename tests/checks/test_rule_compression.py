@@ -42,6 +42,6 @@ class TestRuleCompression(unittest.TestCase):
         self.assertEqual(clustered_rules[0].sub_rules[0], self.rule_b)
 
     def test_compress_rules(self):
-        compressed_rules = rule_compression.compress_rules([self.rule_a, self.rule_b, self.rule_c])
+        compressed_rules = rule_compression.compress_and_sort_rules([self.rule_a, self.rule_b, self.rule_c])
         self.assertEqual(len(compressed_rules), 2)
         self.assertGreaterEqual(compressed_rules[0].rule.delta_supports, compressed_rules[1].rule.delta_supports)

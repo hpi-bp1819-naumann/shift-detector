@@ -18,14 +18,3 @@ class TestConditionalProbabilitiesCheck(TestCase):
 
     def test_run(self):
         self.check.run(self.store)
-        # report = self.precalculation.run(self.store)
-
-        # with self.subTest("Test shifted columns"):
-        #     self.assertCountEqual(report.shifted_columns, ['shift'])
-        #
-        # with self.subTest("Test examined columns"):
-        #     self.assertCountEqual(report.examined_columns, ['shift', 'no_shift'])
-        #
-        # with self.subTest("Test additional information"):
-        #     self.assertEqual(report.information['F1 score df1'], 1.0)
-        #     self.assertEqual(report.information['F1 score df2'], 1.0)

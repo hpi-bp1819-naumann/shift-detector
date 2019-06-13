@@ -17,7 +17,7 @@ def cluster_rules_hierarchically(grouped_rules):
     for group in grouped_rules:
         for rule in group:
             highest_support_super_cluster = max((cluster for cluster in clusters if cluster.is_super_cluster_of(rule)),
-                                                key=lambda c: abs(c.rule.delta_supports), default=None)
+                                                key=lambda c: abs(c.main_rule.delta_supports), default=None)
             if highest_support_super_cluster:
                 highest_support_super_cluster.sub_rules.append(rule)
             else:
@@ -26,9 +26,8 @@ def cluster_rules_hierarchically(grouped_rules):
     return clusters
 
 
-def compress_rules(rules):
+def compress_and_sort_rules(rules):
     grouped_rules = group_rules_by_length(rules)
     clustered_rules = cluster_rules_hierarchically(grouped_rules)
 
-    return sorted(clustered_rules, key=lambda c: abs(c.rule.delta_supports),
-                  reverse=True)
+    return sorted(clustered_rules, key=lambda c: abs(c.main_rule.delta_supports), reverse=True)
