@@ -38,16 +38,16 @@ class TestSorensenDicePrecalculation(unittest.TestCase):
         self.assertEqual(hash(sd1), hash(sd2))
 
     def test_count_fragments(self):
-        ngram1 = {'abc': 6, 'bcd':4, 'def': 3}
+        ngram1 = {'abc': 6, 'bcd': 4, 'def': 3}
         self.assertEqual(SorensenDicePrecalculations.count_fragments(ngram1), 13)
 
     def test_calculate_sdc(self):
-        ngram1 = {'abc': 6, 'bcd':4, 'def': 3}
+        ngram1 = {'abc': 6, 'bcd': 4, 'def': 3}
         ngram2 = {'abc': 2, 'def': 3, 'efg': 4}
         self.assertEqual(SorensenDicePrecalculations.calculate_sdc(ngram1, ngram2), 10 / 22)
 
     def test_join_and_normalze_ngrams(self):
-        ngram_ser = pd.Series([{'abc': 6, 'bcd':4, 'def': 3}, {'abc': 2, 'def': 3, 'efg': 4}])
+        ngram_ser = pd.Series([{'abc': 6, 'bcd': 4, 'def': 3}, {'abc': 2, 'def': 3, 'efg': 4}])
         result = SorensenDicePrecalculations.join_and_normalize_ngrams(ngram_ser)
         self.assertDictEqual(result, {'abc': 4, 'bcd': 2, 'def': 3, 'efg': 2})
         self.assertDictEqual(SorensenDicePrecalculations.join_and_normalize_ngrams(pd.Series([])), {})

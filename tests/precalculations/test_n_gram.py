@@ -39,7 +39,7 @@ class TestNGram(unittest.TestCase):
 
     def test_process(self):
         res1, res2 = self.wordng1.process(self.store)
-        self.assertListEqual(list(res1['col1']),[{('ab',): 1, ('cd',) : 1, ('ef',): 1}] * 20)
+        self.assertListEqual(list(res1['col1']), [{('ab',): 1, ('cd',): 1, ('ef',): 1}] * 20)
         res3, res4 = self.charng2.process(self.store)
         self.assertListEqual(list(res3['col1']), [{('a', 'b', ' ', 'c', 'd'): 1, ('b', ' ', 'c', 'd', ' '): 1,
-                                                   (' ', 'c', 'd', ' ', 'e'): 1, ('c', 'd', ' ', 'e', 'f') : 1}] * 20)
+                                                   (' ', 'c', 'd', ' ', 'e'): 1, ('c', 'd', ' ', 'e', 'f'): 1}] * 20)

@@ -4,7 +4,8 @@ import pandas as pd
 from pandas.util.testing import assert_frame_equal
 
 from shift_detector.detector import Detector
-from shift_detector.checks.statistical_checks.categorical_statistical_check import chi2_test, CategoricalStatisticalCheck
+from shift_detector.checks.statistical_checks.categorical_statistical_check import chi2_test, \
+    CategoricalStatisticalCheck
 from shift_detector.precalculations.store import Store
 
 
@@ -17,8 +18,10 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
         self.assertAlmostEqual(0.17471089, p)
 
     def test_not_significant(self):
-        df1 = pd.DataFrame.from_dict({'vaccination_reaction': (['severe reaction'] * 29) + (['no severe reaction'] * 4757)})
-        df2 = pd.DataFrame.from_dict({'vaccination_reaction': (['severe reaction'] * 75) + (['no severe reaction'] * 8839)})
+        df1 = pd.DataFrame.from_dict({'vaccination_reaction': (['severe reaction'] * 29) +
+                                                              (['no severe reaction'] * 4757)})
+        df2 = pd.DataFrame.from_dict({'vaccination_reaction': (['severe reaction'] * 75) +
+                                                              (['no severe reaction'] * 8839)})
         store = Store(df1, df2)
         result = CategoricalStatisticalCheck().run(store)
         self.assertEqual(1, len(result.examined_columns))
@@ -26,8 +29,10 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
         self.assertEqual(0, len(result.explanation))
 
     def test_significant(self):
-        df1 = pd.DataFrame.from_dict({'vaccination_reaction': (['severe reaction'] * 29) + (['no severe reaction'] * 4757)})
-        df2 = pd.DataFrame.from_dict({'vaccination_reaction': (['severe reaction'] * 125) + (['no severe reaction'] * 8839)})
+        df1 = pd.DataFrame.from_dict({'vaccination_reaction': (['severe reaction'] * 29) +
+                                                              (['no severe reaction'] * 4757)})
+        df2 = pd.DataFrame.from_dict({'vaccination_reaction': (['severe reaction'] * 125) +
+                                                              (['no severe reaction'] * 8839)})
         store = Store(df1, df2)
         result = CategoricalStatisticalCheck().run(store)
         self.assertEqual(1, len(result.examined_columns))
