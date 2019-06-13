@@ -4,7 +4,7 @@ from itertools import chain, combinations
 
 import pandas as pd
 
-from shift_detector.checks.frequent_item_rules import fpgrowth, pyfpgrowth_core
+from shift_detector.checks.frequent_item_rules import fp_growth, pyfpgrowth_core
 
 
 class TestFPGrowth(unittest.TestCase):
@@ -53,7 +53,7 @@ class TestFPGrowth(unittest.TestCase):
         data = [[1, 2], [3, 4]]
         columns = ['a', 'b']
         df = pd.DataFrame(data, columns=columns)
-        it = fpgrowth.DataFrameIteratorAdapter(df)
+        it = fp_growth.DataFrameIteratorAdapter(df)
         self.assertEqual(len(it), 2)
         for i, t in enumerate(it):
             with self.subTest():
@@ -69,7 +69,7 @@ class TestFPGrowth(unittest.TestCase):
         data2 = [['exclusive 2', 2], ['common', 42]]
         df1 = pd.DataFrame(data1, columns=columns)
         df2 = pd.DataFrame(data2, columns=columns)
-        rules = fpgrowth.calculate_frequent_rules(df1, df2)
+        rules = fp_growth.calculate_frequent_rules(df1, df2)
         Rule = namedtuple('Rule', ['left_side', 'right_side', 'supports_of_left_side', 'delta_supports_of_left_side',
                                    'supports', 'delta_supports', 'confidences', 'delta_confidences'])
         expected = [Rule(left_side=(('c1', 'common'),), right_side=(), supports_of_left_side=(0.5, 0.5),
