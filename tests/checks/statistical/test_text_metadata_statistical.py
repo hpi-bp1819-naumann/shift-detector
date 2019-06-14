@@ -1,13 +1,14 @@
 import unittest
+from unittest import mock
 
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
 
-from shift_detector.detector import Detector
 from shift_detector.checks.statistical_checks.text_metadata_statistical_check import TextMetadataStatisticalCheck
+from shift_detector.detector import Detector
 from shift_detector.precalculations.store import Store
-from shift_detector.precalculations.text_metadata import NumCharsMetadata, NumWordsMetadata, DistinctWordsRatioMetadata, \
-    LanguagePerParagraph, UnknownWordRatioMetadata, StopwordRatioMetadata
+from shift_detector.precalculations.text_metadata import NumCharsMetadata, NumWordsMetadata, \
+    DistinctWordsRatioMetadata, LanguagePerParagraph, UnknownWordRatioMetadata, StopwordRatioMetadata, LanguageMetadata
 
 
 class TestTextMetadataStatisticalCheck(unittest.TestCase):
@@ -97,3 +98,25 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
                         if type(mdtype) in [UnknownWordRatioMetadata, StopwordRatioMetadata]]
         for mdtype in md_with_lang:
             self.assertTrue(mdtype.infer_language)
+
+    def test_figure_functions_are_collected(self):
+        df1 = pd.DataFrame.from_dict({'text': ['blub'] * 10})
+        df2 = pd.DataFrame.from_dict({'text': ['blub'] * 10})
+        metadata_names = ['num_chars', 'num_words']
+        cols = pd.MultiIndex.from_product([df1.columns, metadata_names], names=['column', 'metadata'])
+        pvalues = pd.DataFrame(columns=cols, index=['pvalue'])
+        pvalues[('text', 'num_chars')] = 0.05
+        pvalues[('text', 'num_words')] = 0.001
+        check = TextMetadataStatisticalCheck()
+        result = check.metadata_figures(pvalues=pvalues, df1=df1, df2=df2)
+        self.assertEqual(1, len(result))
+
+    @mock.patch('shift_detector.checks.statistical_checks.categorical_statistical_check.CategoricalStatisticalCheck')
+    def test_correct_visualization_is_chosen_categorical(self, mock_cat_check):
+        TextMetadataStatisticalCheck.metadata_figure('text', LanguageMetadata(), pd.DataFrame(), pd.DataFrame())
+        mock_cat_check.column_figure.assert_called_once()
+
+    @mock.patch('shift_detector.checks.statistical_checks.categorical_statistical_check.NumericalStatisticalCheck')
+    def test_correct_visualization_is_chosen_numerical(self, mock_num_check):
+        TextMetadataStatisticalCheck.metadata_figure('text', NumCharsMetadata(), pd.DataFrame(), pd.DataFrame())
+        mock_num_check.column_figure.assert_called_once()

@@ -100,6 +100,14 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
         self.assertEqual(0, len(detector.check_reports[0].explanation))
         assert_frame_equal(pd.DataFrame([1.0], index=['pvalue']), detector.check_reports[0].information['test_results'])
 
+    def test_figure_functions_are_collected(self):
+        self.df1_significant['non_sig_col'] = [0] * len(self.df1_significant)
+        self.df2_significant['non_sig_col'] = [0] * len(self.df2_significant)
+        check = NumericalStatisticalCheck()
+        result = check.column_figures(significant_columns=['significant_col'],
+                                      df1=self.df1_significant, df2=self.df2_significant)
+        self.assertEqual(1, len(result))
+
     @mock.patch('shift_detector.checks.statistical_checks.numerical_statistical_check.plt')
     def test_cumulative_hist_figure_looks_right(self, mock_plt):
         with mock.patch.object(numerical_statistical_check.plt, 'hist',
