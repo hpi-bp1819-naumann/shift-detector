@@ -166,7 +166,7 @@ class GenericTextMetadataWithLanguage(GenericTextMetadata):
             metadata2[column] = temp_column2
         return metadata1, metadata2
 
-      
+
 class NumCharsMetadata(GenericTextMetadata):
 
     @staticmethod
