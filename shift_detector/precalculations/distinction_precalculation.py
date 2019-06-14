@@ -49,9 +49,9 @@ class DistinctionPrecalculation(Precalculation):
         Runs check on provided columns
         :return: result of the check
         """
-        if any(column not in store.columns for column in self.columns):
+        if any(column not in store.column_names() for column in self.columns):
             raise Exception("Not all defined columns are present in both data frames. "
-                            "Defined: {}. Actual: {}".format(self.columns, store.columns))
+                            "Defined: {}. Actual: {}".format(self.columns, store.column_names()))
 
         self.imputer = SimpleImputer(
             input_columns=self.columns,

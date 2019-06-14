@@ -62,12 +62,12 @@ class SimpleStatisticalCheck(StatisticalCheck):
         pass
 
     @abstractmethod
-    def store_keys(self):
+    def data_to_process(self, store):
         """
-        Returns a list of store keys to retrieve the data with all required precalculations.
-        :return: List[ColumnType or Precalculation]
+        Receive the data to run on.
+        :return: Processed df1, df2 and the columns
         """
-        return []
+        return pd.DataFrame(), pd.DataFrame(), []
 
     def explain(self, pvalues):
         """
@@ -96,20 +96,19 @@ class SimpleStatisticalCheck(StatisticalCheck):
 
     def run(self, store) -> Report:
         pvalues = pd.DataFrame(index=['pvalue'])
-        df1 = pd.DataFrame()
-        df2 = pd.DataFrame()
-        for columns1, columns2 in [store[key] for key in self.store_keys()]:
-            df1 = pd.concat([df1, columns1])
-            df2 = pd.concat([df2, columns2])
+
+        df1, df2, columns = self.data_to_process(store)
+
         sample_size = min(len(df1), len(df2))
         part1 = df1.sample(sample_size, random_state=self.seed) if self.use_sampling else df1
         part2 = df2.sample(sample_size, random_state=self.seed) if self.use_sampling else df2
-        for column in df1.columns:
+
+        for column in columns:
             p = self.statistical_test(part1[column], part2[column])
             pvalues[column] = [p]
         significant_columns = self.significant_columns(pvalues)
         return Report("Statistical Check",
-                      examined_columns=list(df1.columns),
+                      examined_columns=columns,
                       shifted_columns=significant_columns,
                       explanation=self.explain(pvalues),
                       information={'test_results': pvalues},

@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+import numpy as np
 from pandas import DataFrame
 
 from shift_detector.checks.word_prediction_check import WordPredictionCheck
@@ -9,6 +10,8 @@ from shift_detector.precalculations.store import Store
 class TestWordPredictionCheck(TestCase):
 
     def setUp(self):
+        np.random.seed(1)
+
         alphabet = [chr(letter) for letter in range(ord('a'), ord('z')+1)]
 
         col = []
@@ -20,7 +23,7 @@ class TestWordPredictionCheck(TestCase):
         self.df1 = DataFrame.from_dict(data1)
         self.df2 = DataFrame.from_dict(data2)
         self.store = Store(self.df1, self.df2)
-        self.check = WordPredictionCheck(relative_thresh=.3)
+        self.check = WordPredictionCheck(relative_thresh=.5, ft_size=10)
 
     def test_init(self):
         with self.subTest("Test wrong columns"):

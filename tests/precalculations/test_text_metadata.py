@@ -8,105 +8,17 @@ from langdetect.lang_detect_exception import LangDetectException
 from shift_detector.precalculations.store import Store
 from shift_detector.precalculations.text_metadata import *
 
+import tests.test_data as td
+
 
 class TestTextMetadataPrecalculations(unittest.TestCase):
 
     def setUp(self):
-        poems = [
-            'Tell me not, in mournful numbers,\n'
-            'Life is but an empty dream!\n'
-            'For the soul is dead that slumbers,\n'
-            'And things are not what they seem.',
-            'Life is real! Life is earnest!\n'
-            'And the grave is not its goal;\n'
-            'Dust thou art, to dust returnest,\n'
-            'Was not spoken of the soul.',
-            'Not enjoyment, and not sorrow,\n'
-            'Is our destined end or way;\n'
-            'But to act, that each tomorrow\n'
-            'Find us farther than today.',
-            'So, gilded by the glow of youth,\n'
-            'Our varied life looks fair and gay;\n'
-            'And so remains the naked truth,\n'
-            'When that false light is past away.',
-            'Fond dreamer! little does she know\n'
-            'The anxious toil, the suffering,\n'
-            'The blasted hopes, the burning woe,\n'
-            'The object of her joy will bring.',
-            'Trust no Future, howe’er pleasant!\n'
-            'Let the dead Past bury its dead!\n'
-            'Act,— act in the living Present!\n'
-            'Heart within, and God o’erhead! ',
-            'They do not see how cruel Death\n'
-            'Comes on, their loving hearts to part:\n'
-            'One feels not now the gasping breath,\n'
-            'The rending of the earth-bound heart, --',
-            "Rapidly, merrily,\n"
-            "Life's sunny hours flit by,\n"
-            "Gratefully, cheerily,\n"
-            "Enjoy them as they fly !",
-            "It has neither a beginning nor an end\n"
-            "You can never predict where it will bend.",
-            'Life is a teacher, it will show you the way\n'
-            'But unless you live it...it will run away.']
-        phrases = ['Front-line leading edge website',
-                   'Upgradable upward-trending software',
-                   'Virtual tangible throughput',
-                   'Robust secondary open system',
-                   'Devolved multimedia knowledge user',
-                   'Self-enabling next generation capability',
-                   'Automated 3rd generation benchmark',
-                   'Switchable global info-mediaries',
-                   'Automated 24/7 alliance',
-                   'Robust logistical function']
+        poems = td.poems
+        phrases = td.phrases
         df1 = pd.DataFrame.from_dict({'text': poems})
         df2 = pd.DataFrame.from_dict({'text': phrases})
         self.store = Store(df1, df2)
-
-    def test_tokenize_into_words(self):
-        md1, md2 = TokenizeIntoWords().process(self.store)
-        sol1_words = [
-            [['Tell', 'me', 'not', 'in', 'mournful', 'numbers', 'Life', 'is', 'but', 'an', 'empty', 'dream', 'For',
-              'the', 'soul', 'is', 'dead', 'that', 'slumbers', 'And', 'things', 'are', 'not', 'what', 'they', 'seem']],
-            [['Life', 'is', 'real', 'Life', 'is', 'earnest', 'And', 'the', 'grave', 'is', 'not', 'its', 'goal', 'Dust',
-              'thou', 'art', 'to', 'dust', 'returnest', 'Was', 'not', 'spoken', 'of', 'the', 'soul']],
-            [['Not', 'enjoyment', 'and', 'not', 'sorrow', 'Is', 'our', 'destined', 'end', 'or', 'way', 'But', 'to',
-              'act', 'that', 'each', 'tomorrow', 'Find', 'us', 'farther', 'than', 'today']],
-            [['So', 'gilded', 'by', 'the', 'glow', 'of', 'youth', 'Our', 'varied', 'life', 'looks', 'fair',
-                        'and', 'gay', 'And', 'so', 'remains', 'the', 'naked', 'truth', 'When', 'that', 'false', 'light',
-                        'is', 'past', 'away']],
-            [['Fond', 'dreamer', 'little', 'does', 'she', 'know', 'The', 'anxious', 'toil', 'the',
-                        'suffering', 'The', 'blasted', 'hopes', 'the', 'burning', 'woe', 'The', 'object', 'of', 'her',
-                        'joy', 'will', 'bring']],
-            [['Trust', 'no', 'Future', 'howeer', 'pleasant', 'Let', 'the', 'dead', 'Past', 'bury', 'its',
-                        'dead', 'Act', 'act', 'in', 'the', 'living', 'Present', 'Heart', 'within', 'and', 'God',
-                        'oerhead']],
-            [['They', 'do', 'not', 'see', 'how', 'cruel', 'Death', 'Comes', 'on', 'their', 'loving', 'hearts',
-                        'to', 'part', 'One', 'feels', 'not', 'now', 'the', 'gasping', 'breath', 'The', 'rending', 'of',
-                        'the', 'earth', 'bound', 'heart']],
-            [['Rapidly', 'merrily', "Life's", 'sunny', 'hours', 'flit', 'by', 'Gratefully', 'cheerily',
-                        'Enjoy', 'them', 'as', 'they', 'fly']],
-            [['It', 'has', 'neither', 'a', 'beginning', 'nor', 'an', 'end', 'You', 'can', 'never', 'predict',
-                        'where', 'it', 'will', 'bend']],
-            [['Life', 'is', 'a', 'teacher', 'it', 'will', 'show', 'you', 'the', 'way', 'But', 'unless', 'you',
-                        'live', 'itit', 'will', 'run', 'away']]
-        ]
-        sol2_words = [
-            [['Front', 'line', 'leading', 'edge', 'website']],
-            [['Upgradable', 'upward', 'trending', 'software']],
-            [['Virtual', 'tangible', 'throughput']],
-            [['Robust', 'secondary', 'open', 'system']],
-            [['Devolved', 'multimedia', 'knowledge', 'user']],
-            [['Self', 'enabling', 'next', 'generation', 'capability']],
-            [['Automated', '3rd', 'generation', 'benchmark']],
-            [['Switchable', 'global', 'info', 'mediaries']],
-            [['Automated', '247', 'alliance']],
-            [['Robust', 'logistical', 'function']]
-        ]
-        solution1 = pd.DataFrame(sol1_words, columns=['text'])
-        solution2 = pd.DataFrame(sol2_words, columns=['text'])
-        assert_frame_equal(solution1, md1)
-        assert_frame_equal(solution2, md2)
 
     def test_num_chars(self):
         md1, md2 = NumCharsMetadata().process(self.store)
@@ -156,7 +68,7 @@ class TestTextMetadataPrecalculations(unittest.TestCase):
 
     def test_distinct_words(self):
         md1, md2 = DistinctWordsRatioMetadata().process(self.store)
-        solution1 = pd.DataFrame([24/26, 20/25, 22/22, 26/27, 21/24, 21/23, 26/28, 14/14, 16/16, 16/18],
+        solution1 = pd.DataFrame([24/26, 19/25, 21/22, 24/27, 20/24, 20/23, 25/28, 14/14, 15/16, 16/18],
                                  columns=['text'])
         solution2 = pd.DataFrame([1.0] * 10, columns=['text'])
         assert_frame_equal(solution1, md1)
@@ -164,7 +76,7 @@ class TestTextMetadataPrecalculations(unittest.TestCase):
 
     def test_unique_words(self):
         md1, md2 = UniqueWordsRatioMetadata().process(self.store)
-        solution1 = pd.DataFrame([22/26, 16/25, 22/22, 25/27, 19/24, 19/23, 24/28, 14/14, 16/16, 14/18],
+        solution1 = pd.DataFrame([22/26, 14/25, 20/22, 21/27, 19/24, 17/23, 23/28, 14/14, 14/16, 14/18],
                                  columns=['text'])
         solution2 = pd.DataFrame([1.0] * 10, columns=['text'])
         assert_frame_equal(solution1, md1)
@@ -208,7 +120,7 @@ class TestTextMetadataPrecalculations(unittest.TestCase):
         assert_frame_equal(solution2, md2)
 
     # seems to be dependent on the machine: travis gets different results
-    #def test_complexity(self):
+    # def test_complexity(self):
     #    md1, md2 = ComplexityMetadata().process(self.store)
     #    solution1 = pd.DataFrame([5.0, 3.0], columns=['text'])
     #    solution2 = pd.DataFrame([0.0, 13.0], columns=['text'])
@@ -220,8 +132,8 @@ class TestTextMetadataPrecalculations(unittest.TestCase):
         solution1 = pd.DataFrame(['NOUN, ., VERB, ADJ, ADP, PRON, ADV, CONJ, DET',
                                   'NOUN, ., VERB, ADV, ADJ, DET, ADP, CONJ, PRON, PRT'], columns=['text'])
         solution2 = pd.DataFrame(['NOUN, ADJ, VERB', 'ADJ, NOUN'], columns=['text'])
-        assert_frame_equal(solution1, md1.iloc[:2,:])
-        assert_frame_equal(solution2, md2.iloc[:2,:])
+        assert_frame_equal(solution1, md1.iloc[:2, :])
+        assert_frame_equal(solution2, md2.iloc[:2, :])
 
     def test_metadata_precalculation(self):
         md1, md2 = self.store[TextMetadata(text_metadata_types=[NumWordsMetadata(), StopwordRatioMetadata(),
@@ -245,18 +157,8 @@ class TestTextMetadataPrecalculations(unittest.TestCase):
 
 class TestTextMetadataFunctions(unittest.TestCase):
 
-    def test_tokenize_into_words(self):
-        normal = "This. is a'n example, ,, 12  35,6  , st/r--ing    \n test."
-        empty = ""
-        punctuation = ".  , * (  \n \t [}"
-        tokenize_into_words = TokenizeIntoWords().tokenize_into_words
-        self.assertEqual(tokenize_into_words(normal), ['This', 'is', "a'n", 'example', '12', '356', 'str', 'ing',
-                                                       'test'])
-        self.assertEqual(tokenize_into_words(empty), [])
-        self.assertEqual(tokenize_into_words(punctuation), [])
-
     def test_dictionary_to_sorted_string(self):
-        many = {'a': 2, 'b': 5, 'c': 3, 'f': 5, 'd': 1, 'e': 5} 
+        many = {'a': 2, 'b': 5, 'c': 3, 'f': 5, 'd': 1, 'e': 5}
         one = {'a': 100}
         empty = {}
         self.assertEqual(TmUtils.dictionary_to_sorted_string(many), "b, e, f, c, a, d")
@@ -371,13 +273,13 @@ class TestTextMetadataFunctions(unittest.TestCase):
 
     def test_stopwords(self):
         no_stopwords = ['computer', 'calculates', 'math']
-        only_stopwords = ['The', 'and', 'is', 'I', 'am']
-        mixed = ['A', 'normal', 'sentence', 'has', 'both']
-        french = ['Demain', 'dès', 'l’aube', 'à', 'l’heure', 'où', 'blanchit', 'la', 'campagne', 'Je', 'partirai',
-                  'Vois', 'tu', 'je', 'sais', 'que', 'tu', 'm’attends', 'J’irai', 'par', 'la', 'forêt', 'j’irai',
-                  'par', 'la', 'montagne', 'Je', 'ne', 'puis', 'demeurer', 'loin', 'de', 'toi', 'plus', 'longtemps']
+        only_stopwords = ['the', 'and', 'is', 'i', 'am']
+        mixed = ['a', 'normal', 'sentence', 'has', 'both']
+        french = ['demain', 'dès', 'l’aube', 'à', 'l’heure', 'où', 'blanchit', 'la', 'campagne', 'je', 'partirai',
+                  'vois', 'tu', 'je', 'sais', 'que', 'tu', 'm’attends', 'j’irai', 'par', 'la', 'forêt', 'j’irai',
+                  'par', 'la', 'montagne', 'je', 'ne', 'puis', 'demeurer', 'loin', 'de', 'toi', 'plus', 'longtemps']
         empty = []
-        unsupported_language = ['Aqoonyahanada', 'caalamku', 'waxay', 'aad', 'ugu', 'murmaan', 'sidii', 'luuqadaha',
+        unsupported_language = ['aqoonyahanada', 'caalamku', 'waxay', 'aad', 'ugu', 'murmaan', 'sidii', 'luuqadaha',
                                 'aduunku', 'ku', 'bilaabmeem']
         stopword_ratio = StopwordRatioMetadata().metadata_function
         self.assertEqual(stopword_ratio('en', no_stopwords), 0.0)
@@ -386,7 +288,6 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertAlmostEqual(stopword_ratio('fr', french), 0.4285714, places=5)
         self.assertEqual(stopword_ratio('en', empty), 0.0)
         self.assertRaises(ValueError, stopword_ratio, language='so', words=unsupported_language)
-
 
     def test_category(self):
         html = "some text <p> some other text < br/ > more text"
@@ -447,9 +348,9 @@ class TestTextMetadataFunctions(unittest.TestCase):
 
     def test_complexity(self):
         easy = "This is easy. This is a sentence. This has a small number."
-        # hard = "Quantum mechanics (QM; also known as quantum physics, quantum theory, the wave mechanical model, or
-        # matrix mechanics), including quantum field theory, is a fundamental theory in physics which describes nature
-        # at the smallest scales of energy levels of atoms and subatomic particles."
+        # hard = "Quantum mechanics (QM; also known as quantum physics, quantum theory, the wave mechanical model, "\
+        #       "or matrix mechanics), including quantum field theory, is a fundamental theory in physics which "\
+        #       "describes nature at the smallest scales of energy levels of atoms and subatomic particles."
         punctuation = " . ,"
         empty = ""
         german = "Dies ist ein einfacher Satz."

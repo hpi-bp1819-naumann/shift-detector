@@ -16,8 +16,10 @@ class NumericalStatisticalCheck(SimpleStatisticalCheck):
     def statistical_test_name(self) -> str:
         return 'Kolmogorov-Smirnov-Two-Sample-Test'
 
-    def store_keys(self):
-        return [ColumnType.numerical]
+    def data_to_process(self, store):
+        df1, df2 = store[ColumnType.numerical]
+        columns = store.column_names(ColumnType.numerical)
+        return df1, df2, columns
 
     def statistical_test(self, part1: pd.Series, part2: pd.Series) -> float:
         return kolmogorov_smirnov_test(part1, part2)

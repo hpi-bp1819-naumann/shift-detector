@@ -3,7 +3,7 @@ import pandas as pd
 from scipy import stats
 
 from shift_detector.checks.statistical_checks.statistical_check import SimpleStatisticalCheck
-from shift_detector.utils.column_management import ColumnType
+from shift_detector.precalculations.low_cardinality_precalculation import LowCardinalityPrecalculation
 
 
 def chi2_test(part1: pd.Series, part2: pd.Series):
@@ -19,8 +19,9 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
     def statistical_test_name(self) -> str:
         return 'Chi^2-Test with Log-Likelihood (G-Test)'
 
-    def store_keys(self):
-        return [ColumnType.all_categorical]
+    def data_to_process(self, store):
+        df1, df2, columns = store[LowCardinalityPrecalculation()]
+        return df1, df2, columns
 
     def statistical_test(self, part1: pd.Series, part2: pd.Series) -> float:
         return chi2_test(part1, part2)

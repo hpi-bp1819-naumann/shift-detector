@@ -1,6 +1,6 @@
 .. _conditional_probabilities:
 
-Conditional probabilities
+Conditional Probabilities
 =========================
 
 Description
@@ -29,7 +29,7 @@ Code
 ::
 
     from shift_detector.Detector import Detector
-    from shift_detector.checks.FrequentItemRulesCheck import FrequentItemsetCheck
+    from shift_detector.checks.ConditionalProbabilitiesCheck import ConditionalProbabilitiesCheck
 
     data_set_1 = 'examples/shoes_first.csv'
     data_set_2 = 'examples/shoes_second.csv'
@@ -39,34 +39,31 @@ Code
         data_set_2,
         delimiter=','
     )
-    detector.add_checks(
-        FrequentItemsetCheck()
+    detector.run(
+        ConditionalProbabilitiesCheck()
     )
-
-    detector.run()
     detector.evaluate()
 
 The code works as follows:
 
 1. First, you create a :class:`~shift_detector.Detector.Detector` object to tell Morpheus
    which data sets you want to compare.
-2. Then, you specify in :meth:`~shift_detector.Detector.Detector.add_checks`
+2. Then, you specify in :meth:`~shift_detector.Detector.Detector.run`
    which check you want to run: in this case
-   :class:`~shift_detector.checks.FrequentItemRulesCheck.FrequentItemsetCheck`.
-3. Finally, you start the detector with
-   :meth:`~shift_detector.Detector.Detector.run` and print the result with
-   :meth:`~shift_detector.Detector.Detector.evaluate`.
+   :class:`~shift_detector.checks.ConditionalProbabilitiesCheck.ConditionalProbabilitiesCheck`.
+3. Finally, you print the result with :meth:`~shift_detector.Detector.Detector.evaluate`.
 
 Result
 ++++++
 
-:ref:`conditional_probabilities` produces a set of rules::
+:ref:`conditional_probabilities` produces a set of so called rule clusters::
 
-    MAKE: Nike, COLOR: black ==> CATEGORY: football
-    [SUPPORTS_OF_LEFT_SIDES: (0.3, 0.07), DELTA_SUPPORTS_OF_LEFT_SIDES: 0.23,
-    SUPPORTS: (0.03, 0.05), DELTA_SUPPORTS: -0.02, CONFIDENCES: (0.1, 0.71),
-    DELTA_CONFIDENCES: -0.61]
+    [make: Nike, color: black, category: football]
+    make: Nike, color: black ==> category: football [SLS: (30%, 7%), S: (3%, 5%), C: (10%, 71%)]
+    delta_support: 2%, number of sub-rules: 13
     ...
+
+.. image:: ../images/conditional_probabilities.png
 
 Interpretation
 ++++++++++++++
@@ -77,7 +74,7 @@ The above rule can be read as follows:
    are about black Nike shoes. This accounts to a difference of 23%.
 2. 3% of the tuples in ``data_set_1`` and 5% of the tuples in ``data_set_2``
    are about black Nike football shoes. This accounts to a difference of -2%.
-3. If a tuple is about black Nike shoes the **conditional probability** that
+3. If a tuple is about black Nike shoes the conditional probability that
    the category is football is 10% in ``data_set_1`` and 71% in ``data_set_2``.
    This accounts to a difference of -61%.
 
@@ -88,21 +85,24 @@ This tells you that:
 2. the probability that a black Nike shoe is made for football is way higher
    in ``data_set_2`` than in ``data_set_1``.
 
+.. _conditional_probabilities_parameters:
+
 Parameters
 ----------
 
-:ref:`conditional_probabilities` provides two tuning knobs that you can use
-to control (a) the computational complexity and (b) the size of the result:
+:ref:`conditional_probabilities` provides several tuning knobs and adjustable
+thresholds that control (a) the computational complexity and
+(b) the size of the result:
 
 ``min_support``:
     This parameter expects a float between 0 and 1 and impacts both runtime
     and size of the result. :ref:`conditional_probabilities` only produces
     rules whose ``support_of_left_side`` and ``support`` exceed ``min_support``
-    in at least one data set.
+    in at least one of the two data sets.
 
-    The lower you choose ``min_support`` the more resources are required during
-    computation both in terms of memory and CPU.
-    The default value is ``0.01``. This means that :ref:`conditional_probabilities`
+    The lower you choose ``min_support`` the more resources are required
+    both in terms of memory and CPU.
+    The default value is 0.01. This means that :ref:`conditional_probabilities`
     only considers values which appear in at least 1% of your tuples.
     By adjusting this parameter you can adjust the granularity of the comparison
     of the two data sets.
@@ -110,11 +110,31 @@ to control (a) the computational complexity and (b) the size of the result:
 ``min_confidence``:
     This parameter expects a float between 0 and 1 and impacts the size of the
     result. :ref:`conditional_probabilities` only produces rules whose
-    ``confidence`` exceeds ``min_confidence`` in at least one data set.
+    ``confidence`` exceeds ``min_confidence`` in at least one of the two data sets.
 
     The lower you choose ``min_confidence`` the more rules are generated.
-    The default value is ``0.15``. This means that the **conditional probability**
-    of a specific right side given a specific left side has to be at least 15%.
+    The default value is 0.15. This means that the conditional probability
+    of a right side given a left side has to be at least 15%.
+
+``rule_limit``:
+	This parameter expects an int and controls the maximum number of rules that are
+	printed as a result of executing :ref:`conditional_probabilities`.
+	The default value is 5. This means that the 5 most significant rules are printed.
+
+``min_delta_supports``:
+	This parameter expects a float between 0 and 1 and affects the granularity of the
+	comparison of the two data sets. Only rules whose support values exhibit an absolute
+	difference of more than ``min_delta_supports`` are considered during computation.
+	The default value is 0.05.
+
+``min_delta_confidences``:
+	This parameter expects a float between 0 and 1 and affects the granularity of the
+	comparison of the two data sets. Only rules whose confidence values exhibit an absolute
+	difference of more than ``min_delta_confidences`` are considered during computation.
+	The default value is 0.05.
+
+Please keep in mind that a rule has to satisfy **all** of the requirements above
+to appear in the result.
 
 Implementation
 --------------
@@ -122,7 +142,12 @@ Implementation
 Algorithm
 +++++++++
 
-:ref:`conditional_probabilities` works as follows:
+:ref:`conditional_probabilities` proceeds in two phases:
+
+Rule Computation
+################
+
+In the first phase,
 
 1. Both data sets are transformed: each component of every tuple is replaced
    by an attribute-name, attribute-value pair. However, this transformation is
@@ -134,58 +159,21 @@ Algorithm
    expect ``floats`` between 0 and 1, whereas [Han2000]_ and [Agrawal1994]_
    use an absolute value for ``min_support``.
 3. Association rules exceeding ``min_support`` and ``min_confidence`` in both
-   data sets can be compared directly. For each of those rule-pairs generate a
-   result rule of the form showed above.
+   data sets can be compared directly. For each of those rule-pairs generate an
+   intermediate result rule similar to the form showed above.
 4. If a rule exceeds ``min_support`` and ``min_confidence`` in
    one data set but not in the other, we don't know if this rule does not appear in
    the other data set at all or just does not exceed ``min_support`` and/or
    ``min_confidence``. We therefore scan both data sets one
    more time and count their appearances. This information at hand, we can
-   generate the remaining result rules.
+   generate the remaining intermediate result rules.
+5. The intermediate result rules are filtered for those exceeding
+   ``min_delta_supports`` and ``min_delta_confidences``.
 
-Notes
-+++++
+Rule Compression
+################
 
-We use the FP-growth algorithm as proposed in [Han2000]_ to compute all relevant
-conditional probabilities. The code is largely copied from fp-growth_.
-The function ``generate_association_rules(...)`` is revised in the following ways:
-
-1. A parameter called ``size`` is added to the *parameter list*.
-   It expects the total number of transactions used to construct the *FP-tree* and
-   is needed to compute relative support values.
-2. The return value is changed to a *dictionary* of the form
-   ``{(left_side, right_side): (support_of_left_side, support, confidence)}``.
-   ``support_of_left_side`` and ``support`` give the
-   percentage of tuples containing all attribute-value pairs from ``left_side``
-   alone and ``left_side`` and ``right_side`` combined.
-
-   * This additionally fixes a `bug
-     <https://github.com/evandempsey/fp-growth/issues/11>`_ present in fp-growth_:
-     if several rules have the same left side, fp-growth_ erroneously overwrites
-     those rules and returns only one rule. The revised function present in this
-     module does not contain this bug anymore.
-3. fp-growth_ does not `generate rules having an empty right side
-   <https://github.com/evandempsey/fp-growth/issues/6>`_. Those should
-   however be part of a correct result and are vital for our purposes. We therefore
-   adapted the function to include those rules too.
-
-We feel very confident that the code is correct and reasonably fast:
-
-1. We included unit tests to verify that our implementation produces the correct
-   result for an example taken from [Agrawal1994]_.
-2. We compared the result produced by this implementation on a large production
-   data set with the result produced by an implementation of the Apriori algorithm
-   [Agrawal1994]_ we used previously. Both results were identical. This is a strong
-   indicator that either both results are false but in exactly the same way or both
-   results are correct. We think it's the latter.
-
-   * During this comparison we could confirm that FP-growth is both faster and
-     requires less memory than the Apriori algorithm as is also shown in [Han2000]_.
-     This is why we feel confident that FP-growth is the right choice for our
-     use case.
-
-As a last aside: we issued a `Pull Request <https://github.com/evandempsey/fp-growth/pull/17>`_
-for fp-growth_ containing our bug fixes.
+The second phase
 
 References
 ----------
@@ -198,4 +186,3 @@ References
    International Conference on Very Large Data Bases (VLDB '94), Jorge B. Bocca,
    Matthias Jarke, and Carlo Zaniolo (Eds.). Morgan Kaufmann Publishers Inc., San
    Francisco, CA, USA, 487-499.
-.. _fp-growth: https://github.com/evandempsey/fp-growth

@@ -5,7 +5,8 @@ import pandas as pd
 from pandas.util.testing import assert_frame_equal
 
 from shift_detector.detector import Detector
-from shift_detector.checks.statistical_checks.categorical_statistical_check import chi2_test, CategoricalStatisticalCheck
+from shift_detector.checks.statistical_checks.categorical_statistical_check import chi2_test, \
+    CategoricalStatisticalCheck
 from shift_detector.precalculations.store import Store
 
 
@@ -13,13 +14,17 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
 
     def setUp(self) -> None:
         self.df1_significant = pd.DataFrame.from_dict({'vaccination_reaction':
-                                                       (['severe reaction'] * 29) + (['no severe reaction'] * 4757)})
+                                                       (['severe reaction'] * 29) +
+                                                       (['no severe reaction'] * 4757)})
         self.df2_significant = pd.DataFrame.from_dict({'vaccination_reaction':
-                                                       (['severe reaction'] * 125) + (['no severe reaction'] * 8839)})
+                                                       (['severe reaction'] * 125) +
+                                                       (['no severe reaction'] * 8839)})
         self.df1_not_sig = pd.DataFrame.from_dict({'vaccination_reaction':
-                                                   (['severe reaction'] * 29) + (['no severe reaction'] * 4757)})
+                                                   (['severe reaction'] * 29) +
+                                                   (['no severe reaction'] * 4757)})
         self.df2_not_sig = pd.DataFrame.from_dict({'vaccination_reaction':
-                                                   (['severe reaction'] * 75) + (['no severe reaction'] * 8839)})
+                                                   (['severe reaction'] * 75) +
+                                                   (['no severe reaction'] * 8839)})
 
     def test_chi2_test_result(self):
         part1 = pd.Series((['severe reaction'] * 29) + (['no severe reaction'] * 4757), name='thigh')

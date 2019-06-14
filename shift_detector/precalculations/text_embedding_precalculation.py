@@ -7,7 +7,8 @@ from copy import copy
 from gensim.models.base_any2vec import BaseWordEmbeddingsModel
 
 from shift_detector.precalculations.precalculation import Precalculation
-from shift_detector.precalculations.store import Store, ColumnType
+from shift_detector.precalculations.text_precalculation import TokenizeIntoLowerWordsPrecalculation
+from shift_detector.precalculations.store import Store
 
 
 class TextEmbeddingPrecalculation(Precalculation):
@@ -28,7 +29,7 @@ class TextEmbeddingPrecalculation(Precalculation):
             self.model = model
         else:
             raise ValueError('Invalid model')
-    
+
     def __eq__(self, other):
         """Overrides the default implementation"""
         if isinstance(other, self.__class__):
@@ -58,7 +59,7 @@ class TextEmbeddingPrecalculation(Precalculation):
         return hash(tuple([self.model.__class__, self.agg] + sorted(model_attributes)))
 
     def process_cell(self, cell):
-        ser = [self.trained_model.wv[word] for word in cell.lower().split()]
+        ser = [self.trained_model.wv[word] for word in cell]
 
         if self.agg == 'sum':
             ser = np.sum(ser, axis=0)
@@ -78,12 +79,10 @@ class TextEmbeddingPrecalculation(Precalculation):
         return ser
 
     def process(self, store: Store):
-        df1, df2 = store[ColumnType.text]
-        df1 = df1.copy().dropna()
-        df2 = df2.copy().dropna()
+        df1_tokenized, df2_tokenized = store[TokenizeIntoLowerWordsPrecalculation()]
 
-        concatenated_ser = pd.concat([df1[i].str.lower().str.split() for i in df1] +
-                                     [df2[i].str.lower().str.split() for i in df2])
+        concatenated_ser = pd.concat([df1_tokenized[i] for i in df1_tokenized] +
+                                     [df2_tokenized[i] for i in df2_tokenized])
 
         if not self.trained_model:
             model = copy(self.model)
@@ -91,9 +90,11 @@ class TextEmbeddingPrecalculation(Precalculation):
             model.train(sentences=concatenated_ser, total_examples=len(concatenated_ser), epochs=10)
             self.trained_model = model
 
-        for column in df1:
-            df1[column] = df1[column].apply(self.process_cell)
-        for column in df2:
-            df2[column] = df2[column].apply(self.process_cell)
+        df1_embedding = pd.DataFrame()
+        df2_embedding = pd.DataFrame()
+        for column in df1_tokenized:
+            df1_embedding[column] = df1_tokenized[column].apply(self.process_cell)
+        for column in df2_tokenized:
+            df2_embedding[column] = df2_tokenized[column].apply(self.process_cell)
 
-        return df1, df2
+        return df1_embedding, df2_embedding
