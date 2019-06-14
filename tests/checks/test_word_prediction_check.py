@@ -45,7 +45,6 @@ class TestWordPredictionCheck(TestCase):
             self.assertCountEqual(['shift', 'no_shift'], report.examined_columns)
 
         with self.subTest("Test shifted columns"):
-            print(report.explanation)
             self.assertCountEqual(['shift'], report.shifted_columns)
 
         with self.subTest("Test examined columns"):
