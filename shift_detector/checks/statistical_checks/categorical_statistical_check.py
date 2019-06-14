@@ -1,6 +1,5 @@
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 from scipy import stats
 
 from shift_detector.checks.statistical_checks.statistical_check import SimpleStatisticalCheck
@@ -27,8 +26,8 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
         return chi2_test(part1, part2)
 
     @staticmethod
-    def stacked_row_ratios_figure(column, df1, df2):
-        value_counts = pd.concat([df1[column].value_counts().head(50), df2[column].value_counts().head(50)],
+    def stacked_row_ratios_figure(column, df1, df2, top_k=50):
+        value_counts = pd.concat([df1[column].value_counts().head(top_k), df2[column].value_counts().head(top_k)],
                                  axis=1, sort=False)
         value_ratios = value_counts.fillna(0).apply(axis='columns',
                                                     func=lambda row: pd.Series([row.iloc[0] / sum(row),
@@ -36,7 +35,6 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
                                                                                index=[str(column) + ' 1',
                                                                                       str(column) + ' 2']))
         axes = value_ratios.plot(kind='bar', fontsize='medium', stacked=True)
-        axes.legend(fontsize='x-small')
         axes.set_title(str(column), fontsize='x-large')
         axes.set_xlabel('column value', fontsize='medium')
         axes.set_ylabel('ratio of first data set', fontsize='medium')
@@ -58,8 +56,7 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
                                                                                       str(column) + ' 2']))
         axes = value_ratios.plot(kind='barh', fontsize='medium')
         axes.invert_yaxis()  # to match order of legend
-        axes.legend(fontsize='x-small')
-        axes.set_title(column, fontsize='x-large')
+        axes.set_title(str(column), fontsize='x-large')
         axes.set_xlabel('value ratio', fontsize='medium')
         axes.set_ylabel('column value', fontsize='medium')
         plt.show()

@@ -23,15 +23,15 @@ class NumericalStatisticalCheck(SimpleStatisticalCheck):
         return kolmogorov_smirnov_test(part1, part2)
 
     @staticmethod
-    def cumulative_hist_figure(column, df1, df2):
-        cumsum1, bins, _ = plt.hist(df1[column], bins=100, align='right', color='cornflowerblue', cumulative=True,
-                                    histtype='step')
-        cumsum2, _, _ = plt.hist(df2[column], bins=bins, align='right', alpha=0.5, color='seagreen', cumulative=True,
+    def cumulative_hist_figure(column, df1, df2, bins=100):
+        cumsum1, bin_edges, _ = plt.hist(df1[column], bins=bins, align='right', color='cornflowerblue', cumulative=True,
+                                         histtype='step')
+        cumsum2, _, _ = plt.hist(df2[column], bins=bin_edges, align='right', alpha=0.5, color='seagreen', cumulative=True,
                                  histtype='step')
         distances = abs(cumsum1 - cumsum2)
         max_idx = list(distances).index(max(distances))
         max_d = max(distances)
-        plt.plot([bins[max_idx], bins[max_idx]], [cumsum1[max_idx], cumsum2[max_idx]],
+        plt.plot([bin_edges[max_idx], bin_edges[max_idx]], [cumsum1[max_idx], cumsum2[max_idx]],
                  color='black', linewidth=1, linestyle='--')
         plt.legend(['maximal distance = ' + str(max_d), column + ' 1', column + ' 2'], fontsize='x-small')
         plt.title(column + ' (Cumulative Distribution)', fontsize='x-large')
@@ -40,9 +40,9 @@ class NumericalStatisticalCheck(SimpleStatisticalCheck):
         plt.show()
 
     @staticmethod
-    def overlayed_hist_figure(column, df1, df2):
-        _, bins, _ = plt.hist(df1[column], bins=40, color='cornflowerblue')
-        plt.hist(df2[column], bins=bins, alpha=0.5, color='seagreen')
+    def overlayed_hist_figure(column, df1, df2, bins=40):
+        _, bin_edges, _ = plt.hist(df1[column], bins=bins, color='cornflowerblue')
+        plt.hist(df2[column], bins=bin_edges, alpha=0.5, color='seagreen')
         plt.legend([column + ' 1', column + ' 2'], fontsize='x-small')
         plt.title(column + ' (Histogram)', fontsize='x-large')
         plt.xlabel('column value', fontsize='medium')
