@@ -2,8 +2,8 @@ import pandas as pd
 from numbers import Number
 from sklearn.decomposition import LatentDirichletAllocation as LDA_skl
 from sklearn.feature_extraction.text import *
-#from gensim.sklearn_api import LdaTransformer
-#from gensim.corpora import Dictionary
+from gensim.sklearn_api import LdaTransformer
+from gensim.corpora import Dictionary
 import lda
 from copy import copy
 from shift_detector.precalculations.precalculation import Precalculation
@@ -39,9 +39,9 @@ class LdaEmbedding(Precalculation):
             self.trained_model = trained_model
         elif lib == 'sklearn':
             self.model = LDA_skl(n_components=self.n_topics, max_iter=self.n_iter, random_state=self.random_state)
-        #elif lib == 'gensim':
-         #   self.model = \
-          #      LdaTransformer(num_topics=self.n_topics, iterations=self.n_iter, random_state=self.random_state)
+        elif lib == 'gensim':
+            self.model = \
+                LdaTransformer(num_topics=self.n_topics, iterations=self.n_iter, random_state=self.random_state)
         elif lib == 'lda':
             self.model = lda.LDA(n_topics=self.n_topics, n_iter=self.n_iter, random_state=self.random_state)
             # n_iter is only the amount of sample iterations, so it can be much higher than the iterations parameter of
