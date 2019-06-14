@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 
@@ -25,15 +26,15 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
     def statistical_test(self, part1: pd.Series, part2: pd.Series) -> float:
         return chi2_test(part1, part2)
 
-    def column_figure(self, column, df1, df2):
+    @staticmethod
+    def stacked_row_ratios_figure(column, df1, df2):
         value_counts = pd.concat([df1[column].value_counts().head(50), df2[column].value_counts().head(50)],
                                  axis=1, sort=False)
-        value_counts.columns = [column + ' 1', column + ' 2']
-        value_counts = value_counts.fillna(0).apply(axis='columns',
+        value_ratios = value_counts.fillna(0).apply(axis='columns',
                                                     func=lambda row: pd.Series([row.iloc[0] / sum(row),
                                                                                 row.iloc[1] / sum(row)],
                                                                                index=[column + ' 1', column + ' 2']))
-        axes = value_counts.plot(kind='bar', fontsize='medium', stacked=True)
+        axes = value_ratios.plot(kind='bar', fontsize='medium', stacked=True)
         axes.legend(fontsize='x-small')
         axes.set_title(column, fontsize='x-large')
         axes.set_xlabel('column value', fontsize='medium')
@@ -42,3 +43,23 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
         plt.text(x=0.5, y=0.54, s='evenly distributed', fontsize='medium',
                  horizontalalignment='center', verticalalignment='center')
         plt.show()
+
+    @staticmethod
+    def paired_total_ratios_figure(column, df1, df2, top_k=50):
+        value_counts = pd.concat([df1[column].value_counts().head(top_k), df2[column].value_counts().head(top_k)],
+                                 axis=1, sort=False).sort_index()
+        value_ratios = value_counts.fillna(0).apply(axis='columns',
+                                                    func=lambda row: pd.Series([row.iloc[0] / len(df1[column]),
+                                                                                row.iloc[1] / len(df2[column])],
+                                                                               index=[column + ' 1', column + ' 2']))
+        axes = value_ratios.plot(kind='barh', fontsize='medium')
+        axes.invert_yaxis()  # to match order of legend
+        axes.legend(fontsize='x-small')
+        axes.set_title(column, fontsize='x-large')
+        axes.set_xlabel('value ratio', fontsize='medium')
+        axes.set_ylabel('column value', fontsize='medium')
+        plt.show()
+
+    def column_figure(self, column, df1, df2):
+        self.stacked_row_ratios_figure(column, df1, df2)
+        self.paired_total_ratios_figure(column, df1, df2)

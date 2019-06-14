@@ -1,6 +1,5 @@
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 from scipy import stats
 
 from shift_detector.checks.statistical_checks.statistical_check import SimpleStatisticalCheck
@@ -23,18 +22,33 @@ class NumericalStatisticalCheck(SimpleStatisticalCheck):
     def statistical_test(self, part1: pd.Series, part2: pd.Series) -> float:
         return kolmogorov_smirnov_test(part1, part2)
 
-    def column_figure(self, column, df1, df2):
-        _, bins, _ = plt.hist(df1[column], bins=100, color='cornflowerblue', cumulative=True, histtype='step')
-        plt.hist(df2[column], bins=bins, alpha=0.5, color='seagreen', cumulative=True, histtype='step')
-        plt.legend([column + ' 1', column + ' 2'], fontsize='x-small')
-        plt.title(column + '(Cumulative Distribution)', fontsize='x-large')
+    @staticmethod
+    def cumulative_hist_figure(column, df1, df2):
+        cumsum1, bins, _ = plt.hist(df1[column], bins=100, align='right', color='cornflowerblue', cumulative=True,
+                                    histtype='step')
+        cumsum2, _, _ = plt.hist(df2[column], bins=bins, align='right', alpha=0.5, color='seagreen', cumulative=True,
+                                 histtype='step')
+        distances = abs(cumsum1 - cumsum2)
+        max_idx = list(distances).index(max(distances))
+        max_d = max(distances)
+        plt.plot([bins[max_idx], bins[max_idx]], [cumsum1[max_idx], cumsum2[max_idx]],
+                 color='black', linewidth=1, linestyle='--')
+        plt.legend(['maximal distance = ' + str(max_d), column + ' 1', column + ' 2'], fontsize='x-small')
+        plt.title(column + ' (Cumulative Distribution)', fontsize='x-large')
         plt.xlabel('column value', fontsize='medium')
         plt.ylabel('number of rows', fontsize='medium')
         plt.show()
+
+    @staticmethod
+    def overlayed_hist_figure(column, df1, df2):
         _, bins, _ = plt.hist(df1[column], bins=40, color='cornflowerblue')
         plt.hist(df2[column], bins=bins, alpha=0.5, color='seagreen')
         plt.legend([column + ' 1', column + ' 2'], fontsize='x-small')
-        plt.title(column + '(Histogram)', fontsize='x-large')
+        plt.title(column + ' (Histogram)', fontsize='x-large')
         plt.xlabel('column value', fontsize='medium')
         plt.ylabel('number of rows', fontsize='medium')
         plt.show()
+
+    def column_figure(self, column, df1, df2):
+        self.cumulative_hist_figure(column, df1, df2)
+        self.overlayed_hist_figure(column, df1, df2)
