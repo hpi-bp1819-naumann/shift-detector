@@ -33,14 +33,17 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
         value_ratios = value_counts.fillna(0).apply(axis='columns',
                                                     func=lambda row: pd.Series([row.iloc[0] / sum(row),
                                                                                 row.iloc[1] / sum(row)],
-                                                                               index=[column + ' 1', column + ' 2']))
+                                                                               index=[str(column) + ' 1',
+                                                                                      str(column) + ' 2']))
         axes = value_ratios.plot(kind='bar', fontsize='medium', stacked=True)
         axes.legend(fontsize='x-small')
-        axes.set_title(column, fontsize='x-large')
+        axes.set_title(str(column), fontsize='x-large')
         axes.set_xlabel('column value', fontsize='medium')
         axes.set_ylabel('ratio of first data set', fontsize='medium')
         plt.axhline(y=0.5, linestyle='--', linewidth=2, color='black')
-        plt.text(x=0.5, y=0.54, s='evenly distributed', fontsize='medium',
+        max_x = axes.get_xticks()[-1]
+        max_y = axes.get_yticks()[-1]
+        plt.text(x=0.5 * max_x, y=0.46 * max_y, s='evenly distributed', fontsize='medium',
                  horizontalalignment='center', verticalalignment='center')
         plt.show()
 
@@ -51,7 +54,8 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
         value_ratios = value_counts.fillna(0).apply(axis='columns',
                                                     func=lambda row: pd.Series([row.iloc[0] / len(df1[column]),
                                                                                 row.iloc[1] / len(df2[column])],
-                                                                               index=[column + ' 1', column + ' 2']))
+                                                                               index=[str(column) + ' 1',
+                                                                                      str(column) + ' 2']))
         axes = value_ratios.plot(kind='barh', fontsize='medium')
         axes.invert_yaxis()  # to match order of legend
         axes.legend(fontsize='x-small')
@@ -60,6 +64,7 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
         axes.set_ylabel('column value', fontsize='medium')
         plt.show()
 
-    def column_figure(self, column, df1, df2):
-        self.stacked_row_ratios_figure(column, df1, df2)
-        self.paired_total_ratios_figure(column, df1, df2)
+    @staticmethod
+    def column_figure(column, df1, df2):
+        CategoricalStatisticalCheck.stacked_row_ratios_figure(column, df1, df2)
+        CategoricalStatisticalCheck.paired_total_ratios_figure(column, df1, df2)

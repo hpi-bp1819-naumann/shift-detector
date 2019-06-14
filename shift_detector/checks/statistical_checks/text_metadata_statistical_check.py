@@ -1,11 +1,14 @@
 import pandas as pd
 
 from shift_detector.checks.check import Report
-from shift_detector.checks.statistical_checks.categorical_statistical_check import chi2_test
-from shift_detector.checks.statistical_checks.numerical_statistical_check import kolmogorov_smirnov_test
+from shift_detector.checks.statistical_checks.categorical_statistical_check import chi2_test, \
+    CategoricalStatisticalCheck
+from shift_detector.checks.statistical_checks.numerical_statistical_check import kolmogorov_smirnov_test, \
+    NumericalStatisticalCheck
 from shift_detector.checks.statistical_checks.statistical_check import StatisticalCheck
 from shift_detector.precalculations.text_metadata import TextMetadata
 from shift_detector.utils.column_management import ColumnType
+from shift_detector.utils.errors import UnknownMetadataReturnColumnTypeError
 
 
 class TextMetadataStatisticalCheck(StatisticalCheck):
@@ -21,7 +24,11 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
                    if len(super(type(self), self).significant_columns(pvalues[column])) > 0)
 
     def significant_metadata(self, mdtype_pvalues):
-        return super().significant_columns(mdtype_pvalues)
+        return set(mdtype for mdtype in self.metadata_precalculation.text_metadata_types
+                   if mdtype.metadata_name() in super(type(self), self).significant_columns(mdtype_pvalues))
+
+    def significant_metadata_names(self, mdtype_pvalues):
+        return [mdtype.metadata_name() for mdtype in self.significant_metadata(mdtype_pvalues)]
 
     def explain(self, pvalues):
         explanation = {}
@@ -30,9 +37,26 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
                                   'distributed.\n{significant_metadata}'\
                                   .format(
                                     column=column,
-                                    significant_metadata='\n'.join(self.significant_metadata(pvalues[column]))
+                                    significant_metadata='\n'.join(self.significant_metadata_names(pvalues[column]))
                                   )
         return explanation
+
+    @staticmethod
+    def metadata_figure(column, mdtype, df1, df2):
+        col_mdtype_tuple = (column, mdtype.metadata_name())
+        if mdtype.metadata_return_type() == ColumnType.categorical:
+            CategoricalStatisticalCheck.column_figure(col_mdtype_tuple, df1, df2)
+        elif mdtype.metadata_return_type() == ColumnType.numerical:
+            NumericalStatisticalCheck.column_figure(col_mdtype_tuple, df1, df2)
+        else:
+            raise UnknownMetadataReturnColumnTypeError(mdtype)
+
+    def metadata_figures(self, pvalues, df1, df2):
+        plot_functions = []
+        for column in self.significant_columns(pvalues):
+            for mdtype in self.significant_metadata(pvalues[column]):
+                plot_functions.append(lambda col=column, meta=mdtype: self.metadata_figure(col, meta, df1, df2))
+        return plot_functions
 
     def run(self, store) -> Report:
         df1, df2 = store[self.metadata_precalculation]
@@ -43,17 +67,17 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
         for column in df1.columns.levels[0]:
             for mdtype in self.metadata_precalculation.text_metadata_types:
                 if mdtype.metadata_return_type() == ColumnType.categorical:
-                    p = chi2_test(part1[(column, mdtype.metadata_name())], part2[(column, mdtype.metadata_name())])
+                    p = CategoricalStatisticalCheck().statistical_test(part1[(column, mdtype.metadata_name())],
+                                                                       part2[(column, mdtype.metadata_name())])
                 elif mdtype.metadata_return_type() == ColumnType.numerical:
-                    p = kolmogorov_smirnov_test(part1[(column, mdtype.metadata_name())],
-                                                part2[(column, mdtype.metadata_name())])
+                    p = NumericalStatisticalCheck().statistical_test(part1[(column, mdtype.metadata_name())],
+                                                                     part2[(column, mdtype.metadata_name())])
                 else:
-                    raise ValueError('Return column type {type} of {metadata} is unknown. '
-                                     'Should be numerical or categorical.'
-                                     .format(type=mdtype.metadata_return_type(), metadata=mdtype))
+                    raise UnknownMetadataReturnColumnTypeError(mdtype)
                 pvalues[(column, mdtype.metadata_name())] = [p]
         return Report("Text Metadata Check",
                       examined_columns=list(df1.columns.levels[0]),
                       shifted_columns=self.significant_columns(pvalues),
                       explanation=self.explain(pvalues),
-                      information={'test_results': pvalues})
+                      information={'test_results': pvalues},
+                      figures=self.metadata_figures(pvalues, part1, part2))

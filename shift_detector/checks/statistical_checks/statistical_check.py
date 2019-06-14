@@ -83,8 +83,9 @@ class SimpleStatisticalCheck(StatisticalCheck):
                                   'statistical test performed was ' + self.statistical_test_name() + '.'
         return explanations
 
+    @staticmethod
     @abstractmethod
-    def column_figure(self, column, df1, df2):
+    def column_figure(column, df1, df2):
         pass
 
     def column_figures(self, significant_columns, df1, df2):

@@ -37,7 +37,7 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
 
     def test_significant_metadata(self):
         pvalues = pd.DataFrame([[0.001, 0.2]], columns=['num_chars', 'distinct_words_ratio'], index=['pvalue'])
-        result = TextMetadataStatisticalCheck(significance=0.01).significant_metadata(pvalues)
+        result = TextMetadataStatisticalCheck(significance=0.01).significant_metadata_names(pvalues)
         self.assertIn('num_chars', result)
         self.assertNotIn('distinct_words_ratio', result)
 

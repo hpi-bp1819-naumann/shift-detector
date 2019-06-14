@@ -49,6 +49,7 @@ class NumericalStatisticalCheck(SimpleStatisticalCheck):
         plt.ylabel('number of rows', fontsize='medium')
         plt.show()
 
-    def column_figure(self, column, df1, df2):
-        self.cumulative_hist_figure(column, df1, df2)
-        self.overlayed_hist_figure(column, df1, df2)
+    @staticmethod
+    def column_figure(column, df1, df2):
+        NumericalStatisticalCheck.cumulative_hist_figure(column, df1, df2)
+        NumericalStatisticalCheck.overlayed_hist_figure(column, df1, df2)
