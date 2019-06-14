@@ -111,12 +111,12 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
         result = check.metadata_figures(pvalues=pvalues, df1=df1, df2=df2)
         self.assertEqual(1, len(result))
 
-    @mock.patch('shift_detector.checks.statistical_checks.categorical_statistical_check.CategoricalStatisticalCheck')
-    def test_correct_visualization_is_chosen_categorical(self, mock_cat_check):
+    @mock.patch('shift_detector.checks.statistical_checks.categorical_statistical_check.CategoricalStatisticalCheck.column_figure')
+    def test_correct_visualization_is_chosen_categorical(self, mock_figure):
         TextMetadataStatisticalCheck.metadata_figure('text', LanguageMetadata(), pd.DataFrame(), pd.DataFrame())
-        mock_cat_check.column_figure.assert_called_once()
+        mock_figure.assert_called_once()
 
-    @mock.patch('shift_detector.checks.statistical_checks.categorical_statistical_check.NumericalStatisticalCheck')
-    def test_correct_visualization_is_chosen_numerical(self, mock_num_check):
+    @mock.patch('shift_detector.checks.statistical_checks.numerical_statistical_check.NumericalStatisticalCheck.column_figure')
+    def test_correct_visualization_is_chosen_numerical(self, mock_figure):
         TextMetadataStatisticalCheck.metadata_figure('text', NumCharsMetadata(), pd.DataFrame(), pd.DataFrame())
-        mock_num_check.column_figure.assert_called_once()
+        mock_figure.assert_called_once()
