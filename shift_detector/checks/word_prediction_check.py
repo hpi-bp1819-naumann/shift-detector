@@ -39,7 +39,7 @@ class WordPredictionCheck(Check):
     def run(self, store) -> Report:
 
         if self.columns is None:
-            self.columns = list(store[ColumnType.text][0].columns)
+            self.columns = store.column_names(ColumnType.text)
             logger.info('Automatically selected columns [{}] to be tested by WordPredictionCheck'.format(self.columns))
 
         result = {}
@@ -47,7 +47,8 @@ class WordPredictionCheck(Check):
             result[col] = store[WordPredictionPrecalculation(col,
                                                              self.ft_window_size,
                                                              self.ft_size,
-                                                             self.lstm_window)]
+                                                             self.lstm_window,
+                                                             verbose=0)]
 
         examined_columns = self.columns
         shifted_columns, explanation = self.detect_shifts(examined_columns, result)

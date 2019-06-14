@@ -2,7 +2,7 @@ import unittest
 
 import pandas as pd
 
-from shift_detector.utils.column_management import is_categorical, split_dataframes, ColumnType
+from shift_detector.utils.column_management import is_categorical, detect_column_types, ColumnType
 from shift_detector.utils.data_io import shared_column_names
 from shift_detector.utils.ucb_list import block, blocks
 
@@ -46,18 +46,16 @@ class TestUtils(unittest.TestCase):
         self.assertFalse(is_categorical(self.df1['description']))
 
     def test_split_dataframes(self):
-        splitted_df = split_dataframes(self.df1, self.df2,
-                                       columns=['brand', 'payment', 'description'])
+        column_type_to_column_names = detect_column_types(self.df1, self.df2,
+                                                          columns=['brand', 'payment', 'description'])
 
-        numerical_columns = splitted_df[ColumnType.numerical][0].columns.values
-        categorical_columns = splitted_df[ColumnType.categorical][0].columns.values
-        all_categorical_columns = splitted_df[ColumnType.all_categorical][0].columns.values
-        text_columns = splitted_df[ColumnType.text][0].columns.values
+        numerical_columns = column_type_to_column_names[ColumnType.numerical]
+        categorical_columns = column_type_to_column_names[ColumnType.categorical]
+        text_columns = column_type_to_column_names[ColumnType.text]
 
-        self.assertListEqual(list(numerical_columns), list(['payment']))
-        self.assertListEqual(list(categorical_columns), list(['brand']))
-        self.assertListEqual(list(all_categorical_columns), list(['brand', 'payment']))
-        self.assertListEqual(list(text_columns), list(['description']))
+        self.assertCountEqual(['payment'], numerical_columns)
+        self.assertCountEqual(['brand'], categorical_columns)
+        self.assertCountEqual(['description'], text_columns)
 
     def test_ucblist_block_function(self):
         self.assertEqual('Basic Latin', block('L'))
