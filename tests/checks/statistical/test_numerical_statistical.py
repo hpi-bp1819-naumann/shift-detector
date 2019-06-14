@@ -8,48 +8,20 @@ from shift_detector.checks.statistical_checks.numerical_statistical_check import
     NumericalStatisticalCheck
 from shift_detector.precalculations.store import Store
 
+import test_data as td
+
 
 class TestCategoricalStatisticalCheck(unittest.TestCase):
 
     def test_kolmogorov_smirnov_test_result(self):
-        part1 = pd.Series(([21] * 4) +
-                          ([23] * 11) +
-                          ([25] * 5) +
-                          ([27] * 7) +
-                          ([29] * 0) +
-                          ([31] * 5) +
-                          ([33] * 9) +
-                          ([35] * 13) +
-                          ([37] * 20) +
-                          ([39] * 6))
-        part2 = pd.Series(([21] * 7) +
-                          ([23] * 4) +
-                          ([25] * 1) +
-                          ([27] * 11) +
-                          ([29] * 12) +
-                          ([31] * 4) +
-                          ([33] * 2) +
-                          ([35] * 4) +
-                          ([37] * 8) +
-                          ([39] * 9))
+        part1 = pd.Series(td.numerical_kolmogorov_smirnov_1)
+        part2 = pd.Series(td.numerical_kolmogorov_smirnov_2)
         p = kolmogorov_smirnov_test(part1, part2)
         self.assertAlmostEqual(0.043055, p, places=2)  # this should be equal in 5 places, but travis fails otherwise
 
     def test_not_significant(self):
-        df1 = pd.DataFrame(([2] * 1) +
-                           ([3] * 2) +
-                           ([4] * 0) +
-                           ([5] * 1) +
-                           ([6] * 2) +
-                           ([8] * 3) +
-                           ([9] * 2))
-        df2 = pd.DataFrame(([2] * 2) +
-                           ([3] * 1) +
-                           ([4] * 2) +
-                           ([5] * 2) +
-                           ([6] * 1) +
-                           ([8] * 1) +
-                           ([9] * 1))
+        df1 = pd.DataFrame(td.numerical_not_significant_1)
+        df2 = pd.DataFrame(td.numerical_not_significant_2)
         store = Store(df1, df2)
         result = NumericalStatisticalCheck().run(store)
         self.assertEqual(1, len(result.examined_columns))
@@ -57,26 +29,8 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
         self.assertEqual(0, len(result.explanation))
 
     def test_significant(self):
-        df1 = pd.DataFrame(([21] * 4) +
-                           ([23] * 11) +
-                           ([25] * 5) +
-                           ([27] * 7) +
-                           ([29] * 0) +
-                           ([31] * 5) +
-                           ([33] * 9) +
-                           ([35] * 18) +
-                           ([37] * 29) +
-                           ([39] * 6))
-        df2 = pd.DataFrame(([21] * 7) +
-                           ([23] * 4) +
-                           ([25] * 1) +
-                           ([27] * 11) +
-                           ([29] * 12) +
-                           ([31] * 4) +
-                           ([33] * 2) +
-                           ([35] * 4) +
-                           ([37] * 2) +
-                           ([39] * 9))
+        df1 = pd.DataFrame(td.numerical_significant_1)
+        df2 = pd.DataFrame(td.numerical_significant_2)
         store = Store(df1, df2)
         result = NumericalStatisticalCheck().run(store)
         self.assertEqual(1, len(result.examined_columns))
