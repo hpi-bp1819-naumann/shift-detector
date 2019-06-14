@@ -6,7 +6,7 @@ from nltk.corpus import stopwords as nltk_stopwords
 import re
 
 
-class WordTokenizer(Precalculation):
+class LdaGensimTokenizer(Precalculation):
 
     def __init__(self, cols, stop_words='english'):
         self.stopwords = None
