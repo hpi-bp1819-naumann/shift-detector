@@ -8,7 +8,7 @@ import lda
 from copy import copy
 from shift_detector.precalculations.precalculation import Precalculation
 from shift_detector.precalculations.count_vectorizer import CountVectorizer
-from shift_detector.precalculations.word_tokenizer import WordTokenizer
+from shift_detector.precalculations.lda_gensim_tokenizer import LdaGensimTokenizer
 from shift_detector.utils.column_management import ColumnType
 
 
@@ -115,7 +115,7 @@ class LdaEmbedding(Precalculation):
         topics2 = pd.DataFrame(index=df2_texts.index, columns=topic_labels)
 
         if self.lib == 'gensim':
-            tokenized1, tokenized2 = store[WordTokenizer(stop_words=self.stop_words, cols=self.cols)]
+            tokenized1, tokenized2 = store[LdaGensimTokenizer(stop_words=self.stop_words, cols=self.cols)]
             tokenized_merged = pd.concat([tokenized1, tokenized2], ignore_index=True)
 
             for col in col_names:
