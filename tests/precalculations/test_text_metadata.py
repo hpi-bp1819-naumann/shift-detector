@@ -164,7 +164,8 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.unicode_string = "\n \u0600 \uF8FF \uDB80 Hi \u02B7 \u0C99 \u1F8D \u094A \uA670 ∑ ´ 42 \u2169 " \
                               "‚·°‡ﬁ›‹€⁄¡™£¢∞§¶•ªº‘«»æ…ÆÚ˘¯≤≤≥ ,;' "
         self.german_string = "Dies ist ein einfacher Satz."
-        self.html_string = "the texts is well written <p> some other text < br/ > Aber es gibt auch deutschen Text"
+        self.html_string = "the text is well written. <p> some other very good text < br/ > "\
+                           "Aber es gibt auch deutschen Text"
         self.comma_string = "some text, some other text -- more text."
         self.whitespace_string = "some text some other text more text"
         self.html_sentence_string = "some text <p> some other text. more text."
@@ -232,7 +233,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
                                                                         'High Private Use Surrogates': 1,
                                                                         'Spacing Modifier Letters': 2, 'Kannada': 1,
                                                                         'Greek Extended': 1, 'Devanagari': 1,
-                                                                        'Cyrillic Extended-B': 1, 
+                                                                        'Cyrillic Extended-B': 1,
                                                                         'Mathematical Operators': 5,
                                                                         'Latin-1 Supplement': 16, 'Number Forms': 1,
                                                                         'General Punctuation': 8,
