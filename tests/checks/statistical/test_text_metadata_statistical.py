@@ -4,6 +4,8 @@ from unittest import mock
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
 
+from shift_detector.checks.statistical_checks.categorical_statistical_check import CategoricalStatisticalCheck
+from shift_detector.checks.statistical_checks.numerical_statistical_check import NumericalStatisticalCheck
 from shift_detector.checks.statistical_checks.text_metadata_statistical_check import TextMetadataStatisticalCheck
 from shift_detector.detector import Detector
 from shift_detector.precalculations.store import Store
@@ -111,12 +113,12 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
         result = check.metadata_figures(pvalues=pvalues, df1=df1, df2=df2)
         self.assertEqual(1, len(result))
 
-    @mock.patch('shift_detector.checks.statistical_checks.categorical_statistical_check.CategoricalStatisticalCheck.column_figure')
-    def test_correct_visualization_is_chosen_categorical(self, mock_figure):
-        TextMetadataStatisticalCheck.metadata_figure('text', LanguageMetadata(), pd.DataFrame(), pd.DataFrame())
-        mock_figure.assert_called_once()
+    def test_correct_visualization_is_chosen_categorical(self):
+        with mock.patch.object(CategoricalStatisticalCheck, 'column_figure') as mock_figure:
+            TextMetadataStatisticalCheck.metadata_figure('text', LanguageMetadata(), None, None)
+        mock_figure.assert_called_once_with(('text', LanguageMetadata().metadata_name()), None, None)
 
-    @mock.patch('shift_detector.checks.statistical_checks.numerical_statistical_check.NumericalStatisticalCheck.column_figure')
-    def test_correct_visualization_is_chosen_numerical(self, mock_figure):
-        TextMetadataStatisticalCheck.metadata_figure('text', NumCharsMetadata(), pd.DataFrame(), pd.DataFrame())
-        mock_figure.assert_called_once()
+    def test_correct_visualization_is_chosen_numerical(self):
+        with mock.patch.object(NumericalStatisticalCheck, 'column_figure') as mock_figure:
+            TextMetadataStatisticalCheck.metadata_figure('text', NumCharsMetadata(), None, None)
+        mock_figure.assert_called_once_with(('text', NumCharsMetadata().metadata_name()), None, None)
