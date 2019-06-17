@@ -54,7 +54,7 @@ StopwordRatioMetadata
 DelimiterTypeMetadata
     Returns a string, containing the delimiter type in the text.
     This are the possible delimiter types:
-        'HTML' : text contains at least one html tag, such as break-tags <br/> or paragraph tags <p> in any variation.
+        'HTML' : text contains at least one HTML tag, such as break-tags <br/> or paragraph tags <p> in any variation.
 
         'newline' : text contains at least one '\\n' character and does not contain any of the above delimiters.
 
@@ -78,7 +78,7 @@ NumPartsMetadata
 
 LanguagePerParagraph
     Returns a string, containing the languages of the parts in the text, comma seperated, sorted descending by their frequency.
-    text is splitted into parts either by html <br/> tags or, if there are no html tags, by newlines.
+    text is splitted into parts either by HTML <br/> tags or, if there are no html tags, by newlines.
     Language detection by  https://github.com/Mimino666/langdetect
     
     Example:
