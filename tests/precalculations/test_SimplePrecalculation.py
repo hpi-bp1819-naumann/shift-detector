@@ -1,111 +1,121 @@
-import math
-import pprint as pp
-import unittest
+import re
+from unittest import TestCase
+import mock
 
-import pandas as pd
+from pandas import DataFrame
 
-from shift_detector.precalculations.simple_precalculation import SimplePrecalculation
+from shift_detector.checks.simple_check import SimpleCheck
 from shift_detector.precalculations.store import Store
 
 
-class TestSimplePrecalculation(unittest.TestCase):
+class TestSimpleCheck(TestCase):
 
-    def setUp(self) -> None:
-        self.precalculation = SimplePrecalculation()
+    def setUp(self):
+        sales1 = {'shift': ['A'] * 100, 'no_shift': ['C'] * 100}
+        sales2 = {'shift': ['B'] * 100, 'no_shift': ['C'] * 100}
+        numbers1 = {'cool_numbers': [1, 2, 3, 4] * 10}
+        numbers2 = {'cool_numbers': [1, 2, 3, 6] * 10}
 
-        numerical_df_1 = pd.DataFrame.from_dict(
-            {'col_1': range(100), 'col_2': list(range(50)) * 2, 'col_3': range(0, 200, 2)})
-        numerical_df_2 = pd.DataFrame.from_dict(
-            {'col_1': range(1, 101), 'col_2': [8] + [None] * 99, 'col_3': list(range(50, 100)) * 2})
-        categorical_df_1 = pd.DataFrame(['red', 'blue', 'blue', 'green', 'green', 'green'] * 20)
-        categorical_df_2 = pd.DataFrame(['red', 'green', 'green', 'green', 'green', 'green'] * 20)
+        self.df1 = DataFrame.from_dict(sales1)
+        self.df2 = DataFrame.from_dict(sales2)
+        self.df1_num = DataFrame.from_dict(numbers1)
+        self.df2_num = DataFrame.from_dict(numbers2)
 
-        self.store_numerical = Store(numerical_df_1, numerical_df_2)
-        self.store_categorical = Store(categorical_df_1, categorical_df_2)
+        self.store = Store(self.df1, self.df2)
+        self.store_num = Store(self.df1_num, self.df2_num)
+        self.check = SimpleCheck()
 
-    def test_minmax_metrics(self):
-        comparison_numeric = self.precalculation.process(self.store_numerical)['numerical_comparison']
+    def test_init(self):
+        with self.subTest('normal analyzers should detect shift'):
+            self.check = SimpleCheck()
+            report = self.check.run(self.store_num)
 
-        self.assertEqual(comparison_numeric['col_1']['min']['df1'], 0)
-        self.assertEqual(comparison_numeric['col_2']['min']['df1'], 0)
-        self.assertEqual(comparison_numeric['col_3']['min']['df1'], 0)
-        self.assertEqual(comparison_numeric['col_1']['min']['df2'], 1)
-        self.assertEqual(comparison_numeric['col_2']['min']['df2'], 8)
-        self.assertEqual(comparison_numeric['col_3']['min']['df2'], 50)
+            explanation_string = report.explanation['cool_numbers']
+            formatted = explanation_string.replace('Metric: ', '').replace('with Diff: ', '').replace(' %', '')
+            formatted_list = re.split(' |\n', formatted)
+            self.assertCountEqual(formatted_list, ['mean', '+0.2', 'max', '+0.5', 'quartile_3', '+0.15', 'std',
+                                                   '+0.67', ''])
 
-        self.assertEqual(comparison_numeric['col_1']['max']['df1'], 99)
-        self.assertEqual(comparison_numeric['col_2']['max']['df1'], 49)
-        self.assertEqual(comparison_numeric['col_3']['max']['df1'], 198)
-        self.assertEqual(comparison_numeric['col_1']['max']['df2'], 100)
-        self.assertEqual(comparison_numeric['col_2']['max']['df2'], 8)
-        self.assertEqual(comparison_numeric['col_3']['max']['df2'], 99)
+        with self.subTest('no analyzer should detect shift'):
+            self.check = SimpleCheck(mean_threshold=.3, max_threshold=.6, quartile_3_threshold=.2, std_threshold=.7)
+            report = self.check.run(self.store_num)
+            self.assertEqual(report.shifted_columns, [])
 
-    def test_quartile_metrics(self):
-        numerical_df_1 = pd.DataFrame(list(range(12)), columns=['col_1'])
-        numerical_df_2 = pd.DataFrame(list(range(1, 20, 2)), columns=['col_1'])
-        new_numerical_store = Store(numerical_df_1, numerical_df_2)
+        with self.subTest('only std should detect shift'):
+            self.check = SimpleCheck(mean_threshold=.3, max_threshold=.6, quartile_3_threshold=.2, std_threshold=.5)
+            report = self.check.run(self.store_num)
 
-        comparison_numeric = self.precalculation.process(new_numerical_store)['numerical_comparison']
-        self.assertAlmostEqual(comparison_numeric['col_1']['quartile_1']['df1'], numerical_df_1['col_1'].quantile(.25))
-        self.assertEqual(comparison_numeric['col_1']['quartile_3']['df1'], numerical_df_1['col_1'].quantile(.75))
-        self.assertEqual(comparison_numeric['col_1']['median']['df1'], numerical_df_1['col_1'].quantile(.5))
-        self.assertAlmostEqual(comparison_numeric['col_1']['quartile_1']['df2'], numerical_df_2['col_1'].quantile(.25))
-        self.assertEqual(comparison_numeric['col_1']['quartile_3']['df2'], numerical_df_2['col_1'].quantile(.75))
-        self.assertEqual(comparison_numeric['col_1']['median']['df2'], numerical_df_2['col_1'].quantile(.5))
+            explanation_string = report.explanation['cool_numbers']
+            formatted = explanation_string.replace('Metric: ', '').replace('with Diff: ', '').replace(' %', '')
+            formatted_list = re.split(' |\n', formatted)
+            self.assertCountEqual(formatted_list, ['std', '+0.67', ''])
 
-    def test_mean_std(self):
-        comparison_numeric = self.precalculation.process(self.store_numerical)['numerical_comparison']
+    def test_run_categorical(self):
+        with self.subTest("Test precalculation"):
+            report = self.check.run(self.store)
 
-        self.assertEqual(comparison_numeric['col_1']['mean']['df1'], 49.5)
-        self.assertEqual(comparison_numeric['col_2']['mean']['df1'], 24.5)
-        self.assertEqual(comparison_numeric['col_3']['mean']['df1'], 99.0)
-        self.assertEqual(comparison_numeric['col_1']['mean']['df2'], 50.5)
-        self.assertEqual(comparison_numeric['col_2']['mean']['df2'], 8)
-        self.assertEqual(comparison_numeric['col_3']['mean']['df2'], 74.5)
+        with self.subTest("Test shifted categorical columns"):
+            self.assertEqual(report.shifted_columns, ['shift'])
+            self.assertCountEqual(report.examined_columns, ['shift', 'no_shift'])
+            self.assertEqual(report.explanation['shift'], 'Attribute: A with Diff: 1.0\n')
 
-        self.assertAlmostEqual(comparison_numeric['col_1']['std']['df1'], 29.011, places=3)
-        self.assertAlmostEqual(comparison_numeric['col_2']['std']['df1'], 14.5035, places=3)
-        self.assertAlmostEqual(comparison_numeric['col_3']['std']['df1'], 58.0229, places=3)
-        self.assertAlmostEqual(comparison_numeric['col_1']['std']['df2'], 29.011, places=3)
-        self.assertTrue(math.isnan(comparison_numeric['col_2']['std']['df2']))
-        self.assertAlmostEqual(comparison_numeric['col_3']['std']['df2'], 14.5035, places=3)
+    def test_run_numerical(self):
+        with self.subTest("Test precalculation"):
+            report = self.check.run(self.store_num)
 
-    def test_uniqueness(self):
-        comparison_numeric = self.precalculation.process(self.store_numerical)['numerical_comparison']
+        with self.subTest('Test shifted numerical columns'):
+            self.assertEqual(report.shifted_columns, ['cool_numbers'])
+            self.assertCountEqual(report.examined_columns, ['cool_numbers'])
 
-        self.assertEqual(comparison_numeric['col_1']['uniqueness']['df1'], 1.0)
-        self.assertEqual(comparison_numeric['col_2']['uniqueness']['df1'], 0)
-        self.assertEqual(comparison_numeric['col_3']['uniqueness']['df1'], 1.0)
-        self.assertEqual(comparison_numeric['col_1']['uniqueness']['df2'], 1.0)
-        self.assertEqual(comparison_numeric['col_2']['uniqueness']['df2'], 1.0)
-        self.assertEqual(comparison_numeric['col_3']['uniqueness']['df2'], 0)
+        with self.subTest('Test explanations'):
+            explanation_string = report.explanation['cool_numbers']
+            formatted = explanation_string.replace('Metric: ', '').replace('with Diff: ', '').replace(' %', '')
+            formatted_list = re.split(' |\n', formatted)
+            self.assertCountEqual(formatted_list, ['mean', '+0.2', 'max', '+0.5', 'quartile_3', '+0.15', 'std',
+                                                   '+0.67', ''])
 
-    def test_num_distinct(self):
-        comparison_numeric = self.precalculation.process(self.store_numerical)['numerical_comparison']
+    def test_relative_metric_difference(self):
+        with self.subTest('Normal case'):
+            self.check.data = {'numerical_comparison': {'column': {'metric_name': {'df1': 10.0, 'df2': 5.0}}}}
+            self.assertEqual(self.check.relative_metric_difference('column', 'metric_name'), -.5)
 
-        self.assertEqual(comparison_numeric['col_1']['num_distinct']['df1'], 100.0)
-        self.assertEqual(comparison_numeric['col_2']['num_distinct']['df1'], 50.0)
-        self.assertEqual(comparison_numeric['col_3']['num_distinct']['df1'], 100.0)
-        self.assertEqual(comparison_numeric['col_1']['num_distinct']['df2'], 100.0)
-        self.assertEqual(comparison_numeric['col_2']['num_distinct']['df2'], 1.0)
-        self.assertEqual(comparison_numeric['col_3']['num_distinct']['df2'], 50.0)
+            self.check.data = {'numerical_comparison': {'column': {'metric_name': {'df1': 1.2, 'df2': 12.0}}}}
+            self.assertEqual(self.check.relative_metric_difference('column', 'metric_name'), 9.0)
 
-    def test_completeness(self):
-        comparison_numeric = self.precalculation.process(self.store_numerical)['numerical_comparison']
+        with self.subTest('Both values zero'):
+            self.check.data = {'numerical_comparison': {'column': {'metric_name': {'df1': 0, 'df2': 0}}}}
+            self.assertEqual(self.check.relative_metric_difference('column', 'metric_name'), 0)
 
-        self.assertEqual(comparison_numeric['col_1']['completeness']['df1'], 1.00)
-        self.assertEqual(comparison_numeric['col_2']['completeness']['df1'], 1.00)
-        self.assertEqual(comparison_numeric['col_3']['completeness']['df1'], 1.00)
-        self.assertEqual(comparison_numeric['col_1']['completeness']['df2'], 1.00)
-        self.assertEqual(comparison_numeric['col_2']['completeness']['df2'], 0.01)
-        self.assertEqual(comparison_numeric['col_3']['completeness']['df2'], 1.00)
+        with self.subTest('Value in df1 zero'):
+            self.check.data = {'numerical_comparison': {'column': {'metric_name': {'df1': 0, 'df2': 12.4}}}}
+            self.assertEqual(self.check.relative_metric_difference('column', 'metric_name'), 0)
 
-    def test_categorical_values(self):
-        comparison_categorical = self.precalculation.process(self.store_categorical)['categorical_comparison']
-        pp.pprint(comparison_categorical)
+    @mock.patch('shift_detector.checks.simple_check.plt')
+    def test_numerical_plots_work(self, mock_plt):
+        self.assertFalse(mock_plt.figure.called)
 
-        self.assertEqual(comparison_categorical[0]['blue']['df1'], 1/3)
-        self.assertEqual(comparison_categorical[0]['green']['df1'], 0.5)
-        self.assertEqual(comparison_categorical[0]['green']['df2'], 5/6)
-        self.assertEqual(comparison_categorical[0]['red']['df1'], 1/6)
-        self.assertEqual(comparison_categorical[0]['red']['df2'], 1/6)
+        report = self.check.run(self.store)
+        custom_plot_numerical = report.numerical_plot(DataFrame([1, 2, 3]), DataFrame([4, 5, 6]))
+        custom_plot_numerical()
+
+        self.assertTrue(mock_plt.figure.called)
+        self.assertTrue(mock_plt.figure().add_subplot.called)
+        self.assertTrue(mock_plt.show.called)
+
+    @mock.patch('shift_detector.checks.simple_check.plt')
+    def test_categorical_plots_work(self, mock_plt):
+        self.assertFalse(mock_plt.figure.called)
+
+        report = self.check.run(self.store)
+        custom_plot_categorical = report.categorical_plot([([1, 2, 3], [2, 4, 6], ['Heinz', 'Peter', 'Rudolf'],
+                                                            'A very important plot')])
+        custom_plot_categorical()
+
+        self.assertTrue(mock_plt.figure.called)
+        self.assertTrue(mock_plt.figure().add_subplot.called)
+        self.assertTrue(mock_plt.figure().show.called)
+
+
+
+
+
