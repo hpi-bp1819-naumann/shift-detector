@@ -35,6 +35,7 @@ class LdaCheck(Check):
                 if col not in store.column_names(ColumnType.text):
                     raise ValueError("Given column is not contained in detected text columns of the datasets: {}"
                                      .format(col))
+            col_names = self.cols
         else:
             col_names = store.column_names(ColumnType.text)
             self.cols = list(col_names)
