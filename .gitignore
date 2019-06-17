@@ -136,8 +136,9 @@ config.py
 train_ascii.csv
 _trial_temp/
 tests/_trial_temp-1/
+main.py
 
 # keras
 wordPredictionCheck_model_checkpoints
 
-main.py
+
