@@ -61,7 +61,7 @@ class LdaEmbedding(Precalculation):
             else:
                 raise ValueError("The supported libraries are sklearn, gensim and lda. Received: {}".format(lib))
 
-        if cols is not None:
+        if not cols:
             if isinstance(cols, list) and all(isinstance(col, str) for col in cols) or isinstance(cols, str):
                 self.cols = cols
             else:
@@ -99,20 +99,14 @@ class LdaEmbedding(Precalculation):
                                self.n_iter, self.random_state]))
 
     def process(self, store):
-        df1_texts, df2_texts = store[ColumnType.text]
-
-        if self.cols is None:
-            col_names = store.column_names(ColumnType.text)
-            self.cols = col_names
-        else:
-            if isinstance(self.cols, str):
-                if self.cols in df1_texts.columns:
-                    col_names = self.cols
-            else:
-                for col in self.cols:
-                    if col not in df1_texts.columns:
-                        raise ValueError("Given column is not contained in given datasets")
+        if isinstance(self.cols, str):
+            if self.cols in store.column_names(ColumnType.text):
                 col_names = self.cols
+        else:
+            for col in self.cols:
+                if col not in store.column_names(ColumnType.text):
+                    raise ValueError("Given column is not contained in given datasets")
+            col_names = self.cols
 
         topic_labels = ['topics ' + col for col in col_names]
 
