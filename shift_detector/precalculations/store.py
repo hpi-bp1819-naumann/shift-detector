@@ -36,9 +36,9 @@ class Store:
 
         self.__apply_custom_column_types(custom_column_types)
 
-        print("Numerical columns: {}".format(", ".join(self.column_names(ColumnType.numerical))))
-        print("Categorical columns: {}".format(", ".join(self.column_names(ColumnType.categorical))))
-        print("Text columns: {}".format(", ".join(self.column_names(ColumnType.text))))
+        print("Numerical columns: {}".format(", ".join([str(c) for c in self.column_names(ColumnType.numerical)])))
+        print("Categorical columns: {}".format(", ".join([str(c) for c in self.column_names(ColumnType.categorical)])))
+        print("Text columns: {}".format(", ".join([str(c) for c in self.column_names(ColumnType.text)])))
 
         self.splitted_dfs = {column_type: (self.df1[columns], self.df2[columns])
                              for column_type, columns in self.type_to_columns.items()}
