@@ -35,7 +35,6 @@ class SimpleCheck(Check):
         self.metrics_thresholds_percentage = threshold_names_values
 
     def run(self, store):
-        logger.info("Execute Simple Check")
         df1_numerical, df2_numerical = store[ColumnType.numerical]
         self.data = store[SimplePrecalculation()]
         numerical_report = self.numerical_report(df1_numerical, df2_numerical)

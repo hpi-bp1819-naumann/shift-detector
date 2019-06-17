@@ -1,4 +1,3 @@
-import logging as logger
 from collections.abc import Iterable
 from numbers import Number
 
@@ -31,7 +30,6 @@ class DistinctionCheck(Check):
         self.relative_threshold = float(relative_threshold)
 
     def run(self, store) -> Report:
-        logger.info("Execute Distinction Check")
         input_columns = self.columns
         if not input_columns:
             input_columns = store.column_names()

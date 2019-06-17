@@ -14,6 +14,8 @@ from shift_detector.precalculations.text_metadata import NumCharsMetadata, NumWo
 
 import tests.test_data as td
 
+import tests.test_data as td
+
 
 class TestTextMetadataStatisticalCheck(unittest.TestCase):
 
