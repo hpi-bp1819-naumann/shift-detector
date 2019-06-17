@@ -42,13 +42,16 @@ class Detector:
         self.check_reports = []
         self.store = Store(self.df1, self.df2, custom_column_types)
 
-        logger.info("Used columns: {}".format(', '.join(column_names(self.store.column_names()))))
+        print("Used columns: {}".format(', '.join(column_names(self.store.column_names()))))
 
-    def run(self, *checks):
+    def run(self, *checks, logger_level=logger.ERROR):
         """
         Run the Detector with the checks to run.
         :param checks: checks to run
+        :param logger_level
         """
+        logger.getLogger().setLevel(logger_level)
+
         if not checks:
             raise Exception("Please include checks)")
 
@@ -56,7 +59,11 @@ class Detector:
             class_names = map(lambda c: c.__class__.__name__, checks)
             raise Exception("All elements in checks should be a Check. Received: {}".format(', '.join(class_names)))
 
-        self.check_reports = [check.run(self.store) for check in checks]
+        check_reports = []
+        for check in checks:
+            print("Execute {}".format(check.__class__.__name__))
+            check_reports.append(check.run(self.store))
+        self.check_reports = check_reports
 
     def evaluate(self):
         """

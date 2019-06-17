@@ -1,5 +1,3 @@
-import logging as logger
-
 import pandas as pd
 from pandas import DataFrame
 
@@ -38,6 +36,10 @@ class Store:
 
         self.__apply_custom_column_types(custom_column_types)
 
+        print("Numerical columns: {}".format(", ".join(self.column_names(ColumnType.numerical))))
+        print("Categorical columns: {}".format(", ".join(self.column_names(ColumnType.categorical))))
+        print("Text columns: {}".format(", ".join(self.column_names(ColumnType.text))))
+
         self.splitted_dfs = {column_type: (self.df1[columns], self.df2[columns])
                              for column_type, columns in self.type_to_columns.items()}
         self.preprocessings = {}
@@ -50,10 +52,10 @@ class Store:
             raise Exception("Needed Preprocessing must be of type Precalculation or ColumnType")
         '''
         if needed_preprocessing in self.preprocessings:
-            logger.info("Use already existing Precalculation")
+            print("- Use already executed {}".format(needed_preprocessing.__class__.__name__))
             return self.preprocessings[needed_preprocessing]
 
-        logger.info("Execute new Precalculation")
+        print("- Execute {}".format(needed_preprocessing.__class__.__name__))
         preprocessing = needed_preprocessing.process(self)
         self.preprocessings[needed_preprocessing] = preprocessing
         return preprocessing
