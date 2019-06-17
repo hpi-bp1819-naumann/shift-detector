@@ -61,7 +61,7 @@ class LdaEmbedding(Precalculation):
             else:
                 raise ValueError("The supported libraries are sklearn, gensim and lda. Received: {}".format(lib))
 
-        if not cols:
+        if cols:
             if isinstance(cols, list) and all(isinstance(col, str) for col in cols) or isinstance(cols, str):
                 self.cols = cols
             else:
