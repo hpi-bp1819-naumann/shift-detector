@@ -1,9 +1,9 @@
 import os
-from typing import Tuple, List
+from typing import Tuple
 
 import numpy as np
 from gensim.models import FastText
-from keras.callbacks import ModelCheckpoint, EarlyStopping, Callback
+from keras.callbacks import ModelCheckpoint, EarlyStopping
 from keras.layers import Dense
 from keras.layers import LSTM
 from keras.models import Sequential
@@ -49,7 +49,7 @@ class WordPredictionPrecalculation(Precalculation):
             raise ValueError('Column {} does not exist or is no textual column. '
                              'Please pass one of [{}] instead.'.format(self.column, store.column_names(ColumnType.text)))
 
-        ft_model = FastText(size=self.ft_size, window=self.ft_window_size, min_count=1, workers=4)
+        ft_model = FastText(size=self.ft_size, window=self.ft_window_size, min_count=1, workers=1, seed=0)
         processed_df1, processed_df2 = store[TextEmbeddingPrecalculation(model=ft_model, agg=None)]
 
         df1_prediction_loss, df2_prediction_loss = self.get_prediction_losses(processed_df1, processed_df2, self.column)
