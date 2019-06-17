@@ -51,8 +51,8 @@ class LdaGensimTokenizer(Precalculation):
                 raise ValueError("Following given column is not contained in given datasets: {}".format(col))
         col_names = self.cols
 
-        processed1 = {}
-        processed2 = {}
+        processed1 = pd.DataFrame()
+        processed2 = pd.DataFrame()
 
         def make_usable_list(texts):
             """
@@ -75,4 +75,4 @@ class LdaGensimTokenizer(Precalculation):
             processed1[col] = make_usable_list(df1_texts[col])
             processed2[col] = make_usable_list(df2_texts[col])
 
-        return pd.DataFrame.from_dict(processed1), pd.DataFrame.from_dict(processed2)
+        return processed1, processed2
