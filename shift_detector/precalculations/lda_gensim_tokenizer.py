@@ -48,7 +48,8 @@ class LdaGensimTokenizer(Precalculation):
 
         for col in self.cols:
             if col not in store.column_names(ColumnType.text):
-                raise ValueError("Following given column is not contained in given datasets: {}".format(col))
+                raise ValueError("Given column is not contained in detected text columns of the datasets: {}"
+                                 .format(col))
         col_names = self.cols
 
         processed1 = pd.DataFrame()
