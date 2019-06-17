@@ -1,7 +1,8 @@
 import pandas as pd
 from pandas import DataFrame
 
-from shift_detector.utils.column_management import detect_column_types, ColumnType, CATEGORICAL_MAX_RELATIVE_CARDINALITY
+from shift_detector.utils.column_management import detect_column_types, ColumnType, \
+    CATEGORICAL_MAX_RELATIVE_CARDINALITY, column_names
 from shift_detector.utils.data_io import shared_column_names
 from shift_detector.utils.errors import InsufficientDataError
 
@@ -36,9 +37,9 @@ class Store:
 
         self.__apply_custom_column_types(custom_column_types)
 
-        print("Numerical columns: {}".format(", ".join([str(c) for c in self.column_names(ColumnType.numerical)])))
-        print("Categorical columns: {}".format(", ".join([str(c) for c in self.column_names(ColumnType.categorical)])))
-        print("Text columns: {}".format(", ".join([str(c) for c in self.column_names(ColumnType.text)])))
+        print("Numerical columns: {}".format(", ".join(column_names(self.column_names(ColumnType.numerical)))))
+        print("Categorical columns: {}".format(", ".join(column_names(self.column_names(ColumnType.categorical)))))
+        print("Text columns: {}".format(", ".join(column_names(self.column_names(ColumnType.text)))))
 
         self.splitted_dfs = {column_type: (self.df1[columns], self.df2[columns])
                              for column_type, columns in self.type_to_columns.items()}
