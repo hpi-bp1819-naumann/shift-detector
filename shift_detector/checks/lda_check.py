@@ -1,4 +1,3 @@
-import numpy as np
 from shift_detector.checks.check import Check, Report
 from shift_detector.precalculations.lda_embedding import LdaEmbedding
 from shift_detector.utils.column_management import ColumnType
@@ -9,6 +8,8 @@ class LdaCheck(Check):
 
     def __init__(self, significance=10, n_topics=20, n_iter=10, lib='sklearn', random_state=0,
                  cols=None, trained_model=None, stop_words='english', max_features=None):
+        # significance here is the difference between the percentages of each topic between both datasets,
+        # meaning a difference above 10% is significant
         self.significance = None
         if isinstance(significance, int) and significance > 0:
             self.significance = significance
@@ -24,21 +25,19 @@ class LdaCheck(Check):
         self.max_features = max_features
 
     def run(self, store) -> Report:
-        df1_texts, df2_texts = store[ColumnType.text]
-
         shifted_columns = set()
         explanation = {}
 
         if self.cols is None:
-            col_names = df1_texts.columns
+            col_names = store.column_names(ColumnType.text)
             self.cols = list(col_names)
         else:
             if isinstance(self.cols, str):
-                if self.cols in df1_texts.columns:
+                if self.cols in store.column_names(ColumnType.text):
                     col_names = self.cols
             else:
                 for col in self.cols:
-                    if col not in df1_texts.columns:
+                    if col not in store.column_names(ColumnType.text):
                         raise ValueError('Given column is not contained in given datasets')
                 col_names = self.cols
 
@@ -52,12 +51,12 @@ class LdaCheck(Check):
             count_topics2 = Counter(df2_embedded['topics ' + col])
 
             labels1_ordered, values1_ordered = zip(*sorted(count_topics1.items(), key=lambda kv: kv[0]))
-            values1_perc = [x * 100 / np.array(values1_ordered).sum() for x in values1_ordered]
+            values1_percentage = [x * 100 / sum(values1_ordered) for x in values1_ordered]
 
             labels2_ordered, values2_ordered = zip(*sorted(count_topics2.items(), key=lambda kv: kv[0]))
-            values2_perc = [x * 100 / np.array(values2_ordered).sum() for x in values2_ordered]
+            values2_percentage = [x * 100 / sum(values2_ordered) for x in values2_ordered]
 
-            for i, (v1, v2) in enumerate(zip(values1_perc, values2_perc)):
+            for i, (v1, v2) in enumerate(zip(values1_percentage, values2_percentage)):
                 # number of rounded digits is 1 per default
                 if abs(round(v1 - v2, 1)) >= self.significance:
                     shifted_columns.add(col)
