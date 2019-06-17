@@ -35,9 +35,7 @@ class CountVectorizer(Precalculation):
 
         if not cols:
             raise TypeError("You have to specify which columns you want to tokenize")
-        if isinstance(cols, str):
-            self.cols = [cols]
-        elif isinstance(cols, list) and all(isinstance(col, str) for col in cols):
+        if isinstance(cols, list) and all(isinstance(col, str) for col in cols):
             self.cols = cols
         else:
             raise TypeError("Cols has to be list of strings or a single string. Received: {}".format(type(cols)))
@@ -65,14 +63,13 @@ class CountVectorizer(Precalculation):
                 raise ValueError("Given column is not contained in given datasets")
         col_names = self.cols
 
-        dict_of_sparse_matrices1 = {}
-        dict_of_sparse_matrices2 = {}
+        dict_of_arrays1 = {}
+        dict_of_arrays2 = {}
 
         for col in col_names:
             count_vec = self.vectorizer
             count_vec = count_vec.fit(merged_texts[col])
-            dict_of_sparse_matrices1[col] = count_vec.transform(df1_texts[col]).A.astype(int)
-            # you can also leave the last part and you get a sparse matrix that is much more memory efficient
-            dict_of_sparse_matrices2[col] = count_vec.transform(df2_texts[col]).A.astype(int)
+            dict_of_arrays1[col] = count_vec.transform(df1_texts[col]).A.astype(int)
+            dict_of_arrays2[col] = count_vec.transform(df2_texts[col]).A.astype(int)
 
-        return dict_of_sparse_matrices1, dict_of_sparse_matrices2
+        return dict_of_arrays1, dict_of_arrays2

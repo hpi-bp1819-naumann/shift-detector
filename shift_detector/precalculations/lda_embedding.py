@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 from numbers import Number
 from sklearn.decomposition import LatentDirichletAllocation as LDA_skl
 from sklearn.feature_extraction.text import *
@@ -26,6 +25,8 @@ class LdaEmbedding(Precalculation):
         if n_topics != 'auto':
             # TODO implement feature to calculate optimal number of topics
             self.n_topics = n_topics
+        if not isinstance(n_topics, int):
+            raise TypeError("Number of topic has to be an integer. Received: {}".format(type(n_topics)))
         if n_topics < 2:
             raise ValueError("Number of topics has to be at least 2. Received: {}".format(n_topics))
 
@@ -61,11 +62,11 @@ class LdaEmbedding(Precalculation):
             else:
                 raise ValueError("The supported libraries are sklearn, gensim and lda. Received: {}".format(lib))
 
-        if cols is not None:
-            if isinstance(cols, list) and all(isinstance(col, str) for col in cols) or isinstance(cols, str):
+        if cols:
+            if isinstance(cols, list) and all(isinstance(col, str) for col in cols):
                 self.cols = cols
             else:
-                raise TypeError("Cols has to be list of strings or a single string. Received: {}".format(type(cols)))
+                raise TypeError("Cols has to be list of strings . Column {} is of type {}".format(cols, type(cols)))
         else:
             raise ValueError("You have to specify which columns you want to vectorize")
 
@@ -99,31 +100,25 @@ class LdaEmbedding(Precalculation):
                                self.n_iter, self.random_state]))
 
     def process(self, store):
-        df1_texts, df2_texts = store[ColumnType.text]
-
-        if self.cols is None:
-            col_names = store.column_names(ColumnType.text)
-            self.cols = col_names
-        else:
-            if isinstance(self.cols, str):
-                if self.cols in df1_texts.columns:
-                    col_names = self.cols
-            else:
-                for col in self.cols:
-                    if col not in df1_texts.columns:
-                        raise ValueError("Given column is not contained in given datasets")
+        if isinstance(self.cols, str):
+            if self.cols in store.column_names(ColumnType.text):
                 col_names = self.cols
+        else:
+            for col in self.cols:
+                if col not in store.column_names(ColumnType.text):
+                    raise ValueError("Given column is not contained in given datasets")
+            col_names = self.cols
 
         topic_labels = ['topics ' + col for col in col_names]
 
-        transformed1 = {}
-        transformed2 = {}
+        transformed1 = pd.DataFrame()
+        transformed2 = pd.DataFrame()
 
         if self.lib == 'gensim':
             tokenized1, tokenized2 = store[LdaGensimTokenizer(stop_words=self.stop_words, cols=self.cols)]
             tokenized_merged = pd.concat([tokenized1, tokenized2], ignore_index=True)
 
-            for col in col_names:
+            for i, col in enumerate(col_names):
                 gensim_dict_merged = Dictionary(tokenized_merged[col])
                 gensim_dict1 = Dictionary(tokenized1[col])
                 gensim_dict2 = Dictionary(tokenized2[col])
@@ -138,27 +133,22 @@ class LdaEmbedding(Precalculation):
                     self.trained_model = model
 
                 # Always takes the topic with the highest probability as the dominant topic
-                transformed1[col] = [arr1.argmax() for arr1 in self.trained_model.transform(corpus1)]
-                transformed2[col] = [arr2.argmax() for arr2 in self.trained_model.transform(corpus2)]
+                transformed1[topic_labels[i]] = [arr1.argmax() for arr1 in self.trained_model.transform(corpus1)]
+                transformed2[topic_labels[i]] = [arr2.argmax() for arr2 in self.trained_model.transform(corpus2)]
 
         else:
             vectorized1, vectorized2 = store[CountVectorizer(stop_words=self.stop_words, max_features=self.max_features,
                                                              cols=self.cols)]
             vectorized_merged = dict(vectorized1, **vectorized2)
 
-            for col in col_names:
+            for i, col in enumerate(col_names):
                 if not self.trained_model:
                     model = copy(self.model)
                     model = model.fit(vectorized_merged[col])
                     self.trained_model = model
 
                 # Always takes the topic with the highest probability as the dominant topic
-                transformed1[col] = [arr1.argmax() for arr1 in self.trained_model.transform(vectorized1[col])]
-                transformed2[col] = [arr2.argmax() for arr2 in self.trained_model.transform(vectorized2[col])]
+                transformed1[topic_labels[i]] = [arr1.argmax() for arr1 in self.trained_model.transform(vectorized1[col])]
+                transformed2[topic_labels[i]] = [arr2.argmax() for arr2 in self.trained_model.transform(vectorized2[col])]
 
-        topics1 = pd.DataFrame(transformed1)
-        topics1.columns = topic_labels
-        topics2 = pd.DataFrame(transformed2)
-        topics2.columns = topic_labels
-
-        return topics1, topics2
+        return transformed1, transformed2

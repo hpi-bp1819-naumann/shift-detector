@@ -27,9 +27,7 @@ class LdaGensimTokenizer(Precalculation):
 
         if not cols:
             raise TypeError("You have to specify which columns you want to tokenize")
-        if isinstance(cols, str):
-            self.cols = [cols]
-        elif isinstance(cols, list) and all(isinstance(col, str) for col in cols):
+        if isinstance(cols, list) and all(isinstance(col, str) for col in cols):
             self.cols = cols
         else:
             raise TypeError("Cols has to be list of strings or a single string. Received: {}".format(type(cols)))
@@ -53,10 +51,15 @@ class LdaGensimTokenizer(Precalculation):
                 raise ValueError("Following given column is not contained in given datasets: {}".format(col))
         col_names = self.cols
 
-        processed1 = {}
-        processed2 = {}
+        processed1 = pd.DataFrame()
+        processed2 = pd.DataFrame()
 
         def make_usable_list(texts):
+            """
+            Make all words lowercase, remove stopwords, remove accents,
+            remove words that are shorter than 2 chars or longer than 15 chars or that start with '_',
+            convert words to unicode
+            """
             tokenized =[]
             for entry in texts:
                 wordlist = []
@@ -72,4 +75,4 @@ class LdaGensimTokenizer(Precalculation):
             processed1[col] = make_usable_list(df1_texts[col])
             processed2[col] = make_usable_list(df2_texts[col])
 
-        return pd.DataFrame.from_dict(processed1), pd.DataFrame.from_dict(processed2)
+        return processed1, processed2
