@@ -25,7 +25,7 @@ class LdaEmbedding(Precalculation):
         if n_topics != 'auto':
             # TODO implement feature to calculate optimal number of topics
             self.n_topics = n_topics
-        if isinstance(n_topics, int):
+        if not isinstance(n_topics, int):
             raise TypeError("Number of topic has to be an integer. Received: {}".format(type(n_topics)))
         if n_topics < 2:
             raise ValueError("Number of topics has to be at least 2. Received: {}".format(n_topics))
