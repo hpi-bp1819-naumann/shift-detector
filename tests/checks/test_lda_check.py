@@ -13,8 +13,6 @@ class TestLdaCheck(unittest.TestCase):
         self.lda_report3 = LdaCheck(cols=['text'], significance=10, n_topics=2, n_iter=1, random_state=2)
         self.lda_report4 = LdaCheck(cols=['abcd'], significance=10, n_topics=2, n_iter=1, random_state=2)
 
-
-
         self.poems = [
             'Tell me not, in mournful numbers,\nLife is but an empty dream!\nFor the soul is dead that slumbers,\nAnd things are not what they seem.',
             'Life is real! Life is earnest!\nAnd the grave is not its goal;\nDust thou art, to dust returnest,\nWas not spoken of the soul.',
@@ -173,14 +171,17 @@ class TestLdaCheck(unittest.TestCase):
         self.assertRaises(ValueError, lambda: LdaCheck(significance=0))
 
     def test_run(self):
-        report = self.lda_report1.run(self.store)
+        with self.subTest("Test successful run without specifying the 'cols' parameter"):
+            report = self.lda_report1.run(self.store)
 
-        self.assertTrue(math.isclose(report.explanation['Topic 0 diff in column text'], 39.2))
-        self.assertTrue(math.isclose(report.explanation['Topic 1 diff in column text'], -39.2))
+            self.assertTrue(math.isclose(report.explanation['Topic 0 diff in column text'], 39.2))
+            self.assertTrue(math.isclose(report.explanation['Topic 1 diff in column text'], -39.2))
 
-        report = self.lda_report3.run(self.store)
+        with self.subTest("Test successful run with specifying the 'cols' parameter"):
+            report = self.lda_report3.run(self.store)
 
-        self.assertTrue(math.isclose(report.explanation['Topic 0 diff in column text'], 39.2))
-        self.assertTrue(math.isclose(report.explanation['Topic 1 diff in column text'], -39.2))
+            self.assertTrue(math.isclose(report.explanation['Topic 0 diff in column text'], 39.2))
+            self.assertTrue(math.isclose(report.explanation['Topic 1 diff in column text'], -39.2))
 
-        self.assertRaises(ValueError, lambda: self.lda_report4.run(self.store))
+        with self.subTest("Test unsuccessful run with specifying a wrong 'cols' parameter"):
+            self.assertRaises(ValueError, lambda: self.lda_report4.run(self.store))

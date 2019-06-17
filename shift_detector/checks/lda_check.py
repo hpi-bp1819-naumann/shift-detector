@@ -8,18 +8,20 @@ class LdaCheck(Check):
 
     def __init__(self, significance=10, n_topics=20, n_iter=10, lib='sklearn', random_state=0,
                  cols=None, trained_model=None, stop_words='english', max_features=None):
-        # significance here is the difference between the percentages of each topic between both datasets,
-        # meaning a difference above 10% is significant
-        self.significance = None
-        if isinstance(significance, int) and significance > 0:
-            self.significance = significance
-        else:
-            raise ValueError('Please enter a positive int as significance')
+        """
+        significance here is the difference between the percentages of each topic between both datasets,
+        meaning a difference above 10% is significant
+        """
+        if not isinstance(significance, int):
+            raise TypeError("Significance has to be an integer. Received: {}".format(type(significance)))
+        if not significance > 0 or not significance < 100:
+            raise ValueError("Significance has to be between 0% and 100%. Recived: {}".format(significance))
+        self.significance = significance
         self.n_topics = n_topics
         self.n_iter = n_iter
         self.lib = lib
         self.random_state = random_state
-        self.cols = cols
+        self.cols = cols # setting cols to None is equal to setting it to a list with all text columns
         self.trained_model = trained_model
         self.stop_words = stop_words
         self.max_features = max_features
@@ -32,14 +34,10 @@ class LdaCheck(Check):
             col_names = store.column_names(ColumnType.text)
             self.cols = list(col_names)
         else:
-            if isinstance(self.cols, str):
-                if self.cols in store.column_names(ColumnType.text):
-                    col_names = self.cols
-            else:
-                for col in self.cols:
-                    if col not in store.column_names(ColumnType.text):
-                        raise ValueError('Given column is not contained in given datasets')
-                col_names = self.cols
+            for col in self.cols:
+                if col not in store.column_names(ColumnType.text):
+                    raise ValueError("Given column is not contained in given datasets: {}".format(col))
+            col_names = self.cols
 
         df1_embedded, df2_embedded = store[LdaEmbedding(n_topics=self.n_topics, n_iter=self.n_iter, lib=self.lib,
                                                         random_state=self.random_state, cols=self.cols,
