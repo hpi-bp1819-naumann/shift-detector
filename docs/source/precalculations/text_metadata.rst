@@ -6,7 +6,7 @@ Text Metadata Precalculation
 Description
 -----------
 
-This precalculation computes metadata about a text.
+This precalculation computes metadata about a text. 
 Since many checks cannot work with textual columns, this precalculation is used to numerize and categorize the texts.
 It generates new columns with data about the textual column, such as:
 
@@ -21,13 +21,16 @@ UnicodeCategoriesMetadata
     What categories exist can be looked up here: https://www.fileformat.info/info/unicode/category/index.htm
     Example:
         input: 'Front-line leading edge website'
+        
         output: 'Ll, Zs, Lu, Pd'
 
 UnicodeBlocksMetadata
     Returns a string, containing the unicode blocks of the characters in the text, comma seperated, sorted descending by their frequency.
     What blocks exist can be looked up here: https://www.fileformat.info/info/unicode/block/index.htm
+    
     Example:
         input: 'Front-line leading edge website'
+        
         output: 'Basic Latin'
 
 NumWordsMetadata
@@ -51,14 +54,22 @@ StopwordRatioMetadata
 DelimiterTypeMetadata
     Returns a string, containing the delimiter type in the text.
     This are the possible delimiter types:
-        'HTML' : text contains at least one html tag, such as break-tags <br/> or paragraph tags <p> in any variation.
-        'newline' : text contains at least one'\n' character and does not contain any of the above delimiters.
+        'HTML' : text contains at least one HTML tag, such as break-tags <br/> or paragraph tags <p> in any variation.
+
+        'newline' : text contains at least one '\\n' character and does not contain any of the above delimiters.
+
         'sentence' : text contains at least one of these punctuations: '.' '!' '?' and does not contain any of the above delimiters.
+
         'semicolon' : text contains at least one semicolon ';' and does not contain any of the above delimiters.
+
         'comma' : text contains at least one comma ',' and does not contain any of the above delimiters.
+
         'dash' : text contains at least one dash of any kind and does not contain any of the above delimiters.
-        'tab' : text contains at least one '\t' characters and does not contain any of the above delimiters.
-        'whitespace' : text contains at least one whitespace '\s' character and does not contain any of the above delimiters.
+
+        'tab' : text contains at least one '\\t' characters and does not contain any of the above delimiters.
+
+        'whitespace' : text contains at least one whitespace '\\s' character and does not contain any of the above delimiters.
+
         'no delimiter' : text does not contain any of the above delimiters.
 
 
@@ -67,10 +78,12 @@ NumPartsMetadata
 
 LanguagePerParagraph
     Returns a string, containing the languages of the parts in the text, comma seperated, sorted descending by their frequency.
-    text is splitted into parts either by html <br/> tags or, if there are no html tags, by newlines.
+    text is splitted into parts either by HTML <br/> tags or, if there are no html tags, by newlines.
     Language detection by  https://github.com/Mimino666/langdetect
+    
     Example:
-        input: 'Dieser Text ist zum Teil deutsch. \n Part of this text is in english. \n This is an example.'
+        input: 'Dieser Text ist zum Teil deutsch. \\n Part of this text is in english. \\n This is an example.'
+        
         output: 'en, de'
 
 LanguageMetadata
@@ -84,6 +97,8 @@ ComplexityMetadata
 PartOfSpeechMetadata
     Returns a string, containing the part of speech tags in the text, comma seperated, sorted descending by their frequency.
     Uses the part of speech tagger by nltk. Only working for english language.
+    
     Example:
         input: 'This is a normal sentence. This is for testing.'
+        
         output: 'DET, VERB, ., ADJ, ADP, NOUN'
