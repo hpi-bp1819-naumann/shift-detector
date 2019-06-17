@@ -28,8 +28,8 @@ class NumericalStatisticalCheck(SimpleStatisticalCheck):
     def cumulative_hist_figure(column, df1, df2, bins=100):
         cumsum1, bin_edges, _ = plt.hist(df1[column], bins=bins, align='right', color='cornflowerblue', cumulative=True,
                                          histtype='step')
-        cumsum2, _, _ = plt.hist(df2[column], bins=bin_edges, align='right', alpha=0.5, color='seagreen', cumulative=True,
-                                 histtype='step')
+        cumsum2, _, _ = plt.hist(df2[column], bins=bin_edges, align='right', alpha=0.5, color='seagreen',
+                                 cumulative=True, histtype='step')
         distances = abs(cumsum1 - cumsum2)
         max_idx = list(distances).index(max(distances))
         max_d = max(distances)

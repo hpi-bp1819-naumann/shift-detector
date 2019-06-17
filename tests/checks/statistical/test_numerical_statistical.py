@@ -116,20 +116,13 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
                                              None]) as mock_hist:
             NumericalStatisticalCheck.cumulative_hist_figure('meaningful_numbers',
                                                              self.df1_significant, self.df2_significant, bins=3)
-        self.assertTrue(mock_hist.called)  # replacement for 3.5
+        self.assertTrue(mock_hist.called)
         self.assertTrue(mock_plt.plot.called)
         self.assertTrue(mock_plt.legend.called)
         self.assertTrue(mock_plt.title.called)
         self.assertTrue(mock_plt.xlabel.called)
         self.assertTrue(mock_plt.ylabel.called)
         self.assertTrue(mock_plt.show.called)
-        # mock_hist.assert_called()
-        # mock_plt.plot.assert_called_once()
-        # mock_plt.legend.assert_called_once()
-        # mock_plt.title.assert_called_once_with('meaningful_numbers (Cumulative Distribution)', fontsize='x-large')
-        # mock_plt.xlabel.assert_called_once_with('column value', fontsize='medium')
-        # mock_plt.ylabel.assert_called_once_with('number of rows', fontsize='medium')
-        # mock_plt.show.assert_called_once()
 
     @mock.patch('shift_detector.checks.statistical_checks.numerical_statistical_check.plt')
     def test_overlayed_hist_figure_looks_right(self, mock_plt):
@@ -138,16 +131,10 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
                                              np.array([0, 1, 2, 3]),
                                              None]) as mock_hist:
             NumericalStatisticalCheck.overlayed_hist_figure('meaningful_numbers',
-                                                             self.df1_significant, self.df2_significant, bins=3)
-        self.assertTrue(mock_hist.called)  # replacement for 3.5
+                                                            self.df1_significant, self.df2_significant, bins=3)
+        self.assertTrue(mock_hist.called)
         self.assertTrue(mock_plt.legend.called)
         self.assertTrue(mock_plt.title.called)
         self.assertTrue(mock_plt.xlabel.called)
         self.assertTrue(mock_plt.ylabel.called)
         self.assertTrue(mock_plt.show.called)
-        # mock_hist.assert_called()
-        # mock_plt.legend.assert_called_once()
-        # mock_plt.title.assert_called_once_with('meaningful_numbers (Histogram)', fontsize='x-large')
-        # mock_plt.xlabel.assert_called_once_with('column value', fontsize='medium')
-        # mock_plt.ylabel.assert_called_once_with('number of rows', fontsize='medium')
-        # mock_plt.show.assert_called_once()

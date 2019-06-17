@@ -1,10 +1,8 @@
 import pandas as pd
 
 from shift_detector.checks.check import Report
-from shift_detector.checks.statistical_checks.categorical_statistical_check import chi2_test, \
-    CategoricalStatisticalCheck
-from shift_detector.checks.statistical_checks.numerical_statistical_check import kolmogorov_smirnov_test, \
-    NumericalStatisticalCheck
+from shift_detector.checks.statistical_checks.categorical_statistical_check import CategoricalStatisticalCheck
+from shift_detector.checks.statistical_checks.numerical_statistical_check import NumericalStatisticalCheck
 from shift_detector.checks.statistical_checks.statistical_check import StatisticalCheck
 from shift_detector.precalculations.text_metadata import TextMetadata
 from shift_detector.utils.column_management import ColumnType

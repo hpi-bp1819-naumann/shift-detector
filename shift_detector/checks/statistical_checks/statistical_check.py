@@ -77,10 +77,13 @@ class SimpleStatisticalCheck(StatisticalCheck):
         """
         explanations = {}
         for column in self.significant_columns(pvalues):
-            explanations[column] = 'The probability for equal distribution of the column ' + str(column) + \
-                                  ' in both datasets is p = ' + str(pvalues[column]) + ', which is lower than the' \
-                                  'specified significance level of alpha = ' + str(self.significance) + '. The ' \
-                                  'statistical test performed was ' + self.statistical_test_name() + '.'
+            explanations[column] = '- probability for equal distribution p = {pvalue}\n' \
+                                   '- specified significance level alpha = {significance}\n' \
+                                   '- statistical test performed: {test_name}'.format(
+                                        pvalue=str(pvalues[column]),
+                                        significance=str(self.significance),
+                                        test_name=self.statistical_test_name()
+                                    )
         return explanations
 
     @staticmethod
