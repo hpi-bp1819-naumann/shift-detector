@@ -27,9 +27,7 @@ class LdaGensimTokenizer(Precalculation):
 
         if not cols:
             raise TypeError("You have to specify which columns you want to tokenize")
-        if isinstance(cols, str):
-            self.cols = [cols]
-        elif isinstance(cols, list) and all(isinstance(col, str) for col in cols):
+        if isinstance(cols, list) and all(isinstance(col, str) for col in cols):
             self.cols = cols
         else:
             raise TypeError("Cols has to be list of strings or a single string. Received: {}".format(type(cols)))
