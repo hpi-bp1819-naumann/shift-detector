@@ -65,13 +65,13 @@ class CountVectorizer(Precalculation):
                 raise ValueError("Given column is not contained in given datasets")
         col_names = self.cols
 
-        dict_of_sparse_matrices1 = {}
-        dict_of_sparse_matrices2 = {}
+        dict_of_arrays1 = {}
+        dict_of_arrays2 = {}
 
         for col in col_names:
             count_vec = self.vectorizer
             count_vec = count_vec.fit(merged_texts[col])
-            dict_of_sparse_matrices1[col] = count_vec.transform(df1_texts[col]).A.astype(int)
-            dict_of_sparse_matrices2[col] = count_vec.transform(df2_texts[col]).A.astype(int)
+            dict_of_arrays1[col] = count_vec.transform(df1_texts[col]).A.astype(int)
+            dict_of_arrays2[col] = count_vec.transform(df2_texts[col]).A.astype(int)
 
-        return dict_of_sparse_matrices1, dict_of_sparse_matrices2
+        return dict_of_arrays1, dict_of_arrays2

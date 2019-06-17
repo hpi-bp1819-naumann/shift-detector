@@ -57,6 +57,11 @@ class LdaGensimTokenizer(Precalculation):
         processed2 = {}
 
         def make_usable_list(texts):
+            """
+            Make all words lowercase, remove stopwords, remove accents,
+            remove words that are shorter than 2 chars or longer than 15 chars or that start with '_',
+            convert words to unicode
+            """
             tokenized =[]
             for entry in texts:
                 wordlist = []
