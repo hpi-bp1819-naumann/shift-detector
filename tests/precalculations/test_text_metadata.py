@@ -14,10 +14,8 @@ import tests.test_data as td
 class TestTextMetadataPrecalculations(unittest.TestCase):
 
     def setUp(self):
-        poems = td.poems
-        phrases = td.phrases
-        df1 = pd.DataFrame.from_dict({'text': poems})
-        df2 = pd.DataFrame.from_dict({'text': phrases})
+        df1 = pd.DataFrame.from_dict({'text': td.poems})
+        df2 = pd.DataFrame.from_dict({'text': td.phrases})
         self.store = Store(df1, df2)
 
     def test_num_chars(self):
@@ -157,218 +155,176 @@ class TestTextMetadataPrecalculations(unittest.TestCase):
 
 class TestTextMetadataFunctions(unittest.TestCase):
 
+    def setUp(self):
+        self.empty_string = ""
+        self.punctuation_string = "., \t \n !`"
+        self.english_string = "This is a normal sentence. This is for testing."
+        self.lower_string = "justlowerletters"
+        self.upper_string = "ALL UPPER CASE LETTERS"
+        self.unicode_string = "\n \u0600 \uF8FF \uDB80 Hi \u02B7 \u0C99 \u1F8D \u094A \uA670 ∑ ´ 42 \u2169 " \
+                              "‚·°‡ﬁ›‹€⁄¡™£¢∞§¶•ªº‘«»æ…ÆÚ˘¯≤≤≥ ,;' "
+        self.german_string = "Dies ist ein einfacher Satz."
+        self.html_string = "the text is well written. <p> some other very good text < br/ > "\
+                           "Aber es gibt auch deutschen Text"
+        self.comma_string = "some text, some other text -- more text."
+        self.whitespace_string = "some text some other text more text"
+        self.html_sentence_string = "some text <p> some other text. more text."
+        self.sentence_other_string = "some text, some other text. more text."
+        self.html_sentence_other_string = "some text -- some. other text <br> more text."
+        self.multiple_languages_string = "Dieser Text ist zum Teil deutsch. \n Part of this text is in english. \n "\
+                                         "there actually is some french coming. \n Ce n'est pas anglais. \n "\
+                                         "No puedo hablar español. \n Beberapa bahasa untuk diuji."
+        self.incorrect_english_string = "Thhis is a nirnal sentense. Lanquage detecction is esay."
+
+        self.empty_array = []
+        self.distinct_words_array = ['this', 'are', 'all', 'different', 'words']
+        self.same_words_array = ['same', 'same', 'same', 'same']
+        self.mixed_words_array = ['there', 'are', 'doubled', 'words', 'and', 'there', 'are', 'distinct', 'words']
+        self.english_array = ['this', 'is', 'a', 'correct', 'sentence']
+        self.incorrect_english_array = ['thiis', 'is', 'an', 'incozyzyrrect', 'sentence']
+        self.no_stopwords_array = ['computer', 'calculates', 'math']
+        self.only_stopwords_array = ['the', 'and', 'is', 'i', 'am']
+        self.french_array = ['demain', 'dès', 'l’aube', 'à', 'l’heure', 'où', 'blanchit', 'la', 'campagne', 'je',
+                             'partirai', 'vois', 'tu', 'je', 'sais', 'que', 'tu', 'm’attends', 'j’irai', 'par', 'la',
+                             'forêt', 'j’irai', 'par', 'la', 'montagne', 'je', 'ne', 'puis', 'demeurer', 'loin', 'de',
+                             'toi', 'plus', 'longtemps']
+        self.unsupported_language_array = ['aqoonyahanada', 'caalamku', 'waxay', 'aad', 'ugu', 'murmaan', 'sidii',
+                                           'luuqadaha', 'aduunku', 'ku', 'bilaabmeem']
+
+        self.empty_dict = {}
+        self.many_entries_dict = {'a': 2, 'b': 5, 'c': 3, 'f': 5, 'd': 1, 'e': 5}
+        self.one_entry_dict = {'a': 100}
+
     def test_dictionary_to_sorted_string(self):
-        many = {'a': 2, 'b': 5, 'c': 3, 'f': 5, 'd': 1, 'e': 5}
-        one = {'a': 100}
-        empty = {}
-        self.assertEqual(TmUtils.dictionary_to_sorted_string(many), "b, e, f, c, a, d")
-        self.assertEqual(TmUtils.dictionary_to_sorted_string(one), "a")
-        self.assertEqual(TmUtils.dictionary_to_sorted_string(empty), "")
+        self.assertEqual(TmUtils.dictionary_to_sorted_string(self.many_entries_dict), "b, e, f, c, a, d")
+        self.assertEqual(TmUtils.dictionary_to_sorted_string(self.one_entry_dict), "a")
+        self.assertEqual(TmUtils.dictionary_to_sorted_string(self.empty_dict), "")
 
     def test_num_chars(self):
-        normal = "normaler Text"
-        unicodes = "\u6667 is one char"
-        punctuation = "., < \t \n !`"
-        empty = ""
         num_chars = NumCharsMetadata().metadata_function
-        self.assertEqual(num_chars(normal), 13)
-        self.assertEqual(num_chars(unicodes), 13)
-        self.assertEqual(num_chars(punctuation), 11)
-        self.assertEqual(num_chars(empty), 0)
+        self.assertEqual(num_chars(self.english_string), 47)
+        self.assertEqual(num_chars(self.unicode_string), 66)
+        self.assertEqual(num_chars(self.punctuation_string), 9)
+        self.assertEqual(num_chars(self.empty_string), 0)
 
     def test_ratio_upper(self):
-        lower = "no upper case letters"
-        upper = "ALL UPPER CASE LETTERS"
-        mixed1 = "FifTY fIFty"
-        mixed2 = "Tre"
-        empty = ""
         ratio_upper = RatioUppercaseLettersMetadata().metadata_function
-        self.assertEqual(ratio_upper(lower), 0.00)
-        self.assertEqual(ratio_upper(upper), 1.00)
-        self.assertEqual(ratio_upper(mixed1), .50)
-        self.assertAlmostEqual(ratio_upper(mixed2), 0.3333333)
-        self.assertEqual(ratio_upper(empty), 0.00)
+        self.assertEqual(ratio_upper(self.lower_string), 0.00)
+        self.assertEqual(ratio_upper(self.upper_string), 1.00)
+        self.assertAlmostEqual(ratio_upper(self.english_string), 0.05405405)
+        self.assertEqual(ratio_upper(self.empty_string), 0.00)
 
     def test_unicode_category(self):
-        lower = "justlowerletters"
-        different = "\n \u0600 \uF8FF \uDB80 Hi \u02B7 \u0C99 \u1F8D \u094A \uA670 ∑ ´ 42 \u2169 " \
-                    "‚·°‡ﬁ›‹€⁄¡™£¢∞§¶•ªº‘«»æ…ÆÚ˘¯≤≤≥ ,;' "
-        empty = ""
         unicode_category_histogram = UnicodeCategoriesMetadata().unicode_category_histogram
-        self.assertEqual(unicode_category_histogram(lower), {'Ll': 16})
-        self.assertEqual(unicode_category_histogram(different), {'Cc': 1, 'Zs': 16, 'Cf': 1, 'Co': 1, 'Cs': 1, 'Lu': 3,
-                                                                 'Ll': 3, 'Lm': 1, 'Lo': 3, 'Lt': 1, 'Mc': 1, 'Me': 1,
-                                                                 'Sm': 6, 'Sk': 3, 'Nd': 2, 'Nl': 1, 'Ps': 1, 'Po': 10,
-                                                                 'So': 2, 'Pf': 2, 'Pi': 3, 'Sc': 3})
-        self.assertEqual(unicode_category_histogram(empty), {})
+        self.assertEqual(unicode_category_histogram(self.lower_string), {'Ll': 16})
+        self.assertEqual(unicode_category_histogram(self.unicode_string), {'Cc': 1, 'Zs': 16, 'Cf': 1, 'Co': 1, 'Cs': 1,
+                                                                           'Lu': 3, 'Ll': 3, 'Lm': 1, 'Lo': 3, 'Lt': 1,
+                                                                           'Nl': 1, 'Ps': 1, 'Po': 10, 'Mc': 1, 'Me': 1,
+                                                                           'Sm': 6, 'Sk': 3, 'Nd': 2, 'So': 2, 'Pf': 2,
+                                                                           'Pi': 3, 'Sc': 3})
+        self.assertEqual(unicode_category_histogram(self.empty_string), {})
 
     def test_unicode_block(self):
         latin = "Latin Letters! *with punctuation,!./ and numbers 983"
-        different = "\n \u0600 \uF8FF \uDB80 Hi \u02B7 \u0C99 \u1F8D \u094A \uA670 ∑ ´ 42 \u2169 " \
-                    "‚·°‡ﬁ›‹€⁄¡™£¢∞§¶•ªº‘«»æ…ÆÚ˘¯≤≤≥ ,;' "
-        empty = ""
         unicode_block_histogram = UnicodeBlocksMetadata().unicode_block_histogram
         self.assertEqual(unicode_block_histogram(latin), {'Basic Latin': 52})
-        self.assertEqual(unicode_block_histogram(different), {'Basic Latin': 24, 'Arabic': 1, 'Private Use Area': 1,
-                                                              'High Private Use Surrogates': 1,
-                                                              'Spacing Modifier Letters': 2, 'Kannada': 1,
-                                                              'Greek Extended': 1, 'Devanagari': 1,
-                                                              'Cyrillic Extended-B': 1, 'Mathematical Operators': 5,
-                                                              'Latin-1 Supplement': 16, 'Number Forms': 1,
-                                                              'General Punctuation': 8,
-                                                              'Alphabetic Presentation Forms': 1,
-                                                              'Currency Symbols': 1, 'Letterlike Symbols': 1})
-        self.assertEqual(unicode_block_histogram(empty), {})
+        self.assertEqual(unicode_block_histogram(self.unicode_string), {'Basic Latin': 24, 'Arabic': 1,
+                                                                        'Private Use Area': 1,
+                                                                        'High Private Use Surrogates': 1,
+                                                                        'Spacing Modifier Letters': 2, 'Kannada': 1,
+                                                                        'Greek Extended': 1, 'Devanagari': 1,
+                                                                        'Cyrillic Extended-B': 1,
+                                                                        'Mathematical Operators': 5,
+                                                                        'Latin-1 Supplement': 16, 'Number Forms': 1,
+                                                                        'General Punctuation': 8,
+                                                                        'Alphabetic Presentation Forms': 1,
+                                                                        'Currency Symbols': 1, 'Letterlike Symbols': 1})
+        self.assertEqual(unicode_block_histogram(self.empty_string), {})
 
     def test_num_words(self):
-        distinct = ['this', 'are', 'all', 'different', 'words']
-        same = ['same', 'same', 'same', 'same']
-        empty = []
         num_words = NumWordsMetadata().metadata_function
-        self.assertEqual(num_words(distinct), 5)
-        self.assertEqual(num_words(same), 4)
-        self.assertEqual(num_words(empty), 0)
+        self.assertEqual(num_words(self.distinct_words_array), 5)
+        self.assertEqual(num_words(self.same_words_array), 4)
+        self.assertEqual(num_words(self.empty_array), 0)
 
     def test_distinct_words_ratio(self):
-        distinct = ['this', 'are', 'all', 'different', 'words']
-        same = ['same', 'same', 'same', 'same']
-        mixed = ['there', 'are', 'doubled', 'words', 'and', 'there', 'are', 'distinct', 'words']
-        capitalLetters = ['Capital', 'letters', 'matter', 'Matter']
-        empty = []
         distinct_words_ratio = DistinctWordsRatioMetadata().metadata_function
-        self.assertEqual(distinct_words_ratio(distinct), 1.0)
-        self.assertEqual(distinct_words_ratio(same), 0.25)
-        self.assertAlmostEqual(distinct_words_ratio(mixed), 0.66666666)
-        self.assertEqual(distinct_words_ratio(capitalLetters), 1.0)
-        self.assertEqual(distinct_words_ratio(empty), 0.0)
+        self.assertEqual(distinct_words_ratio(self.distinct_words_array), 1.0)
+        self.assertEqual(distinct_words_ratio(self.same_words_array), 0.25)
+        self.assertAlmostEqual(distinct_words_ratio(self.mixed_words_array), 0.66666666)
+        self.assertEqual(distinct_words_ratio(self.empty_array), 0.0)
 
     def test_unique_words(self):
-        distinct = ['this', 'are', 'all', 'different', 'words']
-        same = ['same', 'same', 'same', 'same']
-        mixed = ['there', 'are', 'doubled', 'words', 'and', 'there', 'are', 'distinct', 'words']
-        capitalLetters = ['Capital', 'letters', 'letters', 'matter', 'Matter']
-        empty = []
         unique_words_ratio = UniqueWordsRatioMetadata().metadata_function
-        self.assertEqual(unique_words_ratio(distinct), 1.0)
-        self.assertEqual(unique_words_ratio(same), 0.0)
-        self.assertAlmostEqual(unique_words_ratio(mixed), 0.3333333)
-        self.assertEqual(unique_words_ratio(capitalLetters), 0.6)
-        self.assertEqual(unique_words_ratio(empty), 0.0)
+        self.assertEqual(unique_words_ratio(self.distinct_words_array), 1.0)
+        self.assertEqual(unique_words_ratio(self.same_words_array), 0.0)
+        self.assertAlmostEqual(unique_words_ratio(self.mixed_words_array), 0.3333333)
+        self.assertEqual(unique_words_ratio(self.empty_array), 0.0)
 
     def test_unknown_words(self):
-        correct_english = ['This', 'is', 'a', 'correct', 'sentence']
-        incorrect_english = ['Thiis', 'is', 'an', 'incozyzyrrect', 'sentence']
-        french = ['Demain', 'dès', 'l’aube', 'à', 'l’heure', 'où', 'blanchit', 'la', 'campagne', 'Je', 'partirai',
-                  'Vois', 'tu', 'je', 'sais', 'que', 'tu', 'm’attends', 'J’irai', 'par', 'la', 'forêt', 'j’irai',
-                  'par', 'la', 'montagne', 'Je', 'ne', 'puis', 'demeurer', 'loin', 'de', 'toi', 'plus', 'longtemps']
-        empty = []
-        unsupported_language = ['Aqoonyahanada', 'caalamku', 'waxay', 'aad', 'ugu', 'murmaan', 'sidii', 'luuqadaha',
-                                'aduunku', 'ku', 'bilaabmeem']
         unknown_word_ratio = UnknownWordRatioMetadata().metadata_function
-        self.assertEqual(unknown_word_ratio('en', correct_english), 0.00)
-        self.assertEqual(unknown_word_ratio('en', incorrect_english), .4)
-        self.assertRaises(ValueError, unknown_word_ratio, language='so', words=unsupported_language)
-        self.assertAlmostEqual(unknown_word_ratio('fr', french), 0.1142857, places=5)
-        self.assertEqual(unknown_word_ratio('en', empty), 00.00)
+        self.assertEqual(unknown_word_ratio('en', self.english_array), 0.00)
+        self.assertEqual(unknown_word_ratio('en', self.incorrect_english_array), 0.4)
+        self.assertRaises(ValueError, unknown_word_ratio, language='so', words=self.unsupported_language_array)
+        self.assertAlmostEqual(unknown_word_ratio('fr', self.french_array), 0.1142857, places=5)
+        self.assertEqual(unknown_word_ratio('en', self.empty_array), 00.00)
 
     def test_stopwords(self):
-        no_stopwords = ['computer', 'calculates', 'math']
-        only_stopwords = ['the', 'and', 'is', 'i', 'am']
-        mixed = ['a', 'normal', 'sentence', 'has', 'both']
-        french = ['demain', 'dès', 'l’aube', 'à', 'l’heure', 'où', 'blanchit', 'la', 'campagne', 'je', 'partirai',
-                  'vois', 'tu', 'je', 'sais', 'que', 'tu', 'm’attends', 'j’irai', 'par', 'la', 'forêt', 'j’irai',
-                  'par', 'la', 'montagne', 'je', 'ne', 'puis', 'demeurer', 'loin', 'de', 'toi', 'plus', 'longtemps']
-        empty = []
-        unsupported_language = ['aqoonyahanada', 'caalamku', 'waxay', 'aad', 'ugu', 'murmaan', 'sidii', 'luuqadaha',
-                                'aduunku', 'ku', 'bilaabmeem']
         stopword_ratio = StopwordRatioMetadata().metadata_function
-        self.assertEqual(stopword_ratio('en', no_stopwords), 0.0)
-        self.assertEqual(stopword_ratio('en', only_stopwords), 1.0)
-        self.assertEqual(stopword_ratio('en', mixed), 0.6)
-        self.assertAlmostEqual(stopword_ratio('fr', french), 0.4285714, places=5)
-        self.assertEqual(stopword_ratio('en', empty), 0.0)
-        self.assertRaises(ValueError, stopword_ratio, language='so', words=unsupported_language)
+        self.assertEqual(stopword_ratio('en', self.no_stopwords_array), 0.0)
+        self.assertEqual(stopword_ratio('en', self.only_stopwords_array), 1.0)
+        self.assertEqual(stopword_ratio('en', self.english_array), 0.6)
+        self.assertAlmostEqual(stopword_ratio('fr', self.french_array), 0.4285714, places=5)
+        self.assertEqual(stopword_ratio('en', self.empty_array), 0.0)
+        self.assertRaises(ValueError, stopword_ratio, language='so', words=self.unsupported_language_array)
 
     def test_category(self):
-        html = "some text <p> some other text < br/ > more text"
-        sentence = "some text. some other text. more text."
-        comma = "some text, some other text -- more text."
-        white = "some text some other text more text"
-        htmlsentence = "some text <p> some other text. more text."
-        sentenceother = "some text, some other text. more text."
-        htmlsentenceother = "some text -- some. other text <br> more text."
-        empty = ""
         delimiter_type = DelimiterTypeMetadata().metadata_function
-        self.assertEqual(delimiter_type(html), "HTML")
-        self.assertEqual(delimiter_type(sentence), "sentence")
-        self.assertEqual(delimiter_type(comma), "comma")
-        self.assertEqual(delimiter_type(white), "whitespace")
-        self.assertEqual(delimiter_type(htmlsentence), "HTML")
-        self.assertEqual(delimiter_type(sentenceother), "sentence")
-        self.assertEqual(delimiter_type(htmlsentenceother), "HTML")
-        self.assertEqual(delimiter_type(empty), "no delimiter")
+        self.assertEqual(delimiter_type(self.html_string), "HTML")
+        self.assertEqual(delimiter_type(self.english_string), "sentence")
+        self.assertEqual(delimiter_type(self.comma_string), "comma")
+        self.assertEqual(delimiter_type(self.whitespace_string), "whitespace")
+        self.assertEqual(delimiter_type(self.html_sentence_string), "HTML")
+        self.assertEqual(delimiter_type(self.sentence_other_string), "sentence")
+        self.assertEqual(delimiter_type(self.html_sentence_other_string), "HTML")
+        self.assertEqual(delimiter_type(self.empty_string), "no delimiter")
 
     def test_num_parts(self):
-        html = "some text <p> some other text < br/ > more text"
-        sentence = "some text. some other text. more text."
-        comma = "some text, some other text -- more text."
-        none = "some text some other text more text"
-        htmlsentence = "some text <p> some other text. more text."
-        sentenceother = "some text, some other text. more text."
-        htmlsentenceother = "some text -- some. other text <br> more text."
-        empty = ""
         num_parts = NumPartsMetadata().metadata_function
-        self.assertEqual(num_parts(html), 3)
-        self.assertEqual(num_parts(sentence), 3)
-        self.assertEqual(num_parts(comma), 2)
-        self.assertEqual(num_parts(none), 7)
-        self.assertEqual(num_parts(htmlsentence), 2)
-        self.assertEqual(num_parts(sentenceother), 2)
-        self.assertEqual(num_parts(htmlsentenceother), 2)
-        self.assertEqual(num_parts(empty), 0)
+        self.assertEqual(num_parts(self.html_string), 3)
+        self.assertEqual(num_parts(self.english_string), 2)
+        self.assertEqual(num_parts(self.comma_string), 2)
+        self.assertEqual(num_parts(self.whitespace_string), 7)
+        self.assertEqual(num_parts(self.html_sentence_string), 2)
+        self.assertEqual(num_parts(self.sentence_other_string), 2)
+        self.assertEqual(num_parts(self.html_sentence_other_string), 2)
+        self.assertEqual(num_parts(self.empty_string), 0)
 
     def test_languages(self):
-        english = "This is a normal sentence. Language detection is easy."
-        englishTypos = "Thhis is a nirnal sentense. Lanquage detecction is esay."
-        german = "Dies ist ein einfacher Satz. Kurz und knackig."
-        englishgerman = "Dieser Text ist zum Teil deutsch. <br> Part of this text is in english"
-        multipleLanguages = "Dieser Text ist zum Teil deutsch. \n Part of this text is in english. \n there actually " \
-                            "is some french coming. \n Ce n'est pas anglais. \n No puedo hablar español. \n Beberapa " \
-                            "bahasa untuk diuji."
-        punctuation = " . ,"
-        empty = ""
         language = LanguagePerParagraph().detect_languages
-        self.assertEqual(language(english), {'en': 1})
-        self.assertEqual(language(englishTypos), {'en': 1})
-        self.assertEqual(language(german), {'de': 1})
-        self.assertEqual(language(englishgerman), {'en': 1, 'de': 1})
-        self.assertEqual(language(multipleLanguages), {'en': 2, 'de': 1, 'fr': 1, 'es': 1, 'id': 1})
-        self.assertRaises(LangDetectException, language, text=punctuation)
-        self.assertRaises(LangDetectException, language, text=empty)
+        self.assertEqual(language(self.english_string), {'en': 1})
+        self.assertEqual(language(self.incorrect_english_string), {'en': 1})
+        self.assertEqual(language(self.german_string), {'de': 1})
+        self.assertEqual(language(self.html_string), {'en': 1, 'de': 1})
+        self.assertEqual(language(self.multiple_languages_string), {'en': 2, 'de': 1, 'fr': 1, 'es': 1, 'id': 1})
+        self.assertRaises(LangDetectException, language, text=self.punctuation_string)
+        self.assertRaises(LangDetectException, language, text=self.empty_string)
 
     def test_complexity(self):
-        easy = "This is easy. This is a sentence. This has a small number."
         # hard = "Quantum mechanics (QM; also known as quantum physics, quantum theory, the wave mechanical model, "\
         #       "or matrix mechanics), including quantum field theory, is a fundamental theory in physics which "\
         #       "describes nature at the smallest scales of energy levels of atoms and subatomic particles."
-        punctuation = " . ,"
-        empty = ""
-        german = "Dies ist ein einfacher Satz."
         text_complexity = ComplexityMetadata().metadata_function
-        self.assertEqual(text_complexity('en', empty), 0.0)
-        self.assertEqual(text_complexity('en', punctuation), 0.0)
-        self.assertEqual(text_complexity('en', easy), text_complexity('en', easy))
-        self.assertRaises(ValueError, text_complexity, language='de', text=german)
+        self.assertEqual(text_complexity('en', self.empty_string), 0.0)
+        self.assertEqual(text_complexity('en', self.punctuation_string), 0.0)
+        self.assertEqual(text_complexity('en', self.english_string), text_complexity('en', self.english_string))
+        self.assertRaises(ValueError, text_complexity, language='de', text=self.german_string)
         # Works in Travis for Python 3.6 but not for 3.5. 3.5 seems to not support the complexity metric.
         # self.assertGreater(text_complexity(hard), text_complexity(easy))
 
     def test_pos_tags(self):
-        normal = 'This is a test.'
-        punctuation = " . ,"
-        empty = ''
-        german = "Dies ist ein einfacher Satz."
         pos_tags = PartOfSpeechMetadata().metadata_function
-        self.assertEqual('DET, ., NOUN, VERB', pos_tags('en', normal))
-        self.assertEqual('.', pos_tags('en', punctuation))
-        self.assertEqual('', pos_tags('en', empty))
-        self.assertRaises(ValueError, pos_tags, language='de', text=german)
+        self.assertEqual('DET, VERB, ., ADJ, ADP, NOUN', pos_tags('en', self.english_string))
+        self.assertEqual('.', pos_tags('en', self.punctuation_string))
+        self.assertEqual('', pos_tags('en', self.empty_string))
+        self.assertRaises(ValueError, pos_tags, language='de', text=self.german_string)
