@@ -5,7 +5,7 @@ from scipy import stats
 
 from shift_detector.checks.statistical_checks.statistical_check import SimpleStatisticalCheck
 from shift_detector.utils.column_management import ColumnType
-from shift_detector.utils.visualization import cumulative_step_ratio_histogram, ratio_histogram
+from shift_detector.utils.visualization import plot_cumulative_step_ratio_histogram, plot_ratio_histogram
 
 
 def kolmogorov_smirnov_test(part1: pd.Series, part2: pd.Series):
@@ -27,7 +27,7 @@ class NumericalStatisticalCheck(SimpleStatisticalCheck):
         return kolmogorov_smirnov_test(part1, part2)
 
     @staticmethod
-    def cumulative_hist_absolute_figure(column, df1, df2, bins=100):
+    def cumulative_hist_absolute_figure(column, df1, df2, bins=40):
         _, bin_edges = np.histogram(pd.concat([df1[column], df2[column]]), bins=bins)
         cumsum1, _, _ = plt.hist(df1[column], bins=bin_edges, align='right', color='cornflowerblue', cumulative=True,
                                  histtype='step')
@@ -45,9 +45,9 @@ class NumericalStatisticalCheck(SimpleStatisticalCheck):
         plt.show()
 
     @staticmethod
-    def cumulative_hist_figure(column, df1, df2, bins=100):
+    def cumulative_hist_figure(column, df1, df2, bins=40):
         _, bin_edges = np.histogram(pd.concat([df1[column], df2[column]]), bins=bins)
-        cumsum1, cumsum2 = cumulative_step_ratio_histogram(column, df1, df2, bin_edges)
+        cumsum1, cumsum2 = plot_cumulative_step_ratio_histogram(df1[column], df2[column], bin_edges)
         distances = abs(cumsum1 - cumsum2)
         max_idx = list(distances).index(max(distances))
         max_d = max(distances)
@@ -73,7 +73,7 @@ class NumericalStatisticalCheck(SimpleStatisticalCheck):
     @staticmethod
     def overlayed_hist_figure(column, df1, df2, bins=40):
         _, bin_edges = np.histogram(pd.concat([df1[column], df2[column]]), bins=bins)
-        ratio_histogram(column, df1, df2, bin_edges)
+        plot_ratio_histogram(df1[column], df2[column], bin_edges)
         plt.legend([column + ' 1', column + ' 2'], fontsize='x-small')
         plt.title(column + ' (Histogram)', fontsize='x-large')
         plt.xlabel('column value', fontsize='medium')
