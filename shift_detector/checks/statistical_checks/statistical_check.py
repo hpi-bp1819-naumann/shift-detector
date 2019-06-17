@@ -75,13 +75,27 @@ class SimpleStatisticalCheck(StatisticalCheck):
         :param pvalues: dataframe with the test result of each column
         :return: dictionary of column-explanation-pairs
         """
-        explanation = {}
+        explanations = {}
         for column in self.significant_columns(pvalues):
-            explanation[column] = 'The probability for equal distribution of the column ' + str(column) + \
-                                  ' in both datasets is p = ' + str(pvalues[column]) + ', which is lower than the' \
-                                  'specified significance level of alpha = ' + str(self.significance) + '. The ' \
-                                  'statistical test performed was ' + self.statistical_test_name() + '.'
-        return explanation
+            explanations[column] = '- probability for equal distribution p = {pvalue}\n' \
+                                   '- specified significance level alpha = {significance}\n' \
+                                   '- statistical test performed: {test_name}'.format(
+                                        pvalue=str(pvalues[column]),
+                                        significance=str(self.significance),
+                                        test_name=self.statistical_test_name()
+                                    )
+        return explanations
+
+    @staticmethod
+    @abstractmethod
+    def column_figure(column, df1, df2):
+        pass
+
+    def column_figures(self, significant_columns, df1, df2):
+        plot_functions = []
+        for column in significant_columns:
+            plot_functions.append(lambda col=column: self.column_figure(col, df1, df2))
+        return plot_functions
 
     def run(self, store) -> Report:
         pvalues = pd.DataFrame(index=['pvalue'])
@@ -95,9 +109,10 @@ class SimpleStatisticalCheck(StatisticalCheck):
         for column in columns:
             p = self.statistical_test(part1[column], part2[column])
             pvalues[column] = [p]
-
+        significant_columns = self.significant_columns(pvalues)
         return Report("Statistical Check",
                       examined_columns=columns,
-                      shifted_columns=self.significant_columns(pvalues),
+                      shifted_columns=significant_columns,
                       explanation=self.explain(pvalues),
-                      information={'test_results': pvalues})
+                      information={'test_results': pvalues},
+                      figures=self.column_figures(significant_columns, part1, part2))

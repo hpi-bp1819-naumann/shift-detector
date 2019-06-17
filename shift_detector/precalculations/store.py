@@ -5,16 +5,9 @@ from pandas import DataFrame
 
 from shift_detector.utils.column_management import detect_column_types, ColumnType, CATEGORICAL_MAX_RELATIVE_CARDINALITY
 from shift_detector.utils.data_io import shared_column_names
+from shift_detector.utils.errors import InsufficientDataError
 
 MIN_DATA_SIZE = int(CATEGORICAL_MAX_RELATIVE_CARDINALITY * 100)
-
-
-class InsufficientDataError(Exception):
-
-    def __init__(self, message, actual_size, expected_size):
-        super().__init__(message)
-        self.actual_size = actual_size
-        self.expected_size = expected_size
 
 
 class Store:
@@ -79,9 +72,7 @@ class Store:
     @staticmethod
     def verify_min_data_size(size):
         if size < MIN_DATA_SIZE:
-            raise InsufficientDataError('The input data is insufficient for the column type heuristics to work. Only '
-                                        '{actual} row(s) were passed. Please pass at least {expected} rows.'
-                                        .format(actual=size, expected=MIN_DATA_SIZE), size, MIN_DATA_SIZE)
+            raise InsufficientDataError(actual_size=size, expected_size=MIN_DATA_SIZE)
 
     def __apply_custom_column_types(self, custom_column_to_column_type):
         column_to_column_type = {}
