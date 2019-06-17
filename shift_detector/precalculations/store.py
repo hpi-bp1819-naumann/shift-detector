@@ -56,7 +56,7 @@ class Store:
             print("- Use already executed {}".format(needed_preprocessing.__class__.__name__))
             return self.preprocessings[needed_preprocessing]
 
-        print("- Execute {}".format(needed_preprocessing.__class__.__name__))
+        print("- Executing {}".format(needed_preprocessing.__class__.__name__))
         preprocessing = needed_preprocessing.process(self)
         self.preprocessings[needed_preprocessing] = preprocessing
         return preprocessing

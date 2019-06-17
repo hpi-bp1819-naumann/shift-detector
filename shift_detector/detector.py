@@ -48,7 +48,7 @@ class Detector:
         """
         Run the Detector with the checks to run.
         :param checks: checks to run
-        :param logger_level
+        :param logger_level: level of logging
         """
         logger.getLogger().setLevel(logger_level)
 
@@ -61,7 +61,7 @@ class Detector:
 
         check_reports = []
         for check in checks:
-            print("Execute {}".format(check.__class__.__name__))
+            print("Executing {}".format(check.__class__.__name__))
             check_reports.append(check.run(self.store))
         self.check_reports = check_reports
 
