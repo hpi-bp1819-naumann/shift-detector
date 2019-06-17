@@ -72,7 +72,6 @@ class CountVectorizer(Precalculation):
             count_vec = self.vectorizer
             count_vec = count_vec.fit(merged_texts[col])
             dict_of_sparse_matrices1[col] = count_vec.transform(df1_texts[col]).A.astype(int)
-            # you can also leave the last part and you get a sparse matrix that is much more memory efficient
             dict_of_sparse_matrices2[col] = count_vec.transform(df2_texts[col]).A.astype(int)
 
         return dict_of_sparse_matrices1, dict_of_sparse_matrices2
