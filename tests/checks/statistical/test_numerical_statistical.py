@@ -121,8 +121,8 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
 
     @mock.patch('shift_detector.checks.statistical_checks.numerical_statistical_check.plt')
     def test_cumulative_hist_figure_looks_right(self, mock_plt):
-        df1 = pd.DataFrame(self.significant_1)
-        df2 = pd.DataFrame(self.significant_2)
+        df1 = pd.DataFrame(self.significant_1, columns=['meaningful_numbers'])
+        df2 = pd.DataFrame(self.significant_2, columns=['meaningful_numbers'])
         with mock.patch.object(numerical_statistical_check.plt, 'hist',
                                return_value=[np.array([1, 2, 3]),
                                              np.array([0, 1, 2, 3]),
@@ -139,8 +139,8 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
 
     @mock.patch('shift_detector.checks.statistical_checks.numerical_statistical_check.plt')
     def test_overlayed_hist_figure_looks_right(self, mock_plt):
-        df1 = pd.DataFrame(self.significant_1)
-        df2 = pd.DataFrame(self.significant_2)
+        df1 = pd.DataFrame(self.significant_1, columns=['meaningful_numbers'])
+        df2 = pd.DataFrame(self.significant_2, columns=['meaningful_numbers'])
         with mock.patch.object(numerical_statistical_check.plt, 'hist',
                                return_value=[np.array([1, 2, 3]),
                                              np.array([0, 1, 2, 3]),
