@@ -15,13 +15,13 @@ class LdaCheck(Check):
         if not isinstance(significance, int):
             raise TypeError("Significance has to be an integer. Received: {}".format(type(significance)))
         if not significance > 0 or not significance < 100:
-            raise ValueError("Significance has to be between 0% and 100%. Recived: {}".format(significance))
+            raise ValueError("Significance has to be between 0% and 100%. Received: {}".format(significance))
         self.significance = significance
         self.n_topics = n_topics
         self.n_iter = n_iter
         self.lib = lib
         self.random_state = random_state
-        self.cols = cols # setting cols to None is equal to setting it to a list with all text columns
+        self.cols = cols  # setting cols to None is equal to setting it to a list with all text columns
         self.trained_model = trained_model
         self.stop_words = stop_words
         self.max_features = max_features
@@ -30,13 +30,14 @@ class LdaCheck(Check):
         shifted_columns = set()
         explanation = {}
 
-        if self.cols is None:
-            col_names = store.column_names(ColumnType.text)
-            self.cols = list(col_names)
-        else:
+        if self.cols:
             for col in self.cols:
                 if col not in store.column_names(ColumnType.text):
-                    raise ValueError("Given column is not contained in given datasets: {}".format(col))
+                    raise ValueError("Given column is not contained in detected text columns of the datasets: {}"
+                                     .format(col))
+        else:
+            col_names = store.column_names(ColumnType.text)
+            self.cols = list(col_names)
             col_names = self.cols
 
         df1_embedded, df2_embedded = store[LdaEmbedding(n_topics=self.n_topics, n_iter=self.n_iter, lib=self.lib,
@@ -60,4 +61,7 @@ class LdaCheck(Check):
                     shifted_columns.add(col)
                     explanation['Topic '+str(i)+' diff in column '+col] = round(v1 - v2, 1)
 
-        return Report(check_name='LDA Check', examined_columns=col_names, shifted_columns=shifted_columns, explanation=explanation)
+        return Report(check_name='LDA Check',
+                      examined_columns=col_names,
+                      shifted_columns=shifted_columns,
+                      explanation=explanation)
