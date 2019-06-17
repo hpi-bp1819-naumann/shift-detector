@@ -21,8 +21,8 @@ class TestCountVectorizer(unittest.TestCase):
         self.store = Store(self.df1, self.df2)
 
     def test_eq(self):
-        self.assertTrue(self.count1 == self.count2)
-        self.assertFalse(self.count1 == self.count3)
+        self.assertEqual(self.count1, self.count2)
+        self.assertNotEqual(self.count1, self.count3)
 
     def test_exception_for_max_features(self):
         self.assertRaises(ValueError, lambda: CountVectorizer(cols='', max_features=0))
@@ -35,17 +35,16 @@ class TestCountVectorizer(unittest.TestCase):
 
     def test_hash(self):
         self.assertEqual(hash(self.count1), hash(self.count2))
+        self.assertNotEqual(hash(self.count1), hash(self.count3))
 
     def test_process(self):
         res1, res2 = self.count1.process(self.store)
-        test_dict1 = {'col1': np.array([[1,0] if not i == 9 else [0,1] for i in range(10)])}
-        test_dict2 = {'col1': np.array([[0,1] if not i == 9 else [1,0] for i in range(10)])}
+        expected_dict1 = {'col1': np.array([[1,0] if not i == 9 else [0,1] for i in range(10)])}
+        expected_dict2 = {'col1': np.array([[0,1] if not i == 9 else [1,0] for i in range(10)])}
 
-        self.assertEqual(res1.keys(), test_dict1.keys())
-        for val1, test_val1 in zip(res1.values(), test_dict1.values()):
-            for row1, test_row1 in zip(val1, test_val1):
-                np.testing.assert_equal(row1, test_row1)
-        self.assertEqual(res2.keys(), test_dict2.keys())
-        for val2, test_val2 in zip(res2.values(), test_dict2.values()):
-            for row2, test_row2 in zip(val2, test_val2):
-                np.testing.assert_equal(row2, test_row2)
+        self.assertEqual(res1.keys(), expected_dict1.keys())
+        np.testing.assert_equal(res1['col1'], expected_dict1['col1'])
+
+        self.assertEqual(res2.keys(), expected_dict2.keys())
+        np.testing.assert_equal(res2['col1'], expected_dict2['col1'])
+

@@ -195,4 +195,6 @@ class TestLdaEmbedding(unittest.TestCase):
                                                               1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1,
                                                               0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1,
                                                               0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1])))
+
+    def test_column_exception_in_process(self):
         self.assertRaises(ValueError, lambda: self.lda5.process(self.store))

@@ -12,48 +12,42 @@ class CountVectorizer(Precalculation):
         self.stopwords = None
         self.max_features = None
         self.cols = None
+
         if isinstance(stop_words, str):
-            if stop_words in nltk_stopwords.fileids():
-                self.stop_words = nltk_stopwords.words(stop_words)
-            else:
-                raise Exception('The language you entered is not available')
-        elif isinstance(stop_words, list):
-            if all(isinstance(elem, str) for elem in stop_words):
-                for lang in stop_words:
-                    if lang not in nltk_stopwords.fileids():
-                        raise Exception('At least one language you entered is not available')
-                    if self.stopwords is None:
-                        self.stopwords = set(nltk_stopwords.words(lang))
-                    else:
-                        self.stopwords = self.stopwords.union(set(nltk_stopwords.words(lang)))
-            else:
-                raise TypeError('The stop_words list has to contain strings only')
+            if stop_words not in nltk_stopwords.fileids():
+                raise ValueError("The language you entered is not available. Received: {}".format(stop_words))
+            self.stop_words = nltk_stopwords.words(stop_words)
+        elif isinstance(stop_words, list) and all(isinstance(elem, str) for elem in stop_words):
+            for lang in stop_words:
+                if lang not in nltk_stopwords.fileids():
+                    raise ValueError("The following language you entered is not available: {}".format(lang))
+                self.stopwords = self.stopwords.union(set(nltk_stopwords.words(lang)))
         else:
-            raise TypeError('Please enter the language for your stopwords as a string or list of strings')
+            raise TypeError("Please enter the language for your stop_words as a string or list of strings. Received: {}"
+                            .format(type(stop_words)))
+
         if max_features is not None:
-            if isinstance(max_features, int):
-                if max_features > 0:
-                    self.max_features = max_features
-                else:
-                    raise ValueError('Max_features has to be at least 1')
-            else:
-                raise TypeError('Max_features has to be an int')
-        if cols is not None:
-            if isinstance(cols, list) and all(isinstance(col, str) for col in cols) or isinstance(cols, str):
-                self.cols = cols
-            else:
-                raise TypeError('Cols has to be list of strings or a single string')
+            if not isinstance(max_features, int):
+                raise TypeError("Max_features has to be a integer. Received: {}".format(type(max_features)))
+            if max_features < 1:
+                raise ValueError("Max_features has to be at least 1. Received: {}".format(max_features))
+            self.max_features = max_features
+
+        if not cols:
+            raise TypeError("You have to specify which columns you want to tokenize")
+        if isinstance(cols, str):
+            self.cols = [cols]
+        elif isinstance(cols, list) and all(isinstance(col, str) for col in cols):
+            self.cols = cols
         else:
-            raise ValueError('You have to specify which columns you want to vectorize')
+            raise TypeError("Cols has to be list of strings or a single string. Received: {}".format(type(cols)))
 
         self.vectorizer = CountVectorizer_sklearn(stop_words=self.stopwords, max_features=self.max_features)
 
     def __eq__(self, other):
         """Overrides the default implementation"""
-        if isinstance(other, self.__class__) and self.stop_words == other.stop_words \
-                and self.max_features == other.max_features and self.cols == other.cols:
-            return True
-        return False
+        return isinstance(other, self.__class__) and self.stop_words == other.stop_words \
+            and self.max_features == other.max_features and self.cols == other.cols
 
     def __hash__(self):
         """Overrides the default implementation"""
@@ -66,14 +60,10 @@ class CountVectorizer(Precalculation):
         df1_texts, df2_texts = store[ColumnType.text]
         merged_texts = pd.concat([df1_texts, df2_texts], ignore_index=True)
 
-        if isinstance(self.cols, str):
-            if self.cols in df1_texts.columns:
-                col_names = [self.cols]
-        else:
-            for col in self.cols:
-                if col not in df1_texts.columns:
-                    raise ValueError('Given column is not contained in given datasets')
-            col_names = self.cols
+        for col in self.cols:
+            if col not in store.column_names(ColumnType.text):
+                raise ValueError("Given column is not contained in given datasets")
+        col_names = self.cols
 
         dict_of_sparse_matrices1 = {}
         dict_of_sparse_matrices2 = {}
@@ -84,4 +74,5 @@ class CountVectorizer(Precalculation):
             dict_of_sparse_matrices1[col] = count_vec.transform(df1_texts[col]).A.astype(int)
             # you can also leave the last part and you get a sparse matrix that is much more memory efficient
             dict_of_sparse_matrices2[col] = count_vec.transform(df2_texts[col]).A.astype(int)
+
         return dict_of_sparse_matrices1, dict_of_sparse_matrices2

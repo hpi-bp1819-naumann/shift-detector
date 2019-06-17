@@ -38,11 +38,12 @@ class TestLdaGensimTokenizer(unittest.TestCase):
         self.assertRaises(TypeError, lambda: LdaGensimTokenizer(cols='', stop_words=['english', 42]))
 
     def test_eq(self):
-        self.assertTrue(self.token1 == self.token2)
-        self.assertFalse(self.token1 == self.token3)
+        self.assertEqual(self.token1, self.token2)
+        self.assertNotEqual(self.token1, self.token3)
 
     def test_hash(self):
         self.assertEqual(hash(self.token1), hash(self.token2))
+        self.assertNotEqual(hash(self.token1), hash(self.token3))
 
     def test_process(self):
         res1, res2 = self.token1.process(self.store)
