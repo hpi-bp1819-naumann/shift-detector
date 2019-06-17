@@ -27,6 +27,7 @@ UnicodeCategoriesMetadata
 UnicodeBlocksMetadata
     Returns a string, containing the unicode blocks of the characters in the text, comma seperated, sorted descending by their frequency.
     What blocks exist can be looked up here: https://www.fileformat.info/info/unicode/block/index.htm
+    
     Example:
         input: 'Front-line leading edge website'
         
@@ -79,6 +80,7 @@ LanguagePerParagraph
     Returns a string, containing the languages of the parts in the text, comma seperated, sorted descending by their frequency.
     text is splitted into parts either by html <br/> tags or, if there are no html tags, by newlines.
     Language detection by  https://github.com/Mimino666/langdetect
+    
     Example:
         input: 'Dieser Text ist zum Teil deutsch. \\n Part of this text is in english. \\n This is an example.'
         
@@ -95,6 +97,7 @@ ComplexityMetadata
 PartOfSpeechMetadata
     Returns a string, containing the part of speech tags in the text, comma seperated, sorted descending by their frequency.
     Uses the part of speech tagger by nltk. Only working for english language.
+    
     Example:
         input: 'This is a normal sentence. This is for testing.'
         
