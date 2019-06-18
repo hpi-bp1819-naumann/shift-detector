@@ -40,11 +40,13 @@ class WordPredictionPrecalculation(Precalculation):
         return self.column == other.column \
             and self.ft_window_size == other.ft_window_size \
             and self.ft_size == other.ft_size \
+            and self.ft_seed == other.ft_seed \
             and self.lstm_window == other.lstm_window \
             and self.num_epochs_predictor == other.num_epochs_predictor
 
     def __hash__(self):
-        return hash((self.column, self.ft_window_size, self.ft_size, self.lstm_window, self.num_epochs_predictor))
+        return hash((self.column, self.ft_window_size, self.ft_size,
+                     self.ft_seed, self.lstm_window, self.num_epochs_predictor))
 
     def process(self, store) -> Tuple[float, float]:
 
