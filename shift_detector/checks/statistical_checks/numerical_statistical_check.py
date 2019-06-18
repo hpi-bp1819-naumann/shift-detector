@@ -5,7 +5,7 @@ from scipy import stats
 
 from shift_detector.checks.statistical_checks.statistical_check import SimpleStatisticalCheck
 from shift_detector.utils.column_management import ColumnType
-from shift_detector.utils.visualization import plot_cumulative_step_ratio_histogram, plot_ratio_histogram
+import shift_detector.utils.visualization as vis
 
 
 def kolmogorov_smirnov_test(part1: pd.Series, part2: pd.Series):
@@ -29,7 +29,7 @@ class NumericalStatisticalCheck(SimpleStatisticalCheck):
     @staticmethod
     def cumulative_hist_figure(column, df1, df2, bins=40):
         _, bin_edges = np.histogram(pd.concat([df1[column], df2[column]]), bins=bins)
-        cumsum1, cumsum2 = plot_cumulative_step_ratio_histogram(df1[column], df2[column], bin_edges)
+        cumsum1, cumsum2 = vis.plot_cumulative_step_ratio_histogram(df1[column], df2[column], bin_edges)
         distances = abs(cumsum1 - cumsum2)
         max_idx = list(distances).index(max(distances))
         max_d = max(distances)
@@ -44,7 +44,7 @@ class NumericalStatisticalCheck(SimpleStatisticalCheck):
     @staticmethod
     def overlayed_hist_figure(column, df1, df2, bins=40):
         _, bin_edges = np.histogram(pd.concat([df1[column], df2[column]]), bins=bins)
-        plot_ratio_histogram(df1[column], df2[column], bin_edges)
+        vis.plot_ratio_histogram(df1[column], df2[column], bin_edges)
         plt.legend([column + ' 1', column + ' 2'], fontsize='x-small')
         plt.title(column + ' (Histogram)', fontsize='x-large')
         plt.xlabel('column value', fontsize='medium')
