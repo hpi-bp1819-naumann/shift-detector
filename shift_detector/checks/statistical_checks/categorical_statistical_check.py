@@ -27,26 +27,6 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
         return chi2_test(part1, part2)
 
     @staticmethod
-    def stacked_row_ratios_figure(column, df1, df2, top_k=50):
-        value_counts = pd.concat([df1[column].value_counts().head(top_k), df2[column].value_counts().head(top_k)],
-                                 axis=1, sort=False)
-        value_ratios = value_counts.fillna(0).apply(axis='columns',
-                                                    func=lambda row: pd.Series([row.iloc[0] / sum(row),
-                                                                                row.iloc[1] / sum(row)],
-                                                                               index=[str(column) + ' 1',
-                                                                                      str(column) + ' 2']))
-        axes = value_ratios.plot(kind='bar', fontsize='medium', stacked=True)
-        axes.set_title(str(column), fontsize='x-large')
-        axes.set_xlabel('column value', fontsize='medium')
-        axes.set_ylabel('ratio of first data set', fontsize='medium')
-        plt.axhline(y=0.5, linestyle='--', linewidth=2, color='black')
-        max_x = axes.get_xticks()[-1]
-        max_y = axes.get_yticks()[-1]
-        plt.text(x=0.5 * max_x, y=0.46 * max_y, s='evenly distributed', fontsize='medium',
-                 horizontalalignment='center', verticalalignment='center')
-        plt.show()
-
-    @staticmethod
     def paired_total_ratios_figure(column, df1, df2, top_k=50):
         value_counts = pd.concat([df1[column].value_counts().head(top_k), df2[column].value_counts().head(top_k)],
                                  axis=1, sort=False).sort_index()
