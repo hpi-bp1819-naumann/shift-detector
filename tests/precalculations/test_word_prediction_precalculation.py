@@ -1,7 +1,9 @@
+import logging as logger
 from unittest import TestCase
 
-import numpy as np
+from numpy.random import seed
 from pandas import DataFrame
+from tensorflow import set_random_seed
 
 from shift_detector.precalculations.store import Store
 from shift_detector.precalculations.word_prediction_precalculation import WordPredictionPrecalculation
@@ -10,6 +12,11 @@ from shift_detector.precalculations.word_prediction_precalculation import WordPr
 class TestWordPredictionPrecalculation(TestCase):
 
     def setUp(self):
+
+        # set seeds
+        seed(1)
+        set_random_seed(1)
+
         # create alphabet list: ['a', 'b', ..., 'z']
         alphabet = [chr(letter) for letter in range(ord('a'), ord('z')+1)]
 
@@ -19,36 +26,53 @@ class TestWordPredictionPrecalculation(TestCase):
         for idx in range(len(alphabet) - 7):
             col.append(' '.join(alphabet[idx:idx+7]))
 
-        data1 = {'shift': col, 'no_shift': col}
-        data2 = {'shift': ['B B B B B B'] * len(col), 'no_shift': col}
+        error_col = []
+        for idx in range(len(col)):
+            error_col += [alphabet[idx]]
+
+        data1 = {'shift': col, 'no_shift': col, 'error_col': error_col}
+        data2 = {'shift': ['B B B B B B'] * len(col), 'no_shift': col, 'error_col': error_col}
         self.df1 = DataFrame.from_dict(data1)
         self.df2 = DataFrame.from_dict(data2)
         self.store = Store(self.df1, self.df2)
-        self.precalculation_shift = WordPredictionPrecalculation('shift', num_epochs_predictor=10)
-        self.precalculation_no_shift = WordPredictionPrecalculation('no_shift', num_epochs_predictor=10)
+        self.precalculation_shift = WordPredictionPrecalculation('shift', num_epochs_predictor=10,
+                                                                 ft_workers=2, ft_seed=0)
+        self.precalculation_no_shift = WordPredictionPrecalculation('no_shift', num_epochs_predictor=10,
+                                                                    ft_workers=1, ft_seed=0)
+        self.precalculation_error = WordPredictionPrecalculation('error_col', num_epochs_predictor=10,
+                                                                 ft_workers=1, ft_seed=0)
 
-        np.random.seed(1)
+    def test_process(self):
+        with self.subTest("Test losses"):
+            df1_prediction_loss, df2_prediction_loss = self.precalculation_shift.process(self.store)
+            min_loss_diff = df1_prediction_loss * .15
+            logger.info('prediction_loss in first dataset: ', df1_prediction_loss)
+            logger.info('prediction_loss in second dataset: ', df2_prediction_loss)
+            self.assertTrue(df2_prediction_loss > df1_prediction_loss + min_loss_diff)
 
-    # def test_process(self):
-    #     with self.subTest("Test losses"):
-    #         df1_prediction_loss, df2_prediction_loss = self.precalculation_shift.process(self.store)
-    #         min_loss_diff = df1_prediction_loss * .3
-    #         self.assertTrue(df2_prediction_loss > df1_prediction_loss + min_loss_diff)
-    #
-    #         df1_prediction_loss, df2_prediction_loss = self.precalculation_no_shift.process(self.store)
-    #         self.assertTrue(df2_prediction_loss <= df1_prediction_loss)
+            df1_prediction_loss, df2_prediction_loss = self.precalculation_no_shift.process(self.store)
+            self.assertTrue(df2_prediction_loss <= df1_prediction_loss)
+
+    def test_error_raising(self):
+        self.assertRaises(ValueError, lambda: self.precalculation_error.process(self.store))
 
     def test_equal(self):
         with self.subTest("Test equality"):
-            other_precalculation = WordPredictionPrecalculation('shift', num_epochs_predictor=10)
+            other_precalculation = WordPredictionPrecalculation('shift', num_epochs_predictor=10, ft_seed=0)
             self.assertEqual(self.precalculation_shift, other_precalculation)
 
-            other_precalculation = WordPredictionPrecalculation('no_shift', num_epochs_predictor=10)
+            other_precalculation = WordPredictionPrecalculation('no_shift', num_epochs_predictor=10, ft_seed=0)
             self.assertEqual(self.precalculation_no_shift, other_precalculation)
 
         with self.subTest("Test inequality"):
+            other_precalculation = WordPredictionPrecalculation('shift', num_epochs_predictor=10, ft_seed=1)
+            self.assertNotEqual(self.precalculation_shift, other_precalculation)
+
             other_precalculation = WordPredictionPrecalculation('no_shift', num_epochs_predictor=10)
             self.assertNotEqual(self.precalculation_shift, other_precalculation)
+
+            other_precalculation = WordPredictionPrecalculation('no_shift', num_epochs_predictor=10, ft_seed=1)
+            self.assertNotEqual(self.precalculation_no_shift, other_precalculation)
 
             other_precalculation = WordPredictionPrecalculation('shift', num_epochs_predictor=10)
             self.assertNotEqual(self.precalculation_no_shift, other_precalculation)
@@ -60,15 +84,21 @@ class TestWordPredictionPrecalculation(TestCase):
 
     def test_hash(self):
         with self.subTest("Test hash equality"):
-            other_precalculation = WordPredictionPrecalculation('shift', num_epochs_predictor=10)
+            other_precalculation = WordPredictionPrecalculation('shift', num_epochs_predictor=10, ft_seed=0)
             self.assertEqual(self.precalculation_shift.__hash__(), other_precalculation.__hash__())
 
-            other_precalculation = WordPredictionPrecalculation('no_shift', num_epochs_predictor=10)
+            other_precalculation = WordPredictionPrecalculation('no_shift', num_epochs_predictor=10, ft_seed=0)
             self.assertEqual(self.precalculation_no_shift.__hash__(), other_precalculation.__hash__())
 
         with self.subTest("Test hash inequality"):
             other_precalculation = WordPredictionPrecalculation('no_shift', num_epochs_predictor=10)
             self.assertNotEqual(self.precalculation_shift.__hash__(), other_precalculation.__hash__())
 
+            other_precalculation = WordPredictionPrecalculation('shift', num_epochs_predictor=10, ft_seed=1)
+            self.assertNotEqual(self.precalculation_shift.__hash__(), other_precalculation.__hash__())
+
             other_precalculation = WordPredictionPrecalculation('shift', num_epochs_predictor=10)
+            self.assertNotEqual(self.precalculation_no_shift.__hash__(), other_precalculation.__hash__())
+
+            other_precalculation = WordPredictionPrecalculation('no_shift', num_epochs_predictor=10, ft_seed=1)
             self.assertNotEqual(self.precalculation_no_shift.__hash__(), other_precalculation.__hash__())
