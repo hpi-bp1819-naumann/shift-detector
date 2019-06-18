@@ -1,9 +1,8 @@
-import logging as logger
-
 import pandas as pd
 from pandas import DataFrame
 
-from shift_detector.utils.column_management import detect_column_types, ColumnType, CATEGORICAL_MAX_RELATIVE_CARDINALITY
+from shift_detector.utils.column_management import detect_column_types, ColumnType, \
+    CATEGORICAL_MAX_RELATIVE_CARDINALITY, column_names
 from shift_detector.utils.data_io import shared_column_names
 from shift_detector.utils.errors import InsufficientDataError
 
@@ -38,6 +37,10 @@ class Store:
 
         self.__apply_custom_column_types(custom_column_types)
 
+        print("Numerical columns: {}".format(", ".join(column_names(self.column_names(ColumnType.numerical)))))
+        print("Categorical columns: {}".format(", ".join(column_names(self.column_names(ColumnType.categorical)))))
+        print("Text columns: {}".format(", ".join(column_names(self.column_names(ColumnType.text)))))
+
         self.splitted_dfs = {column_type: (self.df1[columns], self.df2[columns])
                              for column_type, columns in self.type_to_columns.items()}
         self.preprocessings = {}
@@ -50,10 +53,10 @@ class Store:
             raise Exception("Needed Preprocessing must be of type Precalculation or ColumnType")
         '''
         if needed_preprocessing in self.preprocessings:
-            logger.info("Use already existing Precalculation")
+            print("- Use already executed {}".format(needed_preprocessing.__class__.__name__))
             return self.preprocessings[needed_preprocessing]
 
-        logger.info("Execute new Precalculation")
+        print("- Executing {}".format(needed_preprocessing.__class__.__name__))
         preprocessing = needed_preprocessing.process(self)
         self.preprocessings[needed_preprocessing] = preprocessing
         return preprocessing

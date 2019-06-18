@@ -1,4 +1,3 @@
-import logging as logger
 from enum import Enum
 from typing import List
 
@@ -60,16 +59,11 @@ def detect_column_types(df1, df2, columns):
     }
     """
     numerical_columns = [c for c in columns if is_numeric_dtype(df1[c]) and is_numeric_dtype(df2[c])]
-    logger.info("Detected numerical columns: {}".format(", ".join(column_names(numerical_columns))))
+
     non_numerical = list(set(columns) - set(numerical_columns))
-
     categorical_columns = [c for c in non_numerical if is_categorical(df1[c]) and is_categorical(df2[c])]
-    logger.info("Detected categorical columns: {}".format(", ".join(column_names(categorical_columns))))
-
-    low_cardinal_numerical_columns = [c for c in numerical_columns if is_categorical(df1[c]) and is_categorical(df2[c])]
 
     text_columns = list(set(non_numerical) - set(categorical_columns))
-    logger.info("Detected text columns: {}".format(", ".join(column_names(text_columns))))
 
     return {
         ColumnType.numerical: numerical_columns,

@@ -1,4 +1,5 @@
 IPython
+mock
 matplotlib
 iso-639
 nltk
@@ -14,3 +15,6 @@ keras
 tensorflow
 gensim
 regex
+sklearn
+lda
+nltk
