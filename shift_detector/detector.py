@@ -80,7 +80,7 @@ class Detector:
         Evaluate the reports.
         """
         nprint("OVERVIEW", text_formatting='h1')
-        nprint('Executed {} checks'.format(len(self.check_reports)))
+        nprint("Executed {} checks".format(len(self.check_reports)))
 
         detected = defaultdict(int)
         examined = defaultdict(int)
@@ -108,7 +108,6 @@ class Detector:
 
         nprint("DETAILS", text_formatting='h1')
         for report in self.check_reports:
-            nprint(report.check_name, text_formatting='h2')
-            print(report)
+            report.print_report()
             for fig in report.figures:
                 fig()
