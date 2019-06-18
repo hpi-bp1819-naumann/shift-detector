@@ -64,5 +64,4 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
 
     @staticmethod
     def column_figure(column, df1, df2):
-        CategoricalStatisticalCheck.stacked_row_ratios_figure(column, df1, df2)
         CategoricalStatisticalCheck.paired_total_ratios_figure(column, df1, df2)
