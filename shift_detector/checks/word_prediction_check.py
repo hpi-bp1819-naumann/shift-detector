@@ -47,7 +47,8 @@ class WordPredictionCheck(Check):
             result[col] = store[WordPredictionPrecalculation(col,
                                                              self.ft_window_size,
                                                              self.ft_size,
-                                                             self.lstm_window)]
+                                                             self.lstm_window,
+                                                             verbose=0)]
 
         examined_columns = self.columns
         shifted_columns, explanation = self.detect_shifts(examined_columns, result)

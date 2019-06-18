@@ -1,57 +1,31 @@
 import unittest
+from unittest import mock
 
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
 
-from shift_detector.detector import Detector
+from shift_detector.checks.statistical_checks.categorical_statistical_check import CategoricalStatisticalCheck
+from shift_detector.checks.statistical_checks.numerical_statistical_check import NumericalStatisticalCheck
 from shift_detector.checks.statistical_checks.text_metadata_statistical_check import TextMetadataStatisticalCheck
+from shift_detector.detector import Detector
 from shift_detector.precalculations.store import Store
 from shift_detector.precalculations.text_metadata import NumCharsMetadata, NumWordsMetadata, \
-    DistinctWordsRatioMetadata, LanguagePerParagraph, UnknownWordRatioMetadata, StopwordRatioMetadata
+    DistinctWordsRatioMetadata, LanguagePerParagraph, UnknownWordRatioMetadata, StopwordRatioMetadata, LanguageMetadata
+
+import tests.test_data as td
+
+import tests.test_data as td
 
 
 class TestTextMetadataStatisticalCheck(unittest.TestCase):
 
     def setUp(self):
-        self.poems = [
-            'Tell me not, in mournful numbers,\nLife is but an empty dream!\nFor the soul is dead that slumbers,\n'
-            'And things are not what they seem.',
-            'Life is real! Life is earnest!\nAnd the grave is not its goal;\nDust thou art, to dust returnest,\n'
-            'Was not spoken of the soul.',
-            'Not enjoyment, and not sorrow,\nIs our destined end or way;\nBut to act, that each to-morrow\n'
-            'Find us farther than to-day.',
-            'Art is long, and Time is fleeting,\nAnd our hearts, though stout and brave,\n'
-            'Still, like muffled drums, are beating\nFuneral marches to the grave.',
-            'In the world’s broad field of battle,\nIn the bivouac of Life,\nBe not like dumb, driven cattle!\n'
-            'Be a hero in the strife! ',
-            'Trust no Future, howe’er pleasant!\nLet the dead Past bury its dead!\n'
-            'Act,— act in the living Present!\nHeart within, and God o’erhead! ',
-            'LIFE, believe, is not a dream\nSo dark as sages say;\nOft a little morning rain\n'
-            'Foretells a pleasant day.\nSometimes there are clouds of gloom,\nBut these are transient all;\n'
-            'If the shower will make the roses bloom,\nO why lament its fall ? ',
-            "Rapidly, merrily,\nLife's sunny hours flit by,\nGratefully, cheerily,\nEnjoy them as they fly !",
-            "What though Death at times steps in\nAnd calls our Best away ?\nWhat though sorrow seems to win,\n"
-            "O'er hope, a heavy sway ?\nYet hope again elastic springs,\nUnconquered, though she fell;\n"
-            "Still buoyant are her golden wings,\nStill strong to bear us well.\nManfully, fearlessly,\n"
-            "The day of trial bear,\nFor gloriously, victoriously,\nCan courage quell despair ! ",
-            'When sinks my heart in hopeless gloom,\nAnd life can shew no joy for me;\n'
-            'And I behold a yawning tomb,\nWhere bowers and palaces should be;\n'
-            'In vain you talk of morbid dreams;\nIn vain you gaily smiling say,\nThat what to me so dreary seems,\n'
-            'The healthy mind deems bright and gay.']
-        self.phrases = ['Front-line leading edge website',
-                        'Upgradable upward-trending software',
-                        'Virtual tangible throughput',
-                        'Robust secondary open system',
-                        'Devolved multimedia knowledge user',
-                        'Intuitive encompassing alliance',
-                        'Automated 3rd generation benchmark',
-                        'Switchable global info-mediaries',
-                        'Automated 24/7 alliance',
-                        'Down-sized homogeneous software']
+        self.poems = td.poems
+        self.phrases = td.phrases
 
     def test_significant_metadata(self):
         pvalues = pd.DataFrame([[0.001, 0.2]], columns=['num_chars', 'distinct_words_ratio'], index=['pvalue'])
-        result = TextMetadataStatisticalCheck(significance=0.01).significant_metadata(pvalues)
+        result = TextMetadataStatisticalCheck(significance=0.01).significant_metadata_names(pvalues)
         self.assertIn('num_chars', result)
         self.assertNotIn('distinct_words_ratio', result)
 
@@ -111,3 +85,25 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
                         if type(mdtype) in [UnknownWordRatioMetadata, StopwordRatioMetadata]]
         for mdtype in md_with_lang:
             self.assertTrue(mdtype.infer_language)
+
+    def test_figure_functions_are_collected(self):
+        df1 = pd.DataFrame.from_dict({'text': ['blub'] * 10})
+        df2 = pd.DataFrame.from_dict({'text': ['blub'] * 10})
+        metadata_names = ['num_chars', 'num_words']
+        cols = pd.MultiIndex.from_product([df1.columns, metadata_names], names=['column', 'metadata'])
+        pvalues = pd.DataFrame(columns=cols, index=['pvalue'])
+        pvalues[('text', 'num_chars')] = 0.05
+        pvalues[('text', 'num_words')] = 0.001
+        check = TextMetadataStatisticalCheck()
+        result = check.metadata_figures(pvalues=pvalues, df1=df1, df2=df2)
+        self.assertEqual(1, len(result))
+
+    def test_correct_visualization_is_chosen_categorical(self):
+        with mock.patch.object(CategoricalStatisticalCheck, 'column_figure') as mock_figure:
+            TextMetadataStatisticalCheck.metadata_figure('text', LanguageMetadata(), None, None)
+        self.assertTrue(mock_figure.called)
+
+    def test_correct_visualization_is_chosen_numerical(self):
+        with mock.patch.object(NumericalStatisticalCheck, 'column_figure') as mock_figure:
+            TextMetadataStatisticalCheck.metadata_figure('text', NumCharsMetadata(), None, None)
+        self.assertTrue(mock_figure.called)
