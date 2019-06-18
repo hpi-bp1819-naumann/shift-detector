@@ -11,15 +11,15 @@ from shift_detector.utils.column_management import ColumnType
 
 class SimpleCheck(Check):
 
-    def __init__(self, categorical_threshold=0.05, mean_threshold=0.1, median_threshold=0.1, min_threshold=0.15,
-                 max_threshold=0.15, quartile_1_threshold=0.15, quartile_3_threshold=0.15, uniqueness_threshold=0.1,
-                 num_distinct_threshold=0.1, completeness_threshold=0.1, std_threshold=0.1):
+    def __init__(self, categorical_threshold=0.05, mean_threshold=0.15, median_threshold=0.15,
+                 value_range_threshold=0.5, quartile_1_threshold=0.2, quartile_3_threshold=0.2,
+                 uniqueness_threshold=0.1, num_distinct_threshold=0.2, completeness_threshold=0.1, std_threshold=0.25):
 
-        threshold_names_values = {'mean': mean_threshold, 'median': median_threshold, 'min': min_threshold,
-                                  'max': max_threshold, 'quartile_1': quartile_1_threshold,
+        threshold_names_values = {'mean': mean_threshold, 'median': median_threshold,
+                                  'value_range': value_range_threshold, 'quartile_1': quartile_1_threshold,
                                   'quartile_3': quartile_3_threshold, 'uniqueness': uniqueness_threshold,
-                                  'num_distinct': num_distinct_threshold, 'std': std_threshold,
-                                  'completeness': completeness_threshold}
+                                  'num_distinct': num_distinct_threshold, 'std': std_threshold, 'completeness':
+                                  completeness_threshold}
 
         if categorical_threshold < 0 or categorical_threshold > 1:
             raise ValueError('The categorical threshold of {} is not correct. It has be between the values of '
@@ -60,9 +60,13 @@ class SimpleCheck(Check):
         return relative_difference
 
     @staticmethod
-    def difference_to_string(metrics_difference):
+    def difference_to_string(metrics_difference, threshold=False):
+        metrics_difference = round(metrics_difference*100, 2)
         metrics_difference_string = str(metrics_difference) + ' %'
-        if metrics_difference > 0:
+
+        if threshold:
+            metrics_difference_string = '+/- ' + metrics_difference_string
+        elif metrics_difference > 0:
             metrics_difference_string = '+' + metrics_difference_string
 
         return metrics_difference_string
@@ -76,15 +80,16 @@ class SimpleCheck(Check):
         for column_name, metrics in numerical_comparison.items():
             examined_columns.add(column_name)
 
+            print('column {}'.format(column_name))
+
             for metric in metrics:
                 diff = self.relative_metric_difference(column_name, metric)
-                diff = round(diff, 2)
-
-                # -.01 for rounding errors
-                if abs(diff) > self.metrics_thresholds_percentage[metric] - .01:
+                # print('diff {}, in the metric {}'.format(diff, metric))
+                if abs(diff) > self.metrics_thresholds_percentage[metric]:
                     shifted_columns.add(column_name)
-                    explanation[column_name] += "Metric: {} with Diff: {}\n".format(metric,
-                                                                                    self.difference_to_string(diff))
+                    explanation[column_name] += "Metric: {}, Diff: {}, threshold: {}\n".\
+                        format(metric, self.difference_to_string(diff),
+                               self.difference_to_string(self.metrics_thresholds_percentage[metric]), threshold=True)
 
         return SimpleReport(examined_columns, shifted_columns, dict(explanation),
                             figures=[SimpleReport.numerical_plot(df1, df2)])
