@@ -101,9 +101,9 @@ class WordPredictionPrecalculation(Precalculation):
                     end_idx = start_idx + self.lstm_window + 1
                     train_data += [row[start_idx:end_idx, :]]
             else:
-                logger.info('Cannot use row {} for training. '
-                            'Expected num words > lstm_window({}), but was {}'
-                            .format(i, self.lstm_window, row.shape[0]))
+                logger.warning('Cannot use row {} for training. '
+                               'Expected num words > lstm_window({}), but was {}'
+                               .format(i, self.lstm_window, row.shape[0]))
 
         train_data = np.array(train_data)
 

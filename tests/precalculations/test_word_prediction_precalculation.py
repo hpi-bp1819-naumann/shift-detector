@@ -1,6 +1,9 @@
+import logging as logger
 from unittest import TestCase
 
+from numpy.random import seed
 from pandas import DataFrame
+from tensorflow import set_random_seed
 
 from shift_detector.precalculations.store import Store
 from shift_detector.precalculations.word_prediction_precalculation import WordPredictionPrecalculation
@@ -9,6 +12,11 @@ from shift_detector.precalculations.word_prediction_precalculation import WordPr
 class TestWordPredictionPrecalculation(TestCase):
 
     def setUp(self):
+
+        # set seeds
+        seed(1)
+        set_random_seed(1)
+
         # create alphabet list: ['a', 'b', ..., 'z']
         alphabet = [chr(letter) for letter in range(ord('a'), ord('z')+1)]
 
@@ -38,6 +46,8 @@ class TestWordPredictionPrecalculation(TestCase):
         with self.subTest("Test losses"):
             df1_prediction_loss, df2_prediction_loss = self.precalculation_shift.process(self.store)
             min_loss_diff = df1_prediction_loss * .15
+            logger.info('prediction_loss in first dataset: ', df1_prediction_loss)
+            logger.info('prediction_loss in second dataset: ', df2_prediction_loss)
             self.assertTrue(df2_prediction_loss > df1_prediction_loss + min_loss_diff)
 
             df1_prediction_loss, df2_prediction_loss = self.precalculation_no_shift.process(self.store)
