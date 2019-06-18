@@ -3,9 +3,8 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 
 from shift_detector.checks.check import Check, Report
-from shift_detector.precalculations.conditional_probabilities import rule_compression
 from shift_detector.precalculations.conditional_probabilities_precalculation import \
-    ConditionalProbabilitiesPrecalculation
+    ConditionalProbabilitiesPrecalculation, ConditionalProbabilitiesCompressionPrecalculation
 
 
 class ConditionalProbabilitiesReport(Report):
@@ -20,16 +19,16 @@ class ConditionalProbabilitiesCheck(Check):
 
     :param min_support: a float between 0 and 1. This parameter mainly impacts
         the runtime of the check. The lower ``min_support`` the more resources are
-        required both in terms of memory and CPU.
+        required during computation both in terms of memory and CPU.
     :param min_confidence: a float between 0 and 1. This parameter impacts the size
-        of the result. The higher ``min_confidence`` the more rules are generated.
+        of the result. The higher ``min_confidence`` the more rules are considered.
     :param rule_limit: an int greater than or equal to 0. At most ``rule_limit``
-        rules are printed as a result of executing this check. The rules are sorted
-        according to their significance.
+        rule clusters are printed as a result of executing this check.
+        The rule clusters are sorted according to their significance.
     :param min_delta_supports: a float between 0 and 1. Rules whose support
-        values exhibit an absolute difference of less than ``min_delta_supports`` are not printed.
+        values exhibit an absolute difference of less than ``min_delta_supports`` are not considered.
     :param min_delta_confidences: a float between 0 and 1. Rules whose confidence
-        values exhibit an absolute difference of less than ``min_delta_confidences`` are not printed.
+        values exhibit an absolute difference of less than ``min_delta_confidences`` are not considered.
     :param number_of_bins: an int greater than 0. Numerical columns are binned into ``number_of_bins``
         bins.
     :param number_of_topics: an int greater than 0. Textual columns are embedded into ``number_of_topics``
@@ -56,12 +55,15 @@ class ConditionalProbabilitiesCheck(Check):
     def run(self, store):
         rules, examined_columns = store[
             ConditionalProbabilitiesPrecalculation(self.min_support, self.min_confidence, self.number_of_bins,
-                                                   self.number_of_topics)]
+                                                   self.number_of_topics)
+        ]
 
-        filtered_rules = (rule for rule in rules if abs(rule.delta_supports) >= self.min_delta_supports and abs(
-            rule.delta_confidences) >= self.min_delta_confidences)
-
-        compressed_rules = rule_compression.compress_and_sort_rules(filtered_rules)
+        compressed_rules = store[
+            ConditionalProbabilitiesCompressionPrecalculation(self.min_support, self.min_confidence,
+                                                              self.number_of_bins, self.number_of_topics,
+                                                              self.min_delta_supports, self.min_delta_confidences,
+                                                              rules)
+        ]
 
         shifted_columns = set()
         explanation = defaultdict(list)
@@ -76,13 +78,15 @@ class ConditionalProbabilitiesCheck(Check):
         def plot_result():
             x = [abs(rule.delta_supports) for rule in rules]
             y = [abs(rule.delta_confidences) for rule in rules]
-            plt.scatter(x, y)
+            plt.scatter(x, y, alpha=0.8)
             plt.title('Conditional Probabilities')
             plt.xlabel('Absolute delta supports')
             plt.ylabel('Absolute delta confidences')
             plt.xticks([i / 10 for i in range(0, 11)])
             plt.yticks([i / 10 for i in range(0, 11)])
+            plt.axhline(y=self.min_delta_confidences, linestyle='--', linewidth=2, color='black')
+            plt.axvline(x=self.min_delta_supports, linestyle='--', linewidth=2, color='black')
             plt.show()
 
-        return ConditionalProbabilitiesReport('Conditional Probabilities', examined_columns, shifted_columns,
+        return ConditionalProbabilitiesReport('Conditional Probabilities', shifted_columns, shifted_columns,
                                               explanation, figures=[plot_result])
