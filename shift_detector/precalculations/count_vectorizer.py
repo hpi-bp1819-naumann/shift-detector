@@ -60,7 +60,8 @@ class CountVectorizer(Precalculation):
 
         for col in self.cols:
             if col not in store.column_names(ColumnType.text):
-                raise ValueError("Given column is not contained in given datasets")
+                raise ValueError("Given column is not contained in detected text columns of the datasets: {}"
+                                 .format(col))
         col_names = self.cols
 
         dict_of_arrays1 = {}
