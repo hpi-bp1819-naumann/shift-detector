@@ -1,9 +1,10 @@
 import os
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import Mock, MagicMock
 
 import pandas as pd
 
+from shift_detector.checks.check import Check
 from shift_detector.detector import Detector
 from shift_detector.checks.dummy_check import DummyCheck
 
@@ -56,6 +57,14 @@ class TestDetector(unittest.TestCase):
         with self.subTest("Test successful run"):
             self.detector.run(DummyCheck(), DummyCheck())
             self.assertEqual(len(self.detector.check_reports), 2)
+
+        with self.subTest("Test run failing check"):
+            mock = Mock(spec=Check)
+            mock.run.side_effect = Mock(side_effect=Exception("Test Exception"))
+            self.detector.run(mock)
+            self.assertEqual(len(self.detector.check_reports), 1)
+            error_msg = self.detector.check_reports[0].information['Exception']
+            self.assertEqual(error_msg, "Test Exception")
 
     def test_evaluate(self):
         mock = MagicMock()
