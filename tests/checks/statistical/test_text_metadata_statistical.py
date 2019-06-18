@@ -1,9 +1,12 @@
 import unittest
 from unittest import mock
+from unittest.mock import MagicMock
 
 import pandas as pd
+from matplotlib.axes import Axes
 from pandas.util.testing import assert_frame_equal
 
+from shift_detector.checks.statistical_checks import numerical_statistical_check
 from shift_detector.checks.statistical_checks.categorical_statistical_check import CategoricalStatisticalCheck
 from shift_detector.checks.statistical_checks.numerical_statistical_check import NumericalStatisticalCheck
 from shift_detector.checks.statistical_checks.text_metadata_statistical_check import TextMetadataStatisticalCheck
@@ -97,6 +100,40 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
         check = TextMetadataStatisticalCheck()
         result = check.metadata_figures(pvalues=pvalues, df1=df1, df2=df2)
         self.assertEqual(1, len(result))
+
+    @mock.patch('shift_detector.checks.statistical_checks.numerical_statistical_check.plt')
+    def test_column_tuples_are_handled_by_numerical_visualization(self, mock_plt):
+        columns = ['text']
+        metadata_names = ['num_chars']
+        cols = pd.MultiIndex.from_product([columns, metadata_names], names=['column', 'metadata'])
+        df1 = pd.DataFrame(columns=cols)
+        df2 = pd.DataFrame(columns=cols)
+        df1[('text', 'num_chars')] = [1, 2, 3]
+        df2[('text', 'num_chars')] = [3, 2, 1]
+        with mock.patch.object(numerical_statistical_check.vis, 'plot_ratio_histogram'):
+            NumericalStatisticalCheck.overlayed_hist_figure(('text', 'num_chars'), df1, df2)
+        mock_plt.legend.assert_called_with(['text_num_chars 1', 'text_num_chars 2'], fontsize='x-small')
+        mock_plt.title.assert_called_with('Column: text_num_chars (Histogram)', fontsize='x-large')
+        with mock.patch.object(numerical_statistical_check.vis, 'plot_cumulative_step_ratio_histogram',
+                               return_value=(pd.np.array([0]), pd.np.array([0]))):
+            NumericalStatisticalCheck.cumulative_hist_figure(('text', 'num_chars'), df1, df2)
+        mock_plt.legend.assert_called_with(['text_num_chars 1', 'text_num_chars 2', 'maximal distance = 0'],
+                                           fontsize='x-small')
+        mock_plt.title.assert_called_with('Column: text_num_chars (Cumulative Distribution)', fontsize='x-large')
+
+    @mock.patch('shift_detector.checks.statistical_checks.categorical_statistical_check.plt')
+    def test_column_tuples_are_handled_by_categorical_visualization(self, mock_plt):
+        columns = ['text']
+        metadata_names = ['category']
+        cols = pd.MultiIndex.from_product([columns, metadata_names], names=['column', 'metadata'])
+        df1 = pd.DataFrame(columns=cols)
+        df2 = pd.DataFrame(columns=cols)
+        df1[('text', 'category')] = ['latin' * 3]
+        df2[('text', 'category')] = ['arabic' * 3]
+        mock_axes = MagicMock(spec=Axes)
+        with mock.patch.object(pd.DataFrame, 'plot', return_value=mock_axes) as mock_plot:
+            CategoricalStatisticalCheck.paired_total_ratios_figure(('text', 'category'), df1, df2)
+        mock_axes.set_title.assert_called_once_with('Column: text_category', fontsize='x-large')
 
     def test_correct_visualization_is_chosen_categorical(self):
         with mock.patch.object(CategoricalStatisticalCheck, 'column_figure') as mock_figure:
