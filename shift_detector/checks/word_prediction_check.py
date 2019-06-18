@@ -10,11 +10,15 @@ from shift_detector.utils.column_management import ColumnType
 
 class WordPredictionCheck(Check):
 
-    def __init__(self, columns=None, ft_window_size=5, ft_size=100, lstm_window=5, relative_thresh=.8):
+    def __init__(self, columns=None, ft_window_size=5, ft_size=100, ft_workers=4, ft_seed=None,
+                 lstm_window=5, relative_thresh=.8):
+
         self.columns = columns
         self.relative_thresh = relative_thresh
         self.ft_window_size = ft_window_size
         self.ft_size = ft_size
+        self.ft_workers = ft_workers
+        self.ft_seed = ft_seed
         self.lstm_window = lstm_window
 
         if columns and (not isinstance(columns, Iterable) or any(not isinstance(column, str) for column in columns)):
@@ -47,6 +51,8 @@ class WordPredictionCheck(Check):
             result[col] = store[WordPredictionPrecalculation(col,
                                                              self.ft_window_size,
                                                              self.ft_size,
+                                                             self.ft_workers,
+                                                             self.ft_seed,
                                                              self.lstm_window,
                                                              verbose=0)]
 

@@ -1,7 +1,8 @@
 from unittest import TestCase
 
-import numpy as np
+from numpy.random import seed
 from pandas import DataFrame
+from tensorflow import set_random_seed
 
 from shift_detector.checks.word_prediction_check import WordPredictionCheck
 from shift_detector.precalculations.store import Store
@@ -10,7 +11,10 @@ from shift_detector.precalculations.store import Store
 class TestWordPredictionCheck(TestCase):
 
     def setUp(self):
-        np.random.seed(1)
+
+        # set seeds
+        seed(1)
+        set_random_seed(1)
 
         alphabet = [chr(letter) for letter in range(ord('a'), ord('z')+1)]
 
@@ -23,7 +27,7 @@ class TestWordPredictionCheck(TestCase):
         self.df1 = DataFrame.from_dict(data1)
         self.df2 = DataFrame.from_dict(data2)
         self.store = Store(self.df1, self.df2)
-        self.check = WordPredictionCheck(relative_thresh=.5, ft_size=10)
+        self.check = WordPredictionCheck(relative_thresh=.5, ft_size=10, ft_workers=1, ft_seed=0)
 
     def test_init(self):
         with self.subTest("Test wrong columns"):
