@@ -40,28 +40,26 @@ class Report:
 
         return res_dict
 
-    def explanation_str(self):
+    def print_explanation(self):
         msg = ""
         for column, explanation in self.explanation.items():
             msg += "Column '{}':\n{}\n".format(column, explanation)
-        return msg
+        print(msg)
 
-    def information_str(self):
+    def print_information(self):
         msg = ""
         for tag, information in self.information.items():
             msg += "'{}':\n{}\n".format(tag, information)
-        return msg
+        print(msg)
 
-    def __str__(self):
-        msg = ""
-        # msg += "{}\n".format(self.check_name)
-        msg += "Examined Columns: {}\n".format(self.examined_columns)
-        msg += "Shifted Columns: {}\n\n".format(self.shifted_columns)
+    def print_report(self):
+        nprint(self.check_name, text_formatting='h2')
+        print("Examined Columns: {}".format(self.examined_columns))
+        print("Shifted Columns: {}".format(self.shifted_columns))
+        print()
 
-        msg += self.explanation_str()
-        msg += self.information_str()
-
-        return msg
+        self.print_explanation()
+        self.print_information()
 
 
 class Check(metaclass=ABCMeta):

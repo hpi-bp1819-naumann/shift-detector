@@ -3,7 +3,7 @@ import pandas as pd
 from shift_detector.checks.check import Report
 from shift_detector.checks.statistical_checks.categorical_statistical_check import CategoricalStatisticalCheck
 from shift_detector.checks.statistical_checks.numerical_statistical_check import NumericalStatisticalCheck
-from shift_detector.checks.statistical_checks.statistical_check import StatisticalCheck
+from shift_detector.checks.statistical_checks.statistical_check import StatisticalCheck, StatisticalReport
 from shift_detector.precalculations.text_metadata import TextMetadata
 from shift_detector.utils.column_management import ColumnType
 from shift_detector.utils.errors import UnknownMetadataReturnColumnTypeError
@@ -73,9 +73,9 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
                 else:
                     raise UnknownMetadataReturnColumnTypeError(mdtype)
                 pvalues[(column, mdtype.metadata_name())] = [p]
-        return Report("Text Metadata Check",
-                      examined_columns=list(df1.columns.levels[0]),
-                      shifted_columns=self.significant_columns(pvalues),
-                      explanation=self.explain(pvalues),
-                      information={'test_results': pvalues},
-                      figures=self.metadata_figures(pvalues, part1, part2))
+        return StatisticalReport("Text Metadata Check",
+                                 examined_columns=list(df1.columns.levels[0]),
+                                 shifted_columns=self.significant_columns(pvalues),
+                                 explanation=self.explain(pvalues),
+                                 information={'test_results': pvalues},
+                                 figures=self.metadata_figures(pvalues, part1, part2))
