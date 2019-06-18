@@ -174,14 +174,14 @@ class TestLdaCheck(unittest.TestCase):
         with self.subTest("Test successful run without specifying the 'cols' parameter"):
             report = self.lda_report1.run(self.store)
 
-            self.assertEqual(report.explanation['Topic 0 diff in column text'], 39.2)
-            self.assertEqual(report.explanation['Topic 1 diff in column text'], -39.2)
+            self.assertAlmostEqual(report.explanation['Topic 0 diff in column text'], 39.2)
+            self.assertAlmostEqual(report.explanation['Topic 1 diff in column text'], -39.2)
 
         with self.subTest("Test successful run with specifying the 'cols' parameter"):
             report = self.lda_report3.run(self.store)
 
-            self.assertEqual(report.explanation['Topic 0 diff in column text'], 39.2)
-            self.assertEqual(report.explanation['Topic 1 diff in column text'], -39.2)
+            self.assertAlmostEqual(report.explanation['Topic 0 diff in column text'], 39.2)
+            self.assertAlmostEqual(report.explanation['Topic 1 diff in column text'], -39.2)
 
         with self.subTest("Test unsuccessful run with specifying a wrong 'cols' parameter"):
             self.assertRaises(ValueError, lambda: self.lda_report4.run(self.store))
