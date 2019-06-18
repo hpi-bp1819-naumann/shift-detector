@@ -123,13 +123,12 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
     def test_cumulative_hist_figure_looks_right(self, mock_plt):
         df1 = pd.DataFrame(self.significant_1, columns=['meaningful_numbers'])
         df2 = pd.DataFrame(self.significant_2, columns=['meaningful_numbers'])
-        with mock.patch.object(numerical_statistical_check.plt, 'hist',
-                               return_value=[np.array([1, 2, 3]),
-                                             np.array([0, 1, 2, 3]),
-                                             None]) as mock_hist:
+        with mock.patch.object(numerical_statistical_check.vis, 'plot_cumulative_step_ratio_histogram',
+                               return_value=[np.array([0, 1, 2, 3]),
+                                             np.array([0, 1, 2, 3])]) as mock_cum_hist:
             NumericalStatisticalCheck.cumulative_hist_figure('meaningful_numbers',
                                                              df1, df2, bins=3)
-        self.assertTrue(mock_hist.called)
+        self.assertTrue(mock_cum_hist.called)
         self.assertTrue(mock_plt.plot.called)
         self.assertTrue(mock_plt.legend.called)
         self.assertTrue(mock_plt.title.called)
@@ -141,13 +140,10 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
     def test_overlayed_hist_figure_looks_right(self, mock_plt):
         df1 = pd.DataFrame(self.significant_1, columns=['meaningful_numbers'])
         df2 = pd.DataFrame(self.significant_2, columns=['meaningful_numbers'])
-        with mock.patch.object(numerical_statistical_check.plt, 'hist',
-                               return_value=[np.array([1, 2, 3]),
-                                             np.array([0, 1, 2, 3]),
-                                             None]) as mock_hist:
+        with mock.patch.object(numerical_statistical_check.vis, 'plot_ratio_histogram') as mock_ratio_hist:
             NumericalStatisticalCheck.overlayed_hist_figure('meaningful_numbers',
                                                             df1, df2, bins=3)
-        self.assertTrue(mock_hist.called)
+        self.assertTrue(mock_ratio_hist.called)
         self.assertTrue(mock_plt.legend.called)
         self.assertTrue(mock_plt.title.called)
         self.assertTrue(mock_plt.xlabel.called)
