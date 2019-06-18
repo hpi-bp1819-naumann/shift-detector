@@ -3,12 +3,13 @@ from collections import defaultdict
 from typing import Union
 
 import pandas as pd
-from IPython.display import display
+from IPython.display import display, Markdown
 
 from shift_detector.checks.check import Check
 from shift_detector.precalculations.store import Store
 from shift_detector.utils.column_management import column_names
 from shift_detector.utils.data_io import read_from_csv
+from shift_detector.utils.neat_print import nprint
 
 
 class Detector:
@@ -69,7 +70,9 @@ class Detector:
         """
         Evaluate the reports.
         """
-        print("OVERVIEW")
+        nprint("OVERVIEW", text_formatting='h1')
+        nprint('Executed {} checks'.format(len(self.check_reports)))
+
         detected = defaultdict(int)
         examined = defaultdict(int)
 
@@ -94,8 +97,9 @@ class Detector:
         df_summary = pd.DataFrame(sorted_summary, columns=['Column', '# Checks Failed', '# Checks Executed'])
         display(df_summary)
 
-        print("DETAILS")
+        nprint("DETAILS", text_formatting='h1')
         for report in self.check_reports:
+            nprint(report.check_name, text_formatting='h2')
             print(report)
             for fig in report.figures:
                 fig()
