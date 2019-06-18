@@ -3,12 +3,8 @@ from collections import defaultdict
 from typing import Union
 
 import pandas as pd
-<<<<<<< HEAD
 from IPython.display import display
 import nltk
-=======
-from IPython.display import display, Markdown
->>>>>>> master
 
 from shift_detector.checks.check import Check
 from shift_detector.precalculations.store import Store
