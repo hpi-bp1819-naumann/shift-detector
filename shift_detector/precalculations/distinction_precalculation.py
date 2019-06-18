@@ -4,7 +4,6 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 from datawig import SimpleImputer
-from datawig.utils import logger as datawig_logger
 from datawig.utils import random_split
 from sklearn.metrics import accuracy_score
 from sklearn.utils import shuffle
@@ -32,8 +31,6 @@ class DistinctionPrecalculation(Precalculation):
         self.output_column = '__shift_detector__dataset'
         self.output_path = 'tmp/basicChecks_params'
         self.imputer = None
-
-        datawig_logger.setLevel("ERROR")
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):

@@ -1,4 +1,3 @@
-import logging as logger
 from collections import defaultdict
 
 from shift_detector.checks.check import Check, Report
@@ -13,7 +12,6 @@ class SorensenDiceCheck(Check):
         self.n = n
 
     def run(self, store):
-        logger.info("Execute Sorensen Dice Check")
         data = store[SorensenDicePrecalculations(ngram_type=self.ngram_type, n=self.n)]
 
         examined_columns = set(data.keys())
