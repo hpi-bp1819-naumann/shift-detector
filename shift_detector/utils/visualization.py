@@ -26,4 +26,4 @@ def plot_ratio_histogram(column1, column2, bin_edges):
     bin_ratios2 = bin_counts2 / float(len(column2))
     bin_width = bin_edges[1] - bin_edges[0]
     plt.bar(bin_edges[:-1], bin_ratios1, width=bin_width, facecolor=COLOR_1)
-    plt.bar(bin_edges[:-1], bin_ratios2, width=bin_width, facecolor=COLOR_2)
+    plt.bar(bin_edges[:-1], bin_ratios2, width=bin_width, alpha=0.5, facecolor=COLOR_2)
