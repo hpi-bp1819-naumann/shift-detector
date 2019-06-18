@@ -149,7 +149,9 @@ class LdaEmbedding(Precalculation):
                     self.trained_model = model
 
                 # Always takes the topic with the highest probability as the dominant topic
-                transformed1[topic_labels[i]] = [arr1.argmax() for arr1 in self.trained_model.transform(vectorized1[col])]
-                transformed2[topic_labels[i]] = [arr2.argmax() for arr2 in self.trained_model.transform(vectorized2[col])]
+                transformed1[topic_labels[i]] = [arr1.argmax() for arr1 in
+                                                 self.trained_model.transform(vectorized1[col])]
+                transformed2[topic_labels[i]] = [arr2.argmax() for arr2 in
+                                                 self.trained_model.transform(vectorized2[col])]
 
         return transformed1, transformed2

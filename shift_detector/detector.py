@@ -4,11 +4,15 @@ from typing import Union
 
 import pandas as pd
 from IPython.display import display
+import nltk
 
 from shift_detector.checks.check import Check
 from shift_detector.precalculations.store import Store
 from shift_detector.utils.column_management import column_names
 from shift_detector.utils.data_io import read_from_csv
+
+from shift_detector.checks.statistical_checks.text_metadata_statistical_check import TextMetadataStatisticalCheck
+from shift_detector.checks.lda_check import LdaCheck
 
 
 class Detector:
@@ -59,10 +63,23 @@ class Detector:
             class_names = map(lambda c: c.__class__.__name__, checks)
             raise Exception("All elements in checks should be a Check. Received: {}".format(', '.join(class_names)))
 
+        download_nltk = False
         check_reports = []
         for check in checks:
+            if isinstance(check, TextMetadataStatisticalCheck) or isinstance(check, LdaCheck):
+                download_nltk = True
             print("Executing {}".format(check.__class__.__name__))
             check_reports.append(check.run(self.store))
+
+        if download_nltk:
+            try:
+                nltk.download('stopwords')
+                nltk.download('universal_tagset')
+                nltk.download('punkt')
+                nltk.download('averaged_perceptron_tagger')
+            except:
+                print('You cannot reach the nltk server, your nltk packages might be out of date.')
+
         self.check_reports = check_reports
 
     def evaluate(self):

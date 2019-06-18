@@ -47,7 +47,8 @@ class WordPredictionPrecalculation(Precalculation):
 
         if self.column not in store.column_names(ColumnType.text):
             raise ValueError('Column {} does not exist or is no textual column. '
-                             'Please pass one of [{}] instead.'.format(self.column, store.column_names(ColumnType.text)))
+                             'Please pass one of [{}] instead.'
+                             .format(self.column, store.column_names(ColumnType.text)))
 
         ft_model = FastText(size=self.ft_size, window=self.ft_window_size, min_count=1, workers=4)
         processed_df1, processed_df2 = store[TextEmbeddingPrecalculation(model=ft_model, agg=None)]

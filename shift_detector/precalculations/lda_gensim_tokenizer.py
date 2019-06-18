@@ -61,7 +61,7 @@ class LdaGensimTokenizer(Precalculation):
             remove words that are shorter than 2 chars or longer than 15 chars or that start with '_',
             convert words to unicode
             """
-            tokenized =[]
+            tokenized = []
             for entry in texts:
                 wordlist = []
                 for word in re.sub(r"[^\w+\s]|\b[a-zA-Z]\b", ' ', entry).split():
