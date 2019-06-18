@@ -172,6 +172,6 @@ class SimpleReport(Report):
                 subplot.set_xticklabels(attribute_names)
                 subplot.legend()
 
-            f.show()
+            plt.show()
 
         return custom_plot
