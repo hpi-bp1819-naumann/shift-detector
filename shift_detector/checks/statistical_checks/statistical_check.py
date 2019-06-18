@@ -12,7 +12,7 @@ class StatisticalCheck(Check):
     :param sampling: whether or not to use sampling for the larger set if compared data sets have unequal sizes
     :param sampling_seed: seed to use for sampling, if sampling is enabled
     """
-    def __init__(self, significance=0.01, use_sampling=False, sampling_seed=None):
+    def __init__(self, significance=0.01, use_sampling=False, sampling_seed=0):
         self.significance = significance
         self.use_sampling = use_sampling
         self.seed = sampling_seed

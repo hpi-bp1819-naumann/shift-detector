@@ -68,19 +68,6 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
         self.assertEqual(1, len(result))
 
     @mock.patch('shift_detector.checks.statistical_checks.categorical_statistical_check.plt')
-    def test_stacked_row_ratio_figure_looks_right(self, mock_plt):
-        with mock.patch.object(pd.DataFrame, 'plot') as mock_plot:
-            CategoricalStatisticalCheck.stacked_row_ratios_figure('vaccination_reaction',
-                                                                  self.df1_significant, self.df2_significant)
-        self.assertTrue(mock_plot.called)
-        self.assertTrue(mock_plot.return_value.set_title.called)
-        self.assertTrue(mock_plot.return_value.set_xlabel.called)
-        self.assertTrue(mock_plot.return_value.set_ylabel.called)
-        self.assertTrue(mock_plt.axhline.called)
-        self.assertTrue(mock_plt.text.called)
-        self.assertTrue(mock_plt.show.called)
-
-    @mock.patch('shift_detector.checks.statistical_checks.categorical_statistical_check.plt')
     def test_paired_total_ratios_figure_looks_right(self, mock_plt):
         with mock.patch.object(pd.DataFrame, 'plot') as mock_plot:
             CategoricalStatisticalCheck.paired_total_ratios_figure('vaccination_reaction',
