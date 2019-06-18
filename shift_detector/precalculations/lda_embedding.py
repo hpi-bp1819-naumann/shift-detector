@@ -5,7 +5,7 @@ from sklearn.feature_extraction.text import *
 from gensim.sklearn_api import LdaTransformer
 from gensim.corpora import Dictionary
 import lda
-from copy import copy
+from copy import deepcopy
 from shift_detector.precalculations.precalculation import Precalculation
 from shift_detector.precalculations.count_vectorizer import CountVectorizer
 from shift_detector.precalculations.lda_gensim_tokenizer import LdaGensimTokenizer
@@ -106,7 +106,8 @@ class LdaEmbedding(Precalculation):
         else:
             for col in self.cols:
                 if col not in store.column_names(ColumnType.text):
-                    raise ValueError("Given column is not contained in given datasets")
+                    raise ValueError("Given column is not contained in detected text columns of the datasets: {}"
+                                     .format(col))
             col_names = self.cols
 
         topic_labels = ['topics ' + col for col in col_names]
@@ -128,7 +129,7 @@ class LdaEmbedding(Precalculation):
                 corpus2 = [gensim_dict2.doc2bow(line) for line in tokenized2[col]]
 
                 if not self.trained_model:
-                    model = copy(self.model)
+                    model = deepcopy(self.model)
                     model = model.fit(corpus_merged)
                     self.trained_model = model
 
@@ -143,7 +144,7 @@ class LdaEmbedding(Precalculation):
 
             for i, col in enumerate(col_names):
                 if not self.trained_model:
-                    model = copy(self.model)
+                    model = deepcopy(self.model)
                     model = model.fit(vectorized_merged[col])
                     self.trained_model = model
 
