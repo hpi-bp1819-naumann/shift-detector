@@ -99,14 +99,16 @@ class WordPredictionPrecalculation(Precalculation):
                     end_idx = start_idx + self.lstm_window + 1
                     train_data += [row[start_idx:end_idx, :]]
             else:
-                logger.info(f'Cannot use row {i} for training. '
-                            f'Expected num words > lstm_window({self.lstm_window}), but was {row.shape[0]}')
+                logger.info('Cannot use row {} for training. '
+                            'Expected num words > lstm_window({}), but was {}'
+                            .format(i, self.lstm_window, row.shape[0]))
 
         train_data = np.array(train_data)
 
         if train_data.shape == (0,):
-            raise ValueError(f'Cannot execute Check. '
-                             f'Text column does not contain any row with num words > lstm_window({self.lstm_window})')
+            raise ValueError('Cannot execute Check. '
+                             'Text column does not contain any row with num words > lstm_window({})'
+                             .format(self.lstm_window))
 
         features = train_data[:, :self.lstm_window, :]
         labels = train_data[:, self.lstm_window, :]
