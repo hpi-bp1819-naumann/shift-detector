@@ -9,8 +9,8 @@ from shift_detector.precalculations.conditional_probabilities_precalculation imp
 
 
 class ConditionalProbabilitiesReport(Report):
-    def explanation_str(self):
-        return '\n\n'.join('{}'.format('\n'.join(rules)) for rules in self.explanation.values())
+    def print_explanation(self):
+        print('\n\n'.join('{}'.format('\n'.join(rules)) for rules in self.explanation.values()))
 
 
 class ConditionalProbabilitiesCheck(Check):
