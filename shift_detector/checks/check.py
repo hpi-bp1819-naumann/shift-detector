@@ -2,6 +2,8 @@ from abc import ABCMeta, abstractmethod
 from collections import defaultdict
 from itertools import chain
 
+from shift_detector.utils.neat_print import nprint
+
 
 class Report:
 
@@ -52,7 +54,7 @@ class Report:
 
     def __str__(self):
         msg = ""
-        msg += "{}\n".format(self.check_name)
+        # msg += "{}\n".format(self.check_name)
         msg += "Examined Columns: {}\n".format(self.examined_columns)
         msg += "Shifted Columns: {}\n\n".format(self.shifted_columns)
 
