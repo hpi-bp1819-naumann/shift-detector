@@ -56,8 +56,7 @@ class TestReport(TestCase):
 
     def test_str(self):
         print(self.report)
-        expected_msg = "Check\n" \
-                       "Examined Columns: ['shift', 'no_shift']\n" \
+        expected_msg = "Examined Columns: ['shift', 'no_shift']\n" \
                        "Shifted Columns: ['shift']\n" \
                        "\n" \
                        "Column 'shift':\n" \

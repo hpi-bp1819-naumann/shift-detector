@@ -53,10 +53,10 @@ class Store:
             raise Exception("Needed Preprocessing must be of type Precalculation or ColumnType")
         '''
         if needed_preprocessing in self.preprocessings:
-            print("- Use already executed {}".format(needed_preprocessing.__class__.__name__))
+            print("    - Use already executed {}".format(needed_preprocessing.__class__.__name__))
             return self.preprocessings[needed_preprocessing]
 
-        print("- Executing {}".format(needed_preprocessing.__class__.__name__))
+        print("    - Executing {}".format(needed_preprocessing.__class__.__name__))
         preprocessing = needed_preprocessing.process(self)
         self.preprocessings[needed_preprocessing] = preprocessing
         return preprocessing
