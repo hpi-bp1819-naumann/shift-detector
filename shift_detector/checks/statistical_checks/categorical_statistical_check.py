@@ -37,7 +37,8 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
                                                                                       str(column) + ' 2']))
         axes = value_ratios.plot(kind='barh', fontsize='medium')
         axes.invert_yaxis()  # to match order of legend
-        axes.set_title(str(column), fontsize='x-large')
+        column_name = column if isinstance(column, str) else '_'.join(column)
+        axes.set_title('Column: ' + column_name, fontsize='x-large')
         axes.set_xlabel('value ratio', fontsize='medium')
         axes.set_ylabel('column value', fontsize='medium')
         plt.show()
