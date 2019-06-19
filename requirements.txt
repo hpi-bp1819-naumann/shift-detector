@@ -7,7 +7,7 @@ textstat
 pyspellchecker
 langdetect
 pandas
-numpy >= 1.15.0
+numpy==1.16.2
 scipy
 sklearn
 datawig
