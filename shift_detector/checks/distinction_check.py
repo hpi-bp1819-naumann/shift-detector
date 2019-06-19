@@ -1,7 +1,10 @@
 from collections.abc import Iterable
 from numbers import Number
 
-from sklearn.metrics import classification_report
+import numpy as np
+from IPython.core.display import display
+from pandas import DataFrame
+from sklearn.metrics import precision_recall_fscore_support
 
 from shift_detector.checks.check import Check, Report
 from shift_detector.precalculations.distinction_precalculation import DistinctionPrecalculation
@@ -33,26 +36,53 @@ class DistinctionCheck(Check):
         input_columns = self.columns
         if not input_columns:
             input_columns = store.column_names()
+        input_columns = set(input_columns)
 
-        examined_columns, precalculation_result = store[DistinctionPrecalculation(input_columns, self.num_epochs)]
+        i = 1
+        complete_examined_columns = []
+        complete_shifted_columns = []
+        complete_explanation = {}
+        complete_information = {}
 
-        shifted_columns, explanation = self.detect_shifts(examined_columns, precalculation_result)
-        information = self.information(precalculation_result)
+        while input_columns:
+            examined_columns, precalculation_result = store[DistinctionPrecalculation(input_columns, self.num_epochs)]
+            if not complete_examined_columns:
+                complete_examined_columns = examined_columns.copy()
 
-        return Report("Distinction Check", examined_columns, shifted_columns, explanation, information)
+            shifted_columns, explanation = self.detect_shifts(examined_columns, precalculation_result)
+
+            complete_shifted_columns.extend(shifted_columns)
+            complete_explanation['Run ' + str(i)] = explanation
+            complete_information['Classification Report - Run ' + str(i)] = self.information(precalculation_result)
+
+            if not shifted_columns:
+                break
+            input_columns -= set(shifted_columns)
+            i += 1
+
+        return DistinctionReport("Distinction Check",
+                                 complete_examined_columns,
+                                 complete_shifted_columns,
+                                 complete_explanation,
+                                 complete_information)
 
     def detect_shifts(self, examined_columns, result):
         shifted_columns = []
-        explanation = {}
 
         base_accuracy = result['base_accuracy']
         permuted_accuracies = result['permuted_accuracies']
 
-        for column in examined_columns:
+        explanation = DataFrame(columns=['column', 'base accuracy in %', 'accuracy in %'])
+
+        for i, column in enumerate(examined_columns):
             accuracy = permuted_accuracies[column]
-            explanation[column] = "{} -> {}".format(base_accuracy, accuracy)
+            explanation.loc[i] = [column, base_accuracy * 100, accuracy * 100]
             if accuracy < base_accuracy * (1 - self.relative_threshold):
                 shifted_columns.append(column)
+
+        explanation.loc[:, 'diff'] = explanation['base accuracy in %'] - explanation['accuracy in %']
+        explanation = explanation.round(2)
+        explanation = explanation.sort_values(by=['diff'], ascending=False).reset_index(drop=True)
 
         return shifted_columns, explanation
 
@@ -61,11 +91,31 @@ class DistinctionCheck(Check):
         y_true = precalculation_result['y_true']
         y_pred = precalculation_result['y_pred']
 
-        report = classification_report(y_true, y_pred)
-        classification = classification_report(y_true, y_pred, output_dict=True)
+        total = str(len(y_true))
 
-        information = dict()
-        information['Classification Report'] = report
-        information['F1 score df1'] = classification["A"]["f1-score"]
-        information['F1 score df2'] = classification["B"]["f1-score"]
-        return information
+        df = DataFrame(columns=['label', 'precision', 'recall', 'fscore', 'support'])
+        standard_report = np.transpose(precision_recall_fscore_support(y_true, y_pred, labels=['A', 'B']))
+        df.loc[0] = ['A'] + list(standard_report[0])
+        df.loc[1] = ['B'] + list(standard_report[1])
+        micro = list(precision_recall_fscore_support(y_true, y_pred, average='micro'))[:3]
+        df.loc[2] = ['micro avg'] + micro + [total]
+        macro = list(precision_recall_fscore_support(y_true, y_pred, average='macro'))[:3]
+        df.loc[3] = ['macro avg'] + macro + [total]
+        weighted = list(precision_recall_fscore_support(y_true, y_pred, average='weighted'))[:3]
+        df.loc[4] = ['weighted avg'] + weighted + [total]
+        df = df.round(4)
+
+        return df
+
+
+class DistinctionReport(Report):
+
+    def print_explanation(self):
+        for run, explanation in self.explanation.items():
+            print("{}:".format(run))
+            display(explanation)
+
+    def print_information(self):
+        for tag, information in self.information.items():
+            print("{}:".format(tag))
+            display(information)
