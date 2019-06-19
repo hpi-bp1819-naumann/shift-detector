@@ -1,4 +1,5 @@
 import logging as logger
+import os
 from unittest import TestCase
 
 from numpy.random import seed
@@ -16,6 +17,7 @@ class TestWordPredictionPrecalculation(TestCase):
         # set seeds
         seed(1)
         set_random_seed(1)
+        os.environ['PYTHONHASHSEED'] = "0"
 
         # create alphabet list: ['a', 'b', ..., 'z']
         alphabet = [chr(letter) for letter in range(ord('a'), ord('z')+1)]
