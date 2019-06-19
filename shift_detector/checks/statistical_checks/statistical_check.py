@@ -1,6 +1,7 @@
 from abc import abstractmethod
 
 import pandas as pd
+from IPython.display import display
 
 from shift_detector.checks.check import Check, Report
 
@@ -110,9 +111,17 @@ class SimpleStatisticalCheck(StatisticalCheck):
             p = self.statistical_test(part1[column], part2[column])
             pvalues[column] = [p]
         significant_columns = self.significant_columns(pvalues)
-        return Report("Statistical Check",
-                      examined_columns=columns,
-                      shifted_columns=significant_columns,
-                      explanation=self.explain(pvalues),
-                      information={'test_results': pvalues},
-                      figures=self.column_figures(significant_columns, part1, part2))
+        return StatisticalReport("Statistical Check",
+                                 examined_columns=columns,
+                                 shifted_columns=significant_columns,
+                                 explanation=self.explain(pvalues),
+                                 information={'test_results': pvalues},
+                                 figures=self.column_figures(significant_columns, part1, part2))
+
+
+class StatisticalReport(Report):
+
+    def print_information(self):
+        test_results = self.information['test_results']
+        print("Test Result:")
+        display(test_results)
