@@ -29,7 +29,7 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
     @staticmethod
     def paired_total_ratios_figure(column, df1, df2, top_k=50):
         value_counts = pd.concat([df1[column].value_counts().head(top_k), df2[column].value_counts().head(top_k)],
-                                 axis=1, sort=False).sort_index()
+                                 axis=1).sort_index()
         value_ratios = value_counts.fillna(0).apply(axis='columns',
                                                     func=lambda row: pd.Series([row.iloc[0] / len(df1[column]),
                                                                                 row.iloc[1] / len(df2[column])],
