@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from numbers import Number
 from sklearn.decomposition import LatentDirichletAllocation as LDA_skl
 from sklearn.feature_extraction.text import *
@@ -99,6 +100,14 @@ class LdaEmbedding(Precalculation):
             return hash(tuple([self.__class__, self.model.__class__, self.n_topics,
                                self.n_iter, self.random_state]))
 
+    @staticmethod
+    def get_topic_word_distribution(model, vocab, n_top_words):
+        topic_words = {}
+        for topic, comp in enumerate(model.components_):
+            word_idx = np.argsort(comp)[::-1]
+            topic_words[topic] = [vocab[i] for i in word_idx]
+        return topic_words.items()
+
     def process(self, store):
         if isinstance(self.cols, str):
             if self.cols in store.column_names(ColumnType.text):
@@ -114,6 +123,7 @@ class LdaEmbedding(Precalculation):
 
         transformed1 = pd.DataFrame()
         transformed2 = pd.DataFrame()
+        topic_words = {}
 
         if self.lib == 'gensim':
             tokenized1, tokenized2 = store[LdaGensimTokenizer(stop_words=self.stop_words, cols=self.cols)]
@@ -141,6 +151,10 @@ class LdaEmbedding(Precalculation):
             vectorized1, vectorized2 = store[CountVectorizer(stop_words=self.stop_words, max_features=self.max_features,
                                                              cols=self.cols)]
             vectorized_merged = dict(vectorized1, **vectorized2)
+            vocab1 = vectorized1.get_feature_names()
+            vocab2 = vectorized1.get_feature_names()
+            vocab_merged = dict(vocab1, **vocab2)
+
 
             for i, col in enumerate(col_names):
                 if not self.trained_model:
@@ -151,5 +165,6 @@ class LdaEmbedding(Precalculation):
                 # Always takes the topic with the highest probability as the dominant topic
                 transformed1[topic_labels[i]] = [arr1.argmax() for arr1 in self.trained_model.transform(vectorized1[col])]
                 transformed2[topic_labels[i]] = [arr2.argmax() for arr2 in self.trained_model.transform(vectorized2[col])]
+                topic_words[col] = self.get_topic_word_distribution(model, vocab_merged)
 
-        return transformed1, transformed2
+        return transformed1, transformed2, topic_words

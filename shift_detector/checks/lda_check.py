@@ -2,7 +2,9 @@ from shift_detector.checks.check import Check, Report
 from shift_detector.precalculations.lda_embedding import LdaEmbedding
 from shift_detector.utils.column_management import ColumnType
 import matplotlib.pyplot as plt
+from wordcloud import WordCloud
 import pandas as pd
+
 
 
 class LdaCheck(Check):
@@ -42,22 +44,28 @@ class LdaCheck(Check):
             self.cols = list(col_names)
             col_names = self.cols
 
-        df1_embedded, df2_embedded = store[LdaEmbedding(n_topics=self.n_topics, n_iter=self.n_iter, lib=self.lib,
-                                                        random_state=self.random_state, cols=self.cols,
-                                                        trained_model=self.trained_model, stop_words=self.stop_words,
-                                                        max_features=self.max_features)]
+        df1_embedded, df2_embedded, twd = store[LdaEmbedding(n_topics=self.n_topics, n_iter=self.n_iter, lib=self.lib,
+                                                             random_state=self.random_state, cols=self.cols,
+                                                             trained_model=self.trained_model, stop_words=self.stop_words,
+                                                             max_features=self.max_features)]
 
         for col in col_names:
-            count_topics1 = df1_embedded['topics ' + col].value_counts()
-            count_topics2 = df2_embedded['topics ' + col].value_counts()
+            count_topics1 = df1_embedded['topics ' + col].value_counts().sort_index()
+            count_topics2 = df2_embedded['topics ' + col].value_counts().sort_index()
 
-            labels1_ordered, values1_ordered = zip(*sorted(count_topics1.items(), key=lambda kv: kv[0]))
-            values1_percentage = [x * 100 / sum(values1_ordered) for x in values1_ordered]
 
-            labels2_ordered, values2_ordered = zip(*sorted(count_topics2.items(), key=lambda kv: kv[0]))
-            values2_percentage = [x * 100 / sum(values2_ordered) for x in values2_ordered]
+
+            #labels1_ordered, values1_ordered = zip(*sorted(count_topics1.items(), key=lambda kv: kv[0]))
+            values1_percentage = [x * 100 / len(df1_embedded['topics ' + col]) for x in count_topics1.values]
+
+            #labels2_ordered, values2_ordered = zip(*sorted(count_topics2.items(), key=lambda kv: kv[0]))
+            values2_percentage = [x * 100 / len(df2_embedded['topics ' + col]) for x in count_topics2.values]
+
+            print(values1_percentage)
+            print(values2_percentage)
 
             for i, (v1, v2) in enumerate(zip(values1_percentage, values2_percentage)):
+                print(abs(round(v1 - v2, 1)))
                 # number of rounded digits is 1 per default
                 if abs(round(v1 - v2, 1)) >= self.significance:
                     shifted_columns.add(col)
@@ -66,26 +74,42 @@ class LdaCheck(Check):
         return Report(check_name='LDA Check',
                       examined_columns=col_names,
                       shifted_columns=shifted_columns,
-                      explanation=explanation)
+                      explanation=explanation,
+                      figures=self.column_figures(col_names, df1_embedded, df2_embedded))
 
     @staticmethod
-    def paired_total_ratios_figure(column, df1, df2, top_k=50):
-        value_counts = pd.concat([df1[column].value_counts().head(top_k), df2[column].value_counts().head(top_k)],
+    def paired_total_ratios_figure(column, df1, df2):
+        value_counts = pd.concat([df1['topics ' + column].value_counts(), df2['topics ' + column].value_counts()],
                                  axis=1).sort_index()
         value_ratios = value_counts.fillna(0).apply(axis='columns',
-                                                    func=lambda row: pd.Series([row.iloc[0] / len(df1[column]),
-                                                                                row.iloc[1] / len(df2[column])],
+                                                    func=lambda row: pd.Series([100 * row.iloc[0] /
+                                                                                len(df1['topics ' + column]),
+                                                                                100 * row.iloc[1] /
+                                                                                len(df2['topics ' + column])],
                                                                                index=[str(column) + ' 1',
                                                                                       str(column) + ' 2']))
+        print(value_ratios)
         axes = value_ratios.plot(kind='barh', fontsize='medium')
         axes.invert_yaxis()  # to match order of legend
         axes.set_title(str(column), fontsize='x-large')
-        axes.set_xlabel('value ratio', fontsize='medium')
-        axes.set_ylabel('column value', fontsize='medium')
+        axes.set_xlabel('percentage', fontsize='medium')
+        axes.set_ylabel('topics', fontsize='medium')
         plt.show()
 
-    def column_figures(self, significant_columns, df1, df2):
+    def column_figure(self, column, df1, df2, twd):
+        self.paired_total_ratios_figure(column, df1, df2)
+        self.wordcloud(column, twd)
+
+    def column_figures(self, significant_columns, df1, df2, twd):
         plot_functions = []
         for column in significant_columns:
-            plot_functions.append(lambda col=column: self.column_figure(col, df1, df2))
+            plot_functions.append(lambda col=column: self.column_figure(col, df1, df2, twd))
         return plot_functions
+
+    @staticmethod
+    def wordcloud(column, twd):
+        wordcloud = WordCloud(background_color='white').generate(' '.join(twd[column])) # add loop for topics
+        plt.figure(figsize=(12, 12))
+        plt.imshow(wordcloud, interpolation="bilinear")
+        plt.axis("off")
+        plt.show()
