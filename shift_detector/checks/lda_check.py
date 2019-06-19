@@ -1,7 +1,8 @@
 from shift_detector.checks.check import Check, Report
 from shift_detector.precalculations.lda_embedding import LdaEmbedding
 from shift_detector.utils.column_management import ColumnType
-from collections import Counter
+import matplotlib.pyplot as plt
+import pandas as pd
 
 
 class LdaCheck(Check):
@@ -47,8 +48,8 @@ class LdaCheck(Check):
                                                         max_features=self.max_features)]
 
         for col in col_names:
-            count_topics1 = Counter(df1_embedded['topics ' + col])
-            count_topics2 = Counter(df2_embedded['topics ' + col])
+            count_topics1 = df1_embedded['topics ' + col].value_counts()
+            count_topics2 = df2_embedded['topics ' + col].value_counts()
 
             labels1_ordered, values1_ordered = zip(*sorted(count_topics1.items(), key=lambda kv: kv[0]))
             values1_percentage = [x * 100 / sum(values1_ordered) for x in values1_ordered]
@@ -66,3 +67,25 @@ class LdaCheck(Check):
                       examined_columns=col_names,
                       shifted_columns=shifted_columns,
                       explanation=explanation)
+
+    @staticmethod
+    def paired_total_ratios_figure(column, df1, df2, top_k=50):
+        value_counts = pd.concat([df1[column].value_counts().head(top_k), df2[column].value_counts().head(top_k)],
+                                 axis=1).sort_index()
+        value_ratios = value_counts.fillna(0).apply(axis='columns',
+                                                    func=lambda row: pd.Series([row.iloc[0] / len(df1[column]),
+                                                                                row.iloc[1] / len(df2[column])],
+                                                                               index=[str(column) + ' 1',
+                                                                                      str(column) + ' 2']))
+        axes = value_ratios.plot(kind='barh', fontsize='medium')
+        axes.invert_yaxis()  # to match order of legend
+        axes.set_title(str(column), fontsize='x-large')
+        axes.set_xlabel('value ratio', fontsize='medium')
+        axes.set_ylabel('column value', fontsize='medium')
+        plt.show()
+
+    def column_figures(self, significant_columns, df1, df2):
+        plot_functions = []
+        for column in significant_columns:
+            plot_functions.append(lambda col=column: self.column_figure(col, df1, df2))
+        return plot_functions
