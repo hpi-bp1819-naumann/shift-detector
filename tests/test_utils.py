@@ -1,8 +1,9 @@
 import unittest
 
+import numpy as np
 import pandas as pd
 
-from shift_detector.utils.column_management import is_categorical, detect_column_types, ColumnType
+from shift_detector.utils.column_management import is_categorical, detect_column_types, ColumnType, is_binary
 from shift_detector.utils.data_io import shared_column_names
 from shift_detector.utils.ucb_list import block, blocks
 
@@ -44,6 +45,24 @@ class TestUtils(unittest.TestCase):
         self.assertTrue(is_categorical(self.df1['payment']))
         self.assertFalse(is_categorical(self.df1['payment'], max_unique_fraction=0.05))
         self.assertFalse(is_categorical(self.df1['description']))
+
+    def test_is_binary(self):
+        data = {
+            'bool': [True, False, True] * 10,
+            'bool_with_na': [True, False, np.nan] * 10,
+            'no_bool': ['A', 'B', 'C'] * 10
+        }
+        df = pd.DataFrame.from_dict(data)
+
+        with self.subTest("Test detection of boolean"):
+            self.assertTrue(is_binary(df['bool']))
+
+        with self.subTest("Test detection of boolean with nan values"):
+            self.assertFalse(is_binary(df['bool_with_na']))
+            self.assertTrue(is_binary(df['bool_with_na'], allow_na=True))
+
+        with self.subTest("Test no binary detection for no boolean value"):
+            self.assertFalse(is_binary(df['no_bool']))
 
     def test_split_dataframes(self):
         column_type_to_column_names = detect_column_types(self.df1, self.df2,
