@@ -35,8 +35,9 @@ class NumericalStatisticalCheck(SimpleStatisticalCheck):
         max_d = max(distances)
         plt.plot([bin_edges[max_idx], bin_edges[max_idx]], [cumsum1[max_idx], cumsum2[max_idx]],
                  color='black', linewidth=1, linestyle='--')
-        plt.legend([column + ' 1', column + ' 2', 'maximal distance = ' + str(max_d)], fontsize='x-small')
-        plt.title(column + ' (Cumulative Distribution)', fontsize='x-large')
+        column_name = column if isinstance(column, str) else '_'.join(column)
+        plt.legend([column_name + ' 1', column_name + ' 2', 'maximal distance = ' + str(max_d)], fontsize='x-small')
+        plt.title('Column: ' + column_name + ' (Cumulative Distribution)', fontsize='x-large')
         plt.xlabel('column value', fontsize='medium')
         plt.ylabel('ratio of rows', fontsize='medium')
         plt.show()
@@ -45,8 +46,9 @@ class NumericalStatisticalCheck(SimpleStatisticalCheck):
     def overlayed_hist_figure(column, df1, df2, bins=40):
         _, bin_edges = np.histogram(pd.concat([df1[column], df2[column]]), bins=bins)
         vis.plot_ratio_histogram(df1[column], df2[column], bin_edges)
-        plt.legend([column + ' 1', column + ' 2'], fontsize='x-small')
-        plt.title(column + ' (Histogram)', fontsize='x-large')
+        column_name = column if isinstance(column, str) else '_'.join(column)
+        plt.legend([column_name + ' 1', column_name + ' 2'], fontsize='x-small')
+        plt.title('Column: ' + column_name + ' (Histogram)', fontsize='x-large')
         plt.xlabel('column value', fontsize='medium')
         plt.ylabel('ratio of rows', fontsize='medium')
         plt.show()
