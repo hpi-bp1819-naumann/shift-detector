@@ -3,12 +3,13 @@ from collections import defaultdict
 from typing import Union
 
 import pandas as pd
-from IPython.display import display
+from IPython.display import display, Markdown
 
-from shift_detector.checks.check import Check
+from shift_detector.checks.check import Check, Report
 from shift_detector.precalculations.store import Store
 from shift_detector.utils.column_management import column_names
 from shift_detector.utils.data_io import read_from_csv
+from shift_detector.utils.neat_print import nprint
 
 
 class Detector:
@@ -42,13 +43,16 @@ class Detector:
         self.check_reports = []
         self.store = Store(self.df1, self.df2, custom_column_types)
 
-        logger.info("Used columns: {}".format(', '.join(column_names(self.store.column_names()))))
+        print("Used columns: {}".format(', '.join(column_names(self.store.column_names()))))
 
-    def run(self, *checks):
+    def run(self, *checks, logger_level=logger.ERROR):
         """
         Run the Detector with the checks to run.
         :param checks: checks to run
+        :param logger_level: level of logging
         """
+        logger.getLogger().setLevel(logger_level)
+
         if not checks:
             raise Exception("Please include checks)")
 
@@ -56,13 +60,28 @@ class Detector:
             class_names = map(lambda c: c.__class__.__name__, checks)
             raise Exception("All elements in checks should be a Check. Received: {}".format(', '.join(class_names)))
 
-        self.check_reports = [check.run(self.store) for check in checks]
+        check_reports = []
+        for check in checks:
+            print("Executing {}".format(check.__class__.__name__))
+            try:
+                report = check.run(self.store)
+                check_reports.append(report)
+            except Exception as e:
+                error_msg = {e.__class__.__name__: str(e)}
+                error_report = Report(check.__class__.__name__,
+                                      examined_columns=[],
+                                      shifted_columns=[],
+                                      information=error_msg)
+                check_reports.append(error_report)
+        self.check_reports = check_reports
 
     def evaluate(self):
         """
         Evaluate the reports.
         """
-        print("OVERVIEW")
+        nprint("OVERVIEW", text_formatting='h1')
+        nprint("Executed {} checks".format(len(self.check_reports)))
+
         detected = defaultdict(int)
         examined = defaultdict(int)
 
@@ -87,8 +106,8 @@ class Detector:
         df_summary = pd.DataFrame(sorted_summary, columns=['Column', '# Checks Failed', '# Checks Executed'])
         display(df_summary)
 
-        print("DETAILS")
+        nprint("DETAILS", text_formatting='h1')
         for report in self.check_reports:
-            print(report)
+            report.print_report()
             for fig in report.figures:
                 fig()

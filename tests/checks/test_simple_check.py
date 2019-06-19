@@ -113,7 +113,7 @@ class TestSimpleCheck(TestCase):
 
         self.assertTrue(mock_plt.figure.called)
         self.assertTrue(mock_plt.figure().add_subplot.called)
-        self.assertTrue(mock_plt.figure().show.called)
+        self.assertTrue(mock_plt.show.called)
 
 
 
