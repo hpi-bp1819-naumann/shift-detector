@@ -2,10 +2,12 @@ import unittest
 from unittest import mock
 from unittest.mock import MagicMock
 
+import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes
 from pandas.util.testing import assert_frame_equal
 
+import tests.test_data as td
 from shift_detector.checks.statistical_checks import numerical_statistical_check
 from shift_detector.checks.statistical_checks.categorical_statistical_check import CategoricalStatisticalCheck
 from shift_detector.checks.statistical_checks.numerical_statistical_check import NumericalStatisticalCheck
@@ -14,10 +16,6 @@ from shift_detector.detector import Detector
 from shift_detector.precalculations.store import Store
 from shift_detector.precalculations.text_metadata import NumCharsMetadata, NumWordsMetadata, \
     DistinctWordsRatioMetadata, LanguagePerParagraph, UnknownWordRatioMetadata, StopwordRatioMetadata, LanguageMetadata
-
-import tests.test_data as td
-
-import tests.test_data as td
 
 
 class TestTextMetadataStatisticalCheck(unittest.TestCase):
@@ -115,7 +113,7 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
         mock_plt.legend.assert_called_with(['text_num_chars 1', 'text_num_chars 2'], fontsize='x-small')
         mock_plt.title.assert_called_with('Column: text_num_chars (Histogram)', fontsize='x-large')
         with mock.patch.object(numerical_statistical_check.vis, 'plot_cumulative_step_ratio_histogram',
-                               return_value=(pd.np.array([0]), pd.np.array([0]))):
+                               return_value=(np.array([0]), np.array([0]))):
             NumericalStatisticalCheck.cumulative_hist_figure(('text', 'num_chars'), df1, df2)
         mock_plt.legend.assert_called_with(['text_num_chars 1', 'text_num_chars 2', 'maximal distance = 0'],
                                            fontsize='x-small')
