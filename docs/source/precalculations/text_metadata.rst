@@ -1,7 +1,7 @@
 .. _text_metadata:
 
-Text Metadata Precalculation
-============================
+Text Metadata
+=============
 
 Description
 -----------
@@ -34,7 +34,7 @@ UnicodeBlocksMetadata
         output: 'Basic Latin'
 
 NumWordsMetadata
-    Returns the total number of words in the text. A word is surrounded bz spaces or punctuation.
+    Returns the total number of words in the text. A word is surrounded by spaces or punctuation.
     Hyphens count as word delimiters, apostrophes do not count as delimiters.
 
 DistinctWordsRatioMetadata
@@ -43,13 +43,13 @@ DistinctWordsRatioMetadata
 UniqueWordsRatioMetadata
     Returns the number of hapax legomenon, words that only appear once in the text, devided by the total number of words.
 
-UnknkownWordRatioMetadata
+UnkownWordRatioMetadata
     Returns the number of words that are not in a dictionary devided by the total number of words.
     Popular reasons for words to be unknown: Typos, technical terms, neologisms.
 
 StopwordRatioMetadata
     Returns the number of stopwords devided by the total number of words.
-    Stopwords are defined by the nltk stopwords, supporting multiple languages. 
+    Stopwords are defined by nltk stopwords corpora, supporting multiple languages. 
 
 DelimiterTypeMetadata
     Returns a string, containing the delimiter type in the text.
