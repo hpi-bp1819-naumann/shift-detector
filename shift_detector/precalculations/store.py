@@ -36,7 +36,7 @@ class Store:
         self.type_to_columns = detect_column_types(self.df1, self.df2, self.shared_columns)
 
         # convert categorical columns string as a precaution
-        categorical_columns = self.type_to_columns[ColumnType.categorical]
+        categorical_columns = self.column_names(ColumnType.categorical)
         self.df1[categorical_columns] = self.df1[categorical_columns].astype(str)
         self.df2[categorical_columns] = self.df2[categorical_columns].astype(str)
 
