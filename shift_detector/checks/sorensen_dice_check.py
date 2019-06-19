@@ -32,8 +32,6 @@ class SorensenDiceCheck(Check):
 class SorensenDiceReport(Report):
 
     def print_information(self):
-        result_df = pd.DataFrame.from_dict(self.information, orient='index',
-                                           columns=['Baseline in Dataset 1',
-                                                    'Baseline in Dataset 2',
-                                                    'Distance between Datasets'])
+        result_df = pd.DataFrame.from_dict(self.information, orient='index')
+        result_df.columns=['Baseline in Dataset 1', 'Baseline in Dataset 2', 'Distance between Datasets']
         display(result_df)
