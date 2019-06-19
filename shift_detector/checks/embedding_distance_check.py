@@ -1,6 +1,9 @@
 from collections import defaultdict
 from shift_detector.checks.check import Check, Report
 from shift_detector.precalculations.embedding_distance_precalculation import EmbeddingDistancePrecalculation
+from IPython.display import display
+
+import pandas as pd
 
 
 class EmbeddingDistanceCheck(Check):
@@ -17,15 +20,22 @@ class EmbeddingDistanceCheck(Check):
         explanation = defaultdict(str)
 
         for column_name in data:
-            explanation[column_name] = "\tBaseline in Dataset1: {}\n" \
-                                       "\tBaseline in Dataset2: {}\n" \
-                                       "\tDistance between Datasets: {}"\
-                .format(data[column_name][0], data[column_name][1], data[column_name][2])
+            baseline1, baseline2, distance = data[column_name]
 
-            if (abs(data[column_name][0] - data[column_name][1]) > data[column_name][0] * 3
-                    or abs(data[column_name][0] - data[column_name][1]) > data[column_name][1] * 3
-                    or abs(data[column_name][0] - data[column_name][2]) > data[column_name][0] * 3
-                    or abs(data[column_name][1] - data[column_name][2]) > data[column_name][1] * 3):
+            if (abs(baseline1 - baseline2) > baseline1 * 3
+                    or abs(baseline1 - baseline2) > baseline2 * 3
+                    or abs(baseline1 - distance) > baseline1 * 3
+                    or abs(baseline2 - distance) > baseline2 * 3):
                 shifted_columns.add(column_name)
 
-        return Report("Embedding Distance Check", examined_columns, shifted_columns, dict(explanation))
+        return EmbeddingDistanceReport("Embedding Distance Check", examined_columns, shifted_columns, dict(explanation), information=data)
+
+
+class EmbeddingDistanceReport(Report):
+
+    def print_information(self):
+        result_df = pd.DataFrame.from_dict(self.information, orient='index',
+                                           columns=['Baseline in Dataset 1',
+                                                    'Baseline in Dataset 2',
+                                                    'Distance between Datasets'])
+        display(result_df)
