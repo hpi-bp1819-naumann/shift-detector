@@ -65,23 +65,16 @@ DelimiterTypeMetadata
 +++++++++++++++++++++
 Returns a string, containing the delimiter type in the text.
 This are the possible delimiter types:
-    'HTML' : text contains at least one HTML tag, such as break-tags <br/> or paragraph tags <p> in any variation.
 
-    'newline' : text contains at least one '\\n' character and does not contain any of the above delimiters.
-
-    'sentence' : text contains at least one of these punctuations: '.' '!' '?' and does not contain any of the above delimiters.
-
-    'semicolon' : text contains at least one semicolon ';' and does not contain any of the above delimiters.
-
-    'comma' : text contains at least one comma ',' and does not contain any of the above delimiters.
-
-    'dash' : text contains at least one dash of any kind and does not contain any of the above delimiters.
-
-    'tab' : text contains at least one '\\t' characters and does not contain any of the above delimiters.
-
-    'whitespace' : text contains at least one whitespace '\\s' character and does not contain any of the above delimiters.
-
-    'no delimiter' : text does not contain any of the above delimiters.
+:'HTML':          text contains at least one HTML tag, such as break-tags <br/> or paragraph tags <p> in any variation.
+:'newline':       text contains at least one '\\n' character and does not contain any of the above delimiters.
+:'sentence':      text contains at least one of these punctuations: '.' '!' '?' and does not contain any of the above delimiters.
+:'semicolon':     text contains at least one semicolon ';' and does not contain any of the above delimiters.
+:'comma':         text contains at least one comma ',' and does not contain any of the above delimiters.
+:'dash':          text contains at least one dash of any kind and does not contain any of the above delimiters.
+:'tab':           text contains at least one '\\t' characters and does not contain any of the above delimiters.
+:'whitespace':    text contains at least one whitespace '\\s' character and does not contain any of the above delimiters.
+:'no delimiter':  text does not contain any of the above delimiters.
 
 
 NumPartsMetadata
