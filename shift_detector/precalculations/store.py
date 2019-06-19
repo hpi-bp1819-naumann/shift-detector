@@ -37,6 +37,10 @@ class Store:
 
         self.__apply_custom_column_types(custom_column_types)
 
+        numerical_columns = self.column_names(ColumnType.numerical)
+        self.df1[numerical_columns] = self.df1[numerical_columns].astype(float)
+        self.df2[numerical_columns] = self.df2[numerical_columns].astype(float)
+
         print("Numerical columns: {}".format(", ".join(column_names(self.column_names(ColumnType.numerical)))))
         print("Categorical columns: {}".format(", ".join(column_names(self.column_names(ColumnType.categorical)))))
         print("Text columns: {}".format(", ".join(column_names(self.column_names(ColumnType.text)))))
