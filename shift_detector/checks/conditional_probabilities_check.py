@@ -78,7 +78,7 @@ class ConditionalProbabilitiesCheck(Check):
         def plot_result():
             x = [abs(rule.delta_supports) for rule in rules]
             y = [abs(rule.delta_confidences) for rule in rules]
-            plt.scatter(x, y, alpha=0.8)
+            plt.scatter(x, y, alpha=0.6)
             plt.title('Conditional Probabilities')
             plt.xlabel('Absolute delta supports')
             plt.ylabel('Absolute delta confidences')
