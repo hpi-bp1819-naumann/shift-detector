@@ -24,6 +24,8 @@ Returns a string, containing the unicode categories of the characters in the tex
 What categories exist can be looked up here: https://www.fileformat.info/info/unicode/category/index.htm
 
 Example:
+::
+
     input: 'Front-line leading edge website'
 
     output: 'Ll, Zs, Lu, Pd'
@@ -34,6 +36,8 @@ Returns a string, containing the unicode blocks of the characters in the text, c
 What blocks exist can be looked up here: https://www.fileformat.info/info/unicode/block/index.htm
 
 Example:
+::
+
     input: 'Front-line leading edge website'
 
     output: 'Basic Latin'
@@ -88,7 +92,9 @@ text is splitted into parts either by HTML <br/> tags or, if there are no html t
 Language detection by  https://github.com/Mimino666/langdetect
 
 Example:
-    input: 'Dieser Text ist zum Teil deutsch. \\n Part of this text is in english. \\n This is an example.'
+::
+
+    input: 'Dieser Text ist zum Teil deutsch. \n Part of this text is in english. \n This is an example.'
 
     output: 'en, de'
 
@@ -108,6 +114,8 @@ Returns a string, containing the part of speech tags in the text, comma seperate
 Uses the part of speech tagger by nltk. Only working for english language.
 
 Example:
+::
+
     input: 'This is a normal sentence. This is for testing.'
 
     output: 'DET, VERB, ., ADJ, ADP, NOUN'
