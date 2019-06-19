@@ -1,3 +1,4 @@
+ipython
 datawig==0.1.10
 gensim==3.7.3
 iso-639==0.4.5
