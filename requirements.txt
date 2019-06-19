@@ -6,7 +6,7 @@ nltk
 textstat
 pyspellchecker
 langdetect
-pandas
+pandas==0.21.0
 numpy
 scipy
 sklearn
