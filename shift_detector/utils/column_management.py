@@ -39,7 +39,8 @@ def is_categorical(col: pd.Series,
 def is_binary(col: pd.Series, allow_na=False):
     if allow_na:
         col = col.dropna()
-    return sorted(col.unique()) == [0, 1]
+    values = sorted(col.unique())
+    return values == [0, 1]
 
 
 def column_names(columns) -> List[str]:

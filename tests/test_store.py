@@ -43,7 +43,7 @@ class TestStore(unittest.TestCase):
 
     def test_apply_custom_column_types(self):
         data = {'to_numerical': ['150', '200', '50', '10', '5', '150', '200', '50', '10', '5', '1'] * 10,
-                'to_text': ['150', '200', '50', '10', '5', 150, 200, 50, 10, 5, 1] * 10,
+                'to_text': ['150', '200', '50', '10', '5', '150', '200', '50', '10', '5', '1'] * 10,
                 'to_categorical': [150, 200, 50, 10, 5, 150, 200, 50, 10, 5, 1] * 10}
         df1 = df2 = pd.DataFrame.from_dict(data)
 
