@@ -80,7 +80,7 @@ class Detector:
                                       examined_columns=[],
                                       shifted_columns=[],
                                       information=error_msg)
-                check_reports.append(error_report)     check_reports.append(check.run(self.store))
+                check_reports.append(error_report)
 
         if download_nltk:
             try:
