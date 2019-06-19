@@ -172,18 +172,16 @@ class SimpleReport(Report):
                 bars1, bars2, attribute_names, column_name = plot_info[0], plot_info[1], plot_info[2], plot_info[3]
 
                 subplot = f.add_subplot(1, num_columns, i + 1)
-
                 bar_width = 0.25
-                r1 = np.arange(len(bars1))
-                r2 = [x + bar_width for x in r1]
 
-                subplot.bar(r1, bars1, color='red', width=bar_width, edgecolor='white', label='DS1')
-                subplot.bar(r2, bars2, color='blue', width=bar_width, edgecolor='white', label='DS2')
+                ind = np.arange(len(bars1))
+                subplot.barh(ind, bars1, bar_width, label='DS1')
+                subplot.barh(ind + bar_width, bars2, bar_width, label='DS2')
 
-                subplot.title.set_text(column_name)
-                subplot.set_xlabel('attribute-values', fontweight='bold')
-                subplot.set_xticks(np.arange(len(attribute_names)) + bar_width / 2)
-                subplot.set_xticklabels(attribute_names)
+                subplot.set_yticklabels(attribute_names)
+                subplot.set_yticks(np.arange(len(attribute_names)) + bar_width / 2)
+
+                subplot.title.set_text("Col '{}'".format(column_name))
                 subplot.legend()
 
             plt.show()
