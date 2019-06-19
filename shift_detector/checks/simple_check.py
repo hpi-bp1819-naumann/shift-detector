@@ -7,6 +7,7 @@ import numpy as np
 from shift_detector.checks.check import Check, Report
 from shift_detector.precalculations.simple_precalculation import SimplePrecalculation
 from shift_detector.utils.column_management import ColumnType
+from shift_detector.utils.neat_print import nprint
 
 
 class SimpleCheck(Check):
@@ -84,7 +85,6 @@ class SimpleCheck(Check):
 
             for metric in metrics:
                 diff = self.relative_metric_difference(column_name, metric)
-                # print('diff {}, in the metric {}'.format(diff, metric))
                 if abs(diff) > self.metrics_thresholds_percentage[metric]:
                     shifted_columns.add(column_name)
                     explanation[column_name] += "Metric: {}, Diff: {}, threshold: {}\n".\
@@ -118,7 +118,9 @@ class SimpleCheck(Check):
 
                 if diff > self.categorical_threshold:
                     shifted_columns.add(column_name)
-                    explanation[column_name] += "Attribute: {} with Diff: {}\n".format(attribute_name, diff)
+                    explanation[column_name] += "Attribute: '{}' with Diff: {}, categorical threshold: {}\n"\
+                        .format(attribute_name, self.difference_to_string(diff),
+                                self.difference_to_string(self.categorical_threshold))
 
             plot_infos.append((bar_df1, bar_df2, attribute_names, column_name))
 
@@ -130,6 +132,18 @@ class SimpleReport(Report):
 
     def __init__(self, examined_columns, shifted_columns, information={}, explanation={}, figures=[]):
         super().__init__("Simple Check", examined_columns, shifted_columns, information, explanation, figures)
+
+    def print_explanation(self):
+        categorical_found = False
+        nprint("Numerical columns", text_formatting='h3')
+
+        for column, explanation in self.explanation.items():
+            if not categorical_found:
+                if 'categorical' in explanation:
+                    categorical_found = True
+                    nprint("Categorical columns", text_formatting='h3')
+
+            print("Column '{}':\n{}\n".format(column, explanation))
 
     @staticmethod
     def numerical_plot(df1, df2):

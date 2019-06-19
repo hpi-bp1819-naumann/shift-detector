@@ -2,6 +2,8 @@ from abc import ABCMeta, abstractmethod
 from collections import defaultdict
 from itertools import chain
 
+from shift_detector.utils.neat_print import nprint
+
 
 class Report:
 
@@ -38,6 +40,15 @@ class Report:
 
         return res_dict
 
+    def print_report(self):
+        nprint(self.check_name, text_formatting='h2')
+        print("Examined Columns: {}".format(self.examined_columns))
+        print("Shifted Columns: {}".format(self.shifted_columns))
+        print()
+
+        self.print_explanation()
+        self.print_information()
+
     def print_explanation(self):
         msg = ""
         for column, explanation in self.explanation.items():
@@ -49,15 +60,6 @@ class Report:
         for tag, information in self.information.items():
             msg += "'{}':\n{}\n".format(tag, information)
         print(msg)
-
-    def print_report(self):
-        nprint(self.check_name, text_formatting='h2')
-        print("Examined Columns: {}".format(self.examined_columns))
-        print("Shifted Columns: {}".format(self.shifted_columns))
-        print()
-
-        self.print_explanation()
-        self.print_information()
 
 
 class Check(metaclass=ABCMeta):
