@@ -1,59 +1,75 @@
+from collections import namedtuple
+from itertools import combinations
+
 import pandas as pd
 
 from shift_detector.precalculations.binning_precalculation import BinningPrecalculation
 from shift_detector.precalculations.conditional_probabilities import fpgrowth
-from shift_detector.precalculations.conditional_probabilities import rule_compression
 from shift_detector.precalculations.precalculation import Precalculation
 from shift_detector.utils.column_management import ColumnType
 
 
 class ConditionalProbabilitiesPrecalculation(Precalculation):
-
-    def __init__(self, min_support, min_confidence, number_of_bins, number_of_topics):
-        self.min_support = min_support
-        self.min_confidence = min_confidence
-        self.number_of_bins = number_of_bins
-        self.number_of_topics = number_of_topics
-
-    def process(self, store):
-        df1_cat, df2_cat = store[ColumnType.categorical]
-        df1_num, df2_num = store[BinningPrecalculation(self.number_of_bins)]
-        # df1_text, df2_text = store[LdaEmbedding(self.number_of_topics)]
-
-        # df1 = pd.concat([df1_cat, df1_num, df1_text], axis=1)
-        # df2 = pd.concat([df2_cat, df2_num, df2_text], axis=1)
-        df1 = pd.concat([df1_cat, df1_num], axis=1)
-        df2 = pd.concat([df2_cat, df2_num], axis=1)
-
-        rules = fpgrowth.calculate_frequent_rules(df1, df2, self.min_support, self.min_confidence)
-        return rules, list(df1.columns)
-
-    def __eq__(self, other):
-        if not isinstance(other, self.__class__):
-            return False
-        return (self.min_support, self.min_confidence, self.number_of_bins, self.number_of_topics) == (
-            other.min_support, other.min_confidence, other.number_of_bins, other.number_of_topics)
-
-    def __hash__(self):
-        return hash((self.__class__, self.min_support, self.min_confidence, self.number_of_bins, self.number_of_topics))
-
-
-class ConditionalProbabilitiesCompressionPrecalculation(Precalculation):
     def __init__(self, min_support, min_confidence, number_of_bins, number_of_topics,
-                 min_delta_supports, min_delta_confidences, rules):
+                 min_delta_supports, min_delta_confidences):
         self.min_support = min_support
         self.min_confidence = min_confidence
         self.number_of_bins = number_of_bins
         self.number_of_topics = number_of_topics
         self.min_delta_supports = min_delta_supports
         self.min_delta_confidences = min_delta_confidences
-        self.rules = rules
 
     def process(self, store):
-        filtered_rules = (rule for rule in self.rules if abs(rule.delta_supports) >= self.min_delta_supports and abs(
-            rule.delta_confidences) >= self.min_delta_confidences)
+        df1_cat, df2_cat = store[ColumnType.categorical]
+        df1_num, df2_num = store[BinningPrecalculation(self.number_of_bins)]
 
-        return rule_compression.compress_and_sort_rules(filtered_rules)
+        df1 = pd.concat([df1_cat, df1_num], axis=1)
+        df2 = pd.concat([df2_cat, df2_num], axis=1)
+
+        rules = fpgrowth.calculate_frequent_rules(df1, df2, self.min_support, self.min_confidence)
+
+        exclusive_rules_of_first = []  # rules that only appear in the first data set
+        exclusive_rules_of_second = []  # rules that only appear in the second data set
+        mutual_rules = []  # rules that appear in both data sets and have a right side
+
+        for rule in rules:
+            if not rule.supports_of_left_side[1]:
+                exclusive_rules_of_first.append(rule)
+            elif not rule.supports_of_left_side[0]:
+                exclusive_rules_of_second.append(rule)
+            elif rule.right_side:  # rules without a right side do not add any further information
+                mutual_rules.append(rule)
+
+        filtered_mutual_rules = (rule for rule in mutual_rules if
+                                 abs(rule.delta_supports) >= self.min_delta_supports and abs(
+                                     rule.delta_confidences) >= self.min_delta_confidences)
+        sorted_filtered_mutual_rules = sorted(filtered_mutual_rules,
+                                              key=lambda r: (abs(r.delta_confidences), max(r.supports_of_left_side)),
+                                              reverse=True)
+
+        def get_significant_rules(rules, index):
+            significant_rules = []
+            smallest_sub_sets = set()
+
+            for rule in sorted(rules, key=lambda r: (len(r.left_side), len(r.right_side))):
+                for length in range(1, len(rule.left_side) + 1):
+                    if any(True for sub_set in combinations(rule.left_side, length) if sub_set in smallest_sub_sets):
+                        break
+                else:
+                    smallest_sub_sets.add(rule.left_side)
+                    significant_rules.append(rule)
+
+            return sorted(significant_rules, key=lambda r: (r.supports_of_left_side[index], r.supports[index]),
+                          reverse=True)
+
+        Result = namedtuple('Result', ['examined_columns', 'significant_rules_of_first', 'significant_rules_of_second',
+                                       'sorted_filtered_mutual_rules', 'mutual_rules'])
+        return Result(examined_columns=list(df1.columns),
+                      significant_rules_of_first=get_significant_rules(exclusive_rules_of_first, 0),
+                      significant_rules_of_second=get_significant_rules(exclusive_rules_of_second, 1),
+                      sorted_filtered_mutual_rules=sorted_filtered_mutual_rules,
+                      mutual_rules=mutual_rules
+                      )
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):

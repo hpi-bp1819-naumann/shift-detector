@@ -4,12 +4,28 @@ import matplotlib.pyplot as plt
 
 from shift_detector.checks.check import Check, Report
 from shift_detector.precalculations.conditional_probabilities_precalculation import \
-    ConditionalProbabilitiesPrecalculation, ConditionalProbabilitiesCompressionPrecalculation
+    ConditionalProbabilitiesPrecalculation
 
 
 class ConditionalProbabilitiesReport(Report):
     def print_explanation(self):
-        print('\n\n'.join('{}'.format('\n'.join(rules)) for rules in self.explanation.values()))
+        if 'significant_rules_of_first' in self.explanation or 'significant_rules_of_second' in self.explanation:
+            def to_str(rule, index):
+                return '\tSupport: {:.0%}\n\t[{}]'.format(rule.supports[index], ', '.join(
+                    f'{attr}: {value}' for attr, value in rule.left_side + rule.right_side))
+
+            if 'significant_rules_of_first' in self.explanation:
+                print('Values exclusive to first data set:\n')
+                print('\n\n'.join(to_str(rule, 0) for rule in self.explanation['significant_rules_of_first']),
+                      end='\n\n')
+            if 'significant_rules_of_second' in self.explanation:
+                print('Values exclusive to second data set:\n')
+                print('\n\n'.join(to_str(rule, 1) for rule in self.explanation['significant_rules_of_second']),
+                      end='\n\n')
+        if 'mutual_rules' in self.explanation:
+            print('Mutual rules:\n')
+            for rule in self.explanation['mutual_rules']:
+                print('\t{}\n'.format(rule))
 
 
 class ConditionalProbabilitiesCheck(Check):
@@ -53,33 +69,44 @@ class ConditionalProbabilitiesCheck(Check):
         self.number_of_topics = int(number_of_topics)
 
     def run(self, store):
-        rules, examined_columns = store[
-            ConditionalProbabilitiesPrecalculation(self.min_support, self.min_confidence, self.number_of_bins,
-                                                   self.number_of_topics)
-        ]
-
-        compressed_rules = store[
-            ConditionalProbabilitiesCompressionPrecalculation(self.min_support, self.min_confidence,
-                                                              self.number_of_bins, self.number_of_topics,
-                                                              self.min_delta_supports, self.min_delta_confidences,
-                                                              rules)
+        pre_calculation = store[
+            ConditionalProbabilitiesPrecalculation(self.min_support, self.min_confidence,
+                                                   self.number_of_bins, self.number_of_topics,
+                                                   self.min_delta_supports, self.min_delta_confidences)
         ]
 
         shifted_columns = set()
         explanation = defaultdict(list)
-        for i, compressed_rule in enumerate(compressed_rules):
-            if i == self.rule_limit:
-                break
-            columns = tuple(sorted(attribute for attribute, _ in compressed_rule.attribute_value_pairs))
-            shifted_columns.add(columns)
 
-            explanation[', '.join(columns)].append(str(compressed_rule))
+        def add_to_explanation(rules, name):
+            for i, rule in enumerate(rules):
+                if i == self.rule_limit:
+                    break
+                columns = tuple(sorted(attribute for attribute, _ in rule.left_side + rule.right_side))
+                shifted_columns.add(columns)
+                explanation[name].append(rule)
+
+        add_to_explanation(pre_calculation.significant_rules_of_first, 'significant_rules_of_first')
+        add_to_explanation(pre_calculation.significant_rules_of_second, 'significant_rules_of_second')
+        add_to_explanation(pre_calculation.sorted_filtered_mutual_rules, 'mutual_rules')
 
         def plot_result():
-            x = [abs(rule.delta_supports) for rule in rules]
-            y = [abs(rule.delta_confidences) for rule in rules]
-            plt.scatter(x, y, alpha=0.6)
-            plt.title('Conditional Probabilities')
+            coordinates = [(abs(rule.delta_supports), abs(rule.delta_confidences)) for rule in
+                           pre_calculation.mutual_rules]
+            green_x = [x for x, y in coordinates if x <= self.min_delta_supports and y <= self.min_delta_confidences]
+            green_y = [y for x, y in coordinates if x <= self.min_delta_supports and y <= self.min_delta_confidences]
+            orange_x = [x for x, y in coordinates if x > self.min_delta_supports
+                        and y <= self.min_delta_confidences or x <= self.min_delta_supports
+                        and y > self.min_delta_confidences]
+            orange_y = [y for x, y in coordinates if x > self.min_delta_supports
+                        and y <= self.min_delta_confidences or x <= self.min_delta_supports
+                        and y > self.min_delta_confidences]
+            red_x = [x for x, y in coordinates if x > self.min_delta_supports and y > self.min_delta_confidences]
+            red_y = [y for x, y in coordinates if x > self.min_delta_supports and y > self.min_delta_confidences]
+            plt.scatter(green_x, green_y, color='green')
+            plt.scatter(orange_x, orange_y, color='orange')
+            plt.scatter(red_x, red_y, color='red')
+            plt.title('Mutual conditional probabilities')
             plt.xlabel('Absolute delta supports')
             plt.ylabel('Absolute delta confidences')
             plt.xticks([i / 10 for i in range(0, 11)])
