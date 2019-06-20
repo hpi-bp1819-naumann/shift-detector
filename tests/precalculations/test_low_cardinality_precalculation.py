@@ -33,7 +33,7 @@ class TestLowCardinalityPrecalculation(TestCase):
         sales = {'brand': ["Jones LLC", "Alpha Co", "Blue Inc", "Blue Inc", "Alpha Co",
                            "Jones LLC", "Alpha Co", "Blue Inc", "Blue Inc", "Alpha Co",
                            "Jones LLC"] * 10,
-                 'payment': [150, 200, 50, 10, 5, 150, 200, 50, 10, 5, 1] * 10,
+                 'payment': [150.0, 200.0, 50.0, 10.0, 5.0, 150.0, 200.0, 50.0, 10.0, 5.0, 1.0] * 10,
                  'description': ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"] * 10}
         df1 = DataFrame.from_dict(sales)
         df2 = df1
