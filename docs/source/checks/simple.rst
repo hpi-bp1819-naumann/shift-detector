@@ -6,14 +6,13 @@ Simple Check
 Description
 -----------
 
-The Simple Check gives you basic information about your datasets and detects the simplest of datashifts.
+The Simple Check gives you basic information about your datasets and detects the most obvious of datashifts.
 
 Some shifts result in the change of basic metrics, that are commonly used for the analysis and exploration of datasets.
 Those metrics and statistics are calculated on both datasets and compared afterwards.
 
-The basic check should be used mostof the times, if you want to analyze your datasets because its metrics are
-scientificaly grounded and commmonly used. It works directly on categorical and numerical data and, with additional
-Precalculations, also on text data.
+The basic check should be used in most analyses because its metrics are scientificaly grounded and commmonly used.
+It works directly on categorical and numerical data and, with additional Precalculations, also on text data.
 
 
 Example
@@ -22,7 +21,7 @@ Example
 ::
 
     from shift_detector.detector import Detector
-    from shift_detector.checks.simple_check import DistinctionCheck
+    from shift_detector.checks.simple_check import SimpleCheck
 
     data_set_1 = 'examples/shoes_first.csv'
     data_set_2 = 'examples/shoes_second.csv'
@@ -33,7 +32,7 @@ Example
         delimiter=','
     )
 
-    detector.run(DistinctionCheck())
+    detector.run(SimpleCheck())
     detector.evaluate()
 
 The code works as follows:
@@ -49,16 +48,38 @@ The code works as follows:
 Result
 ++++++
 
-:ref:`simple` produces the following report::
+The SimpleCheck produces this report::
+
+    Numerical Columns:
 
     Column 'payment':
-    Metric: mean with Diff: -0.29 %
-    Metric: std with Diff: +0.8 %
+    Metric: mean with Diff: -29.4 %, threshold: 20%
+    Metric: std with Diff: +80.2 %, threshold: 50%
+
+    (...)
+
+    Categorical Columns
+
+    Column 'payment_option':
+    Attribute: 'debit' with Diff: +6.0 %, categorical threshold: 5%
+    Attribute: 'cash' with Diff: +6.5 %, categorical threshold: 5%
+
+    (...)
+
+
 
 Interpretation
 ++++++++++++++
 
-The checkresults show column-wise wich shifts appear in your dataset. In this case the two metrics 'mean' so the
+The checkresults show column-wise wich shifts appear in your dataset. First the reports of your numerical columns,
+after that the reports of your categorical columns are printed.
+
+In the numerical column, you see here that the column with the name 'payment' is detected as a shift. In the above case
+there are two metrics, that detected a shift, mean and std - standard deviation. In the diff you see the value of the
+metric
+
+
+In this case the two metrics 'mean' so the
 mean of the column 'payment' and 'std', the standard-deviation of the dataset seem to differ between the
 datasets.
 
