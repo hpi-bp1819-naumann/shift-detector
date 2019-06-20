@@ -103,7 +103,7 @@ class Detector:
 
         sorted_summary = sorted(((col, detected[col], examined[col]) for col in examined), key=sort_key)
 
-        df_summary = pd.DataFrame(sorted_summary, columns=['Column', '# Checks Failed', '# Checks Executed'])
+        df_summary = pd.DataFrame(sorted_summary, columns=['Column', '# Shifts detected', '# Checks Executed'])
         display(df_summary)
 
         nprint("DETAILS", text_formatting='h1')
