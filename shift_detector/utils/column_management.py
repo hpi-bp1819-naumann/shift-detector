@@ -36,6 +36,13 @@ def is_categorical(col: pd.Series,
     return unique_fraction <= max_unique_fraction
 
 
+def is_binary(col: pd.Series, allow_na=True):
+    if allow_na:
+        col = col.dropna()
+    values = sorted(col.unique())
+    return values == [0, 1]
+
+
 def column_names(columns) -> List[str]:
     """
         Return the names of all input columns as list. If column is not named return index as string instead.
@@ -58,10 +65,13 @@ def detect_column_types(df1, df2, columns):
         ...
     }
     """
-    numerical_columns = [c for c in columns if is_numeric_dtype(df1[c]) and is_numeric_dtype(df2[c])]
+    categorical_columns = [c for c in columns if is_binary(df1[c]) and is_binary(df2[c])]
 
-    non_numerical = list(set(columns) - set(numerical_columns))
-    categorical_columns = [c for c in non_numerical if is_categorical(df1[c]) and is_categorical(df2[c])]
+    remaining_columns = list(set(columns) - set(categorical_columns))
+    numerical_columns = [c for c in remaining_columns if is_numeric_dtype(df1[c]) and is_numeric_dtype(df2[c])]
+
+    non_numerical = list(set(remaining_columns) - set(numerical_columns))
+    categorical_columns.extend([c for c in non_numerical if is_categorical(df1[c]) and is_categorical(df2[c])])
 
     text_columns = list(set(non_numerical) - set(categorical_columns))
 
