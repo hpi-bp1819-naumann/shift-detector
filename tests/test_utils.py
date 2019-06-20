@@ -60,8 +60,8 @@ class TestUtils(unittest.TestCase):
             self.assertTrue(is_binary(df['bool']))
 
         with self.subTest("Test detection of boolean with nan values"):
-            self.assertFalse(is_binary(df['bool_with_na']))
-            self.assertTrue(is_binary(df['bool_with_na'], allow_na=True))
+            self.assertTrue(is_binary(df['bool_with_na']))
+            self.assertFalse(is_binary(df['bool_with_na'], allow_na=False))
 
         with self.subTest("Test no binary detection for no boolean value"):
             self.assertFalse(is_binary(df['no_bool']))
