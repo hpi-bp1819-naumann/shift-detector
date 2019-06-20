@@ -10,6 +10,7 @@ step-by-step instructions for shift detection with Morpheus.
    installation
    quickstart
    checks/index
+   precalculations/index
 
 API Reference
 -------------
