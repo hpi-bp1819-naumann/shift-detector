@@ -6,7 +6,6 @@ import pandas as pd
 
 from shift_detector.checks.check import Check
 from shift_detector.detector import Detector
-from shift_detector.checks.dummy_check import DummyCheck
 
 
 class TestCreateDetector(unittest.TestCase):
@@ -55,7 +54,9 @@ class TestDetector(unittest.TestCase):
             self.assertRaises(Exception, self.detector.run)
 
         with self.subTest("Test successful run"):
-            self.detector.run(DummyCheck(), DummyCheck())
+            check = Mock(spec=Check)
+            check.run.return_value = 0
+            self.detector.run(check, check)
             self.assertEqual(len(self.detector.check_reports), 2)
 
         with self.subTest("Test run failing check"):
