@@ -45,7 +45,8 @@ class DistinctionCheck(Check):
         complete_information = {}
 
         while input_columns:
-            examined_columns, precalculation_result = store[DistinctionPrecalculation(input_columns, self.num_epochs)]
+            examined_columns, precalculation_result = store[DistinctionPrecalculation(list(input_columns),
+                                                                                      self.num_epochs)]
             if not complete_examined_columns:
                 complete_examined_columns = examined_columns.copy()
 
