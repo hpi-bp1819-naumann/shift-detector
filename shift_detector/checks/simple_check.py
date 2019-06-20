@@ -61,11 +61,11 @@ class SimpleCheck(Check):
         return relative_difference
 
     @staticmethod
-    def difference_to_string(metrics_difference, threshold=False):
+    def difference_to_string(metrics_difference, print_plus_minus=False):
         metrics_difference = round(metrics_difference*100, 2)
         metrics_difference_string = str(metrics_difference) + ' %'
 
-        if threshold:
+        if print_plus_minus:
             metrics_difference_string = '+/- ' + metrics_difference_string
         elif metrics_difference > 0:
             metrics_difference_string = '+' + metrics_difference_string
@@ -89,7 +89,8 @@ class SimpleCheck(Check):
                     shifted_columns.add(column_name)
                     explanation[column_name] += "Metric: {}, Diff: {}, threshold: {}\n".\
                         format(metric, self.difference_to_string(diff),
-                               self.difference_to_string(self.metrics_thresholds_percentage[metric]), threshold=True)
+                               self.difference_to_string(self.metrics_thresholds_percentage[metric]),
+                               print_plus_minus=True)
 
         return SimpleReport(examined_columns, shifted_columns, dict(explanation),
                             figures=[SimpleReport.numerical_plot(df1, df2)])
@@ -120,7 +121,7 @@ class SimpleCheck(Check):
                     shifted_columns.add(column_name)
                     explanation[column_name] += "Attribute: '{}' with Diff: {}, categorical threshold: {}\n"\
                         .format(attribute_name, self.difference_to_string(diff),
-                                self.difference_to_string(self.categorical_threshold))
+                                self.difference_to_string(self.categorical_threshold, print_plus_minus=True))
 
             plot_infos.append((bar_df1, bar_df2, attribute_names, column_name))
 
