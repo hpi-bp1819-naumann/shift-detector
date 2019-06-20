@@ -26,19 +26,12 @@ class TestSimplePrecalculation(unittest.TestCase):
     def test_minmax_metrics(self):
         comparison_numeric = self.precalculation.process(self.store_numerical)['numerical_comparison']
 
-        self.assertEqual(comparison_numeric['col_1']['min']['df1'], 0)
-        self.assertEqual(comparison_numeric['col_2']['min']['df1'], 0)
-        self.assertEqual(comparison_numeric['col_3']['min']['df1'], 0)
-        self.assertEqual(comparison_numeric['col_1']['min']['df2'], 1)
-        self.assertEqual(comparison_numeric['col_2']['min']['df2'], 8)
-        self.assertEqual(comparison_numeric['col_3']['min']['df2'], 50)
-
-        self.assertEqual(comparison_numeric['col_1']['max']['df1'], 99)
-        self.assertEqual(comparison_numeric['col_2']['max']['df1'], 49)
-        self.assertEqual(comparison_numeric['col_3']['max']['df1'], 198)
-        self.assertEqual(comparison_numeric['col_1']['max']['df2'], 100)
-        self.assertEqual(comparison_numeric['col_2']['max']['df2'], 8)
-        self.assertEqual(comparison_numeric['col_3']['max']['df2'], 99)
+        self.assertEqual(comparison_numeric['col_1']['value_range']['df1'], 99.0)
+        self.assertEqual(comparison_numeric['col_1']['value_range']['df2'], 99.0)
+        self.assertEqual(comparison_numeric['col_2']['value_range']['df1'], 49.0)
+        self.assertEqual(comparison_numeric['col_2']['value_range']['df2'], 0.0)
+        self.assertEqual(comparison_numeric['col_3']['value_range']['df1'], 198.0)
+        self.assertEqual(comparison_numeric['col_3']['value_range']['df2'], 49.0)
 
     def test_quartile_metrics(self):
         numerical_df_1 = pd.DataFrame(list(range(12)), columns=['col_1'])
