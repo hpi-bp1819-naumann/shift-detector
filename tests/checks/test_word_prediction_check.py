@@ -1,3 +1,4 @@
+import os
 from unittest import TestCase
 
 from numpy.random import seed
@@ -15,6 +16,7 @@ class TestWordPredictionCheck(TestCase):
         # set seeds
         seed(1)
         set_random_seed(1)
+        os.environ['PYTHONHASHSEED'] = "0"
 
         alphabet = [chr(letter) for letter in range(ord('a'), ord('z')+1)]
 

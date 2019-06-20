@@ -10,3 +10,6 @@ Glossary
 
     check
         A method to systematically compare two data sets.
+
+    precalculation
+        A precalculation on the data that happens before the check starts.
