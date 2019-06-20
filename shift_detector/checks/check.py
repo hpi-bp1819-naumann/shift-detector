@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 from collections import defaultdict
 from itertools import chain
 
-from shift_detector.utils.neat_print import nprint
+from shift_detector.utils.custom_print import nprint
 
 
 class Report:
