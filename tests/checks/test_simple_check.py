@@ -57,7 +57,7 @@ class TestSimpleCheck(TestCase):
             self.assertEqual(report.shifted_columns, ['shift'])
             self.assertCountEqual(report.examined_columns, ['shift', 'no_shift'])
             self.assertEqual(report.explanation['shift'], "Attribute: 'A' with Diff: +100.0 %, "
-                                                          "categorical threshold: +5.0 %\n")
+                                                          "categorical threshold: +/- 5.0 %\n")
 
     def test_run_numerical(self):
         with self.subTest("Test precalculation"):
