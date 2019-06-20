@@ -2,6 +2,7 @@ from shift_detector.checks.check import Check, Report
 from shift_detector.precalculations.lda_embedding import LdaEmbedding
 from shift_detector.utils.column_management import ColumnType
 from collections import Counter
+import warnings
 
 
 class LdaCheck(Check):
@@ -16,13 +17,25 @@ class LdaCheck(Check):
             raise TypeError("Significance has to be an integer. Received: {}".format(type(significance)))
         if not significance > 0 or not significance < 100:
             raise ValueError("Significance has to be between 0% and 100%. Received: {}".format(significance))
+
+        if cols:
+            if isinstance(cols, list) and all(isinstance(col, str) for col in cols):
+                self.cols = cols
+            else:
+                raise TypeError("Cols has to be list of strings . Column {} is of type {}".format(cols, type(cols)))
+        else:
+            self.cols = cols  # setting cols to None is equal to setting it to a list with all text columns
+
+        if trained_model:
+            warnings.warn("Trained models are not trained again. Please make sure to only input the column(s) "
+                          "that the model was trained on", UserWarning)
+        self.trained_model = trained_model
+
         self.significance = significance
         self.n_topics = n_topics
         self.n_iter = n_iter
         self.lib = lib
         self.random_state = random_state
-        self.cols = cols  # setting cols to None is equal to setting it to a list with all text columns
-        self.trained_model = trained_model
         self.stop_words = stop_words
         self.max_features = max_features
 
