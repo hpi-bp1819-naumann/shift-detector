@@ -18,7 +18,7 @@ class DistinctionPrecalculation(Precalculation):
                 or any(not isinstance(column, str) for column in columns) \
                 or len(columns) < 1:
             raise TypeError("columns should be a list of strings. Received: {}".format(columns))
-        self.columns = columns
+        self.columns = list(columns)
 
         if not isinstance(num_epochs, int):
             raise TypeError("num_epochs should be a Number. "
