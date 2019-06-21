@@ -21,13 +21,13 @@ class SimpleCheck(Check):
                                   'num_distinct': num_distinct_threshold, 'std': std_threshold,
                                   'completeness': completeness_threshold}
 
-        if categorical_threshold < 0 or categorical_threshold > 1:
-            raise ValueError('The categorical threshold of {} is not correct. It has be between the values of '
+        if categorical_threshold < 0:
+            raise ValueError('The categorical threshold of {} is not correct. It has to be between the values of '
                              '0 and 1.'.format(categorical_threshold))
 
         for t_name, t_value in threshold_names_values.items():
-            if t_value < 0 or t_value > 1:
-                raise ValueError('The {}_threshold of {} is not correct. It has be between the values of 0 and 1'
+            if t_value < 0:
+                raise ValueError('The {}_threshold of {} is not correct. It has to be between the values of 0 and 1'
                                  .format(t_name, t_value))
 
         self.data = None
