@@ -55,7 +55,3 @@ class TestReport(TestCase):
         }
 
         self.assertDictEqual(expected_explanation, actual_explanation)
-
-    @patch('builtins.print')
-    def test_str(self, mock_print):
-        self.report.print_report()
