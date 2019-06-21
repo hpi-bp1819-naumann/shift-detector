@@ -31,24 +31,23 @@ class TestSimpleCheck(TestCase):
             report = self.check.run(self.store_num)
 
             explanation_string = report.explanation['cool_numbers']
-            formatted = explanation_string.replace('Metric: ', '').replace('with Diff: ', '').replace(' %', '')
+            formatted = re.sub('Metric: (.*), Diff: (.*) %, threshold: (.*)%', r"\1 \2", explanation_string)
             formatted_list = re.split(' |\n', formatted)
-            self.assertCountEqual(formatted_list, ['mean', '+0.2', 'max', '+0.5', 'quartile_3', '+0.15', 'std',
-                                                   '+0.67', ''])
+            self.assertCountEqual(formatted_list, ['mean', '+20.0', 'value_range', '+67.33', 'std', '+66.67', ''])
 
         with self.subTest('no analyzer should detect shift'):
-            self.check = SimpleCheck(mean_threshold=.3, max_threshold=.6, quartile_3_threshold=.2, std_threshold=.7)
+            self.check = SimpleCheck(mean_threshold=.3, value_range_threshold=.68, std_threshold=.7)
             report = self.check.run(self.store_num)
             self.assertEqual(report.shifted_columns, [])
 
         with self.subTest('only std should detect shift'):
-            self.check = SimpleCheck(mean_threshold=.3, max_threshold=.6, quartile_3_threshold=.2, std_threshold=.5)
+            self.check = SimpleCheck(mean_threshold=.3, value_range_threshold=.68, std_threshold=.5)
             report = self.check.run(self.store_num)
 
             explanation_string = report.explanation['cool_numbers']
-            formatted = explanation_string.replace('Metric: ', '').replace('with Diff: ', '').replace(' %', '')
+            formatted = re.sub('Metric: (.*), Diff: (.*) %, threshold: (.*)%', r"\1 \2", explanation_string)
             formatted_list = re.split(' |\n', formatted)
-            self.assertCountEqual(formatted_list, ['std', '+0.67', ''])
+            self.assertCountEqual(formatted_list, ['std', '+67.33', ''])
 
     def test_run_categorical(self):
         with self.subTest("Test precalculation"):
@@ -57,7 +56,8 @@ class TestSimpleCheck(TestCase):
         with self.subTest("Test shifted categorical columns"):
             self.assertEqual(report.shifted_columns, ['shift'])
             self.assertCountEqual(report.examined_columns, ['shift', 'no_shift'])
-            self.assertEqual(report.explanation['shift'], 'Attribute: A with Diff: 1.0\n')
+            self.assertEqual(report.explanation['shift'], "Attribute: 'A' with Diff: +100.0 %, "
+                                                          "categorical threshold: +/- 5.0 %\n")
 
     def test_run_numerical(self):
         with self.subTest("Test precalculation"):
@@ -69,10 +69,10 @@ class TestSimpleCheck(TestCase):
 
         with self.subTest('Test explanations'):
             explanation_string = report.explanation['cool_numbers']
-            formatted = explanation_string.replace('Metric: ', '').replace('with Diff: ', '').replace(' %', '')
+            formatted = re.sub('Metric: (.*), Diff: (.*) %, threshold: (.*)%', r"\1 \2", explanation_string)
             formatted_list = re.split(' |\n', formatted)
-            self.assertCountEqual(formatted_list, ['mean', '+0.2', 'max', '+0.5', 'quartile_3', '+0.15', 'std',
-                                                   '+0.67', ''])
+            self.assertCountEqual(formatted_list, ['mean', '+20.0', 'value_range', '+66.67', 'std',
+                                                   '+67.33', ''])
 
     def test_relative_metric_difference(self):
         with self.subTest('Normal case'):
