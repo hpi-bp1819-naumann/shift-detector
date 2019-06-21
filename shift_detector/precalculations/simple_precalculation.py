@@ -46,7 +46,7 @@ class SimplePrecalculation(Precalculation):
 
                 numerical_comparison[column]['num_distinct'][df_name] = column_droppedna.nunique()
 
-                numerical_comparison[column]['completeness'][df_name] = len(column_droppedna) / len(df1[column])
+                numerical_comparison[column]['completeness'][df_name] = len(column_droppedna) / len(df[column])
 
                 numerical_comparison[column]['uniqueness'][df_name] = len(df.groupby(column)
                                                                           .filter(lambda x: len(x) == 1)) / \
