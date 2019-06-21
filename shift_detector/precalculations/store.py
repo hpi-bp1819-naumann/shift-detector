@@ -35,7 +35,7 @@ class Store:
 
         self.type_to_columns = detect_column_types(self.df1, self.df2, self.shared_columns)
 
-        self.__apply_custom_column_types(custom_column_types)
+        self.__apply_column_types(custom_column_types)
 
         print("Numerical columns: {}".format(", ".join(column_names(self.column_names(ColumnType.numerical)))))
         print("Categorical columns: {}".format(", ".join(column_names(self.column_names(ColumnType.categorical)))))
@@ -77,18 +77,17 @@ class Store:
         if size < MIN_DATA_SIZE:
             raise InsufficientDataError(actual_size=size, expected_size=MIN_DATA_SIZE)
 
-    def __apply_custom_column_types(self, custom_column_to_column_type):
+    def __apply_column_types(self, custom_column_to_column_type):
         column_to_column_type = {}
         for column_type, columns in self.type_to_columns.items():
             # iterate over columns for column_types
             for column in columns:
                 # apply custom column type
                 if column in custom_column_to_column_type:
-                    custom_column_type = custom_column_to_column_type[column]
-                    self.__change_column_type(column, custom_column_type)
-                    column_to_column_type[column] = custom_column_type
-                else:
-                    column_to_column_type[column] = column_type
+                    column_type = custom_column_to_column_type[column]
+
+                column_to_column_type[column] = column_type
+                self.__set_column_type(column, column_type)
 
         new_column_type_to_columns = {
             ColumnType.categorical: [],
@@ -102,15 +101,15 @@ class Store:
 
         self.type_to_columns = new_column_type_to_columns
 
-    def __change_column_type(self, column, new_column_type):
-        if new_column_type == ColumnType.numerical:
+    def __set_column_type(self, column, column_type):
+        if column_type == ColumnType.numerical:
             try:
-                self.df1[column] = pd.to_numeric(self.df1[column])
-                self.df2[column] = pd.to_numeric(self.df2[column])
+                self.df1[column] = pd.to_numeric(self.df1[column]).astype(float)
+                self.df2[column] = pd.to_numeric(self.df2[column]).astype(float)
             except Exception as e:
-                raise Exception("An error occurred during the conversion of column '{}' to the new column type '{}'. "
-                                "{}".format(column, new_column_type.name, str(e)))
+                raise Exception("An error occurred during the conversion of column '{}' to the column type '{}'. "
+                                "{}".format(column, column_type.name, str(e)))
 
-        elif new_column_type == ColumnType.categorical or new_column_type == ColumnType.text:
+        elif column_type == ColumnType.categorical or column_type == ColumnType.text:
             self.df1[column] = self.df1[column].astype(str)
             self.df2[column] = self.df2[column].astype(str)
