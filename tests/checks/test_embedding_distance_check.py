@@ -1,7 +1,7 @@
 import unittest
 import mock
-from shift_detector.checks.embedding_distance_check import EmbeddingDistanceCheck, EmbeddingDistanceReport
-from shift_detector.precalculations.store import Store
+from morpheus.checks.embedding_distance_check import EmbeddingDistanceCheck, EmbeddingDistanceReport
+from morpheus.precalculations.store import Store
 import pandas as pd
 
 
@@ -46,7 +46,7 @@ class TestEmbeddingDistanceReport(unittest.TestCase):
                   'Col2': (0.2, 0.2, 0.2)}
         self.report = EmbeddingDistanceReport('Test Check', ['Col1', 'Col2'], ['Col1'], information=result)
 
-    @mock.patch('shift_detector.checks.embedding_distance_check.display')
+    @mock.patch('morpheus.checks.embedding_distance_check.display')
     def test_report_calls_display(self, mock_display):
         self.report.print_information()
         self.assertTrue(mock_display.called)

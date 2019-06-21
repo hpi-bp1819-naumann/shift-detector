@@ -4,8 +4,8 @@ import unittest
 
 import pandas as pd
 
-from shift_detector.precalculations.simple_precalculation import SimplePrecalculation
-from shift_detector.precalculations.store import Store
+from morpheus.precalculations.simple_precalculation import SimplePrecalculation
+from morpheus.precalculations.store import Store
 
 
 class TestSimplePrecalculation(unittest.TestCase):

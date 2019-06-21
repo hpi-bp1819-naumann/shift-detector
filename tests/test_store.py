@@ -4,8 +4,8 @@ import pandas as pd
 from pandas.core.dtypes.common import is_numeric_dtype, is_string_dtype
 from pandas.util.testing import assert_frame_equal
 
-from shift_detector.precalculations.store import InsufficientDataError, Store
-from shift_detector.utils.column_management import ColumnType
+from morpheus.precalculations.store import InsufficientDataError, Store
+from morpheus.utils.column_management import ColumnType
 
 
 class TestStore(unittest.TestCase):
@@ -105,4 +105,4 @@ class TestStore(unittest.TestCase):
             self.assertCountEqual(['brand', 'payment', 'description'], store.column_names())
 
         with self.subTest("Incorrect column_types"):
-            self.assertRaises(TypeError, lambda: store(ColumnType.numerical, 'no_column_type'))
+            self.assertRaises(TypeError, lambda: Store(ColumnType.numerical, 'no_column_type'))

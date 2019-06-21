@@ -1,6 +1,6 @@
 import unittest
-from shift_detector.precalculations.n_gram import NGram, NGramType
-from shift_detector.precalculations.store import Store
+from morpheus.precalculations.n_gram import NGram, NGramType
+from morpheus.precalculations.store import Store
 import pandas as pd
 
 

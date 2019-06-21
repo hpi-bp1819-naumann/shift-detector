@@ -11,9 +11,9 @@ assumes you already have Morpheus installed. If you do not, head over to the
 A Minimal Example
 -----------------
 
-A minimal example for Morpheus looks something like this::
+A minimal example for morpheus looks something like this::
 
-    from morpheus import Detector
+    from Morpheus import Detector
 
     detector = Detector('path1.csv', 'path2.csv')
     detector.run()

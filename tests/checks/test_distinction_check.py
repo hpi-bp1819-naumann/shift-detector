@@ -2,8 +2,8 @@ from unittest import TestCase
 
 from pandas import DataFrame
 
-from shift_detector.checks.distinction_check import DistinctionCheck
-from shift_detector.precalculations.store import Store
+from morpheus.checks.distinction_check import DistinctionCheck
+from morpheus.precalculations.store import Store
 
 
 class TestDistinctionCheck(TestCase):

@@ -8,13 +8,13 @@ from matplotlib.axes import Axes
 from pandas.util.testing import assert_frame_equal
 
 import tests.test_data as td
-from shift_detector.checks.statistical_checks import numerical_statistical_check
-from shift_detector.checks.statistical_checks.categorical_statistical_check import CategoricalStatisticalCheck
-from shift_detector.checks.statistical_checks.numerical_statistical_check import NumericalStatisticalCheck
-from shift_detector.checks.statistical_checks.text_metadata_statistical_check import TextMetadataStatisticalCheck
-from shift_detector.detector import Detector
-from shift_detector.precalculations.store import Store
-from shift_detector.precalculations.text_metadata import NumCharsMetadata, NumWordsMetadata, \
+from morpheus.checks.statistical_checks import numerical_statistical_check
+from morpheus.checks.statistical_checks.categorical_statistical_check import CategoricalStatisticalCheck
+from morpheus.checks.statistical_checks.numerical_statistical_check import NumericalStatisticalCheck
+from morpheus.checks.statistical_checks.text_metadata_statistical_check import TextMetadataStatisticalCheck
+from morpheus.detector import Detector
+from morpheus.precalculations.store import Store
+from morpheus.precalculations.text_metadata import NumCharsMetadata, NumWordsMetadata, \
     DistinctWordsRatioMetadata, LanguagePerParagraph, UnknownWordRatioMetadata, StopwordRatioMetadata, LanguageMetadata
 
 
@@ -99,7 +99,7 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
         result = check.metadata_figures(pvalues=pvalues, df1=df1, df2=df2)
         self.assertEqual(1, len(result))
 
-    @mock.patch('shift_detector.checks.statistical_checks.numerical_statistical_check.plt')
+    @mock.patch('morpheus.checks.statistical_checks.numerical_statistical_check.plt')
     def test_column_tuples_are_handled_by_numerical_visualization(self, mock_plt):
         columns = ['text']
         metadata_names = ['num_chars']
@@ -119,7 +119,7 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
                                            fontsize='x-small')
         mock_plt.title.assert_called_with('Column: text_num_chars (Cumulative Distribution)', fontsize='x-large')
 
-    @mock.patch('shift_detector.checks.statistical_checks.categorical_statistical_check.plt')
+    @mock.patch('morpheus.checks.statistical_checks.categorical_statistical_check.plt')
     def test_column_tuples_are_handled_by_categorical_visualization(self, mock_plt):
         columns = ['text']
         metadata_names = ['category']

@@ -3,9 +3,9 @@ import unittest
 import pandas as pd
 import mock
 
-from shift_detector.checks.sorensen_dice_check import SorensenDiceCheck, SorensenDiceReport
-from shift_detector.precalculations.n_gram import NGramType
-from shift_detector.precalculations.store import Store
+from morpheus.checks.sorensen_dice_check import SorensenDiceCheck, SorensenDiceReport
+from morpheus.precalculations.n_gram import NGramType
+from morpheus.precalculations.store import Store
 
 
 class TestSorensenDiceCheck(unittest.TestCase):
@@ -47,7 +47,7 @@ class TestEmbeddingDistanceReport(unittest.TestCase):
                   'Col2': (0.2, 0.2, 0.2)}
         self.report = SorensenDiceReport('Test Check', ['Col1', 'Col2'], ['Col1'], information=result)
 
-    @mock.patch('shift_detector.checks.sorensen_dice_check.display')
+    @mock.patch('morpheus.checks.sorensen_dice_check.display')
     def test_report_calls_display(self, mock_display):
         self.report.print_information()
         self.assertTrue(mock_display.called)

@@ -1,6 +1,6 @@
 import unittest
-from shift_detector.precalculations.lda_gensim_tokenizer import LdaGensimTokenizer
-from shift_detector.precalculations.store import Store
+from morpheus.precalculations.lda_gensim_tokenizer import LdaGensimTokenizer
+from morpheus.precalculations.store import Store
 import pandas as pd
 
 

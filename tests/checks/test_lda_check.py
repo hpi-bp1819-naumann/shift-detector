@@ -1,8 +1,7 @@
 import unittest
-from shift_detector.checks.lda_check import LdaCheck
-from shift_detector.precalculations.store import Store
+from morpheus.checks.lda_check import LdaCheck
+from morpheus.precalculations.store import Store
 import pandas as pd
-import math
 
 
 class TestLdaCheck(unittest.TestCase):

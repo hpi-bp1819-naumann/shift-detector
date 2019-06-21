@@ -27,7 +27,7 @@ These distributions will be installed automatically when installing Morpheus.
 .. _SciPy: https://www.scipy.org
 .. _Gensim: https://pypi.org/project/gensim/
 
-Install Morpheus
+Install morpheus
 ----------------
 
 Use the following command to install Morpheus:

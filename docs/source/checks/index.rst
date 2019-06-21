@@ -14,7 +14,7 @@ Checks
     guide
 
 
-Morpheus comprises several methods to systematically compare two
+morpheus comprises several methods to systematically compare two
 data sets and check for a :term:`shift`. This section introduces each of
 those methods, which we call :term:`check`.
 

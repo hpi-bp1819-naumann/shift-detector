@@ -3,9 +3,9 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from shift_detector.utils.column_management import is_categorical, detect_column_types, ColumnType, is_binary
-from shift_detector.utils.data_io import shared_column_names
-from shift_detector.utils.ucb_list import block, blocks
+from morpheus.utils.column_management import is_categorical, detect_column_types, ColumnType, is_binary
+from morpheus.utils.data_io import shared_column_names
+from morpheus.utils.ucb_list import block, blocks
 
 
 class TestUtils(unittest.TestCase):

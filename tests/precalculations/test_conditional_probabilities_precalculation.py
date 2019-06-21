@@ -4,8 +4,8 @@ from itertools import chain, combinations
 
 import pandas as pd
 
-from shift_detector.precalculations.conditional_probabilities import fpgrowth, pyfpgrowth_core
-from shift_detector.precalculations.conditional_probabilities_precalculation import \
+from morpheus.precalculations.conditional_probabilities import fpgrowth, pyfpgrowth_core
+from morpheus.precalculations.conditional_probabilities_precalculation import \
     ConditionalProbabilitiesPrecalculation
 
 

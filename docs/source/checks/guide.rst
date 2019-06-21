@@ -39,7 +39,7 @@ Code
 
 Start with **copy-pastable** source code that a user can execute on her
 own computer to reproduce the exact same result. You can assume
-that she already installed Morpheus and thus can import our package.
+that she already installed morpheus and thus can import our package.
 Always use one of the example data sets introduced in :ref:`checks`.
 
 Walk the user through the code and link her to the respective

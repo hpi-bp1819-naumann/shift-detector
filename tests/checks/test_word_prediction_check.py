@@ -5,8 +5,8 @@ from numpy.random import seed
 from pandas import DataFrame
 from tensorflow import set_random_seed
 
-from shift_detector.checks.word_prediction_check import WordPredictionCheck
-from shift_detector.precalculations.store import Store
+from morpheus.checks.word_prediction_check import WordPredictionCheck
+from morpheus.precalculations.store import Store
 
 
 class TestWordPredictionCheck(TestCase):

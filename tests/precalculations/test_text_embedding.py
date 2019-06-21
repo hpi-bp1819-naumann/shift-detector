@@ -1,7 +1,7 @@
 import unittest
-from shift_detector.precalculations.text_embedding_precalculation import TextEmbeddingPrecalculation
+from morpheus.precalculations.text_embedding_precalculation import TextEmbeddingPrecalculation
 from gensim.models import FastText
-from shift_detector.precalculations.store import Store
+from morpheus.precalculations.store import Store
 import pandas as pd
 
 
