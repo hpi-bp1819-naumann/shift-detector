@@ -2,9 +2,7 @@ import logging as logger
 import os
 from unittest import TestCase
 
-from numpy.random import seed
 from pandas import DataFrame
-from tensorflow import set_random_seed
 
 from shift_detector.precalculations.store import Store
 from shift_detector.precalculations.word_prediction_precalculation import WordPredictionPrecalculation
@@ -14,9 +12,7 @@ class TestWordPredictionPrecalculation(TestCase):
 
     def setUp(self):
 
-        # set seeds
-        seed(1)
-        set_random_seed(1)
+        # set hash seed
         os.environ['PYTHONHASHSEED'] = "0"
 
         # create alphabet list: ['a', 'b', ..., 'z']
