@@ -4,7 +4,7 @@ from unittest import mock
 import pandas as pd
 import numpy as np
 
-from shift_detector.utils.visualization import plot_cumulative_step_ratio_histogram, plot_ratio_histogram
+from shift_detector.utils.visualization import plot_cumulative_step_ratio_histogram, plot_binned_ratio_histogram
 
 
 class TestVisualizationUtils(unittest.TestCase):
@@ -23,5 +23,5 @@ class TestVisualizationUtils(unittest.TestCase):
 
     @mock.patch('shift_detector.utils.visualization.plt')
     def test_ratio_hist(self, mock_plt):
-        plot_ratio_histogram(self.column1, self.column2, bin_edges=np.array(range(0, 20, 2)))
+        plot_binned_ratio_histogram(self.column1, self.column2, bin_edges=np.array(range(0, 20, 2)))
         self.assertTrue(mock_plt.bar.called)

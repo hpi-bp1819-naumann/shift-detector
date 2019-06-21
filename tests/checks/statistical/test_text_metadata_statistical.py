@@ -87,17 +87,28 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
         for mdtype in md_with_lang:
             self.assertTrue(mdtype.infer_language)
 
-    def test_figure_functions_are_collected(self):
+    def test_figure_function_is_collected(self):
         df1 = pd.DataFrame.from_dict({'text': ['blub'] * 10})
         df2 = pd.DataFrame.from_dict({'text': ['blub'] * 10})
         metadata_names = ['num_chars', 'num_words']
         cols = pd.MultiIndex.from_product([df1.columns, metadata_names], names=['column', 'metadata'])
-        pvalues = pd.DataFrame(columns=cols, index=['pvalue'])
-        pvalues[('text', 'num_chars')] = 0.05
-        pvalues[('text', 'num_words')] = 0.001
         check = TextMetadataStatisticalCheck()
-        result = check.metadata_figures(pvalues=pvalues, df1=df1, df2=df2)
-        self.assertEqual(1, len(result))
+        pvalues = pd.DataFrame(columns=cols, index=['pvalue'])
+        for solution, num_sig_metadata in [(1, 2), (1, 1), (0, 0)]:
+            p = [0.001] * num_sig_metadata + [0.05] * (2 - num_sig_metadata)
+            pvalues[('text', 'num_chars')] = p[0]
+            pvalues[('text', 'num_words')] = p[1]
+            with self.subTest(solution=solution, pvalues=pvalues):
+                result = check.metadata_figure(pvalues=pvalues, df1=df1, df2=df2)
+                self.assertEqual(solution, len(result))
+
+    @mock.patch('shift_detector.checks.statistical_checks.text_metadata_statistical_check.plt')
+    def test_all_figures_are_called_and_plot_is_shown(self, mock_plt):
+        figures = [MagicMock(), MagicMock(), MagicMock()]
+        TextMetadataStatisticalCheck.plot_all_metadata(figures)
+        for figure in figures:
+            self.assertTrue(figure.called)
+        mock_plt.show.assert_called_with()
 
     @mock.patch('shift_detector.checks.statistical_checks.numerical_statistical_check.plt')
     def test_column_tuples_are_handled_by_numerical_visualization(self, mock_plt):
@@ -135,10 +146,10 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
 
     def test_correct_visualization_is_chosen_categorical(self):
         with mock.patch.object(CategoricalStatisticalCheck, 'column_figure') as mock_figure:
-            TextMetadataStatisticalCheck.metadata_figure('text', LanguageMetadata(), None, None)
+            TextMetadataStatisticalCheck.metadata_plot('text', LanguageMetadata(), None, None)
         self.assertTrue(mock_figure.called)
 
     def test_correct_visualization_is_chosen_numerical(self):
         with mock.patch.object(NumericalStatisticalCheck, 'column_figure') as mock_figure:
-            TextMetadataStatisticalCheck.metadata_figure('text', NumCharsMetadata(), None, None)
+            TextMetadataStatisticalCheck.metadata_plot('text', NumCharsMetadata(), None, None)
         self.assertTrue(mock_figure.called)

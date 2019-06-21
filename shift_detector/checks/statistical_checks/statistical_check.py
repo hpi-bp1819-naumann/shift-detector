@@ -1,7 +1,10 @@
 from abc import abstractmethod
 
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 from IPython.display import display
+from matplotlib import gridspec
 
 from shift_detector.checks.check import Check, Report
 
@@ -89,14 +92,29 @@ class SimpleStatisticalCheck(StatisticalCheck):
 
     @staticmethod
     @abstractmethod
-    def column_figure(column, df1, df2):
+    def column_plot(figure, tile, column, df1, df2):
         pass
 
-    def column_figures(self, significant_columns, df1, df2):
+    @abstractmethod
+    def number_of_columns_of_plots(self) -> int:
+        pass
+
+    def plot_all_columns(self, plot_functions):
+        cols = self.number_of_columns_of_plots()
+        rows = int(np.ceil(len(plot_functions) / cols))
+        fig = plt.figure(figsize=(10, 3.6 * rows), tight_layout=True)
+        grid = gridspec.GridSpec(rows, cols)
+        for plot_function, tile in zip(plot_functions, grid):
+            plot_function(fig, tile)
+        fig.show()
+
+    def column_figure(self, significant_columns, df1, df2):
+        if not significant_columns:
+            return []
         plot_functions = []
-        for column in significant_columns:
-            plot_functions.append(lambda col=column: self.column_figure(col, df1, df2))
-        return plot_functions
+        for column in sorted(significant_columns):
+            plot_functions.append(lambda figure, tile, col=column: self.column_plot(figure, tile, col, df1, df2))
+        return [lambda plots=tuple(plot_functions): self.plot_all_columns(plots)]
 
     def run(self, store) -> Report:
         pvalues = pd.DataFrame(index=['pvalue'])
@@ -116,7 +134,7 @@ class SimpleStatisticalCheck(StatisticalCheck):
                                  shifted_columns=significant_columns,
                                  explanation=self.explain(pvalues),
                                  information={'test_results': pvalues},
-                                 figures=self.column_figures(significant_columns, part1, part2))
+                                 figures=self.column_figure(significant_columns, part1, part2))
 
 
 class StatisticalReport(Report):
