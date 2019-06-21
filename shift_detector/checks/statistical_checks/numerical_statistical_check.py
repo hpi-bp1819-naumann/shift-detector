@@ -35,7 +35,7 @@ class NumericalStatisticalCheck(SimpleStatisticalCheck):
         max_idx = list(distances).index(max(distances))
         max_d = max(distances)
         axes.plot([bin_edges[max_idx], bin_edges[max_idx]], [cumsum1[max_idx], cumsum2[max_idx]],
-             color='black', linewidth=1, linestyle='--')
+                  color='black', linewidth=1, linestyle='--')
         column_name = column if isinstance(column, str) else '_'.join(column)
         axes.legend([column_name + ' 1', column_name + ' 2', 'maximal distance = ' + str(max_d)], fontsize='x-small')
         axes.set_title('Column: ' + column_name + ' (Cumulative Distribution)')
