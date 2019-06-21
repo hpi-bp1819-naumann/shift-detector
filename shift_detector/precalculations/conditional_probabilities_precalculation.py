@@ -44,7 +44,9 @@ class ConditionalProbabilitiesPrecalculation(Precalculation):
                                  abs(rule.delta_supports) >= self.min_delta_supports and abs(
                                      rule.delta_confidences) >= self.min_delta_confidences)
         sorted_filtered_mutual_rules = sorted(filtered_mutual_rules,
-                                              key=lambda r: (abs(r.delta_confidences), max(r.supports_of_left_side)),
+                                              key=lambda r: (
+                                                  min(r.supports) != 0, abs(r.delta_confidences),
+                                                  max(r.supports_of_left_side)),
                                               reverse=True)
 
         def get_significant_rules(rules, index):
