@@ -6,13 +6,13 @@ Installation
 Python Version
 --------------
 
-We recommend using the latest version of Python 3. morpheus supports Python 3.5
+We recommend using the latest version of Python 3. Morpheus supports Python 3.5
 and newer.
 
 Dependencies
 ------------
 
-These distributions will be installed automatically when installing morpheus.
+These distributions will be installed automatically when installing Morpheus.
 
 * `pandas`_ provides high-performance, easy-to-use data structures and data
   analysis tools.
@@ -30,11 +30,11 @@ These distributions will be installed automatically when installing morpheus.
 Install morpheus
 ----------------
 
-Use the following command to install morpheus:
+Use the following command to install Morpheus:
 
 .. code-block:: sh
 
     $ pip3 install morpheus
 
-morpheus is now installed. Check out the :doc:`/quickstart` or go to the
+Morpheus is now installed. Check out the :doc:`/quickstart` or go to the
 :doc:`Documentation Overview </index>`.

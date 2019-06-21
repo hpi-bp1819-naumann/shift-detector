@@ -2,7 +2,7 @@ User's Guide
 ------------
 
 This part of the documentation, which is mostly prose, focuses on
-step-by-step instructions for shift detection with morpheus.
+step-by-step instructions for shift detection with Morpheus.
 
 .. toctree::
    :maxdepth: 2
