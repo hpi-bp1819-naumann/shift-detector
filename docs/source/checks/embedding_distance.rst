@@ -14,7 +14,7 @@ The check only works on textual data.
 Example
 -------
 
-This section shows you how to use :ref:`sorensen_dice` and interpret its result.
+This section shows you how to use :ref:`embedding_distance` and interpret its result.
 
 Code
 ++++
@@ -49,7 +49,7 @@ The code works as follows:
 Result
 ++++++
 
-The :ref:`embedding_distance` produces the following output:
+:ref:`embedding_distance` produces the following output:
 
 ::
 
@@ -71,7 +71,7 @@ Interpretation
 The above report can be read as follows:
 
 1. The examined columns are 'describtion' and 'item_name"
-2. The columns that contain a shift according to the Sørensen Dice Check are 'description' and 'item_name'
+2. The columns that contain a shift according to :ref:`embedding_distance` are 'description' and 'item_name'
 3. The distance between the items within Dataset1 is at 13.447 in the column 'description'
 4. The distance between the items within Dataset2 is at 219.189 in the column 'description'
 5. The similarity of Dataset1 and Dataset2 in the column 'description' is at 235.405
@@ -95,7 +95,7 @@ Implementation
 Algorithm
 +++++++++
 
-:ref:`sorensen_dice` works as follows:
+:ref:`embedding_distance` works as follows:
 
 1. A machine learning model is trained on all texts of the examined column.
 2. For each word in the examined column an embedding is calculated using the machine learning model.
