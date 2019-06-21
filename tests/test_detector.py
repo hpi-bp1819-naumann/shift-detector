@@ -58,6 +58,7 @@ class TestDetector(unittest.TestCase):
             check.run.return_value = 0
             self.detector.run(check, check)
             self.assertEqual(len(self.detector.check_reports), 2)
+            self.assertEqual(check.run.call_count, 2)
 
         with self.subTest("Test run failing check"):
             mock = Mock(spec=Check)
