@@ -1,7 +1,7 @@
 import unittest
-from shift_detector.precalculations.sorensen_dice_precalculation import SorensenDicePrecalculations
-from shift_detector.precalculations.n_gram import NGramType
-from shift_detector.precalculations.store import Store
+from Morpheus.precalculations.sorensen_dice_precalculation import SorensenDicePrecalculations
+from Morpheus.precalculations.n_gram import NGramType
+from Morpheus.precalculations.store import Store
 import pandas as pd
 
 

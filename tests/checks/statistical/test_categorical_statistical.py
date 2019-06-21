@@ -4,10 +4,10 @@ from unittest import mock
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
 
-from shift_detector.detector import Detector
-from shift_detector.checks.statistical_checks.categorical_statistical_check import chi2_test, \
+from Morpheus.detector import Detector
+from Morpheus.checks.statistical_checks.categorical_statistical_check import chi2_test, \
     CategoricalStatisticalCheck
-from shift_detector.precalculations.store import Store
+from Morpheus.precalculations.store import Store
 
 
 class TestCategoricalStatisticalCheck(unittest.TestCase):
@@ -67,7 +67,7 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
         result = check.column_figures(significant_columns=['significant_col'], df1=df1, df2=df2)
         self.assertEqual(1, len(result))
 
-    @mock.patch('shift_detector.checks.statistical_checks.categorical_statistical_check.plt')
+    @mock.patch('Morpheus.checks.statistical_checks.categorical_statistical_check.plt')
     def test_paired_total_ratios_figure_looks_right(self, mock_plt):
         with mock.patch.object(pd.DataFrame, 'plot') as mock_plot:
             CategoricalStatisticalCheck.paired_total_ratios_figure('vaccination_reaction',

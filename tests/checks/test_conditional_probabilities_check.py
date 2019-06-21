@@ -2,8 +2,8 @@ from unittest import TestCase
 
 from pandas import DataFrame
 
-from shift_detector.checks.conditional_probabilities_check import ConditionalProbabilitiesCheck
-from shift_detector.precalculations.store import Store
+from Morpheus.checks.conditional_probabilities_check import ConditionalProbabilitiesCheck
+from Morpheus.precalculations.store import Store
 
 
 class TestConditionalProbabilitiesCheck(TestCase):

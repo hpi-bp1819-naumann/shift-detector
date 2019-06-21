@@ -2,7 +2,7 @@ import unittest
 
 import pandas as pd
 
-from shift_detector.detector import Detector
+from Morpheus.detector import Detector
 
 
 class TestLogging(unittest.TestCase):

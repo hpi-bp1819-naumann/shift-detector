@@ -10,6 +10,6 @@ install:
   - pip3 install -r requirements.txt
 script:
   - python3 nltk_downloads.py
-  - coverage run --source shift_detector -m unittest discover
+  - coverage run --source Morpheus -m unittest discover
 after_success:
   - coveralls

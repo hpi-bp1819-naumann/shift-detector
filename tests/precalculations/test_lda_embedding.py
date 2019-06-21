@@ -1,6 +1,6 @@
 import unittest
-from shift_detector.precalculations.lda_embedding import LdaEmbedding
-from shift_detector.precalculations.store import Store
+from Morpheus.precalculations.lda_embedding import LdaEmbedding
+from Morpheus.precalculations.store import Store
 import pandas as pd
 
 

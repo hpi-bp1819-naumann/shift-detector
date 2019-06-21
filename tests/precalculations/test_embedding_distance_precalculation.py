@@ -1,6 +1,6 @@
 import unittest
-from shift_detector.precalculations.embedding_distance_precalculation import EmbeddingDistancePrecalculation
-from shift_detector.precalculations.store import Store
+from Morpheus.precalculations.embedding_distance_precalculation import EmbeddingDistancePrecalculation
+from Morpheus.precalculations.store import Store
 from gensim.models import Word2Vec
 import pandas as pd
 import numpy as np

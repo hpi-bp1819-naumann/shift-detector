@@ -2,8 +2,8 @@ from unittest import TestCase
 
 from pandas import DataFrame
 
-from shift_detector.precalculations.low_cardinality_precalculation import LowCardinalityPrecalculation
-from shift_detector.precalculations.store import Store
+from Morpheus.precalculations.low_cardinality_precalculation import LowCardinalityPrecalculation
+from Morpheus.precalculations.store import Store
 
 
 class TestLowCardinalityPrecalculation(TestCase):

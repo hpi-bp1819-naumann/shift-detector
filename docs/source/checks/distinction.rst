@@ -23,8 +23,8 @@ Code
 
 ::
 
-    from shift_detector.Detector import Detector
-    from shift_detector.checks.DistinctionCheck import DistinctionCheck
+    from Morpheus.Detector import Detector
+    from Morpheus.checks.DistinctionCheck import DistinctionCheck
 
     data_set_1 = 'examples/shoes_first.csv'
     data_set_2 = 'examples/shoes_second.csv'
@@ -40,13 +40,13 @@ Code
 
 The code works as follows:
 
-1. First, you create a :class:`~shift_detector.Detector.Detector` object to tell Morpheus
+1. First, you create a :class:`~Morpheus.Detector.Detector` object to tell Morpheus
    which data sets you want to compare.
 2. Then, you start the detector with
-   :meth:`~shift_detector.Detector.Detector.run` and the checks you want to run: in this case
-   :class:`~shift_detector.checks.DistinctionCheck.DistinctionCheck`.
+   :meth:`~Morpheus.Detector.Detector.run` and the checks you want to run: in this case
+   :class:`~Morpheus.checks.DistinctionCheck.DistinctionCheck`.
 3. Finally, you print the result with
-   :meth:`~shift_detector.Detector.Detector.evaluate`
+   :meth:`~Morpheus.Detector.Detector.evaluate`
 
 Result
 ++++++

@@ -1,6 +1,6 @@
 import unittest
-from shift_detector.precalculations.count_vectorizer import CountVectorizer
-from shift_detector.precalculations.store import Store
+from Morpheus.precalculations.count_vectorizer import CountVectorizer
+from Morpheus.precalculations.store import Store
 import pandas as pd
 import numpy as np
 

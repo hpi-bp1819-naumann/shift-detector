@@ -4,8 +4,8 @@ import mock
 
 from pandas import DataFrame
 
-from shift_detector.checks.simple_check import SimpleCheck
-from shift_detector.precalculations.store import Store
+from Morpheus.checks.simple_check import SimpleCheck
+from Morpheus.precalculations.store import Store
 
 
 class TestSimpleCheck(TestCase):
@@ -90,7 +90,7 @@ class TestSimpleCheck(TestCase):
             self.check.data = {'numerical_comparison': {'column': {'metric_name': {'df1': 0, 'df2': 12.4}}}}
             self.assertEqual(self.check.relative_metric_difference('column', 'metric_name'), 0)
 
-    @mock.patch('shift_detector.checks.simple_check.plt')
+    @mock.patch('Morpheus.checks.simple_check.plt')
     def test_numerical_plots_work(self, mock_plt):
         self.assertFalse(mock_plt.figure.called)
 
@@ -102,7 +102,7 @@ class TestSimpleCheck(TestCase):
         self.assertTrue(mock_plt.figure().add_subplot.called)
         self.assertTrue(mock_plt.show.called)
 
-    @mock.patch('shift_detector.checks.simple_check.plt')
+    @mock.patch('Morpheus.checks.simple_check.plt')
     def test_categorical_plots_work(self, mock_plt):
         self.assertFalse(mock_plt.figure.called)
 

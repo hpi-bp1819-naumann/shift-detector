@@ -4,9 +4,9 @@ from unittest.mock import Mock, MagicMock
 
 import pandas as pd
 
-from shift_detector.checks.check import Check
-from shift_detector.detector import Detector
-from shift_detector.checks.dummy_check import DummyCheck
+from Morpheus.checks.check import Check
+from Morpheus.detector import Detector
+from Morpheus.checks.dummy_check import DummyCheck
 
 
 class TestCreateDetector(unittest.TestCase):

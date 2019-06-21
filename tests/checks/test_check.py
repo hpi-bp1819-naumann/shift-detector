@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from shift_detector.checks.check import Report
+from Morpheus.checks.check import Report
 
 
 class TestReport(TestCase):
