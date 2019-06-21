@@ -72,11 +72,13 @@ class WordPredictionCheck(Check):
     def detect_shifts(self, examined_columns: List[str], result: dict):
         shifted_columns = []
         explanation = {}
-        print('detect_shifts')
 
         for column in examined_columns:
             df1_prediction_loss, df2_prediction_loss = result[column]
-            explanation[column] = "{} -> {}".format(df1_prediction_loss, df2_prediction_loss)
+            relative_diff = df2_prediction_loss / df1_prediction_loss - 1
+            sign = '+' if relative_diff >= 0 else ''
+            explanation[column] = "{} -> {} ({}{:.2f}%)".format(df1_prediction_loss, df2_prediction_loss,
+                                                                sign, 100 * relative_diff)
             if df2_prediction_loss > df1_prediction_loss * (1 + self.relative_thresh):
                 shifted_columns.append(column)
 

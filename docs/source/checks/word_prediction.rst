@@ -1,6 +1,6 @@
 .. _word_prediction:
 
-WordPredictionCheck
+Word Prediction
 ====================
 
 Description
@@ -16,7 +16,7 @@ The output consists of two floats, which represent the model's losses in the fir
 Example
 -------
 
-This section provides a complete and **self-contained** example of
+This section provides a complete and self-contained example of
 how to use this check.
 
 Code
@@ -58,7 +58,7 @@ Result
     Shifted Columns: []
 
     Column 'Entry':
-    0.11589096725815919 -> 0.12034393218721265
+    0.11589096725815919 -> 0.12034393218721265 (+3.84%)
     Column 'Name':
     Cannot execute Check. Text column does not contain any row with num words > lstm_window(5)
     Column 'Type 1':
@@ -90,6 +90,9 @@ Parameters
 :ref:`word_prediction` provides the following parameter in order to adjust
     the run time and the quality of the result:
 
+``relative_thresh=.15``
+    It lets you define the check's threshold. If the relative difference between the losses exceed this threshold, the check will detect a shift in the examined column.
+
 ``columns=None``:
     This parameter expects a list of strings. These strings are the name of
     the columns that you want to be inspected. If no columns are provided all textual columns
@@ -120,19 +123,14 @@ Parameters
     ``lstm_window=5`` means that the model looks at 5 word vectors to predict the 6th word vector.
     That's why a num words per row > ``lstm_window`` is needed.
 
-``relative_thresh=.15``
-    This is probably the most important parameter. It lets you define the check's threshold. If the relative difference between the losses exceed this threshold, the check will detect a shift in the examined column.
-
 
 Implementation
 --------------
 
-.. _algorithm:
-
 Algorithm
 +++++++++
 
-Firstly, a FastText model is trained. You can find parameters you might want to configure under section Parameters.
+First of all, a FastText model is trained. You can find parameters you might want to configure under section Parameters.
 The output of this first step is a list of word vectors per row.
 
 Then, a custom ML model using LSTM cells is used to predict the next word looking at a row of ``lstm_window`` words.
