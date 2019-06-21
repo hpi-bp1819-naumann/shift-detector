@@ -13,6 +13,13 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
 
     def __init__(self, text_metadata_types=None, language='en', infer_language=False, significance=0.01,
                  use_sampling=False, sampling_seed=None):
+        try:
+            nltk.download('stopwords')
+            nltk.download('universal_tagset')
+            nltk.download('punkt')
+            nltk.download('averaged_perceptron_tagger')
+        except:
+            print('You cannot reach the nltk server, your nltk packages might be out of date.')
         super().__init__(significance, use_sampling, sampling_seed)
         self.metadata_precalculation = TextMetadata(text_metadata_types, language=language,
                                                     infer_language=infer_language)

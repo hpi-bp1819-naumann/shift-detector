@@ -12,6 +12,10 @@ class LdaCheck(Check):
         significance here is the difference between the percentages of each topic between both datasets,
         meaning a difference above 10% is significant
         """
+        try:
+            nltk.download('stopwords')
+        except:
+            print('You cannot reach the nltk server, your nltk packages might be out of date.')
         if not isinstance(significance, int):
             raise TypeError("Significance has to be an integer. Received: {}".format(type(significance)))
         if not significance > 0 or not significance < 100:
