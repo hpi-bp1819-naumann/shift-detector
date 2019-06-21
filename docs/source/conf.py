@@ -18,10 +18,10 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 
 project = 'Morpheus'
-copyright = '2019, Malte Barth, Finn Klein, Mats Poerschke, Philipp Schmidt, Leonard von Merzljak, Jan Westphal, ' \
-            'Justus Zeinert, Paul Zimmermann'
-author = 'Malte Barth, Finn Klein, Mats Poerschke, Philipp Schmidt, Leonard von Merzljak, Jan Westphal, ' \
-         'Justus Zeinert, Paul Zimmermann'
+copyright = "2019, Malte Barth, Finn Klein, Mats Poerschke, Philipp Schmidt, Leonard von Merzljak, Jan Westphal, " \
+            "'Justus Zeinert, Paul Zimmermann"
+author = "Malte Barth, Finn Klein, Mats Poerschke, Philipp Schmidt, Leonard von Merzljak, Jan Westphal, " \
+         "Justus Zeinert, Paul Zimmermann"
 
 # The full version, including alpha/beta/rc tags
 release = '2019'

@@ -23,12 +23,12 @@ class SimpleCheck(Check):
                                   completeness_threshold}
 
         if categorical_threshold < 0:
-            raise ValueError('The categorical threshold of {} is not correct. It has to be between the values of '
-                             '0 and 1.'.format(categorical_threshold))
+            raise ValueError("The categorical threshold of {} is not correct. It has to be between the values of "
+                             "0 and 1.".format(categorical_threshold))
 
         for t_name, t_value in threshold_names_values.items():
             if t_value < 0:
-                raise ValueError('The {}_threshold of {} is not correct. It has to be between the values of 0 and 1'
+                raise ValueError("The {}_threshold of {} is not correct. It has to be between the values of 0 and 1"
                                  .format(t_name, t_value))
 
         self.data = None
@@ -50,7 +50,7 @@ class SimpleCheck(Check):
         if metric_in_df1 == 0 and metric_in_df2 == 0:
             return 0
         if metric_in_df1 == 0:
-            logger.warning('column {} \t \t {}: no comparison of distance possible, division by zero'
+            logger.warning("column {} \t \t {}: no comparison of distance possible, division by zero"
                            .format(column, metric_name))
             return 0
 

@@ -1,18 +1,17 @@
 .. _simple:
 
-Simple Check
-====================
+Simple
+======
 
 Description
 -----------
 
-The SimpleCheck gives you basic information about your datasets and detects the most obvious of datashifts.
+The :ref:`simple` gives you basic information about your datasets and detects the most obvious of datashifts.
 
 Some shifts result in the change of basic metrics, that are commonly used for the analysis and exploration of datasets.
-Those metrics and statistics are calculated on both datasets and compared afterwards. HIER NOCH AMAZON DEEQU ERWÄHNEN,
-WIRD NACH UMBENENNUNG DES CHECKS GEMACHT
+Those metrics and statistics are calculated on both datasets and compared afterwards.
 
-The basic check should be used in most analyses because its metrics are scientifically grounded and commmonly used.
+The check should be used in most analyses, its metrics are commonly used to describe datasets.
 It works directly on categorical and numerical data and, with additional Precalculations, also on text data.
 
 
@@ -21,8 +20,8 @@ Example
 
 ::
 
-    from shift_detector.detector import Detector
-    from shift_detector.checks.simple_check import SimpleCheck
+    from Morpheus.detector import Detector
+    from Morpheus.checks.simple_check import SimpleCheck
 
     data_set_1 = 'examples/pokedex1.csv'
     data_set_2 = 'examples/pokedex2.csv'
@@ -38,18 +37,18 @@ Example
 
 The code works as follows:
 
-1. First, you create a :class:`~shift_detector.detector.Detector` object to tell Morpheus
+1. First, you create a :class:`~Morpheus.detector.Detector` object to tell Morpheus
    which data sets you want to compare.
 2. Then you start the detector with
-   :meth:`~shift_detector.detector.Detector.run` and the checks you want to run: in this case
-   :class:`~shift_detector.checks.simple_check.SimpleCheck`.
+   :meth:`~Morpheus.detector.Detector.run` and the checks you want to run: in this case
+   :class:`~Morpheus.checks.simple_check.SimpleCheck`.
 3. Finally, you print the result with
-   :meth:`~shift_detector.detector.Detector.evaluate`
+   :meth:`~Morpheus.detector.Detector.evaluate`
 
 Result
 ++++++
 
-The SimpleCheck produces this report:
+The :ref:`simple` produces this report:
 
 ::
 
@@ -81,8 +80,9 @@ after that the reports of your categorical columns.
 Numerical
 ~~~~~~~~~
 
-In the numerical columns you see that the column with the name 'payment' is detected as shifted. You see below
-the columnname that two numerical metrics detected a shift, *mean* and *std* (standard deviation).
+In the example, below the heading 'numerical columns', you see that the column with the name 'payment' is detected
+as shifted. You see below the columnname that two numerical metrics detected a shift, *mean* and *std*
+(standard deviation).
 
 *Diff* describes the relative value-distance of the metrics that are calculated on your two datasets. If the Diff
 exceeds a metric-specific threshold, the dataset differ that much, that the check calls shift on this column.
@@ -90,28 +90,28 @@ exceeds a metric-specific threshold, the dataset differ that much, that the chec
 In this case, the mean-value of 'payment' could be 1000.0 in your first, but 706.0 in your second dataset. This difference is
 results in an difference of -294 and an relative difference of -29.4%. The threshold set here is 20% which is exceeded
 by the absolute value of -29.4%. All thresholds are customizable through the API of the
-:class:`~shift_detector.checks.simple_check.SimpleCheck`. All the metrics are listed in the section
+:class:`~Morpheus.checks.simple_check.SimpleCheck`. All the metrics are listed in the section
 :ref:`simple_check_parameters`.
 
 Categorical
 ~~~~~~~~~~~
 
-Using the SimpleCheck shifts can also be detected on categorical columns. Here the histograms over the attribute-values are
+Using the :ref:`simple` shifts can also be detected on categorical columns. Here the histograms over the attribute-values are
 compared. If the difference between those values exceeds the *categorical_threshold* the check calls shift on this
 column.
 
 The example above shows a shift in the categorical column 'payment_option'. There are different
 attribute-values in this column, i.e. 'debit and 'cash'. In those, the differences between the dataset are 6% and
--6.5% which both exceed the threshold of 5%. This indicates that the in dataset2 more people use
+-6.5% which both exceed the threshold of 5%. This indicates that in dataset2 more people use
 cash as a payment-option and fewer use debit, the check calls shift on the column.
 
 
 .. _simple_check_parameters:
 
 Metrics & Parameters
-----------
+--------------------
 
-There are 9 different numerical metrics in the SimpleCheck whose differences can indicate a shift. All
+There are 9 different numerical metrics in the :ref:`simple` whose differences can indicate a shift. All
 default-thresholds can be adjusted.
 
 +-----------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------+
@@ -121,7 +121,7 @@ default-thresholds can be adjusted.
 | median,                           | Those are the .25- .5- and .75-quantiles of the column.                                                                                 |
 | quartile_3**                      |                                                                                                                                         |
 +-----------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------+
-| **value-range**                   | The range of values of the columns, calculated as maximum minus minimum of that column.                                                 |
+| **value-range**                   | The range of values of the columns, calculated as difference between maximum and minimum of that column.                                |
 +-----------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------+
 | **std**                           | the standard deviation in the column                                                                                                    |
 +-----------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------+
@@ -144,7 +144,7 @@ the threshold parameter for the categorical columns is called *categorical_thres
 Example
 ::
 
-    from shift_detector.checks.simple_check import SimpleCheck
+    from Morpheus.checks.simple_check import SimpleCheck
     sc = new SimpleCheck(median_threshold=.05, std_threshold=.42, categorical_threshold=1.05)
 
 
@@ -156,9 +156,9 @@ Implementation
 Algorithm
 +++++++++
 
-The SimpleCheck works as follows:
+The :ref:`SimpleCheck` works as follows:
 
-1.  First, calculating the metrics for all usable columns of the datasets ds1 and ds2. Most metrics are build upon
+1.  First, calculate the metrics for all usable columns of the datasets ds1 and ds2. Most metrics are build upon
     functions from the python library *pandas*
 2.  Then, take the difference between each metric, so *diff_metric = metric(ds1) - metric(ds2)*
 3.  Finally, compare those diffs to the predifined or custom thresholds. If the threshold is exceeded, indicate a shift
