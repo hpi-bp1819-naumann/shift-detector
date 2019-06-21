@@ -2,24 +2,29 @@ from shift_detector.checks.check import Check, Report
 from shift_detector.precalculations.lda_embedding import LdaEmbedding
 from shift_detector.utils.column_management import ColumnType
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 from wordcloud import WordCloud
+import pyLDAvis
+import pyLDAvis.gensim
+import pyLDAvis.sklearn
+from IPython.display import display
 import pandas as pd
+import numpy as np
 import warnings
-
 
 
 class LdaCheck(Check):
 
-    def __init__(self, significance=10, n_topics=20, n_iter=10, lib='sklearn', random_state=0,
+    def __init__(self, significance=0.1, n_topics=20, n_iter=10, lib='sklearn', random_state=0,
                  cols=None, trained_model=None, stop_words='english', max_features=None):
         """
         significance here is the difference between the percentages of each topic between both datasets,
         meaning a difference above 10% is significant
         """
-        if not isinstance(significance, int):
-            raise TypeError("Significance has to be an integer. Received: {}".format(type(significance)))
-        if not significance > 0 or not significance < 100:
-            raise ValueError("Significance has to be between 0% and 100%. Received: {}".format(significance))
+        if not isinstance(significance, float):
+            raise TypeError("Significance has to be a float. Received: {}".format(type(significance)))
+        if not 0 < significance < 1:
+            raise ValueError("Significance has to be between 0 and 1. Received: {}".format(significance))
 
         if cols:
             if isinstance(cols, list) and all(isinstance(col, str) for col in cols):
@@ -57,72 +62,132 @@ class LdaCheck(Check):
             self.cols = list(col_names)
             col_names = self.cols
 
-        df1_embedded, df2_embedded, twd = store[LdaEmbedding(n_topics=self.n_topics, n_iter=self.n_iter, lib=self.lib,
-                                                             random_state=self.random_state, cols=self.cols,
-                                                             trained_model=self.trained_model, stop_words=self.stop_words,
-                                                             max_features=self.max_features)]
+        if self.lib == 'sklearn':
+            df1_embedded, df2_embedded, topic_words, all_models, all_dtms, all_vecs = store[LdaEmbedding(
+                                                                                     n_topics=self.n_topics,
+                                                                                     n_iter=self.n_iter,
+                                                                                     lib=self.lib,
+                                                                                     random_state=self.random_state,
+                                                                                     cols=self.cols,
+                                                                                     trained_model=self.trained_model,
+                                                                                     stop_words=self.stop_words,
+                                                                                     max_features=self.max_features)]
+            all_corpora, all_dicts = (None, None)
+
+        else:
+            df1_embedded, df2_embedded, topic_words, all_models, all_corpora, all_dicts = store[LdaEmbedding(
+                                                                                     n_topics=self.n_topics,
+                                                                                     n_iter=self.n_iter,
+                                                                                     lib=self.lib,
+                                                                                     random_state=self.random_state,
+                                                                                     cols=self.cols,
+                                                                                     trained_model=self.trained_model,
+                                                                                     stop_words=self.stop_words,
+                                                                                     max_features=self.max_features)]
+            all_dtms, all_vecs = (None, None)
 
         for col in col_names:
             count_topics1 = df1_embedded['topics ' + col].value_counts().sort_index()
             count_topics2 = df2_embedded['topics ' + col].value_counts().sort_index()
 
+            values1_ratio = [x / len(df1_embedded['topics ' + col]) for x in count_topics1.values]
+            values2_ratio = [x / len(df2_embedded['topics ' + col]) for x in count_topics2.values]
 
-
-            #labels1_ordered, values1_ordered = zip(*sorted(count_topics1.items(), key=lambda kv: kv[0]))
-            values1_percentage = [x * 100 / len(df1_embedded['topics ' + col]) for x in count_topics1.values]
-
-            #labels2_ordered, values2_ordered = zip(*sorted(count_topics2.items(), key=lambda kv: kv[0]))
-            values2_percentage = [x * 100 / len(df2_embedded['topics ' + col]) for x in count_topics2.values]
-
-            print(values1_percentage)
-            print(values2_percentage)
-
-            for i, (v1, v2) in enumerate(zip(values1_percentage, values2_percentage)):
-                print(abs(round(v1 - v2, 1)))
-                # number of rounded digits is 1 per default
-                if abs(round(v1 - v2, 1)) >= self.significance:
+            for i, (v1, v2) in enumerate(zip(values1_ratio, values2_ratio)):
+                # number of rounded digits is 3 per default
+                if abs(round(v1 - v2, 3)) >= self.significance:
                     shifted_columns.add(col)
-                    explanation['Topic '+str(i)+' diff in column '+col] = round(v1 - v2, 1)
+                    explanation['Topic '+str(i)+' diff in column '+col] = round(v1 - v2, 3)
 
         return Report(check_name='LDA Check',
                       examined_columns=col_names,
                       shifted_columns=shifted_columns,
                       explanation=explanation,
-                      figures=self.column_figures(col_names, df1_embedded, df2_embedded))
+                      figures=self.column_figures(col_names, df1_embedded, df2_embedded, topic_words,
+                                                  all_models, all_dtms, all_vecs, all_corpora, all_dicts))
+
+    def column_figure(self, column, df1, df2, topic_words,
+                      all_models, all_dtms, all_vecs, all_corpora, all_dicts):
+        #self.paired_total_ratios_figure(column, df1, df2)
+        #self.wordcloud(column, topic_words, self.n_topics, self.lib)
+        self.pyldavis(column, self.lib, all_models, all_dtms, all_vecs, all_corpora, all_dicts)
+
+    def column_figures(self, significant_columns, df1, df2, topic_words,
+                       all_models, all_dtms, all_vecs, all_corpora, all_dicts):
+        plot_functions = []
+        for column in significant_columns:
+            plot_functions.append(lambda col=column: self.column_figure(col, df1, df2, topic_words,
+                                                                        all_models, all_dtms, all_vecs,
+                                                                        all_corpora, all_dicts))
+        return plot_functions
 
     @staticmethod
     def paired_total_ratios_figure(column, df1, df2):
         value_counts = pd.concat([df1['topics ' + column].value_counts(), df2['topics ' + column].value_counts()],
                                  axis=1).sort_index()
         value_ratios = value_counts.fillna(0).apply(axis='columns',
-                                                    func=lambda row: pd.Series([100 * row.iloc[0] /
+                                                    func=lambda row: pd.Series([row.iloc[0] /
                                                                                 len(df1['topics ' + column]),
-                                                                                100 * row.iloc[1] /
+                                                                                row.iloc[1] /
                                                                                 len(df2['topics ' + column])],
                                                                                index=[str(column) + ' 1',
                                                                                       str(column) + ' 2']))
-        print(value_ratios)
         axes = value_ratios.plot(kind='barh', fontsize='medium')
         axes.invert_yaxis()  # to match order of legend
         axes.set_title(str(column), fontsize='x-large')
-        axes.set_xlabel('percentage', fontsize='medium')
+        axes.set_xlabel('ratio', fontsize='medium')
         axes.set_ylabel('topics', fontsize='medium')
         plt.show()
 
-    def column_figure(self, column, df1, df2, twd):
-        self.paired_total_ratios_figure(column, df1, df2)
-        self.wordcloud(column, twd)
-
-    def column_figures(self, significant_columns, df1, df2, twd):
-        plot_functions = []
-        for column in significant_columns:
-            plot_functions.append(lambda col=column: self.column_figure(col, df1, df2, twd))
-        return plot_functions
-
     @staticmethod
-    def wordcloud(column, twd):
-        wordcloud = WordCloud(background_color='white').generate(' '.join(twd[column])) # add loop for topics
-        plt.figure(figsize=(12, 12))
-        plt.imshow(wordcloud, interpolation="bilinear")
-        plt.axis("off")
+    def wordcloud(column, topic_words, n_topics, lib):
+        cols = [color for name, color in mcolors.XKCD_COLORS.items()]
+
+        cloud = WordCloud(background_color='white',
+                          width=2500,
+                          height=1800,
+                          max_words=10,
+                          colormap='tab10',
+                          color_func=lambda *args, **kwargs: cols[i],
+                          prefer_horizontal=1.0)
+        j = int(np.ceil(n_topics / 2))
+        fig, axes = plt.subplots(j, 2, figsize=(20, 10), sharex='all', sharey='all', tight_layout=True)
+
+        for i, ax in enumerate(axes.flatten()):
+            fig.add_subplot(ax)
+            topics = dict(topic_words[column][i][1])
+            cloud.generate_from_frequencies(topics, max_font_size=300)
+            plt.gca().imshow(cloud)
+            plt.gca().set_title('Topic ' + str(i), fontdict=dict(size=16))
+            plt.gca().axis('off')
+
+        # plt.subplots_adjust(wspace=3, hspace=0)
+        plt.axis('off')
+        plt.margins(x=0, y=0)
         plt.show()
+        '''
+        for t in range(n_topics):
+            #i = t + 1
+            plt.figure()
+            .set_title("Topic #" + str(t))
+            plt.plot()
+            if lib == 'sklearn':
+                plt.imshow(WordCloud(background_color='white').generate(' '.join(topic_words[column][t])))
+            else:
+                plt.imshow(WordCloud(background_color='white').fit_words(dict(topic_words[column][t])))
+            plt.axis("off")
+        fig.suptitle(column)
+        plt.show()
+        '''
+    @staticmethod
+    def pyldavis(column, lib, lda_models, dtm=None, vectorizer=None, corpus=None, dictionary=None):
+        if lib == 'sklearn':
+            print('prepare')
+            vis_data = pyLDAvis.sklearn.prepare(lda_models[column], np.asmatrix(dtm[column]), vectorizer[column])
+        else:
+            print('prepare')
+            vis_data = pyLDAvis.gensim.prepare(lda_models[column], corpus[column], dictionary[column])
+        print('display')
+        display(pyLDAvis.display(vis_data))
+
+
