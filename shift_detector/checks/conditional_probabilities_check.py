@@ -21,11 +21,11 @@ class ConditionalProbabilitiesReport(Report):
             if 'significant_rules_of_second' in self.explanation:
                 nprint('Attribute-value combinations exclusive to second data set', text_formatting='h3')
                 print('\n'.join(to_str(rule, 1) for rule in self.explanation['significant_rules_of_second']))
-        if 'mutual_rules' in self.explanation:
+        if 'sorted_filtered_mutual_rules' in self.explanation:
             nprint('Red rules', text_formatting='h3')
-            mdprint('**Red rules exceed both min_delta_supports and min_delta_confidences.**')
+            mdprint('**Red rules exceed both min_delta_supports and min_delta_confidences.**\n')
             mdprint('The first rule can be read as follows:\n')
-            for i, rule in enumerate(self.explanation['mutual_rules']):
+            for i, rule in enumerate(self.explanation['sorted_filtered_mutual_rules']):
                 if i == 0:
                     explanation_string = '*If the condition holds that '
                     explanation_string += ' and '.join('{}={}'.format(attr, value) for attr, value in rule.left_side)
@@ -35,15 +35,19 @@ class ConditionalProbabilitiesReport(Report):
                         rule.confidences[0], rule.confidences[1])
                     explanation_string += '*The attribute-value combination '
                     explanation_string += ' and '.join('{}={}'.format(attr, value) for attr, value in rule.left_side)
-                    explanation_string += ' appears in {:.0%} of the tuples in the first data set and in {:.0%} of the second data set.*\n'.format(
-                            rule.supports_of_left_side[0], rule.supports_of_left_side[1])
+                    explanation_string += ' appears in {:.0%} of the tuples in the first data set and in {:.0%} of the tuples in the second data set.*\n'.format(
+                        rule.supports_of_left_side[0], rule.supports_of_left_side[1])
                     explanation_string += '*The attribute-value combination '
                     explanation_string += ' and '.join(
                         '{}={}'.format(attr, value) for attr, value in rule.left_side + rule.right_side)
-                    explanation_string += ' appears in {:.0%} of the tuples in the first data set and in {:.0%} of the second data set.*\n'.format(
-                            rule.supports[0], rule.supports[1])
+                    explanation_string += ' appears in {:.0%} of the tuples in the first data set and in {:.0%} of the tuples in the second data set.*\n'.format(
+                        rule.supports[0], rule.supports[1])
                     mdprint(explanation_string)
                 print(rule, end='\n\n')
+                if min(rule.supports) == 0 and i > 0 and min(
+                        self.explanation['sorted_filtered_mutual_rules'][i - 1].supports) != 0:
+                    # insert visual marker
+                    print('\n')
         if ('orange_rules_falling_below_min_delta_supports' in self.explanation
                 or 'orange_rules_falling_below_min_delta_confidences' in self.explanation):
             nprint('Orange rules', text_formatting='h3')
@@ -70,12 +74,14 @@ class ConditionalProbabilitiesCheck(Check):
     :param min_confidence: a float between 0 and 1. This parameter impacts the size
         of the result. The higher ``min_confidence`` the more rules are considered.
     :param rule_limit: an int greater than or equal to 0. At most ``rule_limit``
-        rule clusters are printed as a result of executing this check.
-        The rule clusters are sorted according to their significance.
+        rules are printed in each section of the report as a result of executing this check.
+        Rules are always sorted according to their significance.
     :param min_delta_supports: a float between 0 and 1. Rules whose support
-        values exhibit an absolute difference of less than ``min_delta_supports`` are not considered.
+        values exhibit an absolute difference of less than ``min_delta_supports`` are not considered
+        to indicate a shift.
     :param min_delta_confidences: a float between 0 and 1. Rules whose confidence
-        values exhibit an absolute difference of less than ``min_delta_confidences`` are not considered.
+        values exhibit an absolute difference of less than ``min_delta_confidences`` are not considered
+        to indicate a shift.
     :param number_of_bins: an int greater than 0. Numerical columns are binned into ``number_of_bins``
         bins.
     :param number_of_topics: an int greater than 0. Textual columns are embedded into ``number_of_topics``
@@ -107,15 +113,15 @@ class ConditionalProbabilitiesCheck(Check):
         ]
         explanation = defaultdict(list)
 
-        def add_to_explanation(rules, name):
+        def add_to_explanation(rules, identifier):
             for i, rule in enumerate(rules):
                 if i == self.rule_limit:
                     break
-                explanation[name].append(rule)
+                explanation[identifier].append(rule)
 
         add_to_explanation(pre_calculation.significant_rules_of_first, 'significant_rules_of_first')
         add_to_explanation(pre_calculation.significant_rules_of_second, 'significant_rules_of_second')
-        add_to_explanation(pre_calculation.sorted_filtered_mutual_rules, 'mutual_rules')
+        add_to_explanation(pre_calculation.sorted_filtered_mutual_rules, 'sorted_filtered_mutual_rules')
 
         orange_rules_falling_below_min_delta_supports = sorted(
             (rule for rule in pre_calculation.mutual_rules if abs(rule.delta_supports) < self.min_delta_supports
@@ -151,6 +157,7 @@ class ConditionalProbabilitiesCheck(Check):
                         and y > self.min_delta_confidences]
             red_x = [x for x, y in coordinates if x > self.min_delta_supports and y > self.min_delta_confidences]
             red_y = [y for x, y in coordinates if x > self.min_delta_supports and y > self.min_delta_confidences]
+            plt.rcParams['figure.figsize'] = (10, 8)
             plt.scatter(green_x, green_y, color='green')
             plt.scatter(orange_x, orange_y, color='orange')
             plt.scatter(red_x, red_y, color='red')
