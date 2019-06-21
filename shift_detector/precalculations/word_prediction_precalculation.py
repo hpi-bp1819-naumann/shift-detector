@@ -19,7 +19,7 @@ from shift_detector.utils.column_management import ColumnType
 class WordPredictionPrecalculation(Precalculation):
 
     def __init__(self, column, ft_window_size=5, ft_size=100, ft_workers=4, seed=None,
-                 lstm_window=5, num_epochs_predictor=100, verbose=1):
+                 lstm_window=5, num_epochs_predictor=100, verbose=0):
         self.column = column
         self.ft_window_size = ft_window_size
         self.ft_size = ft_size
