@@ -2,8 +2,8 @@ from unittest import TestCase
 
 from pandas import DataFrame
 
-from Morpheus.precalculations.distinction_precalculation import DistinctionPrecalculation
-from Morpheus.precalculations.store import Store
+from morpheus.precalculations.distinction_precalculation import DistinctionPrecalculation
+from morpheus.precalculations.store import Store
 
 
 class TestCreateDetector(TestCase):

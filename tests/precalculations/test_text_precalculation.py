@@ -2,8 +2,8 @@ import unittest
 
 from pandas.util.testing import assert_frame_equal
 
-from Morpheus.precalculations.store import Store
-from Morpheus.precalculations.text_precalculation import *
+from morpheus.precalculations.store import Store
+from morpheus.precalculations.text_precalculation import *
 
 import tests.test_data as td
 

@@ -3,9 +3,9 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 
-from Morpheus.checks.statistical_checks.statistical_check import SimpleStatisticalCheck
-from Morpheus.utils.column_management import ColumnType
-import Morpheus.utils.visualization as vis
+from morpheus.checks.statistical_checks.statistical_check import SimpleStatisticalCheck
+from morpheus.utils.column_management import ColumnType
+import morpheus.utils.visualization as vis
 
 
 def kolmogorov_smirnov_test(part1: pd.Series, part2: pd.Series):

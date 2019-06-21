@@ -5,10 +5,10 @@ from sklearn.feature_extraction.text import *
 from gensim.sklearn_api import LdaTransformer
 from gensim.corpora import Dictionary
 import warnings
-from Morpheus.precalculations.precalculation import Precalculation
-from Morpheus.precalculations.count_vectorizer import CountVectorizer
-from Morpheus.precalculations.lda_gensim_tokenizer import LdaGensimTokenizer
-from Morpheus.utils.column_management import ColumnType
+from morpheus.precalculations.precalculation import Precalculation
+from morpheus.precalculations.count_vectorizer import CountVectorizer
+from morpheus.precalculations.lda_gensim_tokenizer import LdaGensimTokenizer
+from morpheus.utils.column_management import ColumnType
 
 
 class LdaEmbedding(Precalculation):

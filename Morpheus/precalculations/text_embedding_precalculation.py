@@ -6,9 +6,9 @@ from copy import copy
 
 from gensim.models.base_any2vec import BaseWordEmbeddingsModel
 
-from Morpheus.precalculations.precalculation import Precalculation
-from Morpheus.precalculations.text_precalculation import TokenizeIntoLowerWordsPrecalculation
-from Morpheus.precalculations.store import Store
+from morpheus.precalculations.precalculation import Precalculation
+from morpheus.precalculations.text_precalculation import TokenizeIntoLowerWordsPrecalculation
+from morpheus.precalculations.store import Store
 
 
 class TextEmbeddingPrecalculation(Precalculation):

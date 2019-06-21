@@ -1,7 +1,7 @@
 from pandas import DataFrame
 
-from Morpheus.checks.check import Check, Report
-from Morpheus.precalculations.dummy_precalculation import DummyPrecalculation
+from morpheus.checks.check import Check, Report
+from morpheus.precalculations.dummy_precalculation import DummyPrecalculation
 
 
 class DummyReport(Report):

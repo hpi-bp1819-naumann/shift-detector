@@ -1,7 +1,7 @@
 import pandas as pd
-from Morpheus.precalculations.n_gram import NGram, NGramType
-from Morpheus.precalculations.store import Store
-from Morpheus.precalculations.precalculation import Precalculation
+from morpheus.precalculations.n_gram import NGram, NGramType
+from morpheus.precalculations.store import Store
+from morpheus.precalculations.precalculation import Precalculation
 from datawig.utils import random_split
 
 

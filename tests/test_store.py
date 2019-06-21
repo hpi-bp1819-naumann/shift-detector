@@ -4,8 +4,8 @@ import pandas as pd
 from pandas.core.dtypes.common import is_numeric_dtype, is_string_dtype
 from pandas.util.testing import assert_frame_equal
 
-from Morpheus.precalculations.store import InsufficientDataError, Store
-from Morpheus.utils.column_management import ColumnType
+from morpheus.precalculations.store import InsufficientDataError, Store
+from morpheus.utils.column_management import ColumnType
 
 
 class TestStore(unittest.TestCase):

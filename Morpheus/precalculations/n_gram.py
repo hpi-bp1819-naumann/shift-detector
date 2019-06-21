@@ -1,7 +1,7 @@
-from Morpheus.precalculations.precalculation import Precalculation
+from morpheus.precalculations.precalculation import Precalculation
 from enum import Enum
-from Morpheus.precalculations.store import Store
-from Morpheus.utils.column_management import ColumnType
+from morpheus.precalculations.store import Store
+from morpheus.utils.column_management import ColumnType
 
 
 class NGramType(Enum):

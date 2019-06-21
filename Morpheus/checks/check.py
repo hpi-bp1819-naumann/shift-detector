@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 from collections import defaultdict
 from itertools import chain
 
-from Morpheus.utils.neat_print import nprint
+from morpheus.utils.neat_print import nprint
 
 
 class Report:

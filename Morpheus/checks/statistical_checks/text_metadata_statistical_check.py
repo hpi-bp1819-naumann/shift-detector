@@ -1,12 +1,12 @@
 import pandas as pd
 
-from Morpheus.checks.check import Report
-from Morpheus.checks.statistical_checks.categorical_statistical_check import CategoricalStatisticalCheck
-from Morpheus.checks.statistical_checks.numerical_statistical_check import NumericalStatisticalCheck
-from Morpheus.checks.statistical_checks.statistical_check import StatisticalCheck, StatisticalReport
-from Morpheus.precalculations.text_metadata import TextMetadata
-from Morpheus.utils.column_management import ColumnType
-from Morpheus.utils.errors import UnknownMetadataReturnColumnTypeError
+from morpheus.checks.check import Report
+from morpheus.checks.statistical_checks.categorical_statistical_check import CategoricalStatisticalCheck
+from morpheus.checks.statistical_checks.numerical_statistical_check import NumericalStatisticalCheck
+from morpheus.checks.statistical_checks.statistical_check import StatisticalCheck, StatisticalReport
+from morpheus.precalculations.text_metadata import TextMetadata
+from morpheus.utils.column_management import ColumnType
+from morpheus.utils.errors import UnknownMetadataReturnColumnTypeError
 
 
 class TextMetadataStatisticalCheck(StatisticalCheck):

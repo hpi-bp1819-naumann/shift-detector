@@ -1,7 +1,7 @@
 import unittest
-from Morpheus.precalculations.sorensen_dice_precalculation import SorensenDicePrecalculations
-from Morpheus.precalculations.n_gram import NGramType
-from Morpheus.precalculations.store import Store
+from morpheus.precalculations.sorensen_dice_precalculation import SorensenDicePrecalculations
+from morpheus.precalculations.n_gram import NGramType
+from morpheus.precalculations.store import Store
 import pandas as pd
 
 

@@ -21,8 +21,8 @@ Code
 
 ::
 
-    from Morpheus.Detector import Detector
-    from Morpheus.checks.SorensenDiceCheck import SorensenDiceCheck
+    from morpheus.Detector import Detector
+    from morpheus.checks.SorensenDiceCheck import SorensenDiceCheck
 
     data_set_1 = 'examples/shoes_first.csv'
     data_set_2 = 'examples/shoes_second.csv'
@@ -38,13 +38,13 @@ Code
 
 The code works as follows:
 
-1. First, you create a :class:`~Morpheus.Detector.Detector` object to tell Morpheus
+1. First, you create a :class:`~morpheus.Detector.Detector` object to tell morpheus
    which data sets you want to compare
 2. Then, you start the detector with
-   :meth:`~Morpheus.Detector.Detector.run` and the checks you want to run: in this case
-   :class:`~Morpheus.checks.SorensenDiceCheck.SorensenDiceCheck`.
+   :meth:`~morpheus.Detector.Detector.run` and the checks you want to run: in this case
+   :class:`~morpheus.checks.SorensenDiceCheck.SorensenDiceCheck`.
 3. Finally, you print the result with
-   :meth:`~Morpheus.Detector.Detector.evaluate`
+   :meth:`~morpheus.Detector.Detector.evaluate`
 
 Result
 ++++++

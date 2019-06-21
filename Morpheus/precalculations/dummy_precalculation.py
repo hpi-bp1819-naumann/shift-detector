@@ -1,8 +1,8 @@
 from pandas import DataFrame
 
-from Morpheus.precalculations.precalculation import Precalculation
-from Morpheus.precalculations.store import Store
-from Morpheus.utils.column_management import ColumnType
+from morpheus.precalculations.precalculation import Precalculation
+from morpheus.precalculations.store import Store
+from morpheus.utils.column_management import ColumnType
 
 
 class DummyPrecalculation(Precalculation):

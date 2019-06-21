@@ -2,9 +2,9 @@ from collections import defaultdict
 
 import matplotlib.pyplot as plt
 
-from Morpheus.checks.check import Check, Report
-from Morpheus.precalculations.conditional_probabilities import rule_compression
-from Morpheus.precalculations.conditional_probabilities_precalculation import \
+from morpheus.checks.check import Check, Report
+from morpheus.precalculations.conditional_probabilities import rule_compression
+from morpheus.precalculations.conditional_probabilities_precalculation import \
     ConditionalProbabilitiesPrecalculation
 
 

@@ -1,7 +1,7 @@
 import unittest
-from Morpheus.precalculations.text_embedding_precalculation import TextEmbeddingPrecalculation
+from morpheus.precalculations.text_embedding_precalculation import TextEmbeddingPrecalculation
 from gensim.models import FastText
-from Morpheus.precalculations.store import Store
+from morpheus.precalculations.store import Store
 import pandas as pd
 
 

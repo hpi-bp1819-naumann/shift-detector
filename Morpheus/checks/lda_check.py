@@ -1,6 +1,6 @@
-from Morpheus.checks.check import Check, Report
-from Morpheus.precalculations.lda_embedding import LdaEmbedding
-from Morpheus.utils.column_management import ColumnType
+from morpheus.checks.check import Check, Report
+from morpheus.precalculations.lda_embedding import LdaEmbedding
+from morpheus.utils.column_management import ColumnType
 from collections import Counter
 import warnings
 

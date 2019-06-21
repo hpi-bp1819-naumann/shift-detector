@@ -1,6 +1,6 @@
 from copy import deepcopy
-from Morpheus.precalculations.precalculation import Precalculation
-from Morpheus.utils.column_management import ColumnType
+from morpheus.precalculations.precalculation import Precalculation
+from morpheus.utils.column_management import ColumnType
 
 
 class SimplePrecalculation(Precalculation):

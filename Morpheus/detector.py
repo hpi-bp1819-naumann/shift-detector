@@ -5,11 +5,11 @@ from typing import Union
 import pandas as pd
 from IPython.display import display, Markdown
 
-from Morpheus.checks.check import Check, Report
-from Morpheus.precalculations.store import Store
-from Morpheus.utils.column_management import column_names
-from Morpheus.utils.data_io import read_from_csv
-from Morpheus.utils.neat_print import nprint
+from morpheus.checks.check import Check, Report
+from morpheus.precalculations.store import Store
+from morpheus.utils.column_management import column_names
+from morpheus.utils.data_io import read_from_csv
+from morpheus.utils.neat_print import nprint
 
 
 class Detector:

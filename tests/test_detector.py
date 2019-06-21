@@ -4,9 +4,9 @@ from unittest.mock import Mock, MagicMock
 
 import pandas as pd
 
-from Morpheus.checks.check import Check
-from Morpheus.detector import Detector
-from Morpheus.checks.dummy_check import DummyCheck
+from morpheus.checks.check import Check
+from morpheus.detector import Detector
+from morpheus.checks.dummy_check import DummyCheck
 
 
 class TestCreateDetector(unittest.TestCase):

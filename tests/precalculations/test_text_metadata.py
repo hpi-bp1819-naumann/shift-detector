@@ -2,11 +2,11 @@ import unittest
 
 from pandas.util.testing import assert_frame_equal
 
-import Morpheus.utils.text_metadata_utils as TmUtils
+import morpheus.utils.text_metadata_utils as TmUtils
 from langdetect.lang_detect_exception import LangDetectException
 
-from Morpheus.precalculations.store import Store
-from Morpheus.precalculations.text_metadata import *
+from morpheus.precalculations.store import Store
+from morpheus.precalculations.text_metadata import *
 
 import tests.test_data as td
 

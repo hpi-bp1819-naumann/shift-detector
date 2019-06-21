@@ -1,6 +1,6 @@
 import unittest
-from Morpheus.checks.lda_check import LdaCheck
-from Morpheus.precalculations.store import Store
+from morpheus.checks.lda_check import LdaCheck
+from morpheus.precalculations.store import Store
 import pandas as pd
 
 

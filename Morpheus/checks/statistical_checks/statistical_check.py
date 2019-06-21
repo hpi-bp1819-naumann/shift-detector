@@ -3,7 +3,7 @@ from abc import abstractmethod
 import pandas as pd
 from IPython.display import display
 
-from Morpheus.checks.check import Check, Report
+from morpheus.checks.check import Check, Report
 
 
 class StatisticalCheck(Check):

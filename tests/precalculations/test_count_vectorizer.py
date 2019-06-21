@@ -1,6 +1,6 @@
 import unittest
-from Morpheus.precalculations.count_vectorizer import CountVectorizer
-from Morpheus.precalculations.store import Store
+from morpheus.precalculations.count_vectorizer import CountVectorizer
+from morpheus.precalculations.store import Store
 import pandas as pd
 import numpy as np
 

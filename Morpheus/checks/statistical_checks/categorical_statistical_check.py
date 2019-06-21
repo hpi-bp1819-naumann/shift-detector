@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from scipy import stats
 
-from Morpheus.checks.statistical_checks.statistical_check import SimpleStatisticalCheck
-from Morpheus.precalculations.low_cardinality_precalculation import LowCardinalityPrecalculation
+from morpheus.checks.statistical_checks.statistical_check import SimpleStatisticalCheck
+from morpheus.precalculations.low_cardinality_precalculation import LowCardinalityPrecalculation
 
 
 def chi2_test(part1: pd.Series, part2: pd.Series):

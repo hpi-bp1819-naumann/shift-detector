@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from Morpheus.checks.check import Report
+from morpheus.checks.check import Report
 
 
 class TestReport(TestCase):

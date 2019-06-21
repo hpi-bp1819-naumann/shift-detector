@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from Morpheus.precalculations.conditional_probabilities.rule_cluster import RuleCluster
+from morpheus.precalculations.conditional_probabilities.rule_cluster import RuleCluster
 
 
 def group_rules_by_length(rules):

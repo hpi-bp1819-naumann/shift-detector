@@ -1,6 +1,6 @@
 import unittest
-from Morpheus.precalculations.embedding_distance_precalculation import EmbeddingDistancePrecalculation
-from Morpheus.precalculations.store import Store
+from morpheus.precalculations.embedding_distance_precalculation import EmbeddingDistancePrecalculation
+from morpheus.precalculations.store import Store
 from gensim.models import Word2Vec
 import pandas as pd
 import numpy as np

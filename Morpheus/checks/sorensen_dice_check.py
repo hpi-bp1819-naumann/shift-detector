@@ -1,6 +1,6 @@
-from Morpheus.checks.check import Check, Report
-from Morpheus.precalculations.n_gram import NGramType
-from Morpheus.precalculations.sorensen_dice_precalculation import SorensenDicePrecalculations
+from morpheus.checks.check import Check, Report
+from morpheus.precalculations.n_gram import NGramType
+from morpheus.precalculations.sorensen_dice_precalculation import SorensenDicePrecalculations
 from IPython.display import display
 
 import pandas as pd

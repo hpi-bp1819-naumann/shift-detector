@@ -1,8 +1,8 @@
 import pandas as pd
 from pandas import DataFrame
 
-from Morpheus.precalculations.precalculation import Precalculation
-from Morpheus.utils.column_management import ColumnType, is_categorical
+from morpheus.precalculations.precalculation import Precalculation
+from morpheus.utils.column_management import ColumnType, is_categorical
 
 
 class BinningPrecalculation(Precalculation):

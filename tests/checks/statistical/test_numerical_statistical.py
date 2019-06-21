@@ -5,11 +5,11 @@ import numpy as np
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
 
-from Morpheus.checks.statistical_checks import numerical_statistical_check
-from Morpheus.checks.statistical_checks.numerical_statistical_check import kolmogorov_smirnov_test, \
+from morpheus.checks.statistical_checks import numerical_statistical_check
+from morpheus.checks.statistical_checks.numerical_statistical_check import kolmogorov_smirnov_test, \
     NumericalStatisticalCheck
-from Morpheus.detector import Detector
-from Morpheus.precalculations.store import Store
+from morpheus.detector import Detector
+from morpheus.precalculations.store import Store
 
 
 class TestCategoricalStatisticalCheck(unittest.TestCase):
@@ -119,7 +119,7 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
                                       df1=df1, df2=df2)
         self.assertEqual(1, len(result))
 
-    @mock.patch('Morpheus.checks.statistical_checks.numerical_statistical_check.plt')
+    @mock.patch('morpheus.checks.statistical_checks.numerical_statistical_check.plt')
     def test_cumulative_hist_figure_looks_right(self, mock_plt):
         df1 = pd.DataFrame(self.significant_1, columns=['meaningful_numbers'])
         df2 = pd.DataFrame(self.significant_2, columns=['meaningful_numbers'])
@@ -136,7 +136,7 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
         self.assertTrue(mock_plt.ylabel.called)
         self.assertTrue(mock_plt.show.called)
 
-    @mock.patch('Morpheus.checks.statistical_checks.numerical_statistical_check.plt')
+    @mock.patch('morpheus.checks.statistical_checks.numerical_statistical_check.plt')
     def test_overlayed_hist_figure_looks_right(self, mock_plt):
         df1 = pd.DataFrame(self.significant_1, columns=['meaningful_numbers'])
         df2 = pd.DataFrame(self.significant_2, columns=['meaningful_numbers'])

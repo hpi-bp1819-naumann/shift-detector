@@ -1,10 +1,10 @@
 import pandas as pd
 from pandas import DataFrame
 
-from Morpheus.utils.column_management import detect_column_types, ColumnType, \
+from morpheus.utils.column_management import detect_column_types, ColumnType, \
     CATEGORICAL_MAX_RELATIVE_CARDINALITY, column_names
-from Morpheus.utils.data_io import shared_column_names
-from Morpheus.utils.errors import InsufficientDataError
+from morpheus.utils.data_io import shared_column_names
+from morpheus.utils.errors import InsufficientDataError
 
 MIN_DATA_SIZE = int(CATEGORICAL_MAX_RELATIVE_CARDINALITY * 100)
 

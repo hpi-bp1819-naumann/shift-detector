@@ -4,10 +4,10 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 import numpy as np
 
-from Morpheus.checks.check import Check, Report
-from Morpheus.precalculations.simple_precalculation import SimplePrecalculation
-from Morpheus.utils.column_management import ColumnType
-from Morpheus.utils.neat_print import nprint
+from morpheus.checks.check import Check, Report
+from morpheus.precalculations.simple_precalculation import SimplePrecalculation
+from morpheus.utils.column_management import ColumnType
+from morpheus.utils.neat_print import nprint
 
 
 class SimpleCheck(Check):

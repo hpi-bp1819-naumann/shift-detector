@@ -6,8 +6,8 @@ from numpy.random import seed
 from pandas import DataFrame
 from tensorflow import set_random_seed
 
-from Morpheus.precalculations.store import Store
-from Morpheus.precalculations.word_prediction_precalculation import WordPredictionPrecalculation
+from morpheus.precalculations.store import Store
+from morpheus.precalculations.word_prediction_precalculation import WordPredictionPrecalculation
 
 
 class TestWordPredictionPrecalculation(TestCase):

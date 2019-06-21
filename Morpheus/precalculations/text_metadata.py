@@ -15,11 +15,11 @@ from nltk.corpus import stopwords
 from spellchecker import SpellChecker
 from textstat import textstat
 
-from Morpheus.precalculations.precalculation import Precalculation
-from Morpheus.precalculations.text_precalculation import TokenizeIntoLowerWordsPrecalculation
-from Morpheus.utils import ucb_list
-from Morpheus.utils.column_management import ColumnType
-from Morpheus.utils.text_metadata_utils import dictionary_to_sorted_string, delimiters
+from morpheus.precalculations.precalculation import Precalculation
+from morpheus.precalculations.text_precalculation import TokenizeIntoLowerWordsPrecalculation
+from morpheus.utils import ucb_list
+from morpheus.utils.column_management import ColumnType
+from morpheus.utils.text_metadata_utils import dictionary_to_sorted_string, delimiters
 
 
 class GenericTextMetadata(Precalculation):

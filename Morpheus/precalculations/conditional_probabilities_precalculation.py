@@ -1,9 +1,9 @@
 import pandas as pd
 
-from Morpheus.precalculations.binning_precalculation import BinningPrecalculation
-from Morpheus.precalculations.conditional_probabilities import fpgrowth
-from Morpheus.precalculations.precalculation import Precalculation
-from Morpheus.utils.column_management import ColumnType
+from morpheus.precalculations.binning_precalculation import BinningPrecalculation
+from morpheus.precalculations.conditional_probabilities import fpgrowth
+from morpheus.precalculations.precalculation import Precalculation
+from morpheus.utils.column_management import ColumnType
 
 
 class ConditionalProbabilitiesPrecalculation(Precalculation):

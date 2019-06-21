@@ -3,9 +3,9 @@ from collections.abc import Iterable
 from numbers import Number
 from typing import List
 
-from Morpheus.checks.check import Check, Report
-from Morpheus.precalculations.word_prediction_precalculation import WordPredictionPrecalculation
-from Morpheus.utils.column_management import ColumnType
+from morpheus.checks.check import Check, Report
+from morpheus.precalculations.word_prediction_precalculation import WordPredictionPrecalculation
+from morpheus.utils.column_management import ColumnType
 
 
 class WordPredictionCheck(Check):

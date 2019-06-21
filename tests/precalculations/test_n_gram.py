@@ -1,6 +1,6 @@
 import unittest
-from Morpheus.precalculations.n_gram import NGram, NGramType
-from Morpheus.precalculations.store import Store
+from morpheus.precalculations.n_gram import NGram, NGramType
+from morpheus.precalculations.store import Store
 import pandas as pd
 
 

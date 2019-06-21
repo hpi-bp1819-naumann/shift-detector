@@ -1,4 +1,4 @@
-from Morpheus.precalculations.conditional_probabilities import fpgrowth
+from morpheus.precalculations.conditional_probabilities import fpgrowth
 
 
 class RuleCluster:

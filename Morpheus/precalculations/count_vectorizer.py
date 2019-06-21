@@ -1,8 +1,8 @@
 import pandas as pd
-from Morpheus.precalculations.precalculation import Precalculation
+from morpheus.precalculations.precalculation import Precalculation
 from nltk.corpus import stopwords as nltk_stopwords
 from sklearn.feature_extraction.text import CountVectorizer as CountVectorizer_sklearn
-from Morpheus.utils.column_management import ColumnType
+from morpheus.utils.column_management import ColumnType
 
 
 class CountVectorizer(Precalculation):

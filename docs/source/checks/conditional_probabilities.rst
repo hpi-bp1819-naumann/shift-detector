@@ -28,8 +28,8 @@ Code
 
 ::
 
-    from Morpheus.Detector import Detector
-    from Morpheus.checks.ConditionalProbabilitiesCheck import ConditionalProbabilitiesCheck
+    from morpheus.Detector import Detector
+    from morpheus.checks.ConditionalProbabilitiesCheck import ConditionalProbabilitiesCheck
 
     data_set_1 = 'examples/shoes_first.csv'
     data_set_2 = 'examples/shoes_second.csv'
@@ -46,12 +46,12 @@ Code
 
 The code works as follows:
 
-1. First, you create a :class:`~Morpheus.Detector.Detector` object to tell Morpheus
+1. First, you create a :class:`~morpheus.Detector.Detector` object to tell morpheus
    which data sets you want to compare.
-2. Then, you specify in :meth:`~Morpheus.Detector.Detector.run`
+2. Then, you specify in :meth:`~morpheus.Detector.Detector.run`
    which check you want to run: in this case
-   :class:`~Morpheus.checks.ConditionalProbabilitiesCheck.ConditionalProbabilitiesCheck`.
-3. Finally, you print the result with :meth:`~Morpheus.Detector.Detector.evaluate`.
+   :class:`~morpheus.checks.ConditionalProbabilitiesCheck.ConditionalProbabilitiesCheck`.
+3. Finally, you print the result with :meth:`~morpheus.Detector.Detector.evaluate`.
 
 Result
 ++++++

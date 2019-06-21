@@ -2,8 +2,8 @@ from unittest import TestCase
 
 from pandas import DataFrame
 
-from Morpheus.checks.distinction_check import DistinctionCheck
-from Morpheus.precalculations.store import Store
+from morpheus.checks.distinction_check import DistinctionCheck
+from morpheus.precalculations.store import Store
 
 
 class TestDistinctionCheck(TestCase):

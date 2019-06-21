@@ -3,8 +3,8 @@ from unittest import TestCase
 import numpy as np
 from pandas import DataFrame
 
-from Morpheus.precalculations.binning_precalculation import BinningPrecalculation
-from Morpheus.precalculations.store import Store
+from morpheus.precalculations.binning_precalculation import BinningPrecalculation
+from morpheus.precalculations.store import Store
 
 
 class TestBinningPrecalculation(TestCase):

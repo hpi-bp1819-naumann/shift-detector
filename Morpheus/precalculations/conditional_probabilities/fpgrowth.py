@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-from Morpheus.precalculations.conditional_probabilities import pyfpgrowth_core
+from morpheus.precalculations.conditional_probabilities import pyfpgrowth_core
 
 
 class DataFrameIteratorAdapter:

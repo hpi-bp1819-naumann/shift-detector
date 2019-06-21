@@ -2,7 +2,7 @@ import unittest
 
 import pandas as pd
 
-from Morpheus.detector import Detector
+from morpheus.detector import Detector
 
 
 class TestLogging(unittest.TestCase):

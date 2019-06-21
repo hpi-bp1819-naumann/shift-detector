@@ -8,7 +8,7 @@ from datawig.utils import random_split
 from sklearn.metrics import accuracy_score
 from sklearn.utils import shuffle
 
-from Morpheus.precalculations.precalculation import Precalculation
+from morpheus.precalculations.precalculation import Precalculation
 
 
 class DistinctionPrecalculation(Precalculation):
@@ -28,7 +28,7 @@ class DistinctionPrecalculation(Precalculation):
                              "Received: {}.".format(num_epochs))
         self.num_epochs = num_epochs
 
-        self.output_column = '__Morpheus__dataset'
+        self.output_column = '__morpheus__dataset'
         self.output_path = 'tmp/basicChecks_params'
 
         self.imputer = None

@@ -1,6 +1,6 @@
 from collections import defaultdict
-from Morpheus.checks.check import Check, Report
-from Morpheus.precalculations.embedding_distance_precalculation import EmbeddingDistancePrecalculation
+from morpheus.checks.check import Check, Report
+from morpheus.precalculations.embedding_distance_precalculation import EmbeddingDistancePrecalculation
 from IPython.display import display
 
 import pandas as pd

@@ -4,8 +4,8 @@ import unittest
 
 import pandas as pd
 
-from Morpheus.precalculations.simple_precalculation import SimplePrecalculation
-from Morpheus.precalculations.store import Store
+from morpheus.precalculations.simple_precalculation import SimplePrecalculation
+from morpheus.precalculations.store import Store
 
 
 class TestSimplePrecalculation(unittest.TestCase):

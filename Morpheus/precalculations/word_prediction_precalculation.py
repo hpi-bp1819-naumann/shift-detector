@@ -9,9 +9,9 @@ from keras.layers import Dense
 from keras.layers import LSTM
 from keras.models import Sequential
 
-from Morpheus.precalculations.precalculation import Precalculation
-from Morpheus.precalculations.text_embedding_precalculation import TextEmbeddingPrecalculation
-from Morpheus.utils.column_management import ColumnType
+from morpheus.precalculations.precalculation import Precalculation
+from morpheus.precalculations.text_embedding_precalculation import TextEmbeddingPrecalculation
+from morpheus.utils.column_management import ColumnType
 
 
 class WordPredictionPrecalculation(Precalculation):

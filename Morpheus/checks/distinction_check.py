@@ -6,8 +6,8 @@ from IPython.core.display import display
 from pandas import DataFrame
 from sklearn.metrics import precision_recall_fscore_support
 
-from Morpheus.checks.check import Check, Report
-from Morpheus.precalculations.distinction_precalculation import DistinctionPrecalculation
+from morpheus.checks.check import Check, Report
+from morpheus.precalculations.distinction_precalculation import DistinctionPrecalculation
 
 
 class DistinctionCheck(Check):
