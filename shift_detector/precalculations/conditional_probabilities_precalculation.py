@@ -28,9 +28,9 @@ class ConditionalProbabilitiesPrecalculation(Precalculation):
 
         rules = fpgrowth.calculate_frequent_rules(df1, df2, self.min_support, self.min_confidence)
 
-        exclusive_rules_of_first = []  # rules that only appear in the first data set
-        exclusive_rules_of_second = []  # rules that only appear in the second data set
-        mutual_rules = []  # rules that appear in both data sets and have a right side
+        exclusive_rules_of_first = []  # support of left side is 0 in second data set
+        exclusive_rules_of_second = []  # support of left side is 0 in first data set
+        mutual_rules = []  # support of left side is not 0 in both data sets and right side is not empty
 
         for rule in rules:
             if not rule.supports_of_left_side[1]:
