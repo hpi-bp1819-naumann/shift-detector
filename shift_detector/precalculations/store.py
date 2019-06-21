@@ -88,11 +88,12 @@ class Store:
             # iterate over columns for column_types
             for column in columns:
                 # apply custom column type
+                custom_column_type = column_type
                 if column in custom_column_to_column_type:
-                    column_type = custom_column_to_column_type[column]
+                    custom_column_type = custom_column_to_column_type[column]
 
-                column_to_column_type[column] = column_type
-                self.__set_column_type(column, column_type)
+                column_to_column_type[column] = custom_column_type
+                self.__set_column_type(column, custom_column_type)
 
         new_column_type_to_columns = {
             ColumnType.categorical: [],

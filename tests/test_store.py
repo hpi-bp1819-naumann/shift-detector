@@ -44,7 +44,8 @@ class TestStore(unittest.TestCase):
     def test_apply_custom_column_types(self):
         data = {'to_numerical': ['150', '200', '50', '10', '5', '150', '200', '50', '10', '5', '1'] * 10,
                 'to_text': ['150', '200', '50', '10', '5', '150', '200', '50', '10', '5', '1'] * 10,
-                'to_categorical': [150, 200, 50, 10, 5, 150, 200, 50, 10, 5, 1] * 10}
+                'to_categorical': [150, 200, 50, 10, 5, 150, 200, 50, 10, 5, 1] * 10,
+                'stay_categorical': ['150', '200', '50', '10', '5', '150', '200', '50', '10', '5', '1'] * 10}
         df1 = df2 = pd.DataFrame.from_dict(data)
 
         custom_column_types = {
@@ -56,7 +57,7 @@ class TestStore(unittest.TestCase):
         store = Store(df1, df2, custom_column_types=custom_column_types)
 
         with self.subTest("Apply custom_column_types"):
-            self.assertEqual(['to_categorical'], store.type_to_columns[ColumnType.categorical])
+            self.assertEqual(['to_categorical', 'stay_categorical'], store.type_to_columns[ColumnType.categorical])
             self.assertEqual(['to_text'], store.type_to_columns[ColumnType.text])
             self.assertEqual(['to_numerical'], store.type_to_columns[ColumnType.numerical])
 
