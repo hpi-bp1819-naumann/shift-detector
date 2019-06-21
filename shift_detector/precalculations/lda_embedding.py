@@ -110,8 +110,9 @@ class LdaEmbedding(Precalculation):
         return topic_words
 
     @staticmethod
-    def get_topic_word_distribution_sklearn(lda_model, vocab, n_top_words):
+    def get_topic_word_distribution_sklearn(lda_model, dtm, vocab, n_top_words):
         topic_words = {}
+        term_frequencies = dict(zip(vocab, dtm/np.sum(dtm)))
         for topic, comp in enumerate(lda_model.components_):
             word_idx = np.argsort(comp)[::-1][:n_top_words]
             topic_words[topic] = [vocab[i] for i in word_idx]
@@ -159,7 +160,7 @@ class LdaEmbedding(Precalculation):
                 else:
                     model = self.trained_model
 
-                topic_words_all_cols[col] = self.get_topic_word_distribution_gensim(model, self.n_topics, 10)
+                topic_words_all_cols[col] = self.get_topic_word_distribution_gensim(model, self.n_topics, 200)
 
                 transformed1[topic_labels[i]] = self.topic_probabilities_to_topics(model, corpus1)
                 transformed2[topic_labels[i]] = self.topic_probabilities_to_topics(model, corpus2)
@@ -180,7 +181,10 @@ class LdaEmbedding(Precalculation):
                 else:
                     model = self.trained_model
 
-                topic_words_all_cols[col] = self.get_topic_word_distribution_sklearn(model, feature_names[col], 10)
+                topic_words_all_cols[col] = self.get_topic_word_distribution_sklearn(model,
+                                                                                     all_dtms[col],
+                                                                                     feature_names[col],
+                                                                                     200)
 
                 transformed1[topic_labels[i]] = \
                     self.topic_probabilities_to_topics(model, vectorized1[col])

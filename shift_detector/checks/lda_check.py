@@ -3,6 +3,7 @@ from shift_detector.precalculations.lda_embedding import LdaEmbedding
 from shift_detector.utils.column_management import ColumnType
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+import matplotlib.gridspec as gridspec
 from wordcloud import WordCloud
 import pyLDAvis
 import pyLDAvis.gensim
@@ -97,7 +98,7 @@ class LdaCheck(Check):
                 # number of rounded digits is 3 per default
                 if abs(round(v1 - v2, 3)) >= self.significance:
                     shifted_columns.add(col)
-                    explanation['Topic '+str(i)+' diff in column '+col] = round(v1 - v2, 3)
+                    explanation['Topic '+str(i+1)+' diff in column '+col] = round(v1 - v2, 3)
 
         return Report(check_name='LDA Check',
                       examined_columns=col_names,
@@ -109,8 +110,8 @@ class LdaCheck(Check):
     def column_figure(self, column, df1, df2, topic_words,
                       all_models, all_dtms, all_vecs, all_corpora, all_dicts):
         #self.paired_total_ratios_figure(column, df1, df2)
-        #self.wordcloud(column, topic_words, self.n_topics, self.lib)
-        self.pyldavis(column, self.lib, all_models, all_dtms, all_vecs, all_corpora, all_dicts)
+        self.wordcloud(column, topic_words, self.n_topics, self.lib)
+        #self.pyldavis(column, self.lib, all_models, all_dtms, all_vecs, all_corpora, all_dicts)
 
     def column_figures(self, significant_columns, df1, df2, topic_words,
                        all_models, all_dtms, all_vecs, all_corpora, all_dicts):
@@ -139,8 +140,7 @@ class LdaCheck(Check):
         axes.set_ylabel('topics', fontsize='medium')
         plt.show()
 
-    @staticmethod
-    def wordcloud(column, topic_words, n_topics, lib):
+    def wordcloud(self, column, topic_words, n_topics, lib):
         cols = [color for name, color in mcolors.XKCD_COLORS.items()]
 
         cloud = WordCloud(background_color='white',
@@ -148,37 +148,30 @@ class LdaCheck(Check):
                           height=1800,
                           max_words=10,
                           colormap='tab10',
+                          collocations=False,
                           color_func=lambda *args, **kwargs: cols[i],
                           prefer_horizontal=1.0)
         j = int(np.ceil(n_topics / 2))
-        fig, axes = plt.subplots(j, 2, figsize=(20, 10), sharex='all', sharey='all', tight_layout=True)
+
+        fig, axes = plt.subplots(j, 2, figsize=(20, 10), sharex='all', sharey='all')
 
         for i, ax in enumerate(axes.flatten()):
             fig.add_subplot(ax)
-            topics = dict(topic_words[column][i][1])
-            cloud.generate_from_frequencies(topics, max_font_size=300)
+            if lib == 'gensim':
+                topics = dict(topic_words[column][i][1])
+                cloud.generate_from_frequencies(topics, max_font_size=300)
+            else:
+                topics = ' '.join(set(topic_words[column][i]))
+                cloud.generate_from_text(topics)
+
             plt.gca().imshow(cloud)
-            plt.gca().set_title('Topic ' + str(i), fontdict=dict(size=16))
+            plt.gca().set_title('Topic ' + str(i+1), fontdict=dict(size=16))
             plt.gca().axis('off')
 
-        # plt.subplots_adjust(wspace=3, hspace=0)
         plt.axis('off')
         plt.margins(x=0, y=0)
         plt.show()
-        '''
-        for t in range(n_topics):
-            #i = t + 1
-            plt.figure()
-            .set_title("Topic #" + str(t))
-            plt.plot()
-            if lib == 'sklearn':
-                plt.imshow(WordCloud(background_color='white').generate(' '.join(topic_words[column][t])))
-            else:
-                plt.imshow(WordCloud(background_color='white').fit_words(dict(topic_words[column][t])))
-            plt.axis("off")
-        fig.suptitle(column)
-        plt.show()
-        '''
+
     @staticmethod
     def pyldavis(column, lib, lda_models, dtm=None, vectorizer=None, corpus=None, dictionary=None):
         if lib == 'sklearn':

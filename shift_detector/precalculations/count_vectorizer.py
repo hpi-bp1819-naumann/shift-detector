@@ -39,7 +39,9 @@ class CountVectorizer(Precalculation):
         else:
             raise TypeError("Cols has to be list of strings or a single string. Received: {}".format(type(cols)))
 
-        self.vectorizer = CountVectorizer_sklearn(stop_words=self.stop_words, max_features=self.max_features)
+        self.vectorizer = CountVectorizer_sklearn(stop_words=self.stop_words,
+                                                  max_features=self.max_features)
+                                                  #token_pattern=r'[^\w+\s]|\b[a-zA-Z]\b')
 
     def __eq__(self, other):
         """Overrides the default implementation"""
