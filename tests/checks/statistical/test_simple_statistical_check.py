@@ -20,8 +20,9 @@ class TestSimpleStatisticalCheck(unittest.TestCase):
             self.assertTrue(func.called)
         mock_figure.show.assert_called_with()
 
+    @mock.patch('shift_detector.checks.statistical_checks.statistical_check.plt.figure')
     @mock.patch('shift_detector.checks.statistical_checks.statistical_check.gridspec')
-    def test_grid_is_created(self, mock_grid):
+    def test_grid_is_created(self, mock_grid, mock_plt_figure):
         plot_functions = [MagicMock(), MagicMock(), MagicMock()]
         CategoricalStatisticalCheck().plot_all_columns(plot_functions)  # using a subclass to instantiate
         mock_grid.GridSpec.assert_called_with(2, 2)
