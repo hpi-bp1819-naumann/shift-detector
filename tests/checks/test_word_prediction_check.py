@@ -29,7 +29,7 @@ class TestWordPredictionCheck(TestCase):
         self.df1 = DataFrame.from_dict(data1)
         self.df2 = DataFrame.from_dict(data2)
         self.store = Store(self.df1, self.df2)
-        self.check = WordPredictionCheck(relative_thresh=.15, ft_size=10, ft_workers=1, seed=0)
+        self.check = WordPredictionCheck(relative_thresh=.15, ft_size=10, ft_workers=1, seed=1)
 
     def test_init(self):
         with self.subTest("Test wrong columns"):
