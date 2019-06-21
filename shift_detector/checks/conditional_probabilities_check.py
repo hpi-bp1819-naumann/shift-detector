@@ -9,6 +9,20 @@ from shift_detector.utils.neat_print import nprint, mdprint
 
 
 class ConditionalProbabilitiesReport(Report):
+    def __init__(self, check_name, examined_columns, shifted_column_combinations, explanation={}, information={},
+                 figures=[]):
+        super().__init__(check_name, examined_columns=[], shifted_columns=[], explanation=explanation,
+                         information=information, figures=figures)
+        self.shifted_column_combinations = shifted_column_combinations
+        self.__examined_columns = examined_columns
+
+    def print_report(self):
+        nprint(self.check_name, text_formatting='h2')
+        print("Considered Columns: {}".format(self.__examined_columns))
+        print("Shifted Column Combinations: {}\n".format(self.shifted_column_combinations))
+        self.print_explanation()
+        self.print_information()
+
     def print_explanation(self):
         if 'significant_rules_of_first' in self.explanation or 'significant_rules_of_second' in self.explanation:
             def to_str(rule, index):
@@ -170,5 +184,5 @@ class ConditionalProbabilitiesCheck(Check):
             plt.axvline(x=self.min_delta_supports, linestyle='--', linewidth=2, color='black')
             plt.show()
 
-        return ConditionalProbabilitiesReport('Conditional Probabilities', shifted_columns, shifted_columns,
-                                              explanation, figures=[plot_result])
+        return ConditionalProbabilitiesReport('Conditional Probabilities', pre_calculation.examined_columns,
+                                              shifted_columns, explanation, figures=[plot_result])
