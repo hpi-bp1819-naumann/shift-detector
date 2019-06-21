@@ -48,7 +48,7 @@ class TestWordPredictionCheck(TestCase):
 
     def test_run(self):
         report_automatic_col_detection = self.check_automatic_col_detection.run(self.store)
-        report_custom_cols = self.check2.run(self.store)
+        report_custom_cols = self.check_custom_cols.run(self.store)
 
         with self.subTest("Test setting columns"):
             self.assertCountEqual(['shift', 'no_shift'], report_custom_cols.examined_columns)

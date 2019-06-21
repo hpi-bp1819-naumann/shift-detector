@@ -89,8 +89,10 @@ class WordPredictionPrecalculation(Precalculation):
                              validation_data=(df1_test_x, df1_test_y))
 
         # get prediction loss for both datasets
-        df1_prediction_loss = prediction_model.evaluate(x=df1_test_x, y=df1_test_y)
-        df2_prediction_loss = prediction_model.evaluate(x=df2_test_x, y=df2_test_y)
+        df1_prediction_loss = prediction_model.evaluate(x=df1_test_x, y=df1_test_y,
+                                                        verbose=self.verbose)
+        df2_prediction_loss = prediction_model.evaluate(x=df2_test_x, y=df2_test_y,
+                                                        verbose=self.verbose)
 
         return df1_prediction_loss, df2_prediction_loss
 
