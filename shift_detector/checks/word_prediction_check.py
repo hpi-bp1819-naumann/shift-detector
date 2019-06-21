@@ -20,8 +20,10 @@ class WordPredictionCheck(Check):
         self.seed = seed
         self.lstm_window = lstm_window
 
-        if columns and (not isinstance(columns, Iterable) or any(not isinstance(column, str) for column in columns)):
-            raise TypeError("columns should be empty or a list of strings. Received: {}".format(columns))
+        if columns and (not isinstance(columns, Iterable) or
+                        any(not isinstance(column, str) for column in columns)):
+            raise TypeError("columns should be empty or "
+                            "a list of strings. Received: {}".format(columns))
 
         if not isinstance(self.relative_thresh, Number):
             raise TypeError('Expected argument relative_thresh to be of types [float, int]. '
@@ -43,7 +45,8 @@ class WordPredictionCheck(Check):
 
         if self.columns is None:
             self.columns = store.column_names(ColumnType.text)
-            logger.info('Automatically selected columns [{}] to be tested by WordPredictionCheck'.format(self.columns))
+            logger.info('Automatically selected columns [{}] '
+                        'to be tested by WordPredictionCheck'.format(self.columns))
 
         result = {}
         failure_columns = {}
@@ -58,7 +61,8 @@ class WordPredictionCheck(Check):
                                                                  verbose=0)]
             except ValueError as e:
                 failure_columns[col] = e
-                logger.warning('Skipping textual column {} due to the following error: {}'.format(col, e))
+                logger.warning('Skipping textual column {} '
+                               'due to the following error: {}'.format(col, e))
 
         examined_columns = self.columns
         columns_no_failure = list(set(examined_columns) - failure_columns.keys())
@@ -77,7 +81,8 @@ class WordPredictionCheck(Check):
             df1_prediction_loss, df2_prediction_loss = result[column]
             relative_diff = df2_prediction_loss / df1_prediction_loss - 1
             sign = '+' if relative_diff >= 0 else ''
-            explanation[column] = "{} -> {} ({}{:.2f}%)".format(df1_prediction_loss, df2_prediction_loss,
+            explanation[column] = "{} -> {} ({}{:.2f}%)".format(df1_prediction_loss,
+                                                                df2_prediction_loss,
                                                                 sign, 100 * relative_diff)
             if df2_prediction_loss > df1_prediction_loss * (1 + self.relative_thresh):
                 shifted_columns.append(column)

@@ -27,8 +27,10 @@ class TestWordPredictionCheck(TestCase):
         self.df1 = DataFrame.from_dict(data1)
         self.df2 = DataFrame.from_dict(data2)
         self.store = Store(self.df1, self.df2)
-        self.check_automatic_col_detection = WordPredictionCheck(relative_thresh=.15, ft_size=10, ft_workers=1, seed=1)
-        self.check_custom_cols = WordPredictionCheck(columns=['shift', 'no_shift'], relative_thresh=.15,
+        self.check_automatic_col_detection = WordPredictionCheck(relative_thresh=.15,
+                                                                 ft_size=10, ft_workers=1, seed=1)
+        self.check_custom_cols = WordPredictionCheck(columns=['shift', 'no_shift'],
+                                                     relative_thresh=.15,
                                                      ft_size=10, ft_workers=1, seed=1)
 
     def test_init(self):
@@ -55,7 +57,9 @@ class TestWordPredictionCheck(TestCase):
             self.assertCountEqual(['shift'], report_automatic_col_detection.shifted_columns)
 
         with self.subTest("Test examined columns"):
-            self.assertCountEqual(['shift', 'no_shift', 'too_short'], report_automatic_col_detection.examined_columns)
+            self.assertCountEqual(['shift', 'no_shift', 'too_short'],
+                                  report_automatic_col_detection.examined_columns)
 
         with self.subTest("Test failure columns"):
-            self.assertIsInstance(report_automatic_col_detection.explanation['too_short'], ValueError)
+            self.assertIsInstance(report_automatic_col_detection.explanation['too_short'],
+                                  ValueError)
