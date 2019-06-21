@@ -2,6 +2,9 @@ import unittest
 from unittest import mock
 
 import pandas as pd
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
+from mock import MagicMock
 from pandas.util.testing import assert_frame_equal
 
 from shift_detector.detector import Detector
@@ -67,9 +70,11 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
 
     @mock.patch('shift_detector.checks.statistical_checks.categorical_statistical_check.plt')
     def test_paired_total_ratios_figure_looks_right(self, mock_plt):
+        mock_figure = MagicMock(autospec=Figure)
+        mock_axes = MagicMock(autospec=Axes)
         with mock.patch.object(pd.DataFrame, 'plot') as mock_plot:
-            CategoricalStatisticalCheck.paired_total_ratios_figure('vaccination_reaction',
-                                                                   self.df1_significant, self.df2_significant)
+            CategoricalStatisticalCheck.paired_total_ratios_plot(mock_figure, mock_axes, 'vaccination_reaction',
+                                                                 self.df1_significant, self.df2_significant)
         self.assertTrue(mock_plot.called)
         self.assertTrue(mock_plot.return_value.set_title.called)
         self.assertTrue(mock_plot.return_value.set_xlabel.called)

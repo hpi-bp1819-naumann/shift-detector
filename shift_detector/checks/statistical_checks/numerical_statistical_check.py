@@ -28,7 +28,7 @@ class NumericalStatisticalCheck(SimpleStatisticalCheck):
         return kolmogorov_smirnov_test(part1, part2)
 
     @staticmethod
-    def cumulative_hist_figure(figure, axes, column, df1, df2, bins=40):
+    def cumulative_hist_plot(figure, axes, column, df1, df2, bins=40):
         _, bin_edges = np.histogram(pd.concat([df1[column], df2[column]]), bins=bins)
         cumsum1, cumsum2 = vis.plot_cumulative_step_ratio_histogram(axes, (df1[column], df2[column]), bin_edges)
         distances = abs(cumsum1 - cumsum2)
@@ -44,7 +44,7 @@ class NumericalStatisticalCheck(SimpleStatisticalCheck):
         figure.add_subplot(axes)
 
     @staticmethod
-    def overlayed_hist_figure(figure, axes, column, df1, df2, bins=40):
+    def overlayed_hist_plot(figure, axes, column, df1, df2, bins=40):
         _, bin_edges = np.histogram(pd.concat([df1[column], df2[column]]), bins=bins)
         vis.plot_binned_ratio_histogram(axes, (df1[column], df2[column]), bin_edges)
         column_name = column if isinstance(column, str) else '_'.join(column)
@@ -60,9 +60,9 @@ class NumericalStatisticalCheck(SimpleStatisticalCheck):
     @staticmethod
     def column_plot(figure, tile, column, df1, df2):
         inner_grid = gridspec.GridSpecFromSubplotSpec(1, 2, subplot_spec=tile, wspace=0.2)
-        NumericalStatisticalCheck.cumulative_hist_figure(figure=figure,
-                                                         axes=plt.Subplot(figure, inner_grid[0]),
-                                                         column=column, df1=df1, df2=df2)
-        NumericalStatisticalCheck.overlayed_hist_figure(figure=figure,
-                                                        axes=plt.Subplot(figure, inner_grid[1]),
-                                                        column=column, df1=df1,df2=df2)
+        NumericalStatisticalCheck.cumulative_hist_plot(figure=figure,
+                                                       axes=plt.Subplot(figure, inner_grid[0]),
+                                                       column=column, df1=df1, df2=df2)
+        NumericalStatisticalCheck.overlayed_hist_plot(figure=figure,
+                                                      axes=plt.Subplot(figure, inner_grid[1]),
+                                                      column=column, df1=df1, df2=df2)

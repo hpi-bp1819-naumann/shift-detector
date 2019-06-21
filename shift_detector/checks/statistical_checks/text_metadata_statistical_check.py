@@ -62,16 +62,20 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
             plot_function(fig, tile)
         fig.show()
 
-    def metadata_figure(self, pvalues, df1, df2):
-        significant_columns = self.significant_columns(pvalues)
-        if not significant_columns:
-            return []
+    def plot_functions(self, significant_columns, pvalues, df1, df2):
         plot_functions = []
         for column in sorted(significant_columns):
             for mdtype in sorted(self.significant_metadata(pvalues[column])):
                 plot_functions.append(lambda figure, tile, col=column, meta=mdtype:
                                       self.metadata_plot(figure, tile, col, meta, df1, df2))
-        return [lambda plots=tuple(plot_functions): self.plot_all_metadata(plots)]
+        return plot_functions
+
+    def metadata_figure(self, pvalues, df1, df2):
+        significant_columns = self.significant_columns(pvalues)
+        if not significant_columns:
+            return []
+        return [lambda plots=tuple(self.plot_functions(significant_columns, pvalues, df1, df2)):
+                self.plot_all_metadata(plots)]
 
     def run(self, store) -> Report:
         df1, df2 = store[self.metadata_precalculation]

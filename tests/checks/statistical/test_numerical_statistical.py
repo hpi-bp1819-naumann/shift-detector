@@ -3,6 +3,9 @@ from unittest import mock
 
 import numpy as np
 import pandas as pd
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
+from mock import MagicMock
 from pandas.util.testing import assert_frame_equal
 
 from shift_detector.checks.statistical_checks import numerical_statistical_check
@@ -119,32 +122,36 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
                 self.assertEqual(solution, len(result))
 
     @mock.patch('shift_detector.checks.statistical_checks.numerical_statistical_check.plt')
-    def test_cumulative_hist_figure_looks_right(self, mock_plt):
+    def test_cumulative_hist_plot_looks_right(self, mock_plt):
+        mock_figure = MagicMock(autospec=Figure)
+        mock_axes = MagicMock(autospec=Axes)
         df1 = pd.DataFrame(self.significant_1, columns=['meaningful_numbers'])
         df2 = pd.DataFrame(self.significant_2, columns=['meaningful_numbers'])
         with mock.patch.object(numerical_statistical_check.vis, 'plot_cumulative_step_ratio_histogram',
                                return_value=[np.array([0, 1, 2, 3]),
                                              np.array([0, 1, 2, 3])]) as mock_cum_hist:
-            NumericalStatisticalCheck.cumulative_hist_figure('meaningful_numbers',
-                                                             df1, df2, bins=3)
+            NumericalStatisticalCheck.cumulative_hist_plot(mock_figure, mock_axes, 'meaningful_numbers',
+                                                           df1, df2, bins=3)
         self.assertTrue(mock_cum_hist.called)
-        self.assertTrue(mock_plt.plot.called)
-        self.assertTrue(mock_plt.legend.called)
-        self.assertTrue(mock_plt.title.called)
-        self.assertTrue(mock_plt.xlabel.called)
-        self.assertTrue(mock_plt.ylabel.called)
+        self.assertTrue(mock_axes.plot.called)
+        self.assertTrue(mock_axes.legend.called)
+        self.assertTrue(mock_axes.set_title.called)
+        self.assertTrue(mock_axes.set_xlabel.called)
+        self.assertTrue(mock_axes.set_ylabel.called)
         self.assertFalse(mock_plt.show.called)
 
     @mock.patch('shift_detector.checks.statistical_checks.numerical_statistical_check.plt')
-    def test_overlayed_hist_figure_looks_right(self, mock_plt):
+    def test_overlayed_hist_plot_looks_right(self, mock_plt):
+        mock_figure = MagicMock(autospec=Figure)
+        mock_axes = MagicMock(autospec=Axes)
         df1 = pd.DataFrame(self.significant_1, columns=['meaningful_numbers'])
         df2 = pd.DataFrame(self.significant_2, columns=['meaningful_numbers'])
-        with mock.patch.object(numerical_statistical_check.vis, 'plot_ratio_histogram') as mock_ratio_hist:
-            NumericalStatisticalCheck.overlayed_hist_figure('meaningful_numbers',
-                                                            df1, df2, bins=3)
-        self.assertTrue(mock_ratio_hist.called)
-        self.assertTrue(mock_plt.legend.called)
-        self.assertTrue(mock_plt.title.called)
-        self.assertTrue(mock_plt.xlabel.called)
-        self.assertTrue(mock_plt.ylabel.called)
+        with mock.patch.object(numerical_statistical_check.vis, 'plot_binned_ratio_histogram') as mock_bin_hist:
+            NumericalStatisticalCheck.overlayed_hist_plot(mock_figure, mock_axes, 'meaningful_numbers',
+                                                          df1, df2, bins=3)
+        self.assertTrue(mock_bin_hist.called)
+        self.assertTrue(mock_axes.legend.called)
+        self.assertTrue(mock_axes.set_title.called)
+        self.assertTrue(mock_axes.set_xlabel.called)
+        self.assertTrue(mock_axes.set_ylabel.called)
         self.assertFalse(mock_plt.show.called)

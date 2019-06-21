@@ -16,6 +16,7 @@ class StatisticalCheck(Check):
     :param sampling: whether or not to use sampling for the larger set if compared data sets have unequal sizes
     :param sampling_seed: seed to use for sampling, if sampling is enabled
     """
+
     def __init__(self, significance=0.01, use_sampling=False, sampling_seed=0):
         self.significance = significance
         self.use_sampling = use_sampling
@@ -46,6 +47,7 @@ class SimpleStatisticalCheck(StatisticalCheck):
     """
     Blueprint for a statistical test check which involves only one kind of statistical test
     """
+
     @abstractmethod
     def statistical_test(self, part1: pd.Series, part2: pd.Series) -> float:
         """
@@ -84,10 +86,10 @@ class SimpleStatisticalCheck(StatisticalCheck):
             explanations[column] = '- probability for equal distribution p = {pvalue}\n' \
                                    '- specified significance level alpha = {significance}\n' \
                                    '- statistical test performed: {test_name}'.format(
-                                        pvalue=str(pvalues[column]),
-                                        significance=str(self.significance),
-                                        test_name=self.statistical_test_name()
-                                    )
+                pvalue=str(pvalues[column]),
+                significance=str(self.significance),
+                test_name=self.statistical_test_name()
+            )
         return explanations
 
     @staticmethod
@@ -108,13 +110,16 @@ class SimpleStatisticalCheck(StatisticalCheck):
             plot_function(fig, tile)
         fig.show()
 
-    def column_figure(self, significant_columns, df1, df2):
-        if not significant_columns:
-            return []
+    def plot_functions(self, significant_columns, df1, df2):
         plot_functions = []
         for column in sorted(significant_columns):
             plot_functions.append(lambda figure, tile, col=column: self.column_plot(figure, tile, col, df1, df2))
-        return [lambda plots=tuple(plot_functions): self.plot_all_columns(plots)]
+        return plot_functions
+
+    def column_figure(self, significant_columns, df1, df2):
+        if not significant_columns:
+            return []
+        return [lambda plots=tuple(self.plot_functions(significant_columns, df1, df2)): self.plot_all_columns(plots)]
 
     def run(self, store) -> Report:
         pvalues = pd.DataFrame(index=['pvalue'])

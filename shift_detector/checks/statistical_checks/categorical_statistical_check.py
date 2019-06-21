@@ -29,7 +29,7 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
         return chi2_test(part1, part2)
 
     @staticmethod
-    def paired_total_ratios_figure(figure, axes, column, df1, df2, top_k=50):
+    def paired_total_ratios_plot(figure, axes, column, df1, df2, top_k=50):
         axes = vis.plot_categorical_horizontal_ratio_histogram(axes, (df1[column], df2[column]), top_k)
         axes.invert_yaxis()  # to match order of legend
         column_name = column if isinstance(column, str) else '_'.join(column)
@@ -44,6 +44,6 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
     @staticmethod
     def column_plot(figure, tile, column, df1, df2):
         inner_grid = gridspec.GridSpecFromSubplotSpec(1, 2, subplot_spec=tile, wspace=0.2)
-        CategoricalStatisticalCheck.paired_total_ratios_figure(figure=figure,
-                                                               axes=plt.Subplot(figure, inner_grid[0]),
-                                                               column=column, df1=df1, df2=df2)
+        CategoricalStatisticalCheck.paired_total_ratios_plot(figure=figure,
+                                                             axes=plt.Subplot(figure, inner_grid[0]),
+                                                             column=column, df1=df1, df2=df2)
