@@ -10,14 +10,14 @@ from shift_detector.utils.column_management import ColumnType
 
 class WordPredictionCheck(Check):
 
-    def __init__(self, columns=None, ft_window_size=5, ft_size=100, ft_workers=4, ft_seed=None,
-                 lstm_window=5, relative_thresh=.8):
+    def __init__(self, columns=None, ft_window_size=5, ft_size=100, ft_workers=4, seed=None,
+                 lstm_window=5, relative_thresh=.15):
         self.columns = columns
         self.relative_thresh = relative_thresh
         self.ft_window_size = ft_window_size
         self.ft_size = ft_size
         self.ft_workers = ft_workers
-        self.ft_seed = ft_seed
+        self.seed = seed
         self.lstm_window = lstm_window
 
         if columns and (not isinstance(columns, Iterable) or any(not isinstance(column, str) for column in columns)):
@@ -46,23 +46,33 @@ class WordPredictionCheck(Check):
             logger.info('Automatically selected columns [{}] to be tested by WordPredictionCheck'.format(self.columns))
 
         result = {}
+        failure_columns = {}
         for col in self.columns:
-            result[col] = store[WordPredictionPrecalculation(col,
-                                                             ft_window_size=self.ft_window_size,
-                                                             ft_size=self.ft_size,
-                                                             ft_workers=self.ft_workers,
-                                                             ft_seed=self.ft_seed,
-                                                             lstm_window=self.lstm_window,
-                                                             verbose=0)]
+            try:
+                result[col] = store[WordPredictionPrecalculation(col,
+                                                                 ft_window_size=self.ft_window_size,
+                                                                 ft_size=self.ft_size,
+                                                                 ft_workers=self.ft_workers,
+                                                                 seed=self.seed,
+                                                                 lstm_window=self.lstm_window,
+                                                                 verbose=0)]
+            except ValueError as e:
+                failure_columns[col] = e
+                logger.warning('Skipping textual column {} due to the following error: {}'.format(col, e))
 
         examined_columns = self.columns
-        shifted_columns, explanation = self.detect_shifts(examined_columns, result)
+        columns_no_failure = list(set(examined_columns) - failure_columns.keys())
+        shifted_columns, explanation = self.detect_shifts(columns_no_failure, result)
+
+        for col, err in failure_columns.items():
+            explanation[col] = err
 
         return Report("WordPredictionCheck", examined_columns, shifted_columns, explanation)
 
     def detect_shifts(self, examined_columns: List[str], result: dict):
         shifted_columns = []
         explanation = {}
+        print('detect_shifts')
 
         for column in examined_columns:
             df1_prediction_loss, df2_prediction_loss = result[column]

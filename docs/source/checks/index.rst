@@ -11,6 +11,7 @@ Checks
     distinction
     sorensen_dice
     embedding_distance
+    word_prediction
     guide
 
 
