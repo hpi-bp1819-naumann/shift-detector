@@ -117,22 +117,25 @@ thresholds that control (a) the computational complexity,
     of a right side (consequence) given a left side (antecedent) has to be at least 15%.
 
 ``rule_limit``:
-    This parameter expects an int and controls the maximum number of rule clusters that are
-    printed as a result of executing :ref:`conditional_probabilities`.
-    The default value is 5. This means that the 5 most significant rule clusters are printed.
-    A rule cluster is deemed more significant than another if its main rule has a higher
-    delta support. This parameter does not impact the diagram.
+    This parameter expects an int and controls the maximum number of rules that are
+    printed in each section of the report as a result of executing
+    :ref:`conditional_probabilities`.
+    The default value is 5. This parameter does not have any impact on the diagram.
 
 ``min_delta_supports``:
     This parameter expects a float between 0 and 1 and affects the granularity of the
     comparison of the two data sets. Only rules whose support values exhibit an absolute
-    difference of more than ``min_delta_supports`` are considered during computation.
-    The default value is 0.05. This parameter does not impact the diagram.
+    difference of more than ``min_delta_supports`` are considered to indicate a shift.
+    A rule has to exceed ``min_delta_supports`` to be classified as an orange rule. If it
+    also exceeds ``min_delta_confidences`` it is classiefied as a red rule.
+    The default value is 0.05. This parameter does not impact the diagram. 
 
 ``min_delta_confidences``:
     This parameter expects a float between 0 and 1 and affects the granularity of the
     comparison of the two data sets. Only rules whose confidence values exhibit an absolute
-    difference of more than ``min_delta_confidences`` are considered during computation.
+    difference of more than ``min_delta_confidences`` are considered to indicate a shift.
+    A rule has to exceed ``min_delta_confidences`` to be classified as an orange rule. If it
+    also exceeds ``min_delta_supports`` it is classiefied as a red rule.
     The default value is 0.05. This parameter does not impact the diagram.
 
 ``number_of_bins``:
@@ -158,8 +161,6 @@ Algorithm
 Rule Computation
 ################
 
-In the first phase,
-
 1. Both data sets are pre-processed: numerical columns are binned and textual columns are
    embedded.
 2. Both data sets are transformed: each component of every tuple is replaced
@@ -173,24 +174,32 @@ In the first phase,
    use an absolute value for ``min_support``.
 4. Association rules exceeding ``min_support`` and ``min_confidence`` in both
    data sets can be compared directly. For each of those rule-pairs generate an
-   intermediate result rule similar to the form of the main rule showed above.
+   intermediate result rule similar to the form of the red rules showed above.
 5. If a rule exceeds ``min_support`` and ``min_confidence`` in
    one data set but not in the other, we don't know if this rule does not appear in
    the other data set at all or just does not exceed ``min_support`` and/or
    ``min_confidence``. We therefore scan both data sets one
    more time and count their appearances. This information at hand, we can
    generate the remaining intermediate result rules.
-6. A scatter plot diagram is generated which plots the absolute values of delta support and
-   delta confidence of rules.
 
-Rule Compression
-################
+Rule Reduction
+##############
 
-The second phase works on the **association rules** produced in the first phase:
-
-1. The intermediate result rules are filtered to obtain those exceeding
-   ``min_delta_supports`` and ``min_delta_confidences``.
-2. The remaining rules are assigned to so called rule clusters.
+6. Intermediate result rules are partitioned in those rules that only appear in
+   the first data set, those rules that only appear in the second data set, and
+   those rules that appear in both data sets and consist of a left and a
+   right side (called mutual rules).
+7. Mutual rules are filtered for those exceeding ``min_delta_supports`` and
+   ``min_delta_confidences`` and sorted in descending order according to the
+   absolute difference of their confidence values and the maximum of their
+   supports of left side values. Rules whose support value is 0 in one data
+   set come last.
+8. Rules that only appear in one data set are filtered for significant
+   rules. A rule is significant if there exists no other rule whose set of
+   attribute value combinations is a subset of the set of attribute value
+   combinations of the significant rule. Significant rules are then sorted
+   in descending order according to their support of left side and their
+   support.
 
 References
 ----------
