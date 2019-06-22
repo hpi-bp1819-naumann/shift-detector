@@ -3,7 +3,6 @@ from shift_detector.precalculations.lda_embedding import LdaEmbedding
 from shift_detector.utils.column_management import ColumnType
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-import matplotlib.gridspec as gridspec
 from wordcloud import WordCloud
 import pyLDAvis
 import pyLDAvis.gensim
@@ -110,8 +109,8 @@ class LdaCheck(Check):
     def column_figure(self, column, df1, df2, topic_words,
                       all_models, all_dtms, all_vecs, all_corpora, all_dicts):
         #self.paired_total_ratios_figure(column, df1, df2)
-        self.wordcloud(column, topic_words, self.n_topics, self.lib)
-        #self.pyldavis(column, self.lib, all_models, all_dtms, all_vecs, all_corpora, all_dicts)
+        self.word_cloud(column, topic_words, self.n_topics, self.lib)
+        #self.py_ldavis(column, self.lib, all_models, all_dtms, all_vecs, all_corpora, all_dicts)
 
     def column_figures(self, significant_columns, df1, df2, topic_words,
                        all_models, all_dtms, all_vecs, all_corpora, all_dicts):
@@ -140,7 +139,7 @@ class LdaCheck(Check):
         axes.set_ylabel('topics', fontsize='medium')
         plt.show()
 
-    def wordcloud(self, column, topic_words, n_topics, lib):
+    def word_cloud(self, column, topic_words, n_topics, lib):
         cols = [color for name, color in mcolors.XKCD_COLORS.items()]
 
         cloud = WordCloud(background_color='white',
@@ -153,10 +152,11 @@ class LdaCheck(Check):
                           prefer_horizontal=1.0)
         j = int(np.ceil(n_topics / 2))
 
-        fig, axes = plt.subplots(j, 2, figsize=(20, 10), sharex='all', sharey='all')
+        fig, axes = plt.subplots(j, 2, figsize=(20, 10))
 
         for i, ax in enumerate(axes.flatten()):
             fig.add_subplot(ax)
+            #ax.set_adjustable(adjustable='datalim')
             if lib == 'gensim':
                 topics = dict(topic_words[column][i][1])
                 cloud.generate_from_frequencies(topics, max_font_size=300)
@@ -173,7 +173,7 @@ class LdaCheck(Check):
         plt.show()
 
     @staticmethod
-    def pyldavis(column, lib, lda_models, dtm=None, vectorizer=None, corpus=None, dictionary=None):
+    def py_ldavis(column, lib, lda_models, dtm=None, vectorizer=None, corpus=None, dictionary=None):
         if lib == 'sklearn':
             print('prepare')
             vis_data = pyLDAvis.sklearn.prepare(lda_models[column], np.asmatrix(dtm[column]), vectorizer[column])
