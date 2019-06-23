@@ -109,9 +109,9 @@ class LdaCheck(Check):
 
     def column_figure(self, column, df1, df2, topic_words,
                       all_models, all_dtms, all_vecs, all_corpora, all_dicts):
-        #self.paired_total_ratios_figure(column, df1, df2)
+        self.paired_total_ratios_figure(column, df1, df2)
         self.word_cloud(column, topic_words, self.n_topics, self.lib)
-        #self.py_ldavis(column, self.lib, all_models, all_dtms, all_vecs, all_corpora, all_dicts)
+        self.py_ldavis(column, self.lib, all_models, all_dtms, all_vecs, all_corpora, all_dicts)
 
     def column_figures(self, significant_columns, df1, df2, topic_words,
                        all_models, all_dtms, all_vecs, all_corpora, all_dicts):
