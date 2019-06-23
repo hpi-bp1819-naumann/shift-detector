@@ -32,7 +32,8 @@ class LdaCheck(Check):
             else:
                 raise TypeError("Cols has to be list of strings . Column {} is of type {}".format(cols, type(cols)))
         else:
-            self.cols = cols  # setting cols to None is equal to setting it to a list with all text columns
+            # setting cols to None is equal to setting it to a list with all text columns
+            self.cols = cols
 
         if trained_model:
             warnings.warn("Trained models are not trained again. Please make sure to only input the column(s) "
@@ -140,23 +141,29 @@ class LdaCheck(Check):
         plt.show()
 
     def word_cloud(self, column, topic_words, n_topics, lib):
-        cols = [color for name, color in mcolors.XKCD_COLORS.items()]
+        custom_XKCD_COLORS = mcolors.XKCD_COLORS
+        # remove very light colors that are hard to see on white background
+        custom_XKCD_COLORS.pop('xkcd:yellowish tan', None)
+        custom_XKCD_COLORS.pop('xkcd:really light blue', None)
+        cols = [color for name, color in custom_XKCD_COLORS.items()]
 
         cloud = WordCloud(background_color='white',
                           width=2500,
                           height=1800,
                           max_words=10,
-                          colormap='tab10',
                           collocations=False,
                           color_func=lambda *args, **kwargs: cols[i],
                           prefer_horizontal=1.0)
         j = int(np.ceil(n_topics / 2))
 
-        fig, axes = plt.subplots(j, 2, figsize=(20, 10))
+        fig, axes = plt.subplots(j, 2, figsize=(10, 10+n_topics))
 
         for i, ax in enumerate(axes.flatten()):
+            if n_topics % 2 == 1 and i == n_topics:
+                fig.add_subplot(ax)
+                ax.axis('off')
+                break
             fig.add_subplot(ax)
-            #ax.set_adjustable(adjustable='datalim')
             if lib == 'gensim':
                 topics = dict(topic_words[column][i][1])
                 cloud.generate_from_frequencies(topics, max_font_size=300)
@@ -164,9 +171,9 @@ class LdaCheck(Check):
                 topics = ' '.join(set(topic_words[column][i]))
                 cloud.generate_from_text(topics)
 
-            plt.gca().imshow(cloud)
-            plt.gca().set_title('Topic ' + str(i+1), fontdict=dict(size=16))
-            plt.gca().axis('off')
+            ax.imshow(cloud)
+            ax.set_title('Topic ' + str(i+1), fontdict=dict(size=16))
+            ax.axis('off')
 
         plt.axis('off')
         plt.margins(x=0, y=0)
@@ -174,13 +181,12 @@ class LdaCheck(Check):
 
     @staticmethod
     def py_ldavis(column, lib, lda_models, dtm=None, vectorizer=None, corpus=None, dictionary=None):
+        #print('prepare')
         if lib == 'sklearn':
-            print('prepare')
             vis_data = pyLDAvis.sklearn.prepare(lda_models[column], np.asmatrix(dtm[column]), vectorizer[column])
         else:
-            print('prepare')
             vis_data = pyLDAvis.gensim.prepare(lda_models[column], corpus[column], dictionary[column])
-        print('display')
+        #print('display')
         display(pyLDAvis.display(vis_data))
 
 
