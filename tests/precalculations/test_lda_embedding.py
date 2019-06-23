@@ -181,8 +181,8 @@ class TestLdaEmbedding(unittest.TestCase):
         self.assertNotEqual(hash(self.lda3), hash(self.lda4))
 
     def test_process(self):
-        res1, res2 = self.lda1.process(self.store)
-        res3, res4 = self.lda3.process(self.store)
+        res1, res2, topic_words_all_cols, all_models, all_dtms, all_vecs = self.lda1.process(self.store)
+        res3, res4, topic_words_all_cols, all_models, all_corpora, all_dicts = self.lda3.process(self.store)
         self.assertTrue(res1['topics text'].equals(pd.Series([0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
                                                               0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
                                                               0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0,
