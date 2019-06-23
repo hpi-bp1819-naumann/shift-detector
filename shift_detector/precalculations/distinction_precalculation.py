@@ -18,7 +18,7 @@ class DistinctionPrecalculation(Precalculation):
                 or any(not isinstance(column, str) for column in columns) \
                 or len(columns) < 1:
             raise TypeError("columns should be a list of strings. Received: {}".format(columns))
-        self.columns = columns
+        self.columns = list(columns)
 
         if not isinstance(num_epochs, int):
             raise TypeError("num_epochs should be a Number. "
@@ -30,6 +30,7 @@ class DistinctionPrecalculation(Precalculation):
 
         self.output_column = '__shift_detector__dataset'
         self.output_path = 'tmp/basicChecks_params'
+
         self.imputer = None
 
     def __eq__(self, other):
@@ -68,7 +69,7 @@ class DistinctionPrecalculation(Precalculation):
         imputed = self.imputer.predict(test_df)
         y_true, y_pred = imputed[self.output_column], imputed[self.output_column + '_imputed']
 
-        base_accuracy, permuted_accuracies = self.calculate_permuted_accuracies(df1_train, df2_train, self.columns)
+        base_accuracy, permuted_accuracies = self.calculate_permuted_accuracies(df1_test, df2_test, self.columns)
 
         result = {
             'y_true': y_true,
@@ -86,8 +87,14 @@ class DistinctionPrecalculation(Precalculation):
         :param df2: second DataFrame
         :return: tuple of labeled DataFrames
         """
-        df1[self.output_column] = 'A'
-        df2[self.output_column] = 'B'
+        # Change the logging mode of pandas in order to not show the warning that shouldn't actually be shown.
+        mode = pd.options.mode.chained_assignment
+        pd.options.mode.chained_assignment = None
+
+        df1.loc[:, self.output_column] = 'A'
+        df2.loc[:, self.output_column] = 'B'
+
+        pd.options.mode.chained_assignment = mode
 
         return df1, df2
 
