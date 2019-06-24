@@ -41,5 +41,5 @@ class TestVisualizationUtils(unittest.TestCase):
     @mock.patch('shift_detector.utils.visualization.pd.DataFrame.plot')
     def test_categorical_horizontal_ratio_hist(self, mock_plot):
         mock_axes = MagicMock()
-        plot_categorical_horizontal_ratio_histogram(mock_axes, columns=(self.cat_column1, self.cat_column2))
+        plot_categorical_horizontal_ratio_histogram(mock_axes, columns=(self.cat_column1, self.cat_column2), top_k=1)
         mock_plot.assert_called_with(kind='barh', fontsize='medium', ax=mock_axes)

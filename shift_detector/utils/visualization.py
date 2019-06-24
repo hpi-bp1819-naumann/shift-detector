@@ -1,9 +1,11 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
 
 COLOR_1 = 'cornflowerblue'
 COLOR_2 = 'seagreen'
+
+PLOT_ROW_HEIGHT = 5.0
+PLOT_GRID_WIDTH = 12.0
 
 
 def calculate_bin_counts(bin_edges, columns):
@@ -53,6 +55,6 @@ def calculate_value_ratios(columns, top_k):
                                                                           str(columns[1].name) + ' 2']))
 
 
-def plot_categorical_horizontal_ratio_histogram(axes, columns, top_k=20):
+def plot_categorical_horizontal_ratio_histogram(axes, columns, top_k):
     value_ratios = calculate_value_ratios(columns, top_k)
     return value_ratios.plot(kind='barh', fontsize='medium', ax=axes)

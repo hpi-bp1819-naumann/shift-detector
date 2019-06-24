@@ -104,15 +104,14 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
                 result = check.metadata_figure(pvalues=pvalues, df1=df1, df2=df2)
                 self.assertEqual(solution, len(result))
 
-    @mock.patch('shift_detector.checks.statistical_checks.text_metadata_statistical_check.plt.figure')
-    def test_all_plot_functions_are_called_and_plot_is_shown(self, mock_plt_figure):
-        mock_figure = MagicMock(autospec=Figure)
-        mock_plt_figure.return_value = mock_figure
+    @mock.patch('shift_detector.checks.statistical_checks.text_metadata_statistical_check.plt')
+    def test_all_plot_functions_are_called_and_plot_is_shown(self, mock_plt):
         plot_functions = [MagicMock(), MagicMock(), MagicMock()]
         TextMetadataStatisticalCheck.plot_all_metadata(plot_functions)
+        mock_plt.figure.assert_called_with(figsize=(12.0, 5.0), tight_layout=True)
         for func in plot_functions:
             self.assertTrue(func.called)
-        mock_figure.show.assert_called_with()
+        mock_plt.show.assert_called_with()
 
     def test_column_tuples_are_handled_by_numerical_visualization(self):
         columns = ['text']

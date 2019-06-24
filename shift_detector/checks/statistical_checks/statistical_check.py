@@ -7,6 +7,7 @@ from IPython.display import display
 from matplotlib import gridspec
 
 from shift_detector.checks.check import Check, Report
+from shift_detector.utils.visualization import PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT
 
 
 class StatisticalCheck(Check):
@@ -104,7 +105,7 @@ class SimpleStatisticalCheck(StatisticalCheck):
     def plot_all_columns(self, plot_functions):
         cols = self.number_of_columns_of_plots()
         rows = int(np.ceil(len(plot_functions) / cols))
-        fig = plt.figure(figsize=(15, 4.8 * rows), tight_layout=True)
+        fig = plt.figure(figsize=(PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT * rows), tight_layout=True)
         grid = gridspec.GridSpec(rows, cols)
         for plot_function, tile in zip(plot_functions, grid):
             plot_function(fig, tile)

@@ -10,6 +10,7 @@ from shift_detector.checks.statistical_checks.statistical_check import Statistic
 from shift_detector.precalculations.text_metadata import TextMetadata
 from shift_detector.utils.column_management import ColumnType
 from shift_detector.utils.errors import UnknownMetadataReturnColumnTypeError
+from shift_detector.utils.visualization import PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT
 
 
 class TextMetadataStatisticalCheck(StatisticalCheck):
@@ -54,13 +55,11 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
 
     @staticmethod
     def plot_all_metadata(plot_functions):
-        cols = 1
-        rows = int(np.ceil(len(plot_functions) / cols))
-        fig = plt.figure(figsize=(10 * cols, 3.6 * rows), tight_layout=True)
-        grid = gridspec.GridSpec(rows, cols)
+        fig = plt.figure(figsize=(PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT), tight_layout=True)
+        grid = gridspec.GridSpec(1, len(plot_functions))
         for plot_function, tile in zip(plot_functions, grid):
             plot_function(fig, tile)
-        fig.show()
+        plt.show()
 
     def plot_functions(self, significant_columns, pvalues, df1, df2):
         plot_functions = []
