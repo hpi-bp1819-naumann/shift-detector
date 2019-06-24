@@ -53,6 +53,6 @@ def calculate_value_ratios(columns, top_k):
                                                                                   str(columns[1].name) + ' 2']))
 
 
-def plot_categorical_horizontal_ratio_histogram(axes, columns, top_k=50):
+def plot_categorical_horizontal_ratio_histogram(axes, columns, top_k=20):
     value_ratios = calculate_value_ratios(columns, top_k)
     return value_ratios.plot(kind='barh', fontsize='medium', ax=axes)
