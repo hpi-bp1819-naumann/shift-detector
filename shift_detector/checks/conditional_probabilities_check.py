@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from shift_detector.checks.check import Check, Report
 from shift_detector.precalculations.conditional_probabilities_precalculation import \
     ConditionalProbabilitiesPrecalculation
-from shift_detector.utils.neat_print import nprint, mdprint
+from shift_detector.utils.custom_print import nprint, mdprint
 
 
 class ConditionalProbabilitiesReport(Report):
