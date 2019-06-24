@@ -5,12 +5,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from shift_detector.checks.check import Check, Report
-from shift_detector.precalculations.simple_precalculation import SimplePrecalculation
+from shift_detector.precalculations.dq_metrics_precalculation import DQMetricsPrecalculation
 from shift_detector.utils.column_management import ColumnType
 from shift_detector.utils.custom_print import nprint
 
 
-class SimpleCheck(Check):
+class DQMetricsCheck(Check):
 
     def __init__(self, categorical_threshold=0.05, mean_threshold=0.15, median_threshold=0.15,
                  value_range_threshold=0.5, quartile_1_threshold=0.2, quartile_3_threshold=0.2,
@@ -22,13 +22,13 @@ class SimpleCheck(Check):
                                   'num_distinct': num_distinct_threshold, 'std': std_threshold, 'completeness':
                                   completeness_threshold}
 
-        if categorical_threshold < 0 or categorical_threshold > 1:
-            raise ValueError('The categorical threshold of {} is not correct. It has be between the values of '
-                             '0 and 1.'.format(categorical_threshold))
+        if categorical_threshold < 0:
+            raise ValueError("The categorical threshold of {} is not correct. It has to be larger than 0.0"
+                             .format(categorical_threshold))
 
         for t_name, t_value in threshold_names_values.items():
-            if t_value < 0 or t_value > 1:
-                raise ValueError('The {}_threshold of {} is not correct. It has be between the values of 0 and 1'
+            if t_value < 0:
+                raise ValueError("The {}_threshold of {} is not correct. It has to be larger than 0.0"
                                  .format(t_name, t_value))
 
         self.data = None
@@ -37,7 +37,7 @@ class SimpleCheck(Check):
 
     def run(self, store):
         df1_numerical, df2_numerical = store[ColumnType.numerical]
-        self.data = store[SimplePrecalculation()]
+        self.data = store[DQMetricsPrecalculation()]
         numerical_report = self.numerical_report(df1_numerical, df2_numerical)
         categorical_report = self.categorical_report()
 
@@ -50,7 +50,7 @@ class SimpleCheck(Check):
         if metric_in_df1 == 0 and metric_in_df2 == 0:
             return 0
         if metric_in_df1 == 0:
-            logger.warning('column {} \t \t {}: no comparison of distance possible, division by zero'
+            logger.warning("column {} \t \t {}: no comparison of distance possible, division by zero"
                            .format(column, metric_name))
             return 0
 
@@ -90,8 +90,8 @@ class SimpleCheck(Check):
                                self.difference_to_string(self.metrics_thresholds_percentage[metric]),
                                print_plus_minus=True)
 
-        return SimpleReport(examined_columns, shifted_columns, dict(explanation),
-                            figures=[SimpleReport.numerical_plot(df1, df2)])
+        return DQMetricsReport(examined_columns, shifted_columns, dict(explanation),
+                               figures=[DQMetricsReport.numerical_plot(df1, df2)])
 
     def categorical_report(self):
         categorical_comparison = self.data['categorical_comparison']
@@ -123,14 +123,14 @@ class SimpleCheck(Check):
 
             plot_infos.append((bar_df1, bar_df2, attribute_names, column_name))
 
-        return SimpleReport(examined_columns, shifted_columns, dict(explanation),
-                            figures=[SimpleReport.categorical_plot(plot_infos)])
+        return DQMetricsReport(examined_columns, shifted_columns, dict(explanation),
+                               figures=[DQMetricsReport.categorical_plot(plot_infos)])
 
 
-class SimpleReport(Report):
+class DQMetricsReport(Report):
 
     def __init__(self, examined_columns, shifted_columns, information={}, explanation={}, figures=[]):
-        super().__init__("Simple Check", examined_columns, shifted_columns, information, explanation, figures)
+        super().__init__("DQ Metrics Check", examined_columns, shifted_columns, information, explanation, figures)
 
     def print_explanation(self):
         categorical_found = False
