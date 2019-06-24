@@ -43,12 +43,16 @@ def plot_binned_ratio_histogram(axes, columns, bin_edges):
     axes.bar(bin_edges[:-1], bin_ratios[1], width=bin_width, alpha=0.5, facecolor=COLOR_2)
 
 
-def plot_categorical_horizontal_ratio_histogram(axes, columns, top_k=50):
+def calculate_value_ratios(columns, top_k):
     value_counts = pd.concat([columns[0].value_counts().head(top_k), columns[1].value_counts().head(top_k)],
                              axis=1).sort_index()
-    value_ratios = value_counts.fillna(0).apply(axis='columns',
+    return value_counts.fillna(0).apply(axis='columns',
                                                 func=lambda row: pd.Series([row.iloc[0] / len(columns[0]),
                                                                             row.iloc[1] / len(columns[1])],
                                                                            index=[str(columns[0].name) + ' 1',
                                                                                   str(columns[1].name) + ' 2']))
+
+
+def plot_categorical_horizontal_ratio_histogram(axes, columns, top_k=50):
+    value_ratios = calculate_value_ratios(columns, top_k)
     return value_ratios.plot(kind='barh', fontsize='medium', ax=axes)

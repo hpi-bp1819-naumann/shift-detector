@@ -10,18 +10,16 @@ from shift_detector.checks.statistical_checks.numerical_statistical_check import
 
 class TestSimpleStatisticalCheck(unittest.TestCase):
 
-    @mock.patch('shift_detector.checks.statistical_checks.statistical_check.plt.figure')
-    def test_all_plot_functions_are_called_and_plot_is_shown(self, mock_plt_figure):
-        mock_figure = MagicMock(autospec=Figure)
-        mock_plt_figure.return_value = mock_figure
+    @mock.patch('shift_detector.checks.statistical_checks.statistical_check.plt')
+    def test_all_plot_functions_are_called_and_plot_is_shown(self, mock_plt):
         plot_functions = [MagicMock(), MagicMock(), MagicMock()]
         for check, height in [(CategoricalStatisticalCheck(), 7.2), (NumericalStatisticalCheck(), 10.8)]:
             with self.subTest(check=check):
                 check.plot_all_columns(plot_functions)
-                mock_plt_figure.assert_called_with(figsize=(10, height), tight_layout=True)
+                mock_plt.figure.assert_called_with(figsize=(15, height), tight_layout=True)
                 for func in plot_functions:
                     self.assertTrue(func.called)
-                mock_figure.show.assert_called_with()
+                mock_plt.show.assert_called_with()
 
     @mock.patch('shift_detector.checks.statistical_checks.statistical_check.plt.figure')
     @mock.patch('shift_detector.checks.statistical_checks.statistical_check.gridspec')
