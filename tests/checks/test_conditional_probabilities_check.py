@@ -17,4 +17,6 @@ class TestConditionalProbabilitiesCheck(TestCase):
         self.check = ConditionalProbabilitiesCheck()
 
     def test_run(self):
-        self.check.run(self.store)
+        report = self.check.run(self.store)
+        report.print_report()
+        report.print_explanation()
