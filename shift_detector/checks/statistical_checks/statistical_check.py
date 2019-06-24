@@ -61,6 +61,14 @@ class SimpleStatisticalCheck(StatisticalCheck):
         pass
 
     @abstractmethod
+    def check_name(self) -> str:
+        """
+        Returns the name of the check as String.
+        :return: name of the check
+        """
+        pass
+
+    @abstractmethod
     def statistical_test_name(self) -> str:
         """
         Returns the name of the statistical test performed in statistical_test as String.
@@ -84,13 +92,9 @@ class SimpleStatisticalCheck(StatisticalCheck):
         """
         explanations = {}
         for column in self.significant_columns(pvalues):
-            explanations[column] = '- probability for equal distribution p = {pvalue}\n' \
-                                   '- specified significance level alpha = {significance}\n' \
-                                   '- statistical test performed: {test_name}'.format(
-                pvalue=str(pvalues[column]),
-                significance=str(self.significance),
-                test_name=self.statistical_test_name()
-            )
+            explanations[column] = 'p = {pvalue}\n'.format(
+                                        pvalue=str(pvalues.loc['pvalue', column])
+                                    )
         return explanations
 
     @staticmethod
@@ -135,17 +139,29 @@ class SimpleStatisticalCheck(StatisticalCheck):
             p = self.statistical_test(part1[column], part2[column])
             pvalues[column] = [p]
         significant_columns = self.significant_columns(pvalues)
-        return StatisticalReport("Statistical Check",
+        header = 'Performed statistical test: {test_name}\n'.format(test_name=self.statistical_test_name()) + \
+                 'Significance level: {significance}\n'.format(significance=str(self.significance))
+        return StatisticalReport(self.check_name(),
                                  examined_columns=columns,
                                  shifted_columns=significant_columns,
                                  explanation=self.explain(pvalues),
+                                 explanation_header=header,
                                  information={'test_results': pvalues},
                                  figures=self.column_figure(significant_columns, part1, part2))
 
 
 class StatisticalReport(Report):
 
+    def __init__(self, check_name, examined_columns, shifted_columns, explanation={}, explanation_header=None,
+                 information={}, figures=[]):
+        super().__init__(check_name, examined_columns, shifted_columns, explanation, information, figures)
+        self.explanation_header = explanation_header
+
+    def print_explanation(self):
+        print(self.explanation_header)
+        super().print_explanation()
+
     def print_information(self):
         test_results = self.information['test_results']
-        print("Test Result:")
+        print("p-values of all columns:")
         display(test_results)

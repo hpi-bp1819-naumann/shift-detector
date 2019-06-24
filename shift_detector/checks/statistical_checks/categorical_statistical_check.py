@@ -18,6 +18,9 @@ def chi2_test(part1: pd.Series, part2: pd.Series):
 
 class CategoricalStatisticalCheck(SimpleStatisticalCheck):
 
+    def check_name(self) -> str:
+        return 'Categorical Statistical Check'
+
     def statistical_test_name(self) -> str:
         return 'Chi^2-Test with Log-Likelihood (G-Test)'
 

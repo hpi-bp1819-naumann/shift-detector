@@ -32,15 +32,21 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
     def significant_metadata_names(self, mdtype_pvalues):
         return [mdtype.metadata_name() for mdtype in self.significant_metadata(mdtype_pvalues)]
 
+    def explanation_header(self, numerical_test_name, categorical_test_name, any_significant):
+        header = 'Statistical tests performed:\n' + \
+                 '\t- numerical metadata: {}\n'.format(numerical_test_name) + \
+                 '\t- categorical metadata: {}\n'.format(categorical_test_name) + \
+                 'Significance level: {}\n'.format(str(self.significance))
+        if any_significant:
+            header += '\nSome text metadata metrics on the following columns are unlikely to be equally distributed.\n'
+        return header
+
     def explain(self, pvalues):
         explanation = {}
         for column in self.significant_columns(pvalues):
-            explanation[column] = 'Text metadata metrics on column \'{column}\' are unlikely to be equally ' \
-                                  'distributed.\n{significant_metadata}'\
-                                  .format(
-                                    column=column,
-                                    significant_metadata='\n'.join(self.significant_metadata_names(pvalues[column]))
-                                  )
+            explanation[column] = 'Significant metadata:\n\t\t- {significant_metadata}'.format(
+                significant_metadata='\n\t\t- '.join(self.significant_metadata_names(pvalues[column]))
+            )
         return explanation
 
     @staticmethod
@@ -83,21 +89,28 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
         sample_size = min(len(df1), len(df2))
         part1 = df1.sample(sample_size, random_state=self.seed) if self.use_sampling else df1
         part2 = df2.sample(sample_size, random_state=self.seed) if self.use_sampling else df2
+        categorical_check = CategoricalStatisticalCheck()
+        numerical_check = NumericalStatisticalCheck()
         pvalues = pd.DataFrame(columns=df1.columns, index=['pvalue'])
         for column in df1.columns.levels[0]:
             for mdtype in self.metadata_precalculation.text_metadata_types:
                 if mdtype.metadata_return_type() == ColumnType.categorical:
-                    p = CategoricalStatisticalCheck().statistical_test(part1[(column, mdtype.metadata_name())],
-                                                                       part2[(column, mdtype.metadata_name())])
+                    p = categorical_check.statistical_test(part1[(column, mdtype.metadata_name())],
+                                                           part2[(column, mdtype.metadata_name())])
                 elif mdtype.metadata_return_type() == ColumnType.numerical:
-                    p = NumericalStatisticalCheck().statistical_test(part1[(column, mdtype.metadata_name())],
-                                                                     part2[(column, mdtype.metadata_name())])
+                    p = numerical_check.statistical_test(part1[(column, mdtype.metadata_name())],
+                                                         part2[(column, mdtype.metadata_name())])
                 else:
                     raise UnknownMetadataReturnColumnTypeError(mdtype)
                 pvalues[(column, mdtype.metadata_name())] = [p]
+        significant_columns = self.significant_columns(pvalues)
         return StatisticalReport("Text Metadata Check",
                                  examined_columns=list(df1.columns.levels[0]),
-                                 shifted_columns=self.significant_columns(pvalues),
+                                 shifted_columns=significant_columns,
                                  explanation=self.explain(pvalues),
+                                 explanation_header=self.explanation_header(numerical_check.statistical_test_name(),
+                                                                            categorical_check.statistical_test_name(),
+                                                                            any_significant=len(significant_columns) > 0
+                                                                            ),
                                  information={'test_results': pvalues},
                                  figures=self.metadata_figure(pvalues, part1, part2))
