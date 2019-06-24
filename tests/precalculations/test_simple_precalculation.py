@@ -95,7 +95,6 @@ class TestSimplePrecalculation(unittest.TestCase):
 
     def test_categorical_values(self):
         comparison_categorical = self.precalculation.process(self.store_categorical)['categorical_comparison']
-        pp.pprint(comparison_categorical)
 
         self.assertEqual(comparison_categorical[0]['blue']['df1'], 1/3)
         self.assertEqual(comparison_categorical[0]['green']['df1'], 0.5)

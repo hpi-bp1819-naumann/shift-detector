@@ -7,7 +7,7 @@ import numpy as np
 from shift_detector.checks.check import Check, Report
 from shift_detector.precalculations.simple_precalculation import SimplePrecalculation
 from shift_detector.utils.column_management import ColumnType
-from shift_detector.utils.neat_print import nprint
+from shift_detector.utils.custom_print import nprint
 
 
 class SimpleCheck(Check):
@@ -80,8 +80,6 @@ class SimpleCheck(Check):
 
         for column_name, metrics in numerical_comparison.items():
             examined_columns.add(column_name)
-
-            print('column {}'.format(column_name))
 
             for metric in metrics:
                 diff = self.relative_metric_difference(column_name, metric)

@@ -1,6 +1,6 @@
 import os
 import unittest
-from unittest.mock import Mock, MagicMock
+from unittest.mock import Mock, MagicMock, patch, call
 
 import pandas as pd
 
@@ -23,7 +23,7 @@ class TestCreateDetector(unittest.TestCase):
 
     def test_init(self):
         with self.subTest("Test successful initialization with csv paths"):
-            detector = Detector(self.path1, self.path2)
+            detector = Detector(self.path1, self.path2, log_print=False)
             self.assertTrue(self.df1.equals(detector.df1))
             self.assertTrue(self.df2.equals(detector.df2))
 
@@ -47,7 +47,7 @@ class TestDetector(unittest.TestCase):
         self.df1 = pd.DataFrame.from_dict(sales)
         self.df2 = self.df1
 
-        self.detector = Detector(df1=self.df1, df2=self.df2)
+        self.detector = Detector(df1=self.df1, df2=self.df2, log_print=False)
 
     def test_run(self):
         with self.subTest("Test unsuccessful run"):
@@ -68,7 +68,8 @@ class TestDetector(unittest.TestCase):
             error_msg = self.detector.check_reports[0].information['Exception']
             self.assertEqual(error_msg, "Test Exception")
 
-    def test_evaluate(self):
+    @patch('builtins.print')
+    def test_evaluate(self, mocked_print):
         mock = MagicMock()
         mock.print_report = MagicMock()
         self.detector.check_reports = [mock]
