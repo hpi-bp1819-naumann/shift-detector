@@ -1,12 +1,14 @@
-.. _simple:
+.. _dq_metrics:
 
-Simple
-======
+DQ Metrics
+==========
 
 Description
 -----------
 
-The :ref:`simple` gives you basic information about your datasets and detects the most obvious of datashifts.
+The :ref:`dq_metrics` gives you basic information about your datasets and detects the most obvious of datashifts. The
+'dq' stands for data quality, the metrics are in the style of the 'Unit Test for data'-framework Amazon Deequ.
+For more information on Deequ see [SLSCB18]_.
 
 Some shifts result in the change of basic metrics, that are commonly used for the analysis and exploration of datasets.
 Those metrics and statistics are calculated on both datasets and compared afterwards.
@@ -21,7 +23,7 @@ Example
 ::
 
     from Morpheus.detector import Detector
-    from Morpheus.checks.simple_check import SimpleCheck
+    from Morpheus.checks.dq_metrics_check import DQMetricsCheck
 
     data_set_1 = 'examples/pokedex1.csv'
     data_set_2 = 'examples/pokedex2.csv'
@@ -32,7 +34,7 @@ Example
         delimiter=','
     )
 
-    detector.run(SimpleCheck())
+    detector.run(DQMetricsCheck())
     detector.evaluate()
 
 The code works as follows:
@@ -41,14 +43,14 @@ The code works as follows:
    which data sets you want to compare.
 2. Then you start the detector with
    :meth:`~Morpheus.detector.Detector.run` and the checks you want to run: in this case
-   :class:`~Morpheus.checks.simple_check.SimpleCheck`.
+   :class:`~Morpheus.checks.dq_metrics_check.DQMetricsCheck`.
 3. Finally, you print the result with
    :meth:`~Morpheus.detector.Detector.evaluate`
 
 Result
 ++++++
 
-The :ref:`simple` produces this report:
+The :ref:`dq_metrics` produces this report:
 
 ::
 
@@ -90,13 +92,13 @@ exceeds a metric-specific threshold, the dataset differ that much, that the chec
 In this case, the mean-value of 'payment' could be 1000.0 in your first, but 706.0 in your second dataset. This difference is
 results in an difference of -294 and an relative difference of -29.4%. The threshold set here is 20% which is exceeded
 by the absolute value of -29.4%. All thresholds are customizable through the API of the
-:class:`~Morpheus.checks.simple_check.SimpleCheck`. All the metrics are listed in the section
-:ref:`simple_check_parameters`.
+:class:`~Morpheus.checks.dq_metrics_check.DQMetricsCheck`. All the metrics are listed in the section
+:ref:`dq_metrics_check_parameters`.
 
 Categorical
 ~~~~~~~~~~~
 
-Using the :ref:`simple` shifts can also be detected on categorical columns. Here the histograms over the attribute-values are
+Using the :ref:`dq_metrics` shifts can also be detected on categorical columns. Here the histograms over the attribute-values are
 compared. If the difference between those values exceeds the *categorical_threshold* the check calls shift on this
 column.
 
@@ -106,12 +108,12 @@ attribute-values in this column, i.e. 'debit and 'cash'. In those, the differenc
 cash as a payment-option and fewer use debit, the check calls shift on the column.
 
 
-.. _simple_check_parameters:
+.. _dq_metrics_check_parameters:
 
 Metrics & Parameters
 --------------------
 
-There are 9 different numerical metrics in the :ref:`simple` whose differences can indicate a shift. All
+There are 9 different numerical metrics in the :ref:`dq_metrics` whose differences can indicate a shift. All
 default-thresholds can be adjusted.
 
 +-----------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------+
@@ -144,8 +146,8 @@ the threshold parameter for the categorical columns is called *categorical_thres
 Example
 ::
 
-    from Morpheus.checks.simple_check import SimpleCheck
-    sc = new SimpleCheck(median_threshold=.05, std_threshold=.42, categorical_threshold=1.05)
+    from Morpheus.checks.dq_metrics_check import DQMetricsCheck
+    sc = new DQMetricsCheck(median_threshold=.05, std_threshold=.42, categorical_threshold=1.05)
 
 
 
@@ -156,7 +158,7 @@ Implementation
 Algorithm
 +++++++++
 
-The :ref:`SimpleCheck` works as follows:
+The :ref:`DQMetricsCheck` works as follows:
 
 1.  First, calculate the metrics for all usable columns of the datasets ds1 and ds2. Most metrics are build upon
     functions from the python library *pandas*
@@ -172,4 +174,5 @@ very unresistant to outliers.
 References
 ----------
 
-To be filled with Deequ Paper...
+.. [SLSCB18] Sebastian Schelter, Dustin Lange, Philipp Schmidt, Meltem Celikel, Felix Biessmann, and Andreas Grafberger.
+   2018. Automating large-scale data quality verification. Proc. VLDB Endow. 11, 12 (August 2018), 1781-1794.
