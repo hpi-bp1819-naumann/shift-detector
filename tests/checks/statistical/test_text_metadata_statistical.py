@@ -108,7 +108,7 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
     def test_all_plot_functions_are_called_and_plot_is_shown(self, mock_plt):
         plot_functions = [MagicMock(), MagicMock(), MagicMock()]
         TextMetadataStatisticalCheck.plot_all_metadata(plot_functions)
-        mock_plt.figure.assert_called_with(figsize=(12.0, 5.0), tight_layout=True)
+        mock_plt.figure.assert_called_with(figsize=(12.0, 15.0), tight_layout=True)
         for func in plot_functions:
             self.assertTrue(func.called)
         mock_plt.show.assert_called_with()

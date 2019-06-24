@@ -55,8 +55,10 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
 
     @staticmethod
     def plot_all_metadata(plot_functions):
-        fig = plt.figure(figsize=(PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT), tight_layout=True)
-        grid = gridspec.GridSpec(1, len(plot_functions))
+        rows = len(plot_functions)
+        cols = 1
+        fig = plt.figure(figsize=(PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT * rows), tight_layout=True)
+        grid = gridspec.GridSpec(rows, cols)
         for plot_function, tile in zip(plot_functions, grid):
             plot_function(fig, tile)
         plt.show()
