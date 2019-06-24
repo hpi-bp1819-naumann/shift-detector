@@ -47,17 +47,18 @@ class DQMetricsCheck(Check):
         metric_in_df1 = self.data['numerical_comparison'][column][metric_name]['df1']
         metric_in_df2 = self.data['numerical_comparison'][column][metric_name]['df2']
 
+        if metric_name in ['uniqueness', 'completeness']:
+            return metric_in_df2 - metric_in_df1
+
         if metric_in_df1 == 0 and metric_in_df2 == 0:
             return 0
+
         if metric_in_df1 == 0:
             logger.warning("column {} \t \t {}: no comparison of distance possible, division by zero"
                            .format(column, metric_name))
             return 0
 
         relative_difference = (metric_in_df2 / metric_in_df1 - 1)
-        if metric_name in ['uniqueness', 'completeness', 'completeness']:
-            relative_difference = metric_in_df2 - metric_in_df1
-
         return relative_difference
 
     @staticmethod
