@@ -38,11 +38,11 @@ class TestWordPredictionPrecalculation(TestCase):
         self.df2 = DataFrame.from_dict(data2)
         self.store = Store(self.df1, self.df2)
         self.precalculation_shift = WordPredictionPrecalculation('shift', num_epochs_predictor=10,
-                                                                 ft_workers=2, ft_seed=0)
+                                                                 ft_workers=2, ft_seed=0, verbose=0)
         self.precalculation_no_shift = WordPredictionPrecalculation('no_shift', num_epochs_predictor=10,
-                                                                    ft_workers=1, ft_seed=0)
+                                                                    ft_workers=1, ft_seed=0, verbose=0)
         self.precalculation_error = WordPredictionPrecalculation('error_col', num_epochs_predictor=10,
-                                                                 ft_workers=1, ft_seed=0)
+                                                                 ft_workers=1, ft_seed=0, verbose=0)
 
     def test_process(self):
         with self.subTest("Test losses"):

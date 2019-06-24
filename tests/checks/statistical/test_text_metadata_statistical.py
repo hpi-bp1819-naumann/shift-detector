@@ -65,7 +65,7 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
                                                'Or you will waste your time.', 'Come on, figure it out!',
                                                'Perhaps it will at least entertain you.', 'Do not be afraid.',
                                                'Be brave!']})
-        detector = Detector(df1=df1, df2=df2)
+        detector = Detector(df1=df1, df2=df2, log_print=False)
         detector.run(TextMetadataStatisticalCheck())
         column_index = pd.MultiIndex.from_product([['text'], ['distinct_words', 'num_chars', 'num_words']],
                                                   names=['column', 'metadata'])
