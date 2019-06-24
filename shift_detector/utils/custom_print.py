@@ -30,3 +30,8 @@ def mdprint(input_str):
 
 def is_in_jupyter():
     return 'ipykernel' in sys.modules
+
+
+def lprint(string, log_print):
+    if log_print:
+        print(string)

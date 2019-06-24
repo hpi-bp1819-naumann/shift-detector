@@ -19,16 +19,16 @@ class TestStore(unittest.TestCase):
         df1 = df2 = pd.DataFrame.from_dict(sales)
 
         with self.subTest("Successful initialisation"):
-            Store(df1, df2, {'description': ColumnType.categorical})
+            Store(df1, df2, custom_column_types={'description': ColumnType.categorical})
 
         with self.subTest("Exception when no dict is passed as custom_column_types"):
-            self.assertRaises(TypeError, lambda: Store(df1, df2, 'no_dict'))
+            self.assertRaises(TypeError, lambda: Store(df1, df2, custom_column_types='no_dict'))
 
         with self.subTest("Exception when key of custom_column_types is not a string"):
-            self.assertRaises(TypeError, lambda: Store(df1, df2, {0: ColumnType.numerical}))
+            self.assertRaises(TypeError, lambda: Store(df1, df2, custom_column_types={0: ColumnType.numerical}))
 
         with self.subTest("Exception when value of custom_column_types is not a ColumnType"):
-            self.assertRaises(TypeError, lambda: Store(df1, df2, {'brand': 0}))
+            self.assertRaises(TypeError, lambda: Store(df1, df2, custom_column_types={'brand': 0}))
 
     def test_min_data_size_is_enforced(self):
         df1 = pd.DataFrame(list(range(10)))
@@ -54,7 +54,7 @@ class TestStore(unittest.TestCase):
             'to_categorical': ColumnType.categorical
         }
 
-        store = Store(df1, df2, custom_column_types)
+        store = Store(df1, df2, custom_column_types=custom_column_types)
 
         with self.subTest("Apply custom_column_types"):
             self.assertEqual(['to_categorical', 'stay_categorical'], store.type_to_columns[ColumnType.categorical])
@@ -84,7 +84,7 @@ class TestStore(unittest.TestCase):
         }
 
         with self.subTest("Exception when trying to convert non-numerical column to numerical"):
-            self.assertRaises(Exception, lambda: Store(df1, df2, custom_column_types))
+            self.assertRaises(Exception, lambda: Store(df1, df2, custom_column_types=custom_column_types))
 
     def test_column_names(self):
         sales = {'brand': ["Jones LLC", "Alpha Co", "Blue Inc", "Blue Inc", "Alpha Co",
