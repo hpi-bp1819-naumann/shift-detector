@@ -10,18 +10,20 @@ from shift_detector.utils.column_management import ColumnType
 
 class WordPredictionCheck(Check):
 
-    def __init__(self, columns=None, ft_window_size=5, ft_size=100, ft_workers=4, ft_seed=None,
-                 lstm_window=5, relative_thresh=.8):
+    def __init__(self, columns=None, ft_window_size=5, ft_size=100, ft_workers=4, seed=None,
+                 lstm_window=5, relative_thresh=.15):
         self.columns = columns
         self.relative_thresh = relative_thresh
         self.ft_window_size = ft_window_size
         self.ft_size = ft_size
         self.ft_workers = ft_workers
-        self.ft_seed = ft_seed
+        self.seed = seed
         self.lstm_window = lstm_window
 
-        if columns and (not isinstance(columns, Iterable) or any(not isinstance(column, str) for column in columns)):
-            raise TypeError("columns should be empty or a list of strings. Received: {}".format(columns))
+        if columns and (not isinstance(columns, Iterable) or
+                        any(not isinstance(column, str) for column in columns)):
+            raise TypeError("columns should be empty or "
+                            "a list of strings. Received: {}".format(columns))
 
         if not isinstance(self.relative_thresh, Number):
             raise TypeError('Expected argument relative_thresh to be of types [float, int]. '
@@ -43,20 +45,31 @@ class WordPredictionCheck(Check):
 
         if self.columns is None:
             self.columns = store.column_names(ColumnType.text)
-            logger.info('Automatically selected columns [{}] to be tested by WordPredictionCheck'.format(self.columns))
+            logger.info('Automatically selected columns [{}] '
+                        'to be tested by WordPredictionCheck'.format(self.columns))
 
         result = {}
+        failure_columns = {}
         for col in self.columns:
-            result[col] = store[WordPredictionPrecalculation(col,
-                                                             ft_window_size=self.ft_window_size,
-                                                             ft_size=self.ft_size,
-                                                             ft_workers=self.ft_workers,
-                                                             ft_seed=self.ft_seed,
-                                                             lstm_window=self.lstm_window,
-                                                             verbose=0)]
+            try:
+                result[col] = store[WordPredictionPrecalculation(col,
+                                                                 ft_window_size=self.ft_window_size,
+                                                                 ft_size=self.ft_size,
+                                                                 ft_workers=self.ft_workers,
+                                                                 seed=self.seed,
+                                                                 lstm_window=self.lstm_window,
+                                                                 verbose=0)]
+            except ValueError as e:
+                failure_columns[col] = e
+                logger.warning('Skipping textual column {} '
+                               'due to the following error: {}'.format(col, e))
 
         examined_columns = self.columns
-        shifted_columns, explanation = self.detect_shifts(examined_columns, result)
+        columns_no_failure = list(set(examined_columns) - failure_columns.keys())
+        shifted_columns, explanation = self.detect_shifts(columns_no_failure, result)
+
+        for col, err in failure_columns.items():
+            explanation[col] = err
 
         return Report("WordPredictionCheck", examined_columns, shifted_columns, explanation)
 
@@ -66,7 +79,11 @@ class WordPredictionCheck(Check):
 
         for column in examined_columns:
             df1_prediction_loss, df2_prediction_loss = result[column]
-            explanation[column] = "{} -> {}".format(df1_prediction_loss, df2_prediction_loss)
+            relative_diff = df2_prediction_loss / df1_prediction_loss - 1
+            sign = '+' if relative_diff >= 0 else ''
+            explanation[column] = "{} -> {} ({}{:.2f}%)".format(df1_prediction_loss,
+                                                                df2_prediction_loss,
+                                                                sign, 100 * relative_diff)
             if df2_prediction_loss > df1_prediction_loss * (1 + self.relative_thresh):
                 shifted_columns.append(column)
 
