@@ -120,7 +120,7 @@ class ConditionalProbabilitiesCheck(Check):
         self.number_of_topics = int(number_of_topics)
 
     def run(self, store):
-        pre_calculation = store[
+        pre_calculation_result = store[
             ConditionalProbabilitiesPrecalculation(self.min_support, self.min_confidence,
                                                    self.number_of_bins, self.number_of_topics,
                                                    self.min_delta_supports, self.min_delta_confidences)
@@ -133,12 +133,12 @@ class ConditionalProbabilitiesCheck(Check):
                     break
                 explanation[identifier].append(rule)
 
-        add_to_explanation(pre_calculation.significant_rules_of_first, 'significant_rules_of_first')
-        add_to_explanation(pre_calculation.significant_rules_of_second, 'significant_rules_of_second')
-        add_to_explanation(pre_calculation.sorted_filtered_mutual_rules, 'sorted_filtered_mutual_rules')
+        add_to_explanation(pre_calculation_result.significant_rules_of_first, 'significant_rules_of_first')
+        add_to_explanation(pre_calculation_result.significant_rules_of_second, 'significant_rules_of_second')
+        add_to_explanation(pre_calculation_result.sorted_filtered_mutual_rules, 'sorted_filtered_mutual_rules')
 
         orange_rules_falling_below_min_delta_supports = sorted(
-            (rule for rule in pre_calculation.mutual_rules if abs(rule.delta_supports) < self.min_delta_supports
+            (rule for rule in pre_calculation_result.mutual_rules if abs(rule.delta_supports) < self.min_delta_supports
              and abs(rule.delta_confidences) >= self.min_delta_confidences),
             key=lambda r: (min(r.supports) != 0, abs(r.delta_confidences) * abs(r.delta_supports)),
             reverse=True
@@ -146,7 +146,7 @@ class ConditionalProbabilitiesCheck(Check):
         add_to_explanation(orange_rules_falling_below_min_delta_supports,
                            'orange_rules_falling_below_min_delta_supports')
         orange_rules_falling_below_min_delta_confidences = sorted(
-            (rule for rule in pre_calculation.mutual_rules if
+            (rule for rule in pre_calculation_result.mutual_rules if
              abs(rule.delta_confidences) < self.min_delta_confidences
              and abs(rule.delta_supports) >= self.min_delta_supports),
             key=lambda r: (min(r.supports) != 0, abs(r.delta_confidences) * abs(r.delta_supports)),
@@ -156,11 +156,11 @@ class ConditionalProbabilitiesCheck(Check):
                            'orange_rules_falling_below_min_delta_confidences')
 
         shifted_columns = set(tuple(sorted(attribute for attribute, _ in rule.left_side + rule.right_side))
-                              for rule in pre_calculation.sorted_filtered_mutual_rules)
+                              for rule in pre_calculation_result.sorted_filtered_mutual_rules)
 
         def plot_result():
             coordinates = [(abs(rule.delta_supports), abs(rule.delta_confidences)) for rule in
-                           pre_calculation.mutual_rules]
+                           pre_calculation_result.mutual_rules]
             green_x = [x for x, y in coordinates if x <= self.min_delta_supports and y <= self.min_delta_confidences]
             green_y = [y for x, y in coordinates if x <= self.min_delta_supports and y <= self.min_delta_confidences]
             orange_x = [x for x, y in coordinates if x > self.min_delta_supports
@@ -184,5 +184,5 @@ class ConditionalProbabilitiesCheck(Check):
             plt.axvline(x=self.min_delta_supports, linestyle='--', linewidth=2, color='black')
             plt.show()
 
-        return ConditionalProbabilitiesReport('Conditional Probabilities', pre_calculation.examined_columns,
+        return ConditionalProbabilitiesReport('Conditional Probabilities', pre_calculation_result.examined_columns,
                                               shifted_columns, explanation, figures=[plot_result])

@@ -56,14 +56,8 @@ The code works as follows:
 Result
 ++++++
 
-:ref:`conditional_probabilities` produces a set of so called rule clusters and a summarizing diagram::
-
-    [make: Nike, color: black, category: football]
-    make: Nike, color: black ==> category: football [SLS: (30%, 7%), S: (3%, 5%), C: (10%, 71%)]
-    delta_support: 2%, number of sub-rules: 13
-    ...
-
-.. image:: ../images/conditional_probabilities.png
+.. image:: ../images/bild.png
+  :width: 1200
 
 Interpretation
 ++++++++++++++
