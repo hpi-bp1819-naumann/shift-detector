@@ -102,7 +102,7 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
     def test_compliance_with_detector(self):
         df1 = pd.DataFrame([0] * 10)
         df2 = pd.DataFrame([0] * 10)
-        detector = Detector(df1=df1, df2=df2)
+        detector = Detector(df1=df1, df2=df2, log_print=False)
         detector.run(NumericalStatisticalCheck())
         self.assertEqual(1, len(detector.check_reports[0].examined_columns))
         self.assertEqual(0, len(detector.check_reports[0].shifted_columns))

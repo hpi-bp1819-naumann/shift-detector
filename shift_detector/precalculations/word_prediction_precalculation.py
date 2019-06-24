@@ -82,6 +82,7 @@ class WordPredictionPrecalculation(Precalculation):
 
         # build and train model
         prediction_model = self.create_model()
+
         prediction_model.fit(df1_train_x, df1_train_y,
                              epochs=self.num_epochs_predictor, batch_size=512,
                              callbacks=self.create_callbacks(),
