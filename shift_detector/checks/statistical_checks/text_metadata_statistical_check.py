@@ -89,6 +89,6 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
                                  explanation_header=self.explanation_header(numerical_check.statistical_test_name(),
                                                                             categorical_check.statistical_test_name(),
                                                                             any_significant=len(significant_columns) > 0
-                                                                           ),
+                                                                            ),
                                  information={'test_results': pvalues},
                                  figures=self.metadata_figures(pvalues, part1, part2))
