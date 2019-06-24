@@ -19,7 +19,6 @@ class ConditionalProbabilitiesReport(Report):
     def print_report(self):
         nprint(self.check_name, text_formatting='h2')
         print("Considered Columns: {}".format(self.__examined_columns))
-        print("Shifted Column Combinations: {}\n".format(self.shifted_column_combinations))
         self.print_explanation()
         self.print_information()
 
