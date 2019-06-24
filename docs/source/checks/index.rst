@@ -9,6 +9,7 @@ Checks
 
     conditional_probabilities
     distinction
+    simple
     sorensen_dice
     embedding_distance
     word_prediction
