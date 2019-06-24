@@ -12,6 +12,7 @@ Checks
     simple
     sorensen_dice
     embedding_distance
+    word_prediction
     guide
 
 
