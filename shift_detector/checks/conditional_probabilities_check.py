@@ -45,16 +45,19 @@ class ConditionalProbabilitiesReport(Report):
                     explanation_string += ' and '.join('{}={}'.format(attr, value) for attr, value in rule.left_side)
                     explanation_string += ' then the probability that '
                     explanation_string += ' and '.join('{}={}'.format(attr, value) for attr, value in rule.right_side)
-                    explanation_string += ' is {:.0%} in the first data set and {:.0%} in the second data set.*\n'.format(
+                    explanation_string += ' is {:.0%} in the first data set and ' \
+                                          '{:.0%} in the second data set.*\n'.format(
                         rule.confidences[0], rule.confidences[1])
                     explanation_string += '*The attribute-value combination '
                     explanation_string += ' and '.join('{}={}'.format(attr, value) for attr, value in rule.left_side)
-                    explanation_string += ' appears in {:.0%} of the tuples in the first data set and in {:.0%} of the tuples in the second data set.*\n'.format(
+                    explanation_string += ' appears in {:.0%} of the tuples in the first data set and in {:.0%} ' \
+                                          'of the tuples in the second data set.*\n'.format(
                         rule.supports_of_left_side[0], rule.supports_of_left_side[1])
                     explanation_string += '*The attribute-value combination '
                     explanation_string += ' and '.join(
                         '{}={}'.format(attr, value) for attr, value in rule.left_side + rule.right_side)
-                    explanation_string += ' appears in {:.0%} of the tuples in the first data set and in {:.0%} of the tuples in the second data set.*\n'.format(
+                    explanation_string += ' appears in {:.0%} of the tuples in the first data set and in {:.0%} of ' \
+                                          'the tuples in the second data set.*\n'.format(
                         rule.supports[0], rule.supports[1])
                     mdprint(explanation_string)
                 print(rule, end='\n\n')
