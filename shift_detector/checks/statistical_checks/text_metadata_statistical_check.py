@@ -44,8 +44,8 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
     def explain(self, pvalues):
         explanation = {}
         for column in self.significant_columns(pvalues):
-            explanation[column] = '\tSignificant metadata: {significant_metadata}'.format(
-                significant_metadata=', '.join(self.significant_metadata_names(pvalues[column]))
+            explanation[column] = 'Significant metadata:\n\t\t- {significant_metadata}'.format(
+                significant_metadata='\n\t\t- '.join(self.significant_metadata_names(pvalues[column]))
             )
         return explanation
 
