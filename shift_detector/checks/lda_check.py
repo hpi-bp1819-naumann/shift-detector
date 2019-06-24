@@ -67,7 +67,7 @@ class LdaCheck(Check):
             df1_embedded, df2_embedded, topic_words, all_models, all_dtms, all_vecs = store[LdaEmbedding(
                                                                                      n_topics=self.n_topics,
                                                                                      n_iter=self.n_iter,
-                                                                                     lib=self.lib,
+                                                                                     lib='sklearn',
                                                                                      random_state=self.random_state,
                                                                                      cols=self.cols,
                                                                                      trained_model=self.trained_model,
@@ -79,7 +79,7 @@ class LdaCheck(Check):
             df1_embedded, df2_embedded, topic_words, all_models, all_corpora, all_dicts = store[LdaEmbedding(
                                                                                      n_topics=self.n_topics,
                                                                                      n_iter=self.n_iter,
-                                                                                     lib=self.lib,
+                                                                                     lib='gensim',
                                                                                      random_state=self.random_state,
                                                                                      cols=self.cols,
                                                                                      trained_model=self.trained_model,
@@ -111,7 +111,7 @@ class LdaCheck(Check):
                       all_models, all_dtms, all_vecs, all_corpora, all_dicts):
         self.paired_total_ratios_figure(column, df1, df2)
         self.word_cloud(column, topic_words, self.n_topics, self.lib)
-        self.py_ldavis(column, self.lib, all_models, all_dtms, all_vecs, all_corpora, all_dicts)
+        self.py_lda_vis(column, self.lib, all_models, all_dtms, all_vecs, all_corpora, all_dicts)
 
     def column_figures(self, significant_columns, df1, df2, topic_words,
                        all_models, all_dtms, all_vecs, all_corpora, all_dicts):
@@ -180,7 +180,7 @@ class LdaCheck(Check):
         plt.show()
 
     @staticmethod
-    def py_ldavis(column, lib, lda_models, dtm=None, vectorizer=None, corpus=None, dictionary=None):
+    def py_lda_vis(column, lib, lda_models, dtm=None, vectorizer=None, corpus=None, dictionary=None):
         #print('prepare')
         if lib == 'sklearn':
             vis_data = pyLDAvis.sklearn.prepare(lda_models[column], np.asmatrix(dtm[column]), vectorizer[column])
