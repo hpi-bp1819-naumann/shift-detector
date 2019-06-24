@@ -174,8 +174,8 @@ class DQMetricsReport(Report):
                 bar_width = 0.25
 
                 ind = np.arange(len(bars1))
-                subplot.barh(ind, bars1, bar_width, label='DS1')
-                subplot.barh(ind + bar_width, bars2, bar_width, label='DS2')
+                subplot.barh(ind + bar_width, bars1, bar_width, label='DS1')
+                subplot.barh(ind, bars2, bar_width, label='DS2')
 
                 subplot.set_yticklabels(attribute_names)
                 subplot.set_yticks(np.arange(len(attribute_names)) + bar_width / 2)
