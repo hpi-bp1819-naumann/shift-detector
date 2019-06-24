@@ -124,8 +124,6 @@ Parameters
 Implementation
 --------------
 
-.. _algorithm:
-
 Algorithm
 +++++++++
 

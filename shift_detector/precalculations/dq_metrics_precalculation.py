@@ -3,7 +3,7 @@ from shift_detector.precalculations.precalculation import Precalculation
 from shift_detector.utils.column_management import ColumnType
 
 
-class SimplePrecalculation(Precalculation):
+class DQMetricsPrecalculation(Precalculation):
 
     def __eq__(self, other):
         return isinstance(other, self.__class__)

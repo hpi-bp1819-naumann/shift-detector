@@ -18,8 +18,10 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 
 project = 'Morpheus'
-copyright = '2019, Malte Barth, Finn Klein, Mats Poerschke, Philipp Schmidt, Leonard von Merzljak, Jan Westphal, Justus Zeinert, Paul Zimmermann'
-author = 'Malte Barth, Finn Klein, Mats Poerschke, Philipp Schmidt, Leonard von Merzljak, Jan Westphal, Justus Zeinert, Paul Zimmermann'
+copyright = "2019, Malte Barth, Finn Klein, Mats Poerschke, Philipp Schmidt, Leonard von Merzljak, Jan Westphal, " \
+            "'Justus Zeinert, Paul Zimmermann"
+author = "Malte Barth, Finn Klein, Mats Poerschke, Philipp Schmidt, Leonard von Merzljak, Jan Westphal, " \
+         "Justus Zeinert, Paul Zimmermann"
 
 # The full version, including alpha/beta/rc tags
 release = '2019'
@@ -54,3 +56,8 @@ html_theme = 'alabaster'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+
+# Custom CSS
+def setup(app):
+    app.add_stylesheet('custom_style.css')
