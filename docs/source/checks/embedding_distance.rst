@@ -21,11 +21,11 @@ Code
 
 ::
 
-    from Morpheus.Detector import Detector
-    from Morpheus.checks.EmbeddingDistanceCheck import EmbeddingDistanceCheck
+    from morpheus.detector import Detector
+    from morpheus.checks.embedding_distance_check import EmbeddingDistanceCheck
 
-    data_set_1 = 'examples/shoes_first.csv'
-    data_set_2 = 'examples/shoes_second.csv'
+    data_set_1 = 'examples/pokedex1.csv'
+    data_set_2 = 'examples/pokedex2.csv'
 
     detector = Detector(
         data_set_1,
@@ -38,13 +38,13 @@ Code
 
 The code works as follows:
 
-1. First, you create a :class:`~Morpheus.Detector.Detector` object to tell Morpheus
+1. First, you create a :class:`~morpheus.detector.Detector` object to tell Morpheus
    which data sets you want to compare
 2. Then, you start the detector with
-   :meth:`~Morpheus.Detector.Detector.run` and the checks you want to run: in this case
-   :class:`~Morpheus.checks.SorensenDiceCheck.EmbeddingDistanceCheck`.
+   :meth:`~morpheus.detector.Detector.run` and the checks you want to run: in this case
+   :class:`~morpheus.checks.embedding_distance_check.EmbeddingDistanceCheck`.
 3. Finally, you print the result with
-   :meth:`~Morpheus.Detector.Detector.evaluate`
+   :meth:`~morpheus.detector.Detector.evaluate`
 
 Result
 ++++++
@@ -54,27 +54,25 @@ Result
 ::
 
     Embedding Distance Check
-    Examined Columns: ['description', 'item_name']
-    Shifted Columns: ['description', 'item_name']
-    Column 'description':
-        Baseline in Dataset1: 13.447
-        Baseline in Dataset2: 219.189
-        Distance between Datasets: 235.404
-    Column 'item_name':
-        Baseline in Dataset1: 2.412
-        Baseline in Dataset2: 25.603
-        Distance between Datasets: 50.208
+    Examined Columns: ['Name', 'Type 2', 'Type 1', 'Entry']
+    Shifted Columns: ['Type 2', 'Entry']
+            Baseline in Dataset 1  Baseline in Dataset 2  Distance between Datasets
+    Name                 0.006821               0.012077                   0.015904
+    Type 2               0.017263               0.138629                   0.003874
+    Type 1               0.334552               0.402841                   0.086517
+    Entry               11.298921               1.835465                  20.921940
 
 Interpretation
 ++++++++++++++
 
 The above report can be read as follows:
 
-1. The examined columns are 'describtion' and 'item_name"
-2. The columns that contain a shift according to :ref:`embedding_distance` are 'description' and 'item_name'
-3. The distance between the items within Dataset1 is at 13.447 in the column 'description'
-4. The distance between the items within Dataset2 is at 219.189 in the column 'description'
-5. The similarity of Dataset1 and Dataset2 in the column 'description' is at 235.405
+1. The examined columns are ``Name``, ``Type 2``, ``Type 1`` and ``Entry``
+2. The columns that contain a shift according to the Sørensen Dice Check are ``Type 2`` and ``Entry``
+3. The distance between the items within Dataset1 is at 11.299 in the column ``Entry``
+4. The distance between the items within Dataset2 is at 1.835 in the column ``Entry``
+5. The distance between Dataset1 and Dataset2 in the column ``Entry`` is at 20.922
+6. Since the distances within the Datasets differ strong enough, there is probably a shift within column ``Entry``
 
 
 Parameters

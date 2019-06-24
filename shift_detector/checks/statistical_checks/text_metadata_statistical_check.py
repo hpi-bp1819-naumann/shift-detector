@@ -1,4 +1,7 @@
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import gridspec
 
 from shift_detector.checks.check import Report
 from shift_detector.checks.statistical_checks.categorical_statistical_check import CategoricalStatisticalCheck
@@ -7,6 +10,7 @@ from shift_detector.checks.statistical_checks.statistical_check import Statistic
 from shift_detector.precalculations.text_metadata import TextMetadata
 from shift_detector.utils.column_management import ColumnType
 from shift_detector.utils.errors import UnknownMetadataReturnColumnTypeError
+from shift_detector.utils.visualization import PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT
 
 
 class TextMetadataStatisticalCheck(StatisticalCheck):
@@ -46,21 +50,39 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
         return explanation
 
     @staticmethod
-    def metadata_figure(column, mdtype, df1, df2):
+    def metadata_plot(figure, tile, column, mdtype, df1, df2):
         col_mdtype_tuple = (column, mdtype.metadata_name())
         if mdtype.metadata_return_type() == ColumnType.categorical:
-            CategoricalStatisticalCheck.column_figure(col_mdtype_tuple, df1, df2)
+            CategoricalStatisticalCheck.column_plot(figure, tile, col_mdtype_tuple, df1, df2)
         elif mdtype.metadata_return_type() == ColumnType.numerical:
-            NumericalStatisticalCheck.column_figure(col_mdtype_tuple, df1, df2)
+            NumericalStatisticalCheck.column_plot(figure, tile, col_mdtype_tuple, df1, df2)
         else:
             raise UnknownMetadataReturnColumnTypeError(mdtype)
 
-    def metadata_figures(self, pvalues, df1, df2):
+    @staticmethod
+    def plot_all_metadata(plot_functions):
+        rows = len(plot_functions)
+        cols = 1
+        fig = plt.figure(figsize=(PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT * rows), tight_layout=True)
+        grid = gridspec.GridSpec(rows, cols)
+        for plot_function, tile in zip(plot_functions, grid):
+            plot_function(fig, tile)
+        plt.show()
+
+    def plot_functions(self, significant_columns, pvalues, df1, df2):
         plot_functions = []
-        for column in self.significant_columns(pvalues):
-            for mdtype in self.significant_metadata(pvalues[column]):
-                plot_functions.append(lambda col=column, meta=mdtype: self.metadata_figure(col, meta, df1, df2))
+        for column in sorted(significant_columns):
+            for mdtype in sorted(self.significant_metadata(pvalues[column])):
+                plot_functions.append(lambda figure, tile, col=column, meta=mdtype:
+                                      self.metadata_plot(figure, tile, col, meta, df1, df2))
         return plot_functions
+
+    def metadata_figure(self, pvalues, df1, df2):
+        significant_columns = self.significant_columns(pvalues)
+        if not significant_columns:
+            return []
+        return [lambda plots=tuple(self.plot_functions(significant_columns, pvalues, df1, df2)):
+                self.plot_all_metadata(plots)]
 
     def run(self, store) -> Report:
         df1, df2 = store[self.metadata_precalculation]
@@ -91,4 +113,4 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
                                                                             any_significant=len(significant_columns) > 0
                                                                             ),
                                  information={'test_results': pvalues},
-                                 figures=self.metadata_figures(pvalues, part1, part2))
+                                 figures=self.metadata_figure(pvalues, part1, part2))
