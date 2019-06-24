@@ -12,6 +12,7 @@ Checks
     dq_metrics
     sorensen_dice
     embedding_distance
+    word_prediction
     guide
 
 
