@@ -4,7 +4,7 @@ import mock
 
 from pandas import DataFrame
 
-from shift_detector.checks.simple_check import SimpleCheck
+from shift_detector.checks.dq_metrics_check import DQMetricsCheck
 from shift_detector.precalculations.store import Store
 
 
@@ -23,11 +23,11 @@ class TestSimpleCheck(TestCase):
 
         self.store = Store(self.df1, self.df2)
         self.store_num = Store(self.df1_num, self.df2_num)
-        self.check = SimpleCheck()
+        self.check = DQMetricsCheck()
 
     def test_init(self):
         with self.subTest('normal analyzers should detect shift'):
-            self.check = SimpleCheck()
+            self.check = DQMetricsCheck()
             report = self.check.run(self.store_num)
 
             explanation_string = report.explanation['cool_numbers']
@@ -36,12 +36,12 @@ class TestSimpleCheck(TestCase):
             self.assertCountEqual(formatted_list, ['mean', '+20.0', 'value_range', '+67.33', 'std', '+66.67', ''])
 
         with self.subTest('no analyzer should detect shift'):
-            self.check = SimpleCheck(mean_threshold=.3, value_range_threshold=.68, std_threshold=.7)
+            self.check = DQMetricsCheck(mean_threshold=.3, value_range_threshold=.68, std_threshold=.7)
             report = self.check.run(self.store_num)
             self.assertEqual(report.shifted_columns, [])
 
         with self.subTest('only std should detect shift'):
-            self.check = SimpleCheck(mean_threshold=.3, value_range_threshold=.68, std_threshold=.5)
+            self.check = DQMetricsCheck(mean_threshold=.3, value_range_threshold=.68, std_threshold=.5)
             report = self.check.run(self.store_num)
 
             explanation_string = report.explanation['cool_numbers']

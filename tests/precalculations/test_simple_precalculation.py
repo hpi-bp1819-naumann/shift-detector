@@ -4,14 +4,14 @@ import unittest
 
 import pandas as pd
 
-from shift_detector.precalculations.simple_precalculation import SimplePrecalculation
+from shift_detector.precalculations.dq_metrics_precalculation import DQMetricsPrecalculation
 from shift_detector.precalculations.store import Store
 
 
 class TestSimplePrecalculation(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.precalculation = SimplePrecalculation()
+        self.precalculation = DQMetricsPrecalculation()
 
         numerical_df_1 = pd.DataFrame.from_dict(
             {'col_1': range(100), 'col_2': list(range(50)) * 2, 'col_3': range(0, 200, 2)})

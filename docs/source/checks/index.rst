@@ -9,7 +9,7 @@ Checks
 
     conditional_probabilities
     distinction
-    simple
+    dq_metrics
     sorensen_dice
     embedding_distance
     guide
