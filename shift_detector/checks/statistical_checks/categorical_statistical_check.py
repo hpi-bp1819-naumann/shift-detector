@@ -32,8 +32,8 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
     def paired_total_ratios_plot(figure, axes, column, df1, df2, top_k=15):
         axes = vis.plot_categorical_horizontal_ratio_histogram(axes, (df1[column], df2[column]), top_k)
         axes.invert_yaxis()  # to match order of legend
-        column_name = column if isinstance(column, str) else '_'.join(column)
-        axes.set_title('Column: ' + column_name, fontsize='x-large')
+        column_name = str(column)
+        axes.set_title('Column: {}'.format(column_name), fontsize='x-large')
         axes.set_xlabel('value ratio', fontsize='medium')
         axes.set_ylabel('column value', fontsize='medium')
         figure.add_subplot(axes)

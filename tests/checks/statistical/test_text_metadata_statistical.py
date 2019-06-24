@@ -125,14 +125,14 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
         mock_axes = MagicMock(autospec=Axes)
         with mock.patch.object(numerical_statistical_check.vis, 'plot_binned_ratio_histogram'):
             NumericalStatisticalCheck.overlayed_hist_plot(mock_figure, mock_axes, ('text', 'num_chars'), df1, df2)
-        mock_axes.legend.assert_called_with(['text_num_chars 1', 'text_num_chars 2'], fontsize='x-small')
-        mock_axes.set_title.assert_called_with('Column: text_num_chars (Histogram)')
+        mock_axes.legend.assert_called_with(["('text', 'num_chars') 1", "('text', 'num_chars') 2"], fontsize='x-small')
+        mock_axes.set_title.assert_called_with("Column: ('text', 'num_chars') (Histogram)")
         with mock.patch.object(numerical_statistical_check.vis, 'plot_cumulative_step_ratio_histogram',
                                return_value=(np.array([0]), np.array([0]))):
             NumericalStatisticalCheck.cumulative_hist_plot(mock_figure, mock_axes, ('text', 'num_chars'), df1, df2)
-        mock_axes.legend.assert_called_with(['text_num_chars 1', 'text_num_chars 2', 'maximal distance = 0'],
+        mock_axes.legend.assert_called_with(["('text', 'num_chars') 1", "('text', 'num_chars') 2", 'maximal distance = 0'],
                                            fontsize='x-small')
-        mock_axes.set_title.assert_called_with('Column: text_num_chars (Cumulative Distribution)')
+        mock_axes.set_title.assert_called_with("Column: ('text', 'num_chars') (Cumulative Distribution)")
 
     def test_column_tuples_are_handled_by_categorical_visualization(self):
         columns = ['text']
@@ -147,7 +147,7 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
         with mock.patch.object(categorical_statistical_check.vis, 'plot_categorical_horizontal_ratio_histogram',
                                return_value=mock_axes):
             CategoricalStatisticalCheck.paired_total_ratios_plot(mock_figure, mock_axes, ('text', 'category'), df1, df2)
-        mock_axes.set_title.assert_called_once_with('Column: text_category', fontsize='x-large')
+        mock_axes.set_title.assert_called_once_with("Column: ('text', 'category')", fontsize='x-large')
 
     def test_correct_visualization_is_chosen_categorical(self):
         with mock.patch.object(CategoricalStatisticalCheck, 'column_plot') as mock_plot:

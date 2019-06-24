@@ -36,7 +36,7 @@ class NumericalStatisticalCheck(SimpleStatisticalCheck):
         max_d = max(distances)
         axes.plot([bin_edges[max_idx], bin_edges[max_idx]], [cumsum1[max_idx], cumsum2[max_idx]],
                   color='black', linewidth=1, linestyle='--')
-        column_name = column if isinstance(column, str) else '_'.join(column)
+        column_name = str(column)
         axes.legend([column_name + ' 1', column_name + ' 2', 'maximal distance = ' + str(max_d)], fontsize='x-small')
         axes.set_title('Column: ' + column_name + ' (Cumulative Distribution)')
         axes.set_xlabel('column value', fontsize='medium')
@@ -47,7 +47,7 @@ class NumericalStatisticalCheck(SimpleStatisticalCheck):
     def overlayed_hist_plot(figure, axes, column, df1, df2, bins=40):
         _, bin_edges = np.histogram(pd.concat([df1[column], df2[column]]), bins=bins)
         vis.plot_binned_ratio_histogram(axes, (df1[column], df2[column]), bin_edges)
-        column_name = column if isinstance(column, str) else '_'.join(column)
+        column_name = str(column)
         axes.legend([column_name + ' 1', column_name + ' 2'], fontsize='x-small')
         axes.set_title('Column: ' + column_name + ' (Histogram)')
         axes.set_xlabel('column value', fontsize='medium')
