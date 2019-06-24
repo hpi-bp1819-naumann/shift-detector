@@ -43,7 +43,6 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
 
     @staticmethod
     def column_plot(figure, tile, column, df1, df2):
-        inner_grid = gridspec.GridSpecFromSubplotSpec(1, 2, subplot_spec=tile, wspace=0.2)
         CategoricalStatisticalCheck.paired_total_ratios_plot(figure=figure,
-                                                             axes=plt.Subplot(figure, inner_grid[0]),
+                                                             axes=plt.Subplot(figure, tile),
                                                              column=column, df1=df1, df2=df2)

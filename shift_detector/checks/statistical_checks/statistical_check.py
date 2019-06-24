@@ -104,11 +104,11 @@ class SimpleStatisticalCheck(StatisticalCheck):
     def plot_all_columns(self, plot_functions):
         cols = self.number_of_columns_of_plots()
         rows = int(np.ceil(len(plot_functions) / cols))
-        fig = plt.figure(figsize=(10, 3.6 * rows), tight_layout=True)
+        fig = plt.figure(figsize=(15, 3.6 * rows), tight_layout=True)
         grid = gridspec.GridSpec(rows, cols)
         for plot_function, tile in zip(plot_functions, grid):
             plot_function(fig, tile)
-        fig.show()
+        plt.show()
 
     def plot_functions(self, significant_columns, df1, df2):
         plot_functions = []
