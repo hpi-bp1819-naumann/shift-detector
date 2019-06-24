@@ -73,6 +73,7 @@ The above report can be read as follows:
 3. The similarity of the column ``Type 1`` within Dataset1 is at 0.778
 4. The similarity of the column ``Type 1`` within Dataset2 is at 0.510
 5. The similarity of Dataset1 and Dataset2 in the column ``Type 1`` is at 0.839
+6. Since the similarity within the Datasets differs strong enough, the is probably a shift in column ``Type 1``
 
 
 Parameters

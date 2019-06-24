@@ -72,6 +72,7 @@ The above report can be read as follows:
 3. The distance between the items within Dataset1 is at 11.299 in the column ``Entry``
 4. The distance between the items within Dataset2 is at 1.835 in the column ``Entry``
 5. The distance between Dataset1 and Dataset2 in the column ``Entry`` is at 20.922
+6. Since the distances within the Datasets differ strong enough, there is probably a shift within column ``Entry``
 
 
 Parameters
