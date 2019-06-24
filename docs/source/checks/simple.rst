@@ -81,7 +81,7 @@ Numerical
 ~~~~~~~~~
 
 In the example, below the heading 'numerical columns', you see that the column with the name 'payment' is detected
-as shifted. You see below the columnname that two numerical metrics detected a shift, *mean* and *std*
+as shifted. Below the columnname, you can see that two numerical metrics detected a shift, *mean* and *std*
 (standard deviation).
 
 *Diff* describes the relative value-distance of the metrics that are calculated on your two datasets. If the Diff

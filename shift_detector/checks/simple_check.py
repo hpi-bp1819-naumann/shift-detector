@@ -23,12 +23,12 @@ class SimpleCheck(Check):
                                   completeness_threshold}
 
         if categorical_threshold < 0:
-            raise ValueError("The categorical threshold of {} is not correct. It has to be between the values of "
-                             "0 and 1.".format(categorical_threshold))
+            raise ValueError("The categorical threshold of {} is not correct. It has to be between larger than 0.0"
+                             .format(categorical_threshold))
 
         for t_name, t_value in threshold_names_values.items():
             if t_value < 0:
-                raise ValueError("The {}_threshold of {} is not correct. It has to be between the values of 0 and 1"
+                raise ValueError("The {}_threshold of {} is not correct. It has to be between larger than 0.0"
                                  .format(t_name, t_value))
 
         self.data = None
