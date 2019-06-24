@@ -92,7 +92,7 @@ class SimpleStatisticalCheck(StatisticalCheck):
         """
         explanations = {}
         for column in self.significant_columns(pvalues):
-            explanations[column] = '- p = {pvalue}\n'.format(
+            explanations[column] = 'p = {pvalue}\n'.format(
                                         pvalue=str(pvalues.loc['pvalue', column])
                                     )
         return explanations
