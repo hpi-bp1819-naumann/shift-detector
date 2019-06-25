@@ -4,7 +4,7 @@ import mock
 
 from pandas import DataFrame
 
-from shift_detector.checks.simple_check import SimpleCheck
+from shift_detector.checks.dq_metrics_check import DQMetricsCheck
 from shift_detector.precalculations.store import Store
 
 
@@ -23,32 +23,31 @@ class TestSimpleCheck(TestCase):
 
         self.store = Store(self.df1, self.df2)
         self.store_num = Store(self.df1_num, self.df2_num)
-        self.check = SimpleCheck()
+        self.check = DQMetricsCheck()
 
     def test_init(self):
         with self.subTest('normal analyzers should detect shift'):
-            self.check = SimpleCheck()
+            self.check = DQMetricsCheck()
             report = self.check.run(self.store_num)
 
             explanation_string = report.explanation['cool_numbers']
-            formatted = explanation_string.replace('Metric: ', '').replace('with Diff: ', '').replace(' %', '')
+            formatted = re.sub('Metric: (.*), Diff: (.*) %, threshold: (.*)%', r"\1 \2", explanation_string)
             formatted_list = re.split(' |\n', formatted)
-            self.assertCountEqual(formatted_list, ['mean', '+0.2', 'max', '+0.5', 'quartile_3', '+0.15', 'std',
-                                                   '+0.67', ''])
+            self.assertCountEqual(formatted_list, ['mean', '+20.0', 'value_range', '+67.33', 'std', '+66.67', ''])
 
         with self.subTest('no analyzer should detect shift'):
-            self.check = SimpleCheck(mean_threshold=.3, max_threshold=.6, quartile_3_threshold=.2, std_threshold=.7)
+            self.check = DQMetricsCheck(mean_threshold=.3, value_range_threshold=.68, std_threshold=.7)
             report = self.check.run(self.store_num)
             self.assertEqual(report.shifted_columns, [])
 
         with self.subTest('only std should detect shift'):
-            self.check = SimpleCheck(mean_threshold=.3, max_threshold=.6, quartile_3_threshold=.2, std_threshold=.5)
+            self.check = DQMetricsCheck(mean_threshold=.3, value_range_threshold=.68, std_threshold=.5)
             report = self.check.run(self.store_num)
 
             explanation_string = report.explanation['cool_numbers']
-            formatted = explanation_string.replace('Metric: ', '').replace('with Diff: ', '').replace(' %', '')
+            formatted = re.sub('Metric: (.*), Diff: (.*) %, threshold: (.*)%', r"\1 \2", explanation_string)
             formatted_list = re.split(' |\n', formatted)
-            self.assertCountEqual(formatted_list, ['std', '+0.67', ''])
+            self.assertCountEqual(formatted_list, ['std', '+67.33', ''])
 
     def test_run_categorical(self):
         with self.subTest("Test precalculation"):
@@ -57,7 +56,8 @@ class TestSimpleCheck(TestCase):
         with self.subTest("Test shifted categorical columns"):
             self.assertEqual(report.shifted_columns, ['shift'])
             self.assertCountEqual(report.examined_columns, ['shift', 'no_shift'])
-            self.assertEqual(report.explanation['shift'], 'Attribute: A with Diff: 1.0\n')
+            self.assertEqual(report.explanation['shift'], "Attribute: 'A' with Diff: +100.0 %, "
+                                                          "categorical threshold: +/- 5.0 %\n")
 
     def test_run_numerical(self):
         with self.subTest("Test precalculation"):
@@ -69,10 +69,10 @@ class TestSimpleCheck(TestCase):
 
         with self.subTest('Test explanations'):
             explanation_string = report.explanation['cool_numbers']
-            formatted = explanation_string.replace('Metric: ', '').replace('with Diff: ', '').replace(' %', '')
+            formatted = re.sub('Metric: (.*), Diff: (.*) %, threshold: (.*)%', r"\1 \2", explanation_string)
             formatted_list = re.split(' |\n', formatted)
-            self.assertCountEqual(formatted_list, ['mean', '+0.2', 'max', '+0.5', 'quartile_3', '+0.15', 'std',
-                                                   '+0.67', ''])
+            self.assertCountEqual(formatted_list, ['mean', '+20.0', 'value_range', '+66.67', 'std',
+                                                   '+67.33', ''])
 
     def test_relative_metric_difference(self):
         with self.subTest('Normal case'):
@@ -90,7 +90,7 @@ class TestSimpleCheck(TestCase):
             self.check.data = {'numerical_comparison': {'column': {'metric_name': {'df1': 0, 'df2': 12.4}}}}
             self.assertEqual(self.check.relative_metric_difference('column', 'metric_name'), 0)
 
-    @mock.patch('shift_detector.checks.simple_check.plt')
+    @mock.patch('shift_detector.checks.dq_metrics_check.plt')
     def test_numerical_plots_work(self, mock_plt):
         self.assertFalse(mock_plt.figure.called)
 
@@ -102,7 +102,7 @@ class TestSimpleCheck(TestCase):
         self.assertTrue(mock_plt.figure().add_subplot.called)
         self.assertTrue(mock_plt.show.called)
 
-    @mock.patch('shift_detector.checks.simple_check.plt')
+    @mock.patch('shift_detector.checks.dq_metrics_check.plt')
     def test_categorical_plots_work(self, mock_plt):
         self.assertFalse(mock_plt.figure.called)
 

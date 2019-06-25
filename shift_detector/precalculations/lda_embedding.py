@@ -1,11 +1,11 @@
 import pandas as pd
+import numpy as np
 from numbers import Number
 from sklearn.decomposition import LatentDirichletAllocation as LDA_skl
 from sklearn.feature_extraction.text import *
 from gensim.sklearn_api import LdaTransformer
 from gensim.corpora import Dictionary
-import lda
-from copy import deepcopy
+import warnings
 from shift_detector.precalculations.precalculation import Precalculation
 from shift_detector.precalculations.count_vectorizer import CountVectorizer
 from shift_detector.precalculations.lda_gensim_tokenizer import LdaGensimTokenizer
@@ -29,6 +29,7 @@ class LdaEmbedding(Precalculation):
             raise TypeError("Number of topic has to be an integer. Received: {}".format(type(n_topics)))
         if n_topics < 2:
             raise ValueError("Number of topics has to be at least 2. Received: {}".format(n_topics))
+        self.n_topics = n_topics
 
         if not isinstance(n_iter, int):
             raise TypeError("Random_state has to be a integer. Received: {}".format(type(n_iter)))
@@ -43,24 +44,21 @@ class LdaEmbedding(Precalculation):
         self.random_state = random_state
 
         if trained_model:
+            warnings.warn("Trained models are not trained again. Please make sure to only input the column(s) "
+                          "that the model was trained on", UserWarning)
             self.trained_model = trained_model
         else:
             if not isinstance(lib, str):
                 raise TypeError("Lib has to be a string. Received: {}".format(type(lib)))
-            if lib in ['sklearn', 'gensim', 'lda']:
-                self.lib = lib
-                if lib == 'sklearn':
-                    self.model = \
-                        LDA_skl(n_components=self.n_topics, max_iter=self.n_iter, random_state=self.random_state)
-                elif lib == 'gensim':
-                    self.model = \
-                        LdaTransformer(num_topics=self.n_topics, iterations=self.n_iter, random_state=self.random_state)
-                else:
-                    self.model = lda.LDA(n_topics=self.n_topics, n_iter=self.n_iter, random_state=self.random_state)
-                # n_iter is only the amount of sample iterations, so it can be much higher than the iterations parameter
-                # of the other models without sacrificing performance
+            if lib == 'sklearn':
+                self.model = \
+                    LDA_skl(n_components=self.n_topics, max_iter=self.n_iter, random_state=self.random_state)
+            elif lib == 'gensim':
+                self.model = \
+                    LdaTransformer(num_topics=self.n_topics, iterations=self.n_iter, random_state=self.random_state)
             else:
-                raise ValueError("The supported libraries are sklearn, gensim and lda. Received: {}".format(lib))
+                raise ValueError("The supported libraries are sklearn and gensim. Received: {}".format(lib))
+        self.lib = lib
 
         if cols:
             if isinstance(cols, list) and all(isinstance(col, str) for col in cols):
@@ -99,6 +97,27 @@ class LdaEmbedding(Precalculation):
             return hash(tuple([self.__class__, self.model.__class__, self.n_topics,
                                self.n_iter, self.random_state]))
 
+    @staticmethod
+    def topic_probabilities_to_topics(lda_model, dtm):
+        # Always takes the topic with the highest probability as the dominant topic
+        return [arr.argmax() for arr in lda_model.transform(dtm)]
+
+    @staticmethod
+    def get_topic_word_distribution_gensim(lda_model, n_topics, n_top_words):
+        topic_words = lda_model.gensim_model.show_topics(num_topics=n_topics,
+                                                         num_words=n_top_words,
+                                                         formatted=False)
+        return topic_words
+
+    @staticmethod
+    def get_topic_word_distribution_sklearn(lda_model, dtm, vocab, n_top_words):
+        topic_words = {}
+        term_frequencies = dict(zip(vocab, dtm/np.sum(dtm)))
+        for topic, comp in enumerate(lda_model.components_):
+            word_idx = np.argsort(comp)[::-1][:n_top_words]
+            topic_words[topic] = [vocab[i] for i in word_idx]
+        return topic_words
+
     def process(self, store):
         if isinstance(self.cols, str):
             if self.cols in store.column_names(ColumnType.text):
@@ -114,44 +133,62 @@ class LdaEmbedding(Precalculation):
 
         transformed1 = pd.DataFrame()
         transformed2 = pd.DataFrame()
+        topic_words_all_cols = {}
+        all_models = {}
 
         if self.lib == 'gensim':
             tokenized1, tokenized2 = store[LdaGensimTokenizer(stop_words=self.stop_words, cols=self.cols)]
             tokenized_merged = pd.concat([tokenized1, tokenized2], ignore_index=True)
 
+            all_corpora = {}
+            all_dicts = {}
+
             for i, col in enumerate(col_names):
-                gensim_dict_merged = Dictionary(tokenized_merged[col])
+                all_dicts[col] = Dictionary(tokenized_merged[col])
                 gensim_dict1 = Dictionary(tokenized1[col])
                 gensim_dict2 = Dictionary(tokenized2[col])
 
-                corpus_merged = [gensim_dict_merged.doc2bow(line) for line in tokenized_merged[col]]
+                all_corpora[col] = [all_dicts[col].doc2bow(line) for line in tokenized_merged[col]]
                 corpus1 = [gensim_dict1.doc2bow(line) for line in tokenized1[col]]
                 corpus2 = [gensim_dict2.doc2bow(line) for line in tokenized2[col]]
 
                 if not self.trained_model:
-                    model = deepcopy(self.model)
-                    model = model.fit(corpus_merged)
-                    self.trained_model = model
+                    model = self.model
+                    model.id2word = all_dicts[col]
+                    model = model.fit(all_corpora[col])
+                    all_models[col] = model.gensim_model
+                else:
+                    model = self.trained_model
 
-                # Always takes the topic with the highest probability as the dominant topic
-                transformed1[topic_labels[i]] = [arr1.argmax() for arr1 in self.trained_model.transform(corpus1)]
-                transformed2[topic_labels[i]] = [arr2.argmax() for arr2 in self.trained_model.transform(corpus2)]
+                topic_words_all_cols[col] = self.get_topic_word_distribution_gensim(model, self.n_topics, 200)
+
+                transformed1[topic_labels[i]] = self.topic_probabilities_to_topics(model, corpus1)
+                transformed2[topic_labels[i]] = self.topic_probabilities_to_topics(model, corpus2)
+
+            return transformed1, transformed2, topic_words_all_cols, all_models, all_corpora, all_dicts
 
         else:
-            vectorized1, vectorized2 = store[CountVectorizer(stop_words=self.stop_words, max_features=self.max_features,
-                                                             cols=self.cols)]
-            vectorized_merged = dict(vectorized1, **vectorized2)
+            vectorized1, vectorized2, feature_names, all_vecs = store[CountVectorizer(stop_words=self.stop_words,
+                                                                                      max_features=self.max_features,
+                                                                                      cols=self.cols)]
+            all_dtms = dict(vectorized1, **vectorized2)
 
             for i, col in enumerate(col_names):
                 if not self.trained_model:
-                    model = deepcopy(self.model)
-                    model = model.fit(vectorized_merged[col])
-                    self.trained_model = model
+                    model = self.model
+                    model = model.fit(all_dtms[col])
+                    all_models[col] = model
+                else:
+                    model = self.trained_model
 
-                # Always takes the topic with the highest probability as the dominant topic
-                transformed1[topic_labels[i]] = [arr1.argmax() for arr1 in
-                                                 self.trained_model.transform(vectorized1[col])]
-                transformed2[topic_labels[i]] = [arr2.argmax() for arr2 in
-                                                 self.trained_model.transform(vectorized2[col])]
+                topic_words_all_cols[col] = self.get_topic_word_distribution_sklearn(model,
+                                                                                     all_dtms[col],
+                                                                                     feature_names[col],
+                                                                                     200)
 
-        return transformed1, transformed2
+                transformed1[topic_labels[i]] = \
+                    self.topic_probabilities_to_topics(model, vectorized1[col])
+                transformed2[topic_labels[i]] = \
+                    self.topic_probabilities_to_topics(model, vectorized2[col])
+
+            return transformed1, transformed2, topic_words_all_cols, all_models, all_dtms, all_vecs

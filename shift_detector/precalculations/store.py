@@ -3,6 +3,7 @@ from pandas import DataFrame
 
 from shift_detector.utils.column_management import detect_column_types, ColumnType, \
     CATEGORICAL_MAX_RELATIVE_CARDINALITY, column_names
+from shift_detector.utils.custom_print import lprint
 from shift_detector.utils.data_io import shared_column_names
 from shift_detector.utils.errors import InsufficientDataError
 
@@ -14,12 +15,14 @@ class Store:
     def __init__(self,
                  df1: DataFrame,
                  df2: DataFrame,
+                 log_print=False,
                  custom_column_types={}):
         self.verify_min_data_size(min([len(df1), len(df2)]))
 
         self.shared_columns = shared_column_names(df1, df2)
         self.df1 = df1[self.shared_columns]
         self.df2 = df2[self.shared_columns]
+        self.log_print = log_print
 
         if not isinstance(custom_column_types, dict):
             raise TypeError("column_types is not a dictionary."
@@ -35,11 +38,13 @@ class Store:
 
         self.type_to_columns = detect_column_types(self.df1, self.df2, self.shared_columns)
 
-        self.__apply_custom_column_types(custom_column_types)
+        self.__apply_column_types(custom_column_types)
 
-        print("Numerical columns: {}".format(", ".join(column_names(self.column_names(ColumnType.numerical)))))
-        print("Categorical columns: {}".format(", ".join(column_names(self.column_names(ColumnType.categorical)))))
-        print("Text columns: {}".format(", ".join(column_names(self.column_names(ColumnType.text)))))
+        lprint("Numerical columns: {}".format(", ".join(column_names(self.column_names(ColumnType.numerical)))),
+               self.log_print)
+        lprint("Categorical columns: {}".format(", ".join(column_names(self.column_names(ColumnType.categorical)))),
+               self.log_print)
+        lprint("Text columns: {}".format(", ".join(column_names(self.column_names(ColumnType.text)))), self.log_print)
 
         self.splitted_dfs = {column_type: (self.df1[columns], self.df2[columns])
                              for column_type, columns in self.type_to_columns.items()}
@@ -53,10 +58,10 @@ class Store:
             raise Exception("Needed Preprocessing must be of type Precalculation or ColumnType")
         '''
         if needed_preprocessing in self.preprocessings:
-            print("- Use already executed {}".format(needed_preprocessing.__class__.__name__))
+            lprint("- Use already executed {}".format(needed_preprocessing.__class__.__name__), self.log_print)
             return self.preprocessings[needed_preprocessing]
 
-        print("- Executing {}".format(needed_preprocessing.__class__.__name__))
+        lprint("- Executing {}".format(needed_preprocessing.__class__.__name__), self.log_print)
         preprocessing = needed_preprocessing.process(self)
         self.preprocessings[needed_preprocessing] = preprocessing
         return preprocessing
@@ -77,18 +82,18 @@ class Store:
         if size < MIN_DATA_SIZE:
             raise InsufficientDataError(actual_size=size, expected_size=MIN_DATA_SIZE)
 
-    def __apply_custom_column_types(self, custom_column_to_column_type):
+    def __apply_column_types(self, custom_column_to_column_type):
         column_to_column_type = {}
         for column_type, columns in self.type_to_columns.items():
             # iterate over columns for column_types
             for column in columns:
                 # apply custom column type
+                custom_column_type = column_type
                 if column in custom_column_to_column_type:
                     custom_column_type = custom_column_to_column_type[column]
-                    self.__change_column_type(column, custom_column_type)
-                    column_to_column_type[column] = custom_column_type
-                else:
-                    column_to_column_type[column] = column_type
+
+                column_to_column_type[column] = custom_column_type
+                self.__set_column_type(column, custom_column_type)
 
         new_column_type_to_columns = {
             ColumnType.categorical: [],
@@ -102,15 +107,15 @@ class Store:
 
         self.type_to_columns = new_column_type_to_columns
 
-    def __change_column_type(self, column, new_column_type):
-        if new_column_type == ColumnType.numerical:
+    def __set_column_type(self, column, column_type):
+        if column_type == ColumnType.numerical:
             try:
-                self.df1[column] = pd.to_numeric(self.df1[column])
-                self.df2[column] = pd.to_numeric(self.df2[column])
+                self.df1[column] = pd.to_numeric(self.df1[column]).astype(float)
+                self.df2[column] = pd.to_numeric(self.df2[column]).astype(float)
             except Exception as e:
-                raise Exception("An error occurred during the conversion of column '{}' to the new column type '{}'. "
-                                "{}".format(column, new_column_type.name, str(e)))
+                raise Exception("An error occurred during the conversion of column '{}' to the column type '{}'. "
+                                "{}".format(column, column_type.name, str(e)))
 
-        elif new_column_type == ColumnType.categorical or new_column_type == ColumnType.text:
+        elif column_type == ColumnType.categorical or column_type == ColumnType.text:
             self.df1[column] = self.df1[column].astype(str)
             self.df2[column] = self.df2[column].astype(str)

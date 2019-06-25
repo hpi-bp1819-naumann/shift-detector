@@ -5,9 +5,8 @@ import pandas as pd
 
 
 def read_from_csv(file_path: str, separator: str) -> pd.DataFrame:
-    # TODO: give user feedback about how many lines were dropped
     logger.info('Reading in CSV file. This may take a while ...')
-    return pd.read_csv(file_path, sep=separator, error_bad_lines=False).dropna()
+    return pd.read_csv(file_path, sep=separator, error_bad_lines=False)
 
 
 def shared_column_names(df1: pd.DataFrame, df2: pd.DataFrame) -> List[str]:

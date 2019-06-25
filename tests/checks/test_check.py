@@ -1,5 +1,7 @@
 from unittest import TestCase
 
+from mock import patch
+
 from shift_detector.checks.check import Report
 
 
@@ -53,6 +55,3 @@ class TestReport(TestCase):
         }
 
         self.assertDictEqual(expected_explanation, actual_explanation)
-
-    def test_str(self):
-        self.report.print_report()

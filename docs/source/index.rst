@@ -1,7 +1,7 @@
 Welcome to Morpheus
 ===================
 
-    **Remember: all I'm offering is the truth. Nothing more.**
+    **"Remember, all I'm offering is the truth. Nothing more."**
 
 Morpheus is a framework for :term:`shift` detection. It unifies several methods
 to systematically compare data sets into an easy-to-use interface.

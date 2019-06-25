@@ -3,7 +3,7 @@ from shift_detector.precalculations.precalculation import Precalculation
 from shift_detector.utils.column_management import ColumnType
 
 
-class SimplePrecalculation(Precalculation):
+class DQMetricsPrecalculation(Precalculation):
 
     def __eq__(self, other):
         return isinstance(other, self.__class__)
@@ -24,7 +24,7 @@ class SimplePrecalculation(Precalculation):
     @staticmethod
     def compare_numerical_columns(df1, df2):
         numerical_comparison = dict()
-        empty_metrics_dict = {'mean': {}, 'median': {}, 'min': {}, 'max': {}, 'quartile_1': {}, 'quartile_3': {},
+        empty_metrics_dict = {'mean': {}, 'median': {}, 'value_range': {}, 'quartile_1': {}, 'quartile_3': {},
                               'uniqueness': {}, 'num_distinct': {}, 'completeness': {}, 'std': {}}
 
         for df_name, df in [('df1', df1), ('df2', df2)]:
@@ -34,10 +34,7 @@ class SimplePrecalculation(Precalculation):
                 elif not numerical_comparison.get(column):
                     numerical_comparison[column] = deepcopy(empty_metrics_dict)
 
-                # TODO Later Vielleicht: verschnellerbar, in dem man alle Quantile gleichzeitig berechnet,
-                #  also quantile([0, 0.25,  ... ]) oder Methoden selbst berechnet
-                numerical_comparison[column]['min'][df_name] = df[column].min()
-                numerical_comparison[column]['max'][df_name] = df[column].max()
+                numerical_comparison[column]['value_range'][df_name] = float(df[column].max()) - float(df[column].min())
                 numerical_comparison[column]['quartile_1'][df_name] = df[column].quantile(.25)
                 numerical_comparison[column]['quartile_3'][df_name] = df[column].quantile(.75)
 
@@ -49,7 +46,7 @@ class SimplePrecalculation(Precalculation):
 
                 numerical_comparison[column]['num_distinct'][df_name] = column_droppedna.nunique()
 
-                numerical_comparison[column]['completeness'][df_name] = len(column_droppedna) / len(df1[column])
+                numerical_comparison[column]['completeness'][df_name] = len(column_droppedna) / len(df[column])
 
                 numerical_comparison[column]['uniqueness'][df_name] = len(df.groupby(column)
                                                                           .filter(lambda x: len(x) == 1)) / \

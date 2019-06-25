@@ -19,23 +19,23 @@ class TestStore(unittest.TestCase):
         df1 = df2 = pd.DataFrame.from_dict(sales)
 
         with self.subTest("Successful initialisation"):
-            Store(df1, df2, {'description': ColumnType.categorical})
+            Store(df1, df2, custom_column_types={'description': ColumnType.categorical})
 
         with self.subTest("Exception when no dict is passed as custom_column_types"):
-            self.assertRaises(TypeError, lambda: Store(df1, df2, 'no_dict'))
+            self.assertRaises(TypeError, lambda: Store(df1, df2, custom_column_types='no_dict'))
 
         with self.subTest("Exception when key of custom_column_types is not a string"):
-            self.assertRaises(TypeError, lambda: Store(df1, df2, {0: ColumnType.numerical}))
+            self.assertRaises(TypeError, lambda: Store(df1, df2, custom_column_types={0: ColumnType.numerical}))
 
         with self.subTest("Exception when value of custom_column_types is not a ColumnType"):
-            self.assertRaises(TypeError, lambda: Store(df1, df2, {'brand': 0}))
+            self.assertRaises(TypeError, lambda: Store(df1, df2, custom_column_types={'brand': 0}))
 
     def test_min_data_size_is_enforced(self):
         df1 = pd.DataFrame(list(range(10)))
         df2 = pd.DataFrame(list(range(10)))
         store = Store(df1=df1, df2=df2)
-        assert_frame_equal(df1, store[ColumnType.numerical][0])
-        assert_frame_equal(df2, store[ColumnType.numerical][1])
+        assert_frame_equal(df1.astype(float), store[ColumnType.numerical][0])
+        assert_frame_equal(df2.astype(float), store[ColumnType.numerical][1])
         self.assertRaises(InsufficientDataError, Store, df1=pd.DataFrame(), df2=pd.DataFrame([0]))
         self.assertRaises(InsufficientDataError, Store,
                           df1=pd.DataFrame(list(range(9))),
@@ -43,8 +43,9 @@ class TestStore(unittest.TestCase):
 
     def test_apply_custom_column_types(self):
         data = {'to_numerical': ['150', '200', '50', '10', '5', '150', '200', '50', '10', '5', '1'] * 10,
-                'to_text': ['150', '200', '50', '10', '5', 150, 200, 50, 10, 5, 1] * 10,
-                'to_categorical': [150, 200, 50, 10, 5, 150, 200, 50, 10, 5, 1] * 10}
+                'to_text': ['150', '200', '50', '10', '5', '150', '200', '50', '10', '5', '1'] * 10,
+                'to_categorical': [150, 200, 50, 10, 5, 150, 200, 50, 10, 5, 1] * 10,
+                'stay_categorical': ['150', '200', '50', '10', '5', '150', '200', '50', '10', '5', '1'] * 10}
         df1 = df2 = pd.DataFrame.from_dict(data)
 
         custom_column_types = {
@@ -53,17 +54,17 @@ class TestStore(unittest.TestCase):
             'to_categorical': ColumnType.categorical
         }
 
-        store = Store(df1, df2, custom_column_types)
+        store = Store(df1, df2, custom_column_types=custom_column_types)
 
         with self.subTest("Apply custom_column_types"):
-            self.assertEqual(['to_categorical'], store.type_to_columns[ColumnType.categorical])
+            self.assertEqual(['to_categorical', 'stay_categorical'], store.type_to_columns[ColumnType.categorical])
             self.assertEqual(['to_text'], store.type_to_columns[ColumnType.text])
             self.assertEqual(['to_numerical'], store.type_to_columns[ColumnType.numerical])
 
         with self.subTest("Apply numerical conversion for custom_column_types to dataframes"):
             self.assertTrue(is_numeric_dtype(store.df1['to_numerical']))
-            self.assertTrue(store.df1['to_numerical'].equals(pd.Series([150, 200, 50, 10, 5,
-                                                                        150, 200, 50, 10, 5, 1] * 10)))
+            self.assertTrue(store.df1['to_numerical'].equals(pd.Series([150.0, 200.0, 50.0, 10.0, 5.0,
+                                                                        150.0, 200.0, 50.0, 10.0, 5.0, 1.0] * 10)))
 
         with self.subTest("Apply categorical conversion for custom_column_types to dataframes"):
             self.assertTrue(is_string_dtype(store.df1['to_categorical']))
@@ -83,7 +84,7 @@ class TestStore(unittest.TestCase):
         }
 
         with self.subTest("Exception when trying to convert non-numerical column to numerical"):
-            self.assertRaises(Exception, lambda: Store(df1, df2, custom_column_types))
+            self.assertRaises(Exception, lambda: Store(df1, df2, custom_column_types=custom_column_types))
 
     def test_column_names(self):
         sales = {'brand': ["Jones LLC", "Alpha Co", "Blue Inc", "Blue Inc", "Alpha Co",
