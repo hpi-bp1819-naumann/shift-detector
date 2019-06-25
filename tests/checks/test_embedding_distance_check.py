@@ -49,7 +49,7 @@ class TestEmbeddingDistanceReport(unittest.TestCase):
     def setUp(self):
         result = {'Col1': (0.1, 0.2, 20.0),
                   'Col2': (0.2, 0.2, 0.2)}
-        self.report = EmbeddingDistanceReport('Test Check', ['Col1', 'Col2'], ['Col1'], information=(1.0, result))
+        self.report = EmbeddingDistanceReport('Test Check', ['Col1', 'Col2'], ['Col1'], information=(3.0, result))
 
     @mock.patch('shift_detector.checks.embedding_distance_check.display')
     def test_report_calls_display(self, mock_display):
