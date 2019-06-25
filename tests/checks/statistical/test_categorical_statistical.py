@@ -2,6 +2,9 @@ import unittest
 from unittest import mock
 
 import pandas as pd
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
+from mock import MagicMock
 from pandas.util.testing import assert_frame_equal
 
 from shift_detector.detector import Detector
@@ -49,32 +52,32 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
     def test_compliance_with_detector(self):
         df1 = pd.DataFrame([0] * 10)
         df2 = pd.DataFrame([0] * 10)
-        detector = Detector(df1=df1, df2=df2)
+        detector = Detector(df1=df1, df2=df2, log_print=False)
         detector.run(CategoricalStatisticalCheck())
         self.assertEqual(1, len(detector.check_reports[0].examined_columns))
         self.assertEqual(0, len(detector.check_reports[0].shifted_columns))
         self.assertEqual(0, len(detector.check_reports[0].explanation))
         assert_frame_equal(pd.DataFrame([1.0], index=['pvalue']), detector.check_reports[0].information['test_results'])
 
-    def test_figure_functions_are_collected(self):
-        df1 = pd.DataFrame.from_dict(
-            {'significant_col': (['severe reaction'] * 29) + (['no severe reaction'] * 4757),
-             'not_significant_col': ['uninteresting'] * 4786})
-        df2 = pd.DataFrame.from_dict(
-            {'significant_col': (['severe reaction'] * 125) + (['no severe reaction'] * 8839),
-             'not_significant_col': ['uninteresting'] * 8964})
+    def test_figure_function_is_collected(self):
+        df1 = pd.DataFrame.from_dict({'col1': ['value'] * 100, 'col2': ['value'] * 100})
+        df2 = pd.DataFrame.from_dict({'col1': ['value'] * 200, 'col2': ['value'] * 200})
         check = CategoricalStatisticalCheck()
-        result = check.column_figures(significant_columns=['significant_col'], df1=df1, df2=df2)
-        self.assertEqual(1, len(result))
+        for solution, sig_cols in [(1, ['col1, col2']), (1, ['col1']), (0, [])]:
+            with self.subTest(solution=solution, sig_cols=sig_cols):
+                result = check.column_figure(significant_columns=sig_cols, df1=df1, df2=df2)
+                self.assertEqual(solution, len(result))
 
     @mock.patch('shift_detector.checks.statistical_checks.categorical_statistical_check.plt')
     def test_paired_total_ratios_figure_looks_right(self, mock_plt):
+        mock_figure = MagicMock(autospec=Figure)
+        mock_axes = MagicMock(autospec=Axes)
         with mock.patch.object(pd.DataFrame, 'plot') as mock_plot:
-            CategoricalStatisticalCheck.paired_total_ratios_figure('vaccination_reaction',
-                                                                   self.df1_significant, self.df2_significant)
+            CategoricalStatisticalCheck.paired_total_ratios_plot(mock_figure, mock_axes, 'vaccination_reaction',
+                                                                 self.df1_significant, self.df2_significant)
         self.assertTrue(mock_plot.called)
         self.assertTrue(mock_plot.return_value.set_title.called)
         self.assertTrue(mock_plot.return_value.set_xlabel.called)
         self.assertTrue(mock_plot.return_value.set_ylabel.called)
         self.assertTrue(mock_plot.return_value.invert_yaxis.called)
-        self.assertTrue(mock_plt.show.called)
+        self.assertFalse(mock_plt.show.called)

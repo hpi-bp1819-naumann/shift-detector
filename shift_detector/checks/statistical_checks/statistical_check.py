@@ -1,9 +1,13 @@
 from abc import abstractmethod
 
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 from IPython.display import display
+from matplotlib import gridspec
 
 from shift_detector.checks.check import Check, Report
+from shift_detector.utils.visualization import PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT
 
 
 class StatisticalCheck(Check):
@@ -13,6 +17,7 @@ class StatisticalCheck(Check):
     :param sampling: whether or not to use sampling for the larger set if compared data sets have unequal sizes
     :param sampling_seed: seed to use for sampling, if sampling is enabled
     """
+
     def __init__(self, significance=0.01, use_sampling=False, sampling_seed=0):
         self.significance = significance
         self.use_sampling = use_sampling
@@ -43,6 +48,7 @@ class SimpleStatisticalCheck(StatisticalCheck):
     """
     Blueprint for a statistical test check which involves only one kind of statistical test
     """
+
     @abstractmethod
     def statistical_test(self, part1: pd.Series, part2: pd.Series) -> float:
         """
@@ -51,6 +57,14 @@ class SimpleStatisticalCheck(StatisticalCheck):
         :param part1: first sample
         :param part2: second sample
         :return: p-value of statistical test
+        """
+        pass
+
+    @abstractmethod
+    def check_name(self) -> str:
+        """
+        Returns the name of the check as String.
+        :return: name of the check
         """
         pass
 
@@ -78,25 +92,39 @@ class SimpleStatisticalCheck(StatisticalCheck):
         """
         explanations = {}
         for column in self.significant_columns(pvalues):
-            explanations[column] = '- probability for equal distribution p = {pvalue}\n' \
-                                   '- specified significance level alpha = {significance}\n' \
-                                   '- statistical test performed: {test_name}'.format(
-                                        pvalue=str(pvalues[column]),
-                                        significance=str(self.significance),
-                                        test_name=self.statistical_test_name()
+            explanations[column] = 'p = {pvalue}\n'.format(
+                                        pvalue=str(pvalues.loc['pvalue', column])
                                     )
         return explanations
 
     @staticmethod
     @abstractmethod
-    def column_figure(column, df1, df2):
+    def column_plot(figure, tile, column, df1, df2):
         pass
 
-    def column_figures(self, significant_columns, df1, df2):
+    @abstractmethod
+    def number_of_columns_of_plots(self) -> int:
+        pass
+
+    def plot_all_columns(self, plot_functions):
+        cols = self.number_of_columns_of_plots()
+        rows = int(np.ceil(len(plot_functions) / cols))
+        fig = plt.figure(figsize=(PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT * rows), tight_layout=True)
+        grid = gridspec.GridSpec(rows, cols)
+        for plot_function, tile in zip(plot_functions, grid):
+            plot_function(fig, tile)
+        plt.show()
+
+    def plot_functions(self, significant_columns, df1, df2):
         plot_functions = []
-        for column in significant_columns:
-            plot_functions.append(lambda col=column: self.column_figure(col, df1, df2))
+        for column in sorted(significant_columns):
+            plot_functions.append(lambda figure, tile, col=column: self.column_plot(figure, tile, col, df1, df2))
         return plot_functions
+
+    def column_figure(self, significant_columns, df1, df2):
+        if not significant_columns:
+            return []
+        return [lambda plots=tuple(self.plot_functions(significant_columns, df1, df2)): self.plot_all_columns(plots)]
 
     def run(self, store) -> Report:
         pvalues = pd.DataFrame(index=['pvalue'])
@@ -111,17 +139,29 @@ class SimpleStatisticalCheck(StatisticalCheck):
             p = self.statistical_test(part1[column], part2[column])
             pvalues[column] = [p]
         significant_columns = self.significant_columns(pvalues)
-        return StatisticalReport("Statistical Check",
+        header = 'Performed statistical test: {test_name}\n'.format(test_name=self.statistical_test_name()) + \
+                 'Significance level: {significance}\n'.format(significance=str(self.significance))
+        return StatisticalReport(self.check_name(),
                                  examined_columns=columns,
                                  shifted_columns=significant_columns,
                                  explanation=self.explain(pvalues),
+                                 explanation_header=header,
                                  information={'test_results': pvalues},
-                                 figures=self.column_figures(significant_columns, part1, part2))
+                                 figures=self.column_figure(significant_columns, part1, part2))
 
 
 class StatisticalReport(Report):
 
+    def __init__(self, check_name, examined_columns, shifted_columns, explanation={}, explanation_header=None,
+                 information={}, figures=[]):
+        super().__init__(check_name, examined_columns, shifted_columns, explanation, information, figures)
+        self.explanation_header = explanation_header
+
+    def print_explanation(self):
+        print(self.explanation_header)
+        super().print_explanation()
+
     def print_information(self):
         test_results = self.information['test_results']
-        print("Test Result:")
+        print("p-values of all columns:")
         display(test_results)

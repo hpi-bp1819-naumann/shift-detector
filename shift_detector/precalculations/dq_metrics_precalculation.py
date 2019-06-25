@@ -3,7 +3,7 @@ from shift_detector.precalculations.precalculation import Precalculation
 from shift_detector.utils.column_management import ColumnType
 
 
-class SimplePrecalculation(Precalculation):
+class DQMetricsPrecalculation(Precalculation):
 
     def __eq__(self, other):
         return isinstance(other, self.__class__)
@@ -46,7 +46,7 @@ class SimplePrecalculation(Precalculation):
 
                 numerical_comparison[column]['num_distinct'][df_name] = column_droppedna.nunique()
 
-                numerical_comparison[column]['completeness'][df_name] = len(column_droppedna) / len(df1[column])
+                numerical_comparison[column]['completeness'][df_name] = len(column_droppedna) / len(df[column])
 
                 numerical_comparison[column]['uniqueness'][df_name] = len(df.groupby(column)
                                                                           .filter(lambda x: len(x) == 1)) / \

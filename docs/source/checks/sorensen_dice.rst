@@ -21,11 +21,11 @@ Code
 
 ::
 
-    from Morpheus.Detector import Detector
-    from Morpheus.checks.SorensenDiceCheck import SorensenDiceCheck
+    from morpheus.detector import Detector
+    from morpheus.checks.sorensen_dice_check import SorensenDiceCheck
 
-    data_set_1 = 'examples/shoes_first.csv'
-    data_set_2 = 'examples/shoes_second.csv'
+    data_set_1 = 'data/pokedex1.csv'
+    data_set_2 = 'data/pokedex2.csv'
 
     detector = Detector(
         data_set_1,
@@ -54,27 +54,26 @@ Result
 ::
 
     Sorensen Dice Check
-    Examined Columns: ['item_name', 'description']
-    Shifted Columns: ['item_name', 'description']
-    Column 'item_name':
-        Baseline in Dataset1: 0.882
-        Baseline in Dataset2: 0.501
-        Sorensen Dice Coefficient between Datasets: 0.545
-    Column 'description':
-        Baseline in Dataset1: 0.9355557653895485
-        Baseline in Dataset2: 0.5669534250708042
-        Sorensen Dice Coefficient between Datasets: 0.623536146479158
+    Examined Columns: ['Type 2', 'Type 1', 'Name', 'Entry']
+    Shifted Columns: ['Type 1', 'Name', 'Type 2']
+
+            Baseline in Dataset 1  Baseline in Dataset 2  Distance between Datasets
+    Type 1               0.778443               0.510345                   0.839186
+    Entry                0.260510               0.209295                   0.506504
+    Name                 0.007456               0.030494                   0.022639
+    Type 2               0.689764               0.561594                   0.701052
 
 Interpretation
 ++++++++++++++
 
 The above report can be read as follows:
 
-1. The examined columns are 'description' and 'item_name"
-2. The columns that contain a shift according to the Sørensen Dice Check are 'item_name' and 'description'
-3. The similarity of the item names within Dataset1 is at 0.882
-4. The similarity of the item names within Dataset2 is at 0.501
-5. The similarity of Dataset1 and Dataset2 in the column 'item_name' is at 0.545
+1. The examined columns are ``Type 2``, ``Type 1``, ``Name`` and ``Entry``
+2. The columns that contain a shift according to the Sørensen Dice Check are ``Type 2``, ``Type 1`` and ``Name``
+3. The similarity of the column ``Type 1`` within Dataset1 is at 0.778
+4. The similarity of the column ``Type 1`` within Dataset2 is at 0.510
+5. The similarity of Dataset1 and Dataset2 in the column ``Type 1`` is at 0.839
+6. Since the similarity within the Datasets differs strong enough, there is probably a shift in column ``Type 1``
 
 
 Parameters

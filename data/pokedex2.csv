@@ -1,971 +1,971 @@
-,#,Name,Type 1,Type 2,Total,HP,Attack,Defense,Sp. Atk,Sp. Def,Speed,Generation,Legendary,Entry
-360,361,Snorunt,Ice,,300,50,50,50,50,50,50,3,False,"It feeds mainly on ice and snow. It’s only able to
+Sp. Def,Sp. Atk,Legendary,Generation,Total,Name,Entry,Attack,HP,Speed,Defense,Type 2,Type 1,#
+50,50,False,3,300,Snorunt,"It feeds mainly on ice and snow. It’s only able to
 survive in a limited number of places in the
-warm Alola region."
-361,362,Glalie,Ice,,480,80,80,80,80,80,80,3,False,"It freezes its prey and chews them whole.
+warm Alola region.",50,50,50,50,,Ice,361
+80,80,False,3,480,Glalie,"It freezes its prey and chews them whole.
 However, it prefers to eat Pokémon like Vanillite
-that are already frozen."
-362,363,Spheal,Ice,Water,290,70,40,50,55,50,25,3,False,"Spheal always travels by rolling around on its ball-like body.
+that are already frozen.",80,80,80,80,,Ice,362
+50,55,False,3,290,Spheal,"Spheal always travels by rolling around on its ball-like body.
 When the season for ice floes arrives, this Pokémon can be
-seen rolling about on ice and crossing the sea."
-363,364,Sealeo,Ice,Water,410,90,60,70,75,70,45,3,False,"Sealeo often balances and rolls things on the tip of its
+seen rolling about on ice and crossing the sea.",40,70,25,50,Water,Ice,363
+70,75,False,3,410,Sealeo,"Sealeo often balances and rolls things on the tip of its
 nose. While the Pokémon is rolling something, it checks
 the object’s aroma and texture to determine whether it likes
-the object or not."
-364,365,Walrein,Ice,Water,530,110,80,90,95,90,65,3,False,"Walrein swims all over in frigid seawater while crushing
+the object or not.",60,90,45,70,Water,Ice,364
+90,95,False,3,530,Walrein,"Walrein swims all over in frigid seawater while crushing
 icebergs with its grand, imposing tusks. Its thick layer of
-blubber makes enemy attacks bounce off harmlessly."
-365,366,Clamperl,Water,,345,35,64,85,74,55,32,3,False,"Despite its appearance, it’s carnivorous. It
+blubber makes enemy attacks bounce off harmlessly.",80,110,65,90,Water,Ice,365
+55,74,False,3,345,Clamperl,"Despite its appearance, it’s carnivorous. It
 clamps down on its prey with both sides of its
-shell and doesn’t let go until they stop moving."
-366,367,Huntail,Water,,485,55,104,105,94,75,52,3,False,"It’s not the strongest swimmer. It wags its tail to
+shell and doesn’t let go until they stop moving.",64,35,32,85,,Water,366
+75,94,False,3,485,Huntail,"It’s not the strongest swimmer. It wags its tail to
 lure in its prey and then gulps them down as
-soon as they get close."
-367,368,Gorebyss,Water,,485,55,84,105,114,75,52,3,False,"The color of its body changes with the water
+soon as they get close.",104,55,52,105,,Water,367
+75,114,False,3,485,Gorebyss,"The color of its body changes with the water
 temperature. The coloration of Gorebyss in Alola
-is almost blindingly vivid."
-368,369,Relicanth,Water,Rock,485,100,90,130,45,65,55,3,False,"Thought to have gone extinct, Relicanth was
+is almost blindingly vivid.",84,55,52,105,,Water,368
+65,45,False,3,485,Relicanth,"Thought to have gone extinct, Relicanth was
 given a name that is a variation of the name of
-the person who discovered it."
-369,370,Luvdisc,Water,,330,43,30,55,40,65,97,3,False,"There was an era when it was overfished due to
+the person who discovered it.",90,100,55,130,Rock,Water,369
+65,40,False,3,330,Luvdisc,"There was an era when it was overfished due to
 the rumor that having one of its heart-shaped
-scales would enable you to find a sweetheart."
-370,371,Bagon,Dragon,,300,45,75,60,40,30,50,3,False,"Whenever it sees bird Pokémon flying through
+scales would enable you to find a sweetheart.",30,43,97,55,,Water,370
+30,40,False,3,300,Bagon,"Whenever it sees bird Pokémon flying through
 the sky, it becomes envious and smashes its
-surroundings to bits with headbutts."
-371,372,Shelgon,Dragon,,420,65,95,100,60,50,50,3,False,"The cells within its body are changing at a
+surroundings to bits with headbutts.",75,45,50,60,,Dragon,371
+50,60,False,3,420,Shelgon,"The cells within its body are changing at a
 bewildering pace. Its hard shell is made from
-the same substance as bone."
-372,373,Salamence,Dragon,Flying,600,95,135,80,110,80,100,3,False,"Overjoyed at finally being able to fly, it flies all
+the same substance as bone.",95,65,50,100,,Dragon,372
+80,110,False,3,600,Salamence,"Overjoyed at finally being able to fly, it flies all
 over the place and usually doesn’t land until it’s
-completely exhausted and needs to sleep."
-373,374,Beldum,Steel,Psychic,300,40,55,80,35,60,30,3,False,"Instead of blood, magnetism flows through its
+completely exhausted and needs to sleep.",135,95,100,80,Flying,Dragon,373
+60,35,False,3,300,Beldum,"Instead of blood, magnetism flows through its
 body. When it’s feeling bad, try giving it
-a magnet."
-374,375,Metang,Steel,Psychic,420,60,75,100,55,80,50,3,False,"With its two brains, it fires powerful psychic
-energy to stop its prey in their tracks."
-375,376,Metagross,Steel,Psychic,600,80,135,130,95,90,70,3,False,"It boasts not only psychic powers but also
+a magnet.",55,40,30,80,Psychic,Steel,374
+80,55,False,3,420,Metang,"With its two brains, it fires powerful psychic
+energy to stop its prey in their tracks.",75,60,50,100,Psychic,Steel,375
+90,95,False,3,600,Metagross,"It boasts not only psychic powers but also
 fantastic strength. It grabs its prey with its four
-legs and holds them in place with its claws."
-376,377,Regirock,Rock,,580,80,100,200,50,100,50,3,True,"Regirock’s body is composed entirely of rocks. Recently,
+legs and holds them in place with its claws.",135,80,70,130,Psychic,Steel,376
+100,50,True,3,580,Regirock,"Regirock’s body is composed entirely of rocks. Recently,
 a study made the startling discovery that the rocks were all
-unearthed from different locations."
-377,378,Regice,Ice,,580,80,50,100,100,200,50,3,True,"Regice cloaks itself with frigid air of -328 degrees Fahrenheit.
+unearthed from different locations.",100,80,50,200,,Rock,377
+200,100,True,3,580,Regice,"Regice cloaks itself with frigid air of -328 degrees Fahrenheit.
 Things will freeze solid just by going near this Pokémon.
 Its icy body is so cold, it will not melt even if it is immersed
-in magma."
-378,379,Registeel,Steel,,580,80,75,150,75,150,50,3,True,"Registeel was imprisoned by people in ancient times.
+in magma.",50,80,50,100,,Ice,378
+150,75,True,3,580,Registeel,"Registeel was imprisoned by people in ancient times.
 The metal composing its body is thought to be a curious
-substance that is not of this earth."
-379,380,Latias,Dragon,Psychic,600,80,80,90,110,130,110,3,True,"Latias is highly intelligent and capable of understanding
+substance that is not of this earth.",75,80,50,150,,Steel,379
+130,110,True,3,600,Latias,"Latias is highly intelligent and capable of understanding
 human speech. It is covered with a glass-like down.
 The Pokémon enfolds its body with its down and refracts
-light to alter its appearance."
-380,381,Latios,Dragon,Psychic,600,80,90,80,130,110,110,3,True,"Latios will only open its heart to a Trainer with a
+light to alter its appearance.",80,80,110,90,Psychic,Dragon,380
+110,130,True,3,600,Latios,"Latios will only open its heart to a Trainer with a
 compassionate spirit. This Pokémon can fly faster than a
-jet plane by folding its forelegs to minimize air resistance."
-381,382,Kyogre,Water,,670,100,100,90,150,140,90,3,True,"Kyogre is said to be the personification of the sea itself.
+jet plane by folding its forelegs to minimize air resistance.",90,80,110,80,Psychic,Dragon,381
+140,150,True,3,670,Kyogre,"Kyogre is said to be the personification of the sea itself.
 Legends tell of its many clashes against Groudon,
-as each sought to gain the power of nature."
-382,383,Groudon,Ground,,670,100,150,140,100,90,90,3,True,"Through Primal Reversion and with nature’s full power,
+as each sought to gain the power of nature.",100,100,90,90,,Water,382
+90,100,True,3,670,Groudon,"Through Primal Reversion and with nature’s full power,
 it will take back its true form. It can cause magma to
-erupt and expand the landmass of the world."
-383,384,Rayquaza,Dragon,Flying,680,105,150,90,150,90,95,3,True,"It flies forever through the ozone layer, consuming
+erupt and expand the landmass of the world.",150,100,90,140,,Ground,383
+90,150,True,3,680,Rayquaza,"It flies forever through the ozone layer, consuming
 meteoroids for sustenance. The many meteoroids
-in its body provide the energy it needs to Mega Evolve."
-384,385,Jirachi,Steel,Psychic,600,100,100,100,100,100,100,3,True,"Jirachi will awaken from its sleep of a thousand years if you
+in its body provide the energy it needs to Mega Evolve.",150,105,95,90,Flying,Dragon,384
+100,100,True,3,600,Jirachi,"Jirachi will awaken from its sleep of a thousand years if you
 sing to it in a voice of purity. It is said to make true any wish
-that people desire."
-385,386,DeoxysNormal Forme,Psychic,,600,50,150,50,150,50,150,3,True,"Deoxys emerged from a virus that came from space. It is highly
+that people desire.",100,100,100,100,Psychic,Steel,385
+50,150,True,3,600,DeoxysNormal Forme,"Deoxys emerged from a virus that came from space. It is highly
 intelligent and wields psychokinetic powers. This Pokémon
-shoots lasers from the crystalline organ on its chest."
-386,387,Turtwig,Grass,,318,55,68,64,45,55,31,4,False,"It undertakes photosynthesis with its body, making
-oxygen. The leaf on its head wilts if it is thirsty."
-387,388,Grotle,Grass,,405,75,89,85,55,65,36,4,False,"It knows where pure water wells up. It carries fellow
-Pokémon there on its back."
-388,389,Torterra,Grass,Ground,525,95,109,105,75,85,56,4,False,"Small Pokémon occasionally gather on its unmoving
-back to begin building their nests."
-389,390,Chimchar,Fire,,309,44,58,44,58,44,61,4,False,"The gas made in its belly burns from its rear end.
-The fire burns weakly when it feels sick."
-390,391,Monferno,Fire,Fighting,405,64,78,52,78,52,81,4,False,"It uses ceilings and walls to launch aerial attacks.
-Its fiery tail is but one weapon."
-391,392,Infernape,Fire,Fighting,534,76,104,71,104,71,108,4,False,"It tosses its enemies around with agility. It uses all
-its limbs to fight in its own unique style."
-392,393,Piplup,Water,,314,53,51,53,61,56,40,4,False,"Because it is very proud, it hates accepting food
-from people. Its thick down guards it from cold."
-393,394,Prinplup,Water,,405,64,66,68,81,76,50,4,False,"It lives a solitary life. Its wings deliver wicked blows
-that can snap even the thickest of trees."
-394,395,Empoleon,Water,Steel,530,84,86,88,111,101,60,4,False,"The three horns that extend from its beak attest to
-its power. The leader has the biggest horns."
-395,396,Starly,Normal,Flying,245,40,55,30,30,30,60,4,False,"They flock around mountains and fields, chasing
+shoots lasers from the crystalline organ on its chest.",150,50,150,50,,Psychic,386
+55,45,False,4,318,Turtwig,"It undertakes photosynthesis with its body, making
+oxygen. The leaf on its head wilts if it is thirsty.",68,55,31,64,,Grass,387
+65,55,False,4,405,Grotle,"It knows where pure water wells up. It carries fellow
+Pokémon there on its back.",89,75,36,85,,Grass,388
+85,75,False,4,525,Torterra,"Small Pokémon occasionally gather on its unmoving
+back to begin building their nests.",109,95,56,105,Ground,Grass,389
+44,58,False,4,309,Chimchar,"The gas made in its belly burns from its rear end.
+The fire burns weakly when it feels sick.",58,44,61,44,,Fire,390
+52,78,False,4,405,Monferno,"It uses ceilings and walls to launch aerial attacks.
+Its fiery tail is but one weapon.",78,64,81,52,Fighting,Fire,391
+71,104,False,4,534,Infernape,"It tosses its enemies around with agility. It uses all
+its limbs to fight in its own unique style.",104,76,108,71,Fighting,Fire,392
+56,61,False,4,314,Piplup,"Because it is very proud, it hates accepting food
+from people. Its thick down guards it from cold.",51,53,40,53,,Water,393
+76,81,False,4,405,Prinplup,"It lives a solitary life. Its wings deliver wicked blows
+that can snap even the thickest of trees.",66,64,50,68,,Water,394
+101,111,False,4,530,Empoleon,"The three horns that extend from its beak attest to
+its power. The leader has the biggest horns.",86,84,60,88,Steel,Water,395
+30,30,False,4,245,Starly,"They flock around mountains and fields, chasing
 after bug Pokémon. Their singing is noisy
-and annoying."
-396,397,Staravia,Normal,Flying,340,55,75,50,40,40,80,4,False,"It lives in forests and fields. Squabbles over
-territory occur when flocks collide."
-397,398,Staraptor,Normal,Flying,485,85,120,70,50,60,100,4,False,"When Staravia evolve into Staraptor, they leave the
-flock to live alone. They have sturdy wings."
-398,399,Bidoof,Normal,,250,59,45,40,35,40,31,4,False,"It constantly gnaws on logs and rocks to whittle
-down its front teeth. It nests alongside water."
-399,400,Bibarel,Normal,Water,410,79,85,60,55,60,71,4,False,"It makes its nest by damming streams with bark and
-mud. It is known as an industrious worker."
-400,401,Kricketot,Bug,,194,37,25,41,25,41,25,4,False,"When its antennae hit each other, it sounds like the
-music of a xylophone."
-401,402,Kricketune,Bug,,384,77,85,51,55,51,65,4,False,"It signals its emotions with its melodies. Scientists
-are studying these melodic patterns."
-402,403,Shinx,Electric,,263,45,65,34,40,34,45,4,False,"All of its fur dazzles if danger is sensed. It flees
-while the foe is momentarily blinded."
-403,404,Luxio,Electric,,363,60,85,49,60,49,60,4,False,"Strong electricity courses through the tips of its
-sharp claws. A light scratch causes fainting in foes."
-404,405,Luxray,Electric,,523,80,120,79,95,79,70,4,False,"Luxray’s ability to see through objects comes in
-handy when it’s scouting for danger."
-405,406,Budew,Grass,Poison,280,40,30,35,50,70,55,4,False,"Over the winter, it closes its bud and endures the
-cold. In spring, the bud opens and releases pollen."
-406,407,Roserade,Grass,Poison,515,60,70,65,125,105,90,4,False,"With the movements of a dancer, it strikes with
-whips that are densely lined with poison thorns."
-407,408,Cranidos,Rock,,350,67,125,40,30,30,58,4,False,"A primeval Pokémon, it possesses a hard and
-sturdy skull, lacking any intelligence within."
-408,409,Rampardos,Rock,,495,97,165,60,65,50,58,4,False,"In ancient times, people would dig up fossils of
+and annoying.",55,40,60,30,Flying,Normal,396
+40,40,False,4,340,Staravia,"It lives in forests and fields. Squabbles over
+territory occur when flocks collide.",75,55,80,50,Flying,Normal,397
+60,50,False,4,485,Staraptor,"When Staravia evolve into Staraptor, they leave the
+flock to live alone. They have sturdy wings.",120,85,100,70,Flying,Normal,398
+40,35,False,4,250,Bidoof,"It constantly gnaws on logs and rocks to whittle
+down its front teeth. It nests alongside water.",45,59,31,40,,Normal,399
+60,55,False,4,410,Bibarel,"It makes its nest by damming streams with bark and
+mud. It is known as an industrious worker.",85,79,71,60,Water,Normal,400
+41,25,False,4,194,Kricketot,"When its antennae hit each other, it sounds like the
+music of a xylophone.",25,37,25,41,,Bug,401
+51,55,False,4,384,Kricketune,"It signals its emotions with its melodies. Scientists
+are studying these melodic patterns.",85,77,65,51,,Bug,402
+34,40,False,4,263,Shinx,"All of its fur dazzles if danger is sensed. It flees
+while the foe is momentarily blinded.",65,45,45,34,,Electric,403
+49,60,False,4,363,Luxio,"Strong electricity courses through the tips of its
+sharp claws. A light scratch causes fainting in foes.",85,60,60,49,,Electric,404
+79,95,False,4,523,Luxray,"Luxray’s ability to see through objects comes in
+handy when it’s scouting for danger.",120,80,70,79,,Electric,405
+70,50,False,4,280,Budew,"Over the winter, it closes its bud and endures the
+cold. In spring, the bud opens and releases pollen.",30,40,55,35,Poison,Grass,406
+105,125,False,4,515,Roserade,"With the movements of a dancer, it strikes with
+whips that are densely lined with poison thorns.",70,60,90,65,Poison,Grass,407
+30,30,False,4,350,Cranidos,"A primeval Pokémon, it possesses a hard and
+sturdy skull, lacking any intelligence within.",125,67,58,40,,Rock,408
+50,65,False,4,495,Rampardos,"In ancient times, people would dig up fossils of
 this Pokémon and use its skull, which is harder
-than steel, to make helmets."
-409,410,Shieldon,Rock,Steel,350,30,42,118,42,88,30,4,False,"A mild-mannered, herbivorous Pokémon, it used
+than steel, to make helmets.",165,97,58,60,,Rock,409
+88,42,False,4,350,Shieldon,"A mild-mannered, herbivorous Pokémon, it used
 its face to dig up tree roots to eat. The skin on
-its face was plenty tough."
-410,411,Bastiodon,Rock,Steel,495,60,52,168,47,138,30,4,False,"The bones of its face are huge and hard, so
+its face was plenty tough.",42,30,30,118,Steel,Rock,410
+138,47,False,4,495,Bastiodon,"The bones of its face are huge and hard, so
 they were mistaken for its spine until after this
-Pokémon was successfully restored."
-411,412,Burmy,Bug,,224,40,29,45,29,45,36,4,False,"If its cloak is broken in battle, it quickly remakes
-the cloak with materials nearby."
-412,413,WormadamPlant Cloak,Bug,Grass,424,60,59,85,79,105,36,4,False,"When Burmy evolved, its cloak became a part of
-this Pokémon’s body. The cloak is never shed."
-413,414,Mothim,Bug,Flying,424,70,94,50,94,50,66,4,False,"It flutters around at night and steals honey from
-the Combee hive."
-414,415,Combee,Bug,Flying,244,30,30,42,30,42,70,4,False,"It collects and delivers honey to its colony.
-At night, they cluster to form a beehive and sleep."
-415,416,Vespiquen,Bug,Flying,474,70,80,102,80,102,40,4,False,"Its abdomen is a honeycomb for grubs. It raises its
-grubs on honey collected by Combee."
-416,417,Pachirisu,Electric,,405,60,45,70,45,90,95,4,False,"A pair may be seen rubbing their cheek pouches
-together in an effort to share stored electricity."
-417,418,Buizel,Water,,330,55,65,35,60,30,85,4,False,"It inflates the flotation sac around its neck and
+Pokémon was successfully restored.",52,60,30,168,Steel,Rock,411
+45,29,False,4,224,Burmy,"If its cloak is broken in battle, it quickly remakes
+the cloak with materials nearby.",29,40,36,45,,Bug,412
+105,79,False,4,424,WormadamPlant Cloak,"When Burmy evolved, its cloak became a part of
+this Pokémon’s body. The cloak is never shed.",59,60,36,85,Grass,Bug,413
+50,94,False,4,424,Mothim,"It flutters around at night and steals honey from
+the Combee hive.",94,70,66,50,Flying,Bug,414
+42,30,False,4,244,Combee,"It collects and delivers honey to its colony.
+At night, they cluster to form a beehive and sleep.",30,30,70,42,Flying,Bug,415
+102,80,False,4,474,Vespiquen,"Its abdomen is a honeycomb for grubs. It raises its
+grubs on honey collected by Combee.",80,70,40,102,Flying,Bug,416
+90,45,False,4,405,Pachirisu,"A pair may be seen rubbing their cheek pouches
+together in an effort to share stored electricity.",45,60,95,70,,Electric,417
+30,60,False,4,330,Buizel,"It inflates the flotation sac around its neck and
 pokes its head out of the water to see what is
-going on."
-418,419,Floatzel,Water,,495,85,105,55,85,50,115,4,False,"Its flotation sac developed as a result of pursuing
-aquatic prey. It can double as a rubber raft."
-419,420,Cherubi,Grass,,275,45,35,45,62,53,35,4,False,"It evolves by sucking the energy out of the small
-ball where it had been storing nutrients."
-420,421,Cherrim,Grass,,450,70,60,70,87,78,85,4,False,"If it senses strong sunlight, it opens its folded
-petals to absorb the sun’s rays with its whole body."
-421,422,Shellos,Water,,325,76,48,48,57,62,34,4,False,"While they normally live in the sea, they can
-function on land, too, until their skin dries out."
-422,423,Gastrodon,Water,Ground,475,111,83,68,92,82,39,4,False,"Long ago, it had a shell on its back. There’s now
-a vestigial plate on its back that’s hard but thin."
-423,424,Ambipom,Normal,,482,75,100,66,60,66,115,4,False,"In their search for comfortable trees, they get
+going on.",65,55,85,35,,Water,418
+50,85,False,4,495,Floatzel,"Its flotation sac developed as a result of pursuing
+aquatic prey. It can double as a rubber raft.",105,85,115,55,,Water,419
+53,62,False,4,275,Cherubi,"It evolves by sucking the energy out of the small
+ball where it had been storing nutrients.",35,45,35,45,,Grass,420
+78,87,False,4,450,Cherrim,"If it senses strong sunlight, it opens its folded
+petals to absorb the sun’s rays with its whole body.",60,70,85,70,,Grass,421
+62,57,False,4,325,Shellos,"While they normally live in the sea, they can
+function on land, too, until their skin dries out.",48,76,34,48,,Water,422
+82,92,False,4,475,Gastrodon,"Long ago, it had a shell on its back. There’s now
+a vestigial plate on its back that’s hard but thin.",83,111,39,68,Ground,Water,423
+66,60,False,4,482,Ambipom,"In their search for comfortable trees, they get
 into territorial disputes with groups of
-Passimian. They win about half the time."
-424,425,Drifloon,Ghost,Flying,348,90,50,34,60,44,70,4,False,"Its round body is stuffed with souls and
-expands each time it leads someone away."
-425,426,Drifblim,Ghost,Flying,498,150,80,44,90,54,80,4,False,"There’s a rumor that if you catch a Drifblim
+Passimian. They win about half the time.",100,75,115,66,,Normal,424
+44,60,False,4,348,Drifloon,"Its round body is stuffed with souls and
+expands each time it leads someone away.",50,90,70,34,Flying,Ghost,425
+54,90,False,4,498,Drifblim,"There’s a rumor that if you catch a Drifblim
 floating on the wind at dusk, you’ll be carried
-away to the afterlife."
-426,427,Buneary,Normal,,350,55,66,44,44,56,85,4,False,"Its arms and legs are weak, but when it rolls its
+away to the afterlife.",80,150,80,44,Flying,Ghost,426
+56,44,False,4,350,Buneary,"Its arms and legs are weak, but when it rolls its
 ears up tight and then unleashes them with its
-full force, it can smash boulders to dust."
-427,428,Lopunny,Normal,,480,65,76,84,54,96,105,4,False,"Lopunny regrows its coat twice a year. Mufflers
-and hats made from its fur are really warm."
-428,429,Mismagius,Ghost,,495,60,60,60,105,105,105,4,False,"Feared for its wrath and the curses it spreads,
+full force, it can smash boulders to dust.",66,55,85,44,,Normal,427
+96,54,False,4,480,Lopunny,"Lopunny regrows its coat twice a year. Mufflers
+and hats made from its fur are really warm.",76,65,105,84,,Normal,428
+105,105,False,4,495,Mismagius,"Feared for its wrath and the curses it spreads,
 this Pokémon will also, on a whim, cast spells
-that help people."
-429,430,Honchkrow,Dark,Flying,505,100,125,52,105,52,71,4,False,"It will absolutely not forgive failure from or
+that help people.",60,60,105,60,,Ghost,429
+52,105,False,4,505,Honchkrow,"It will absolutely not forgive failure from or
 betrayal by its goons. It has no choice in this
-if it wants to maintain the order of the flock."
-430,431,Glameow,Normal,,310,49,55,42,42,37,85,4,False,"When it’s happy, Glameow demonstrates beautiful
-movements of its tail, like a dancing ribbon."
-431,432,Purugly,Normal,,452,71,82,64,64,59,112,4,False,"To make itself appear intimidatingly beefy, it tightly
-cinches its waist with its twin tails."
-432,433,Chingling,Psychic,,285,45,30,50,65,50,45,4,False,"There is an orb inside its mouth. When it hops,
+if it wants to maintain the order of the flock.",125,100,71,52,Flying,Dark,430
+37,42,False,4,310,Glameow,"When it’s happy, Glameow demonstrates beautiful
+movements of its tail, like a dancing ribbon.",55,49,85,42,,Normal,431
+59,64,False,4,452,Purugly,"To make itself appear intimidatingly beefy, it tightly
+cinches its waist with its twin tails.",82,71,112,64,,Normal,432
+50,65,False,4,285,Chingling,"There is an orb inside its mouth. When it hops,
 the orb bounces all over and makes a
-ringing sound."
-433,434,Stunky,Poison,Dark,329,63,63,47,41,41,74,4,False,"It protects itself by spraying a noxious fluid from its
-rear. The stench lingers for 24 hours."
-434,435,Skuntank,Poison,Dark,479,103,93,67,71,61,84,4,False,"It sprays a stinky fluid from its tail. The fluid smells
-worse the longer it is allowed to fester."
-435,436,Bronzor,Steel,Psychic,300,57,24,86,24,86,23,4,False,"Implements shaped like it were discovered in
-ancient tombs. It is unknown if they are related."
-436,437,Bronzong,Steel,Psychic,500,67,89,116,79,116,33,4,False,"Ancient people believed that petitioning Bronzong
-for rain was the way to make crops grow."
-437,438,Bonsly,Rock,,290,50,80,95,10,45,10,4,False,"It discharges moisture from its eyes, making it
+ringing sound.",30,45,45,50,,Psychic,433
+41,41,False,4,329,Stunky,"It protects itself by spraying a noxious fluid from its
+rear. The stench lingers for 24 hours.",63,63,74,47,Dark,Poison,434
+61,71,False,4,479,Skuntank,"It sprays a stinky fluid from its tail. The fluid smells
+worse the longer it is allowed to fester.",93,103,84,67,Dark,Poison,435
+86,24,False,4,300,Bronzor,"Implements shaped like it were discovered in
+ancient tombs. It is unknown if they are related.",24,57,23,86,Psychic,Steel,436
+116,79,False,4,500,Bronzong,"Ancient people believed that petitioning Bronzong
+for rain was the way to make crops grow.",89,67,33,116,Psychic,Steel,437
+45,10,False,4,290,Bonsly,"It discharges moisture from its eyes, making it
 look like it’s crying—apparently an effective way
-of getting enemies to let down their guard."
-438,439,Mime Jr.,Psychic,Fairy,310,20,25,45,70,90,60,4,False,"It does its absolute best to mimic the
+of getting enemies to let down their guard.",80,50,10,95,,Rock,438
+90,70,False,4,310,Mime Jr.,"It does its absolute best to mimic the
 movements and expressions of its opponents,
-but it’s still not very good at it."
-439,440,Happiny,Normal,,220,100,5,5,15,65,30,4,False,"Usually it’s a well-behaved Pokémon, but if you
+but it’s still not very good at it.",25,20,60,45,Fairy,Psychic,439
+65,15,False,4,220,Happiny,"Usually it’s a well-behaved Pokémon, but if you
 take its round rock away, it will cry and fuss
-and throw a big old tantrum."
-440,441,Chatot,Normal,Flying,411,76,65,45,92,42,91,4,False,"It can learn and speak human words. If they gather,
-they all learn the same saying."
-441,442,Spiritomb,Ghost,Dark,485,50,92,108,92,108,35,4,False,"It was bound to a fissure in an odd keystone as
-punishment for misdeeds 500 years ago."
-442,443,Gible,Dragon,Ground,300,58,70,45,40,45,42,4,False,"It reacts to anything that moves—flies right at it
+and throw a big old tantrum.",5,100,30,5,,Normal,440
+42,92,False,4,411,Chatot,"It can learn and speak human words. If they gather,
+they all learn the same saying.",65,76,91,45,Flying,Normal,441
+108,92,False,4,485,Spiritomb,"It was bound to a fissure in an odd keystone as
+punishment for misdeeds 500 years ago.",92,50,35,108,Dark,Ghost,442
+45,40,False,4,300,Gible,"It reacts to anything that moves—flies right at it
 and bites it. Sometimes it injures itself, but it
-doesn’t care too much."
-443,444,Gabite,Dragon,Ground,410,68,90,65,50,55,82,4,False,"It loves shiny things. When it finds a Sableye
+doesn’t care too much.",70,58,42,45,Ground,Dragon,443
+55,50,False,4,410,Gabite,"It loves shiny things. When it finds a Sableye
 trying to catch a Carbink, Gabite becomes
-furiously angry and attacks the Sableye."
-444,445,Garchomp,Dragon,Ground,600,108,130,95,80,85,102,4,False,"It flies at the speed of sound while searching
+furiously angry and attacks the Sableye.",90,68,82,65,Ground,Dragon,444
+85,80,False,4,600,Garchomp,"It flies at the speed of sound while searching
 for prey, and it has midair battles with
-Salamence as the two compete for food."
-445,446,Munchlax,Normal,,390,135,85,40,40,85,5,4,False,"It hides food under its long fur, but it
+Salamence as the two compete for food.",130,108,102,95,Ground,Dragon,445
+85,40,False,4,390,Munchlax,"It hides food under its long fur, but it
 sometimes forgets about it and causes
-a stinky disturbance."
-446,447,Riolu,Fighting,,285,40,70,40,35,40,60,4,False,"It knows how people and Pokémon feel by
+a stinky disturbance.",85,135,5,40,,Normal,446
+40,35,False,4,285,Riolu,"It knows how people and Pokémon feel by
 looking at their auras. It doesn’t approach
-dangerous opponents."
-447,448,Lucario,Fighting,Steel,525,70,110,70,115,70,90,4,False,"It concentrates its mental energy and fires off
+dangerous opponents.",70,40,60,40,,Fighting,447
+70,115,False,4,525,Lucario,"It concentrates its mental energy and fires off
 mysterious waves called auras, which can crush
-boulders of large size to dust."
-448,449,Hippopotas,Ground,,330,68,72,78,38,42,32,4,False,"It enshrouds itself with sand to protect itself from
-germs. It does not enjoy getting wet."
-449,450,Hippowdon,Ground,,525,108,112,118,68,72,47,4,False,"It blasts internally stored sand from ports on its
-body to create a towering twister for attack."
-450,451,Skorupi,Poison,Bug,330,40,50,90,30,55,65,4,False,"It burrows under the sand to lie in wait for prey.
+boulders of large size to dust.",110,70,90,70,Steel,Fighting,448
+42,38,False,4,330,Hippopotas,"It enshrouds itself with sand to protect itself from
+germs. It does not enjoy getting wet.",72,68,32,78,,Ground,449
+72,68,False,4,525,Hippowdon,"It blasts internally stored sand from ports on its
+body to create a towering twister for attack.",112,108,47,118,,Ground,450
+55,30,False,4,330,Skorupi,"It burrows under the sand to lie in wait for prey.
 Its tail claws can inject its prey with a
-savage poison."
-451,452,Drapion,Poison,Dark,500,70,90,110,60,75,95,4,False,"It has the power in its clawed arms to make scrap
-of a car. The tips of its claws release poison."
-452,453,Croagunk,Poison,Fighting,300,48,61,40,61,40,50,4,False,"Inflating its poison sacs, it fills the area with an odd
+savage poison.",50,40,65,90,Bug,Poison,451
+75,60,False,4,500,Drapion,"It has the power in its clawed arms to make scrap
+of a car. The tips of its claws release poison.",90,70,95,110,Dark,Poison,452
+40,61,False,4,300,Croagunk,"Inflating its poison sacs, it fills the area with an odd
 sound and hits flinching opponents with a
-poison jab."
-453,454,Toxicroak,Poison,Fighting,490,83,106,65,86,65,85,4,False,"Its knuckle claws secrete a toxin so vile that even a
-scratch could prove fatal."
-454,455,Carnivine,Grass,,454,74,100,72,90,72,46,4,False,"It binds itself to trees in marshes. It attracts prey
-with its sweet-smelling drool and gulps them down."
-455,456,Finneon,Water,,330,49,49,56,49,61,66,4,False,"When night falls, their pink patterns begin to
+poison jab.",61,48,50,40,Fighting,Poison,453
+65,86,False,4,490,Toxicroak,"Its knuckle claws secrete a toxin so vile that even a
+scratch could prove fatal.",106,83,85,65,Fighting,Poison,454
+72,90,False,4,454,Carnivine,"It binds itself to trees in marshes. It attracts prey
+with its sweet-smelling drool and gulps them down.",100,74,46,72,,Grass,455
+61,49,False,4,330,Finneon,"When night falls, their pink patterns begin to
 shine. They’re popular with divers, so there are
-resorts that feed them to keep them close."
-456,457,Lumineon,Water,,460,69,69,76,69,86,91,4,False,"Deep down at the bottom of the ocean, prey is
+resorts that feed them to keep them close.",49,49,66,56,,Water,456
+86,69,False,4,460,Lumineon,"Deep down at the bottom of the ocean, prey is
 scarce. Lumineon get into fierce disputes with
-Lanturn over food."
-457,458,Mantyke,Water,Flying,345,45,20,50,60,120,50,4,False,"It’s highly friendly and easily tamed. Tours that
+Lanturn over food.",69,69,91,76,,Water,457
+120,60,False,4,345,Mantyke,"It’s highly friendly and easily tamed. Tours that
 take people swimming with Mantyke are a
-super-popular beach activity."
-458,459,Snover,Grass,Ice,334,60,62,50,62,60,40,4,False,"In the spring, it grows berries with the texture of
-frozen treats around its belly."
-459,460,Abomasnow,Grass,Ice,494,90,92,75,92,85,60,4,False,"It lives a quiet life on mountains that are perpetually
+super-popular beach activity.",20,45,50,50,Flying,Water,458
+60,62,False,4,334,Snover,"In the spring, it grows berries with the texture of
+frozen treats around its belly.",62,60,40,50,Ice,Grass,459
+85,92,False,4,494,Abomasnow,"It lives a quiet life on mountains that are perpetually
 covered in snow. It hides itself by whipping
-up blizzards."
-460,461,Weavile,Dark,Ice,510,70,120,65,45,85,125,4,False,"One Weavile will trip a Sandshrew and flip it
+up blizzards.",92,90,60,75,Ice,Grass,460
+85,45,False,4,510,Weavile,"One Weavile will trip a Sandshrew and flip it
 over, and then another Weavile will deal the
-finishing blow with its sharp claws."
-461,462,Magnezone,Electric,Steel,535,70,70,115,130,90,60,4,False,"It uses radar to monitor its territory. Intruders
-are quickly disposed of with a hyper beam."
-462,463,Lickilicky,Normal,,515,110,85,95,80,95,50,4,False,"A contest is under way to determine which one
+finishing blow with its sharp claws.",120,70,125,65,Ice,Dark,461
+90,130,False,4,535,Magnezone,"It uses radar to monitor its territory. Intruders
+are quickly disposed of with a hyper beam.",70,70,60,115,Steel,Electric,462
+95,80,False,4,515,Lickilicky,"A contest is under way to determine which one
 can stick its tongue out the farthest. The
-current record is...more than 82 feet."
-463,464,Rhyperior,Ground,Rock,535,115,140,130,55,55,40,4,False,"It puts rocks in holes in its palms and uses its
+current record is...more than 82 feet.",85,110,50,95,,Normal,463
+55,55,False,4,535,Rhyperior,"It puts rocks in holes in its palms and uses its
 muscles to shoot them. Geodude are shot at
-rare times."
-464,465,Tangrowth,Grass,,535,100,100,125,110,50,50,4,False,"Its vines grow so profusely that, in the warm
-season, you can’t even see its eyes."
-465,466,Electivire,Electric,,540,75,123,67,95,85,95,4,False,"It grips its tail, which spews electricity, and
+rare times.",140,115,40,130,Rock,Ground,464
+50,110,False,4,535,Tangrowth,"Its vines grow so profusely that, in the warm
+season, you can’t even see its eyes.",100,100,50,125,,Grass,465
+85,95,False,4,540,Electivire,"It grips its tail, which spews electricity, and
 then beats down opponents with the power of
-its electrified fist."
-466,467,Magmortar,Fire,,540,75,95,67,125,95,83,4,False,"There are still quite a few factories that rely on
+its electrified fist.",123,75,95,67,,Electric,466
+95,125,False,4,540,Magmortar,"There are still quite a few factories that rely on
 the flames provided by Magmortar to
-process metals."
-467,468,Togekiss,Fairy,Flying,545,85,50,95,120,115,80,4,False,"It shares many blessings with people who respect
-one another’s rights and avoid needless strife."
-468,469,Yanmega,Bug,Flying,515,86,76,86,116,56,95,4,False,"This six-legged Pokémon is easily capable of
+process metals.",95,75,83,67,,Fire,467
+115,120,False,4,545,Togekiss,"It shares many blessings with people who respect
+one another’s rights and avoid needless strife.",50,85,80,95,Flying,Fairy,468
+56,116,False,4,515,Yanmega,"This six-legged Pokémon is easily capable of
 transporting an adult in flight. The wings on its tail
-help it stay balanced."
-469,470,Leafeon,Grass,,525,65,110,130,60,65,95,4,False,"Although it doesn’t like disputes, it will sharpen
+help it stay balanced.",76,86,95,86,Flying,Bug,469
+65,60,False,4,525,Leafeon,"Although it doesn’t like disputes, it will sharpen
 the leaf on its tail into a blade and fight if it has
-to protect its friends."
-470,471,Glaceon,Ice,,525,65,60,110,130,95,65,4,False,"It protects itself by freezing its fur into sharp
+to protect its friends.",110,65,95,130,,Grass,470
+95,130,False,4,525,Glaceon,"It protects itself by freezing its fur into sharp
 needles. It can drop its body temperature below
-–75 degrees Fahrenheit."
-471,472,Gliscor,Ground,Flying,510,75,95,125,45,75,95,4,False,"Its flight is soundless. It uses its lengthy tail to
+–75 degrees Fahrenheit.",60,65,65,110,,Ice,471
+75,45,False,4,510,Gliscor,"Its flight is soundless. It uses its lengthy tail to
 carry off its prey... Then its elongated fangs do
-the rest."
-472,473,Mamoswine,Ice,Ground,530,110,130,80,70,60,80,4,False,"Its impressive tusks are made of ice. The population
-thinned when it turned warm after the ice age."
-473,474,Porygon-Z,Normal,,535,85,80,70,135,75,90,4,False,"Its behavior is noticeably unstable, which is
+the rest.",95,75,95,125,Flying,Ground,472
+60,70,False,4,530,Mamoswine,"Its impressive tusks are made of ice. The population
+thinned when it turned warm after the ice age.",130,110,80,80,Ground,Ice,473
+75,135,False,4,535,Porygon-Z,"Its behavior is noticeably unstable, which is
 apparently due to the incompetence of the
-engineer who updated its programming."
-474,475,Gallade,Psychic,Fighting,518,68,125,65,65,115,80,4,False,"A master of courtesy and swordsmanship, it fights
-using extending swords on its elbows."
-475,476,Probopass,Rock,Steel,525,60,55,145,75,150,40,4,False,"Although it can control its units known as
+engineer who updated its programming.",80,85,90,70,,Normal,474
+115,65,False,4,518,Gallade,"A master of courtesy and swordsmanship, it fights
+using extending swords on its elbows.",125,68,80,65,Fighting,Psychic,475
+150,75,False,4,525,Probopass,"Although it can control its units known as
 Mini-Noses, they sometimes get lost and don’t
-come back."
-476,477,Dusknoir,Ghost,,525,45,100,135,65,135,45,4,False,"The antenna on its head captures radio waves from
+come back.",55,60,40,145,Steel,Rock,476
+135,65,False,4,525,Dusknoir,"The antenna on its head captures radio waves from
 the world of spirits that command it to take
-people there."
-477,478,Froslass,Ice,Ghost,480,70,80,70,80,70,110,4,False,"It freezes hikers who have come to climb snowy
+people there.",100,45,45,135,,Ghost,477
+70,80,False,4,480,Froslass,"It freezes hikers who have come to climb snowy
 mountains and carries them back to its home. It
-only goes after men it thinks are handsome."
-478,479,Rotom,Electric,Ghost,440,50,50,77,95,77,91,4,False,"Its body is composed of plasma. It is known to
-infiltrate electronic devices and wreak havoc."
-479,480,Uxie,Psychic,,580,75,75,130,75,130,95,4,True,"It is said that its emergence gave humans the
-intelligence to improve their quality of life."
-480,481,Mesprit,Psychic,,580,80,105,105,105,105,80,4,True,"It sleeps at the bottom of a lake. Its spirit is said to
-leave its body to fly on the lake’s surface."
-481,482,Azelf,Psychic,,580,75,125,70,125,70,115,4,True,"It is thought that Uxie, Mesprit, and Azelf all came
-from the same egg."
-482,483,Dialga,Steel,Dragon,680,100,120,120,150,100,90,4,True,"It has the power to control time. It appears in
-Sinnoh-region myths as an ancient deity."
-483,484,Palkia,Water,Dragon,680,90,120,100,150,120,100,4,True,"It has the ability to distort space. It is described as
-a deity in Sinnoh-region mythology."
-484,485,Heatran,Fire,Steel,600,91,90,106,130,106,77,4,True,"Boiling blood, like magma, circulates through its
-body. It makes its dwelling place in volcanic caves."
-485,486,Regigigas,Normal,,670,110,160,110,80,110,100,4,True,"There is an enduring legend that states this
-Pokémon towed continents with ropes."
-486,487,GiratinaAltered Forme,Ghost,Dragon,680,150,100,120,100,120,90,4,True,"It was banished for its violence. It silently gazed
-upon the old world from the Distortion World."
-487,488,Cresselia,Psychic,,600,120,70,120,75,130,85,4,False,"Those who sleep holding Cresselia’s feather are
+only goes after men it thinks are handsome.",80,70,110,70,Ghost,Ice,478
+77,95,False,4,440,Rotom,"Its body is composed of plasma. It is known to
+infiltrate electronic devices and wreak havoc.",50,50,91,77,Ghost,Electric,479
+130,75,True,4,580,Uxie,"It is said that its emergence gave humans the
+intelligence to improve their quality of life.",75,75,95,130,,Psychic,480
+105,105,True,4,580,Mesprit,"It sleeps at the bottom of a lake. Its spirit is said to
+leave its body to fly on the lake’s surface.",105,80,80,105,,Psychic,481
+70,125,True,4,580,Azelf,"It is thought that Uxie, Mesprit, and Azelf all came
+from the same egg.",125,75,115,70,,Psychic,482
+100,150,True,4,680,Dialga,"It has the power to control time. It appears in
+Sinnoh-region myths as an ancient deity.",120,100,90,120,Dragon,Steel,483
+120,150,True,4,680,Palkia,"It has the ability to distort space. It is described as
+a deity in Sinnoh-region mythology.",120,90,100,100,Dragon,Water,484
+106,130,True,4,600,Heatran,"Boiling blood, like magma, circulates through its
+body. It makes its dwelling place in volcanic caves.",90,91,77,106,Steel,Fire,485
+110,80,True,4,670,Regigigas,"There is an enduring legend that states this
+Pokémon towed continents with ropes.",160,110,100,110,,Normal,486
+120,100,True,4,680,GiratinaAltered Forme,"It was banished for its violence. It silently gazed
+upon the old world from the Distortion World.",100,150,90,120,Dragon,Ghost,487
+130,75,False,4,600,Cresselia,"Those who sleep holding Cresselia’s feather are
 assured of joyful dreams. It is said to represent
-the crescent moon."
-488,489,Phione,Water,,480,80,80,80,80,80,80,4,False,"It drifts in warm seas. It always returns to where it
-was born, no matter how far it may have drifted."
-489,490,Manaphy,Water,,600,100,100,100,100,100,100,4,False,"It starts its life with a wondrous power that permits
-it to bond with any kind of Pokémon."
-490,491,Darkrai,Dark,,600,70,90,90,135,90,125,4,True,"It can lull people to sleep and make them dream.
-It is active during nights of the new moon."
-491,492,ShayminLand Forme,Grass,,600,100,100,100,100,100,100,4,True,"The blooming of Gracidea flowers confers the
+the crescent moon.",70,120,85,120,,Psychic,488
+80,80,False,4,480,Phione,"It drifts in warm seas. It always returns to where it
+was born, no matter how far it may have drifted.",80,80,80,80,,Water,489
+100,100,False,4,600,Manaphy,"It starts its life with a wondrous power that permits
+it to bond with any kind of Pokémon.",100,100,100,100,,Water,490
+90,135,True,4,600,Darkrai,"It can lull people to sleep and make them dream.
+It is active during nights of the new moon.",90,70,125,90,,Dark,491
+100,100,True,4,600,ShayminLand Forme,"The blooming of Gracidea flowers confers the
 power of flight upon it. Feelings of gratitude are
-the message it delivers."
-492,493,Arceus,Normal,,720,120,120,120,120,120,120,4,True,"It is told in mythology that this Pokémon was born
-before the universe even existed."
-493,494,Victini,Psychic,Fire,600,100,100,100,100,100,100,5,True,"When it shares the infinite energy it creates,
+the message it delivers.",100,100,100,100,,Grass,492
+120,120,True,4,720,Arceus,"It is told in mythology that this Pokémon was born
+before the universe even existed.",120,120,120,120,,Normal,493
+100,100,True,5,600,Victini,"When it shares the infinite energy it creates,
 that being’s entire body will be overflowing
-with power."
-494,495,Snivy,Grass,,308,45,45,55,45,55,63,5,False,"They photosynthesize by bathing their tails in
+with power.",100,100,100,100,Fire,Psychic,494
+55,45,False,5,308,Snivy,"They photosynthesize by bathing their tails in
 sunlight. When they are not feeling well, their
-tails droop."
-495,496,Servine,Grass,,413,60,60,75,60,75,83,5,False,"When it gets dirty, its leaves can’t be used in
-photosynthesis, so it always keeps itself clean."
-496,497,Serperior,Grass,,528,75,75,95,75,95,113,5,False,"It can stop its opponents’ movements with just a
+tails droop.",45,45,63,55,,Grass,495
+75,60,False,5,413,Servine,"When it gets dirty, its leaves can’t be used in
+photosynthesis, so it always keeps itself clean.",60,60,83,75,,Grass,496
+95,75,False,5,528,Serperior,"It can stop its opponents’ movements with just a
 glare. It takes in solar energy and boosts
-it internally."
-497,498,Tepig,Fire,,308,65,63,45,45,45,45,5,False,"It loves to eat roasted berries, but sometimes it
-gets too excited and burns them to a crisp."
-498,499,Pignite,Fire,Fighting,418,90,93,55,70,55,55,5,False,"When its internal fire flares up, its movements grow
-sharper and faster. When in trouble, it emits smoke."
-499,500,Emboar,Fire,Fighting,528,110,123,65,100,65,65,5,False,"It has mastered fast and powerful fighting moves.
-It grows a beard of fire."
-500,501,Oshawott,Water,,308,55,55,45,63,45,45,5,False,"It fights using the scalchop on its stomach.
+it internally.",75,75,113,95,,Grass,497
+45,45,False,5,308,Tepig,"It loves to eat roasted berries, but sometimes it
+gets too excited and burns them to a crisp.",63,65,45,45,,Fire,498
+55,70,False,5,418,Pignite,"When its internal fire flares up, its movements grow
+sharper and faster. When in trouble, it emits smoke.",93,90,55,55,Fighting,Fire,499
+65,100,False,5,528,Emboar,"It has mastered fast and powerful fighting moves.
+It grows a beard of fire.",123,110,65,65,Fighting,Fire,500
+45,63,False,5,308,Oshawott,"It fights using the scalchop on its stomach.
 In response to an attack, it retaliates immediately
-by slashing."
-501,502,Dewott,Water,,413,75,75,60,83,60,60,5,False,"As a result of strict training, each Dewott learns
-different forms for using the scalchops."
-502,503,Samurott,Water,,528,95,100,85,108,70,70,5,False,"One swing of the sword incorporated in its armor
+by slashing.",55,55,45,45,,Water,501
+60,83,False,5,413,Dewott,"As a result of strict training, each Dewott learns
+different forms for using the scalchops.",75,75,60,60,,Water,502
+70,108,False,5,528,Samurott,"One swing of the sword incorporated in its armor
 can fell an opponent. A simple glare from one of
-them quiets everybody."
-503,504,Patrat,Normal,,255,45,55,39,35,39,42,5,False,"Extremely cautious, one of them will always be on
+them quiets everybody.",100,95,70,85,,Water,503
+39,35,False,5,255,Patrat,"Extremely cautious, one of them will always be on
 the lookout, but it won’t notice a foe coming
-from behind."
-504,505,Watchog,Normal,,420,60,85,69,60,69,77,5,False,"When they see an enemy, their tails stand high,
+from behind.",55,45,42,39,,Normal,504
+69,60,False,5,420,Watchog,"When they see an enemy, their tails stand high,
 and they spit the seeds of berries stored in their
-cheek pouches."
-505,506,Lillipup,Normal,,275,45,60,45,25,45,55,5,False,"This Pokémon has excellent judgment.
+cheek pouches.",85,60,77,69,,Normal,505
+45,25,False,5,275,Lillipup,"This Pokémon has excellent judgment.
 If it decides it can’t defeat an opponent,
-it immediately turns tail and vamooses."
-506,507,Herdier,Normal,,370,65,80,65,35,65,60,5,False,"The longer its black fur grows, the harder and
+it immediately turns tail and vamooses.",60,45,55,45,,Normal,506
+65,35,False,5,370,Herdier,"The longer its black fur grows, the harder and
 more impervious it gets. Claws and fangs can’t
-easily penetrate it."
-507,508,Stoutland,Normal,,500,85,110,90,45,90,80,5,False,"It pays no mind to the cold, thanks to its long
+easily penetrate it.",80,65,60,65,,Normal,507
+90,45,False,5,500,Stoutland,"It pays no mind to the cold, thanks to its long
 warm coat. Stoutland in Alola look a
-little uncomfortable."
-508,509,Purrloin,Dark,,281,41,50,37,50,37,66,5,False,"They steal from people for fun, but their victims
+little uncomfortable.",110,85,80,90,,Normal,508
+37,50,False,5,281,Purrloin,"They steal from people for fun, but their victims
 can’t help but forgive them. Their deceptively cute
-act is perfect."
-509,510,Liepard,Dark,,446,64,88,50,88,50,106,5,False,"Stealthily, it sneaks up on its target, striking from
-behind before its victim has a chance to react."
-510,511,Pansage,Grass,,316,50,53,48,53,48,64,5,False,"It’s good at finding berries and gathers them from
+act is perfect.",50,41,66,37,,Dark,509
+50,88,False,5,446,Liepard,"Stealthily, it sneaks up on its target, striking from
+behind before its victim has a chance to react.",88,64,106,50,,Dark,510
+48,53,False,5,316,Pansage,"It’s good at finding berries and gathers them from
 all over. It’s kind enough to share them
-with friends."
-511,512,Simisage,Grass,,498,75,98,63,98,63,101,5,False,"Ill tempered, it fights by swinging its barbed tail
+with friends.",53,50,64,48,,Grass,511
+63,98,False,5,498,Simisage,"Ill tempered, it fights by swinging its barbed tail
 around wildly. The leaf growing on its head is
-very bitter."
-512,513,Pansear,Fire,,316,50,53,48,53,48,64,5,False,"This Pokémon lives in caves in volcanoes.
+very bitter.",98,75,101,63,,Grass,512
+48,53,False,5,316,Pansear,"This Pokémon lives in caves in volcanoes.
 The fire within the tuft on its head can reach
-600 degrees Fahrenheit."
-513,514,Simisear,Fire,,498,75,98,63,98,63,101,5,False,"When it gets excited, embers rise from its head
+600 degrees Fahrenheit.",53,50,64,48,,Fire,513
+63,98,False,5,498,Simisear,"When it gets excited, embers rise from its head
 and tail and it gets hot. For some reason, it
-loves sweets."
-514,515,Panpour,Water,,316,50,53,48,53,48,64,5,False,"The water stored inside the tuft on its head is full of
-nutrients. Plants that receive its water grow large."
-515,516,Simipour,Water,,498,75,98,63,98,63,101,5,False,"It prefers places with clean water. When its tuft runs
+loves sweets.",98,75,101,63,,Fire,514
+48,53,False,5,316,Panpour,"The water stored inside the tuft on its head is full of
+nutrients. Plants that receive its water grow large.",53,50,64,48,,Water,515
+63,98,False,5,498,Simipour,"It prefers places with clean water. When its tuft runs
 low, it replenishes it by siphoning up water with
-its tail."
-516,517,Munna,Psychic,,292,76,25,45,67,55,24,5,False,"It eats the dreams of people and Pokémon. When it
-eats a pleasant dream, it expels pink-colored mist."
-517,518,Musharna,Psychic,,487,116,55,85,107,95,29,5,False,"The dream mist coming from its forehead changes
+its tail.",98,75,101,63,,Water,516
+55,67,False,5,292,Munna,"It eats the dreams of people and Pokémon. When it
+eats a pleasant dream, it expels pink-colored mist.",25,76,24,45,,Psychic,517
+95,107,False,5,487,Musharna,"The dream mist coming from its forehead changes
 into many different colors depending on the dream
-that was eaten."
-518,519,Pidove,Normal,Flying,264,50,55,50,36,30,43,5,False,"These Pokémon live in cities. They are accustomed
-to people. Flocks often gather in parks and plazas."
-519,520,Tranquill,Normal,Flying,358,62,77,62,50,42,65,5,False,"No matter where in the world it goes, it knows
+that was eaten.",55,116,29,85,,Psychic,518
+30,36,False,5,264,Pidove,"These Pokémon live in cities. They are accustomed
+to people. Flocks often gather in parks and plazas.",55,50,43,50,Flying,Normal,519
+42,50,False,5,358,Tranquill,"No matter where in the world it goes, it knows
 where its nest is, so it never gets separated from
-its Trainer."
-520,521,Unfezant,Normal,Flying,488,80,115,80,65,55,93,5,False,"Males have plumage on their heads. They will never
+its Trainer.",77,62,65,62,Flying,Normal,520
+55,65,False,5,488,Unfezant,"Males have plumage on their heads. They will never
 let themselves feel close to anyone other than
-their Trainers."
-521,522,Blitzle,Electric,,295,45,60,32,50,32,76,5,False,"Its mane shines when it discharges electricity.
+their Trainers.",115,80,93,80,Flying,Normal,521
+32,50,False,5,295,Blitzle,"Its mane shines when it discharges electricity.
 They use the frequency and rhythm of these flashes
-to communicate."
-522,523,Zebstrika,Electric,,497,75,100,63,80,63,116,5,False,"They have lightning-like movements.
+to communicate.",60,45,76,32,,Electric,522
+63,80,False,5,497,Zebstrika,"They have lightning-like movements.
 When Zebstrika run at full speed, the sound of
-thunder reverberates."
-523,524,Roggenrola,Rock,,280,55,75,85,25,25,15,5,False,"The hexagonal hole is its ear. Deep in that ear is
+thunder reverberates.",100,75,116,63,,Electric,523
+25,25,False,5,280,Roggenrola,"The hexagonal hole is its ear. Deep in that ear is
 an energy core, so if you stick your hand in
-there, Roggenrola will be very angry!"
-524,525,Boldore,Rock,,390,70,105,105,50,40,20,5,False,"The energy overflowing from its body has
+there, Roggenrola will be very angry!",75,55,15,85,,Rock,524
+40,50,False,5,390,Boldore,"The energy overflowing from its body has
 turned into orange crystals that are hard
-enough to smash diamonds."
-525,526,Gigalith,Rock,,515,85,135,130,60,80,25,5,False,"When it fires off energy with all its might, the
-power creates countless fissures on its body."
-526,527,Woobat,Psychic,Flying,313,55,45,43,55,43,72,5,False,"The heart-shaped mark left on a body after a
+enough to smash diamonds.",105,70,20,105,,Rock,525
+80,60,False,5,515,Gigalith,"When it fires off energy with all its might, the
+power creates countless fissures on its body.",135,85,25,130,,Rock,526
+43,55,False,5,313,Woobat,"The heart-shaped mark left on a body after a
 Woobat has been attached to it is said to bring
-good fortune."
-527,528,Swoobat,Psychic,Flying,425,67,57,55,77,55,114,5,False,"Anyone who comes into contact with the ultrasonic
+good fortune.",45,55,72,43,Flying,Psychic,527
+55,77,False,5,425,Swoobat,"Anyone who comes into contact with the ultrasonic
 waves emitted by a courting male experiences a
-positive mood shift."
-528,529,Drilbur,Ground,,328,60,85,40,30,45,68,5,False,"By spinning its body, it can dig straight through the
-ground at a speed of 30 mph."
-529,530,Excadrill,Ground,Steel,508,110,135,60,50,65,88,5,False,"More than 300 feet below the surface, they build
+positive mood shift.",57,67,114,55,Flying,Psychic,528
+45,30,False,5,328,Drilbur,"By spinning its body, it can dig straight through the
+ground at a speed of 30 mph.",85,60,68,40,,Ground,529
+65,50,False,5,508,Excadrill,"More than 300 feet below the surface, they build
 mazelike nests. Their activity can be destructive to
-subway tunnels."
-530,531,Audino,Normal,,445,103,60,86,60,86,50,5,False,"It touches others with the feelers on its ears, using
+subway tunnels.",135,110,88,60,Steel,Ground,530
+86,60,False,5,445,Audino,"It touches others with the feelers on its ears, using
 the sound of their heartbeats to tell how they
-are feeling."
-531,532,Timburr,Fighting,,305,75,80,55,25,35,35,5,False,"Always carrying squared logs, they help out with
-construction. As they grow, they carry bigger logs."
-532,533,Gurdurr,Fighting,,405,85,105,85,40,50,40,5,False,"This Pokémon is so muscular and strongly built that
+are feeling.",60,103,50,86,,Normal,531
+35,25,False,5,305,Timburr,"Always carrying squared logs, they help out with
+construction. As they grow, they carry bigger logs.",80,75,35,55,,Fighting,532
+50,40,False,5,405,Gurdurr,"This Pokémon is so muscular and strongly built that
 even a group of wrestlers could not make it budge
-an inch."
-533,534,Conkeldurr,Fighting,,505,105,140,95,55,65,45,5,False,"Rather than rely on force, they master moves that
-utilize the centrifugal force of spinning concrete."
-534,535,Tympole,Water,,294,50,50,40,50,40,64,5,False,"By vibrating its cheeks, it emits sound waves
+an inch.",105,85,40,85,,Fighting,533
+65,55,False,5,505,Conkeldurr,"Rather than rely on force, they master moves that
+utilize the centrifugal force of spinning concrete.",140,105,45,95,,Fighting,534
+40,50,False,5,294,Tympole,"By vibrating its cheeks, it emits sound waves
 imperceptible to humans. It uses the rhythm of
-these sounds to talk."
-535,536,Palpitoad,Water,Ground,384,75,65,55,65,55,69,5,False,"It lives in the water and on land. It uses its long,
-sticky tongue to immobilize its opponents."
-536,537,Seismitoad,Water,Ground,509,105,95,75,85,75,74,5,False,"They shoot paralyzing liquid from their head bumps.
-They use vibration to hurt their opponents."
-537,538,Throh,Fighting,,465,120,100,85,30,85,45,5,False,"When it encounters a foe bigger than itself, it wants
-to throw it. It changes belts as it gets stronger."
-538,539,Sawk,Fighting,,465,75,125,75,30,75,85,5,False,"Tying their belts gets them pumped and makes their
+these sounds to talk.",50,50,64,40,,Water,535
+55,65,False,5,384,Palpitoad,"It lives in the water and on land. It uses its long,
+sticky tongue to immobilize its opponents.",65,75,69,55,Ground,Water,536
+75,85,False,5,509,Seismitoad,"They shoot paralyzing liquid from their head bumps.
+They use vibration to hurt their opponents.",95,105,74,75,Ground,Water,537
+85,30,False,5,465,Throh,"When it encounters a foe bigger than itself, it wants
+to throw it. It changes belts as it gets stronger.",100,120,45,85,,Fighting,538
+75,30,False,5,465,Sawk,"Tying their belts gets them pumped and makes their
 punches more destructive. Disturbing their training
-angers them."
-539,540,Sewaddle,Bug,Grass,310,45,53,70,40,60,42,5,False,"Since this Pokémon makes its own clothes out of
-leaves, it is a popular mascot for fashion designers."
-540,541,Swadloon,Bug,Grass,380,55,63,90,50,80,42,5,False,"It protects itself from the cold by wrapping up in
+angers them.",125,75,85,75,,Fighting,539
+60,40,False,5,310,Sewaddle,"Since this Pokémon makes its own clothes out of
+leaves, it is a popular mascot for fashion designers.",53,45,42,70,Grass,Bug,540
+80,50,False,5,380,Swadloon,"It protects itself from the cold by wrapping up in
 leaves. It stays on the move, eating leaves
-in forests."
-541,542,Leavanny,Bug,Grass,500,75,103,80,70,80,92,5,False,"It keeps its eggs warm with heat from fermenting
+in forests.",63,55,42,90,Grass,Bug,541
+80,70,False,5,500,Leavanny,"It keeps its eggs warm with heat from fermenting
 leaves. It also uses leaves to make warm wrappings
-for Sewaddle."
-542,543,Venipede,Bug,Poison,260,30,45,59,30,39,57,5,False,"Its bite injects a potent poison, enough to paralyze
-large bird Pokémon that try to prey on it."
-543,544,Whirlipede,Bug,Poison,360,40,55,99,40,79,47,5,False,"It is usually motionless, but when attacked,
+for Sewaddle.",103,75,92,80,Grass,Bug,542
+39,30,False,5,260,Venipede,"Its bite injects a potent poison, enough to paralyze
+large bird Pokémon that try to prey on it.",45,30,57,59,Poison,Bug,543
+79,40,False,5,360,Whirlipede,"It is usually motionless, but when attacked,
 it rotates at high speed and then crashes into
-its opponent."
-544,545,Scolipede,Bug,Poison,485,60,100,89,55,69,112,5,False,"With quick movements, it chases down its foes,
-attacking relentlessly with its horns until it prevails."
-545,546,Cottonee,Grass,Fairy,280,40,27,60,37,50,66,5,False,"To protect itself, it shoots cotton from its body.
+its opponent.",55,40,47,99,Poison,Bug,544
+69,55,False,5,485,Scolipede,"With quick movements, it chases down its foes,
+attacking relentlessly with its horns until it prevails.",100,60,112,89,Poison,Bug,545
+50,37,False,5,280,Cottonee,"To protect itself, it shoots cotton from its body.
 When it gets wet in the rain, its cotton grows
-moist and heavy, and it can’t move as well."
-546,547,Whimsicott,Grass,Fairy,480,60,67,85,77,75,116,5,False,"This nuisance sneaks into people’s homes,
+moist and heavy, and it can’t move as well.",27,40,66,60,Fairy,Grass,546
+75,77,False,5,480,Whimsicott,"This nuisance sneaks into people’s homes,
 where it hides important things and scatters
-cotton all over the place."
-547,548,Petilil,Grass,,280,45,35,50,70,50,30,5,False,"Some say if you dry the leaves on its head, boil
+cotton all over the place.",67,60,116,85,Fairy,Grass,547
+50,70,False,5,280,Petilil,"Some say if you dry the leaves on its head, boil
 them down, and drink the infusion, your vigor
-will return, so Petilil is popular with the elderly."
-548,549,Lilligant,Grass,,480,70,60,75,110,75,90,5,False,"The fragrance of its flower differs slightly
+will return, so Petilil is popular with the elderly.",35,45,30,50,,Grass,548
+75,110,False,5,480,Lilligant,"The fragrance of its flower differs slightly
 depending on the soil where it grew up.
-Sniffing the aroma calms your heart and mind."
-549,550,Basculin,Water,,460,70,92,65,80,55,98,5,False,"Savage, violent Pokémon, red and blue Basculin
-are always fighting each other over territory."
-550,551,Sandile,Ground,Dark,292,50,72,35,35,35,65,5,False,"Alola, where it’s warm all year round, is a
+Sniffing the aroma calms your heart and mind.",60,70,90,75,,Grass,549
+55,80,False,5,460,Basculin,"Savage, violent Pokémon, red and blue Basculin
+are always fighting each other over territory.",92,70,98,65,,Water,550
+35,35,False,5,292,Sandile,"Alola, where it’s warm all year round, is a
 comfortable environment for this Pokémon.
-Sometimes you’ll even see it outside of deserts."
-551,552,Krokorok,Ground,Dark,351,60,82,45,45,45,74,5,False,"Krokorok really hates it when its body gets
+Sometimes you’ll even see it outside of deserts.",72,50,65,35,Dark,Ground,551
+45,45,False,5,351,Krokorok,"Krokorok really hates it when its body gets
 cold. On nights when the temperature drops,
-it digs deep into the desert sands."
-552,553,Krookodile,Ground,Dark,519,95,117,80,65,70,92,5,False,"When it spots prey, even at a distance of over
+it digs deep into the desert sands.",82,60,74,45,Dark,Ground,552
+70,65,False,5,519,Krookodile,"When it spots prey, even at a distance of over
 30 miles, it swims through the desert as if it
-were water, then jumps out and chomps them."
-553,554,Darumaka,Fire,,315,70,90,45,15,45,50,5,False,"When it sleeps, it pulls its limbs into its
+were water, then jumps out and chomps them.",117,95,92,80,Dark,Ground,553
+45,15,False,5,315,Darumaka,"When it sleeps, it pulls its limbs into its
 body and its internal fire goes down to
-1,100 degrees Fahrenheit."
-554,555,DarmanitanStandard Mode,Fire,,480,105,140,55,30,55,95,5,False,"Its internal fire burns at 2,500 degrees Fahrenheit,
+1,100 degrees Fahrenheit.",90,70,50,45,,Fire,554
+55,30,False,5,480,DarmanitanStandard Mode,"Its internal fire burns at 2,500 degrees Fahrenheit,
 making enough power that it can destroy a dump
-truck with one punch."
-555,556,Maractus,Grass,,461,75,86,67,106,67,60,5,False,"Arid regions are their habitat. They move
-rhythmically, making a sound similar to maracas."
-556,557,Dwebble,Bug,Rock,325,50,65,85,35,35,55,5,False,"When it finds a stone of a suitable size, it secretes
+truck with one punch.",140,105,95,55,,Fire,555
+67,106,False,5,461,Maractus,"Arid regions are their habitat. They move
+rhythmically, making a sound similar to maracas.",86,75,60,67,,Grass,556
+35,35,False,5,325,Dwebble,"When it finds a stone of a suitable size, it secretes
 a liquid from its mouth to open up a hole to
-crawl into."
-557,558,Crustle,Bug,Rock,475,70,95,125,65,75,45,5,False,"Competing for territory, Crustle fight viciously.
+crawl into.",65,50,55,85,Rock,Bug,557
+75,65,False,5,475,Crustle,"Competing for territory, Crustle fight viciously.
 The one whose boulder is broken is the loser of
-the battle."
-558,559,Scraggy,Dark,Fighting,348,50,75,70,35,70,48,5,False,"They move in small groups, walking around lazily.
+the battle.",95,70,45,125,Rock,Bug,558
+70,35,False,5,348,Scraggy,"They move in small groups, walking around lazily.
 Anyone who makes eye contact gets smacked
-with a headbutt."
-559,560,Scrafty,Dark,Fighting,488,65,90,115,45,115,58,5,False,"This Pokémon may be rude, but it takes very
-good care of its family, its friends, and its turf."
-560,561,Sigilyph,Psychic,Flying,490,72,58,80,103,80,97,5,False,"The guardians of an ancient city, they always fly
-the same route while keeping watch for invaders."
-561,562,Yamask,Ghost,,303,38,30,85,55,65,30,5,False,"Each of them carries a mask that used to be its face
+with a headbutt.",75,50,48,70,Fighting,Dark,559
+115,45,False,5,488,Scrafty,"This Pokémon may be rude, but it takes very
+good care of its family, its friends, and its turf.",90,65,58,115,Fighting,Dark,560
+80,103,False,5,490,Sigilyph,"The guardians of an ancient city, they always fly
+the same route while keeping watch for invaders.",58,72,97,80,Flying,Psychic,561
+65,55,False,5,303,Yamask,"Each of them carries a mask that used to be its face
 when it was human. Sometimes they look at it
-and cry."
-562,563,Cofagrigus,Ghost,,483,58,50,145,95,105,30,5,False,"Grave robbers who mistake them for real coffins and
-get too close end up trapped inside their bodies."
-563,564,Tirtouga,Water,Rock,355,54,78,103,53,45,22,5,False,"It was restored from an ancient fossil. Tirtouga
+and cry.",30,38,30,85,,Ghost,562
+105,95,False,5,483,Cofagrigus,"Grave robbers who mistake them for real coffins and
+get too close end up trapped inside their bodies.",50,58,30,145,,Ghost,563
+45,53,False,5,355,Tirtouga,"It was restored from an ancient fossil. Tirtouga
 lived in the sea but came up onto the land to
-search for prey."
-564,565,Carracosta,Water,Rock,495,74,108,133,83,65,32,5,False,"Its jaws are terrifyingly powerful. It could eat
+search for prey.",78,54,22,103,Rock,Water,564
+65,83,False,5,495,Carracosta,"Its jaws are terrifyingly powerful. It could eat
 Omastar and Omanyte whole and not be
-bothered in the slightest by their shells."
-565,566,Archen,Rock,Flying,401,55,112,45,74,45,70,5,False,"Once thought to be the ancestor of all bird
+bothered in the slightest by their shells.",108,74,32,133,Rock,Water,565
+45,74,False,5,401,Archen,"Once thought to be the ancestor of all bird
 Pokémon, some of the latest research suggests
-that may not be the case."
-566,567,Archeops,Rock,Flying,567,75,140,65,112,65,110,5,False,"This ancient Pokémon’s plumage is delicate,
+that may not be the case.",112,55,70,45,Flying,Rock,566
+65,112,False,5,567,Archeops,"This ancient Pokémon’s plumage is delicate,
 so if anyone other than an experienced
-professional tries to restore it, they will fail."
-567,568,Trubbish,Poison,,329,50,50,62,40,62,65,5,False,"Poisonous gas leaks out of it when it breathes.
+professional tries to restore it, they will fail.",140,75,110,65,Flying,Rock,567
+62,40,False,5,329,Trubbish,"Poisonous gas leaks out of it when it breathes.
 Muk that catch a whiff of that stench will
-come drooling."
-568,569,Garbodor,Poison,,474,80,95,82,60,82,75,5,False,"It locks opponents in place with its left hand,
+come drooling.",50,50,65,62,,Poison,568
+82,60,False,5,474,Garbodor,"It locks opponents in place with its left hand,
 immobilizing them by entirely dousing their
-bodies with poisonous liquid."
-569,570,Zorua,Dark,,330,40,65,40,80,40,65,5,False,"This Pokémon has a cowardly disposition, so
+bodies with poisonous liquid.",95,80,75,82,,Poison,569
+40,80,False,5,330,Zorua,"This Pokémon has a cowardly disposition, so
 when it’s not around friends, it basically
-always stays transformed as something else."
-570,571,Zoroark,Dark,,510,60,105,60,120,60,105,5,False,"It doesn’t just transform itself—it also has the
+always stays transformed as something else.",65,40,65,40,,Dark,570
+60,120,False,5,510,Zoroark,"It doesn’t just transform itself—it also has the
 power to make hundreds of people see
-its illusions."
-571,572,Minccino,Normal,,300,55,50,40,40,40,75,5,False,"A clean freak that will not allow even the
+its illusions.",105,60,105,60,,Dark,571
+40,40,False,5,300,Minccino,"A clean freak that will not allow even the
 slightest mess, it uses its tail like a mop to
-thoroughly clean any and all filth."
-572,573,Cinccino,Normal,,470,75,95,60,65,60,115,5,False,"The white parts of its coat are covered in an oil
+thoroughly clean any and all filth.",50,55,75,40,,Normal,572
+60,65,False,5,470,Cinccino,"The white parts of its coat are covered in an oil
 secreted from its body, so this Pokémon can
-slide right away from its enemies’ attacks."
-573,574,Gothita,Psychic,,290,45,30,50,55,65,45,5,False,"They intently observe both Trainers and Pokémon.
+slide right away from its enemies’ attacks.",95,75,115,60,,Normal,573
+65,55,False,5,290,Gothita,"They intently observe both Trainers and Pokémon.
 Apparently, they are looking at something that only
-Gothita can see."
-574,575,Gothorita,Psychic,,390,60,45,70,75,85,55,5,False,"According to many old tales, it creates friends for
+Gothita can see.",30,45,45,50,,Psychic,574
+85,75,False,5,390,Gothorita,"According to many old tales, it creates friends for
 itself by controlling sleeping children on
-starry nights."
-575,576,Gothitelle,Psychic,,490,70,55,95,95,110,65,5,False,"They can predict the future from the placement and
+starry nights.",45,60,55,70,,Psychic,575
+110,95,False,5,490,Gothitelle,"They can predict the future from the placement and
 movement of the stars. They can see Trainers’
-life spans."
-576,577,Solosis,Psychic,,290,45,30,40,105,50,20,5,False,"They drive away attackers by unleashing psychic
-power. They can use telepathy to talk with others."
-577,578,Duosion,Psychic,,370,65,40,50,125,60,30,5,False,"When their two divided brains think the same
-thoughts, their psychic power is maximized."
-578,579,Reuniclus,Psychic,,490,110,65,75,125,85,30,5,False,"When Reuniclus shake hands, a network forms
+life spans.",55,70,65,95,,Psychic,576
+50,105,False,5,290,Solosis,"They drive away attackers by unleashing psychic
+power. They can use telepathy to talk with others.",30,45,20,40,,Psychic,577
+60,125,False,5,370,Duosion,"When their two divided brains think the same
+thoughts, their psychic power is maximized.",40,65,30,50,,Psychic,578
+85,125,False,5,490,Reuniclus,"When Reuniclus shake hands, a network forms
 between their brains, increasing their
-psychic power."
-579,580,Ducklett,Water,Flying,305,62,44,50,44,50,55,5,False,"They are better at swimming than flying, and they
+psychic power.",65,110,30,75,,Psychic,579
+50,44,False,5,305,Ducklett,"They are better at swimming than flying, and they
 happily eat their favorite food, peat moss, as they
-dive underwater."
-580,581,Swanna,Water,Flying,473,75,87,63,87,63,98,5,False,"Swanna start to dance at dusk. The one dancing in
-the middle is the leader of the flock."
-581,582,Vanillite,Ice,,305,36,50,50,65,60,44,5,False,"It exhales cold air that is at –58 degrees
+dive underwater.",44,62,55,50,Flying,Water,580
+63,87,False,5,473,Swanna,"Swanna start to dance at dusk. The one dancing in
+the middle is the leader of the flock.",87,75,98,63,Flying,Water,581
+60,65,False,5,305,Vanillite,"It exhales cold air that is at –58 degrees
 Fahrenheit. When it’s in a warm place, it shrinks
-little by little."
-582,583,Vanillish,Ice,,395,51,65,65,80,75,59,5,False,"It sprays its enemies with grains of ice to freeze
+little by little.",50,36,44,50,,Ice,582
+75,80,False,5,395,Vanillish,"It sprays its enemies with grains of ice to freeze
 them. Most Vanillish in Alola are smaller
-than average."
-583,584,Vanilluxe,Ice,,535,71,95,85,110,95,79,5,False,"It blasts blizzards from its two mouths. It can
+than average.",65,51,59,65,,Ice,583
+95,110,False,5,535,Vanilluxe,"It blasts blizzards from its two mouths. It can
 create snow anywhere, so it gets a lot of love
-from skiers and snowboarders."
-584,585,Deerling,Normal,Grass,335,60,60,50,40,50,75,5,False,"The turning of the seasons changes the color and
+from skiers and snowboarders.",95,71,79,85,,Ice,584
+50,40,False,5,335,Deerling,"The turning of the seasons changes the color and
 scent of this Pokémon’s fur. People use it to mark
-the seasons."
-585,586,Sawsbuck,Normal,Grass,475,80,100,70,60,70,95,5,False,"They migrate according to the seasons, so some
-people call Sawsbuck the harbingers of spring."
-586,587,Emolga,Electric,Flying,428,55,75,60,75,60,103,5,False,"They store up electricity to fly through the air.
+the seasons.",60,60,75,50,Grass,Normal,585
+70,60,False,5,475,Sawsbuck,"They migrate according to the seasons, so some
+people call Sawsbuck the harbingers of spring.",100,80,95,70,Grass,Normal,586
+60,75,False,5,428,Emolga,"They store up electricity to fly through the air.
 When thunder cracks at night, sometimes there
-are almost enough of them to blot out the sky."
-587,588,Karrablast,Bug,,315,50,75,45,40,45,60,5,False,"For some reason they evolve when they receive
-electrical energy while they are attacking Shelmet."
-588,589,Escavalier,Bug,Steel,495,70,135,105,60,105,20,5,False,"These Pokémon evolve by wearing the shell
+are almost enough of them to blot out the sky.",75,55,103,60,Flying,Electric,587
+45,40,False,5,315,Karrablast,"For some reason they evolve when they receive
+electrical energy while they are attacking Shelmet.",75,50,60,45,,Bug,588
+105,60,False,5,495,Escavalier,"These Pokémon evolve by wearing the shell
 covering of a Shelmet. The steel armor protects
-their whole body."
-589,590,Foongus,Grass,Poison,294,69,55,45,55,55,15,5,False,"It lures Pokémon with its pattern that looks just like
-a Poké Ball, then releases poison spores."
-590,591,Amoonguss,Grass,Poison,464,114,85,70,85,80,30,5,False,"It lures prey close by dancing and waving its
+their whole body.",135,70,20,105,Steel,Bug,589
+55,55,False,5,294,Foongus,"It lures Pokémon with its pattern that looks just like
+a Poké Ball, then releases poison spores.",55,69,15,45,Poison,Grass,590
+80,85,False,5,464,Amoonguss,"It lures prey close by dancing and waving its
 arm caps, which resemble Poké Balls, in a
-swaying motion."
-591,592,Frillish,Water,Ghost,335,55,40,50,65,85,40,5,False,"It wraps its veillike arms and legs around prey
+swaying motion.",85,114,30,70,Poison,Grass,591
+85,65,False,5,335,Frillish,"It wraps its veillike arms and legs around prey
 swimming by and drags them down to the
-depths of the ocean."
-592,593,Jellicent,Water,Ghost,480,100,60,70,85,105,60,5,False,"Jellicent is always hanging around fancy cruise
-ships and tankers, hoping to drag away its prey."
-593,594,Alomomola,Water,,470,165,75,80,40,45,65,5,False,"Fishermen take them along on long voyages,
+depths of the ocean.",40,55,40,50,Ghost,Water,592
+105,85,False,5,480,Jellicent,"Jellicent is always hanging around fancy cruise
+ships and tankers, hoping to drag away its prey.",60,100,60,70,Ghost,Water,593
+45,40,False,5,470,Alomomola,"Fishermen take them along on long voyages,
 because if you have an Alomomola with you,
-there’ll be no need for a doctor or medicine."
-594,595,Joltik,Bug,Electric,319,50,47,50,57,50,65,5,False,"They attach themselves to large-bodied Pokémon
+there’ll be no need for a doctor or medicine.",75,165,65,80,,Water,594
+50,57,False,5,319,Joltik,"They attach themselves to large-bodied Pokémon
 and absorb static electricity, which they store in an
-electric pouch."
-595,596,Galvantula,Bug,Electric,472,70,77,60,97,60,108,5,False,"When attacked, they create an electric barrier by
-spitting out many electrically charged threads."
-596,597,Ferroseed,Grass,Steel,305,44,50,91,24,86,10,5,False,"It absorbs the iron it finds in the rock while clinging
-to the ceiling. It shoots spikes when in danger."
-597,598,Ferrothorn,Grass,Steel,489,74,94,131,54,116,20,5,False,"They attach themselves to cave ceilings, firing steel
-spikes at targets passing beneath them."
-598,599,Klink,Steel,,300,40,55,70,45,60,30,5,False,"The two minigears that mesh together are
+electric pouch.",47,50,65,50,Electric,Bug,595
+60,97,False,5,472,Galvantula,"When attacked, they create an electric barrier by
+spitting out many electrically charged threads.",77,70,108,60,Electric,Bug,596
+86,24,False,5,305,Ferroseed,"It absorbs the iron it finds in the rock while clinging
+to the ceiling. It shoots spikes when in danger.",50,44,10,91,Steel,Grass,597
+116,54,False,5,489,Ferrothorn,"They attach themselves to cave ceilings, firing steel
+spikes at targets passing beneath them.",94,74,20,131,Steel,Grass,598
+60,45,False,5,300,Klink,"The two minigears that mesh together are
 predetermined. Each will rebound from other
-minigears without meshing."
-599,600,Klang,Steel,,440,60,80,95,70,85,50,5,False,"A minigear and big gear comprise its body. If the
+minigears without meshing.",55,40,30,70,,Steel,599
+85,70,False,5,440,Klang,"A minigear and big gear comprise its body. If the
 minigear it launches at a foe doesn’t return, it
-will die."
-600,601,Klinklang,Steel,,520,60,100,115,70,85,90,5,False,"Its red core functions as an energy tank. It fires the
-charged energy through its spikes into an area."
-601,602,Tynamo,Electric,,275,35,55,40,45,40,60,5,False,"One alone can emit only a trickle of electricity,
+will die.",80,60,50,95,,Steel,600
+85,70,False,5,520,Klinklang,"Its red core functions as an energy tank. It fires the
+charged energy through its spikes into an area.",100,60,90,115,,Steel,601
+40,45,False,5,275,Tynamo,"One alone can emit only a trickle of electricity,
 so a group of them gathers to unleash a powerful
-electric shock."
-602,603,Eelektrik,Electric,,405,65,85,70,75,70,40,5,False,"These Pokémon have a big appetite. When they
+electric shock.",55,35,60,40,,Electric,602
+70,75,False,5,405,Eelektrik,"These Pokémon have a big appetite. When they
 spot their prey, they attack it and paralyze it
-with electricity."
-603,604,Eelektross,Electric,,515,85,115,80,105,80,50,5,False,"They crawl out of the ocean using their arms.
+with electricity.",85,65,40,70,,Electric,603
+80,105,False,5,515,Eelektross,"They crawl out of the ocean using their arms.
 They will attack prey on shore and immediately drag
-it into the ocean."
-604,605,Elgyem,Psychic,,335,55,55,55,85,55,30,5,False,"It controls tremendous psychic power. Most
+it into the ocean.",115,85,50,80,,Electric,604
+55,85,False,5,335,Elgyem,"It controls tremendous psychic power. Most
 reports of alien sightings are actually just
-people mistaking Elgyem for an alien."
-605,606,Beheeyem,Psychic,,485,75,75,75,125,95,40,5,False,"With its psychic powers, it rewrites its
+people mistaking Elgyem for an alien.",55,55,30,55,,Psychic,605
+95,125,False,5,485,Beheeyem,"With its psychic powers, it rewrites its
 opponents’ memories. You, too, may have
-already had your memories rewritten."
-606,607,Litwick,Ghost,Fire,275,50,30,55,65,55,20,5,False,"Litwick shines a light that absorbs the life energy of
+already had your memories rewritten.",75,75,40,75,,Psychic,606
+55,65,False,5,275,Litwick,"Litwick shines a light that absorbs the life energy of
 people and Pokémon, which becomes the fuel that
-it burns."
-607,608,Lampent,Ghost,Fire,370,60,40,60,95,60,55,5,False,"It arrives near the moment of death and steals spirit
-from the body."
-608,609,Chandelure,Ghost,Fire,520,60,55,90,145,90,80,5,False,"The spirits burned up in its ominous flame lose their
-way and wander this world forever."
-609,610,Axew,Dragon,,320,46,87,60,30,40,57,5,False,"They mark their territory by leaving gashes in trees
+it burns.",30,50,20,55,Fire,Ghost,607
+60,95,False,5,370,Lampent,"It arrives near the moment of death and steals spirit
+from the body.",40,60,55,60,Fire,Ghost,608
+90,145,False,5,520,Chandelure,"The spirits burned up in its ominous flame lose their
+way and wander this world forever.",55,60,80,90,Fire,Ghost,609
+40,30,False,5,320,Axew,"They mark their territory by leaving gashes in trees
 with their tusks. If a tusk breaks, a new one grows
-in quickly."
-610,611,Fraxure,Dragon,,410,66,117,70,40,50,67,5,False,"A broken tusk will not grow back, so it diligently
+in quickly.",87,46,57,60,,Dragon,610
+50,40,False,5,410,Fraxure,"A broken tusk will not grow back, so it diligently
 sharpens its tusks on river rocks after the end of
-a battle."
-611,612,Haxorus,Dragon,,540,76,147,90,60,70,97,5,False,"Their sturdy tusks will stay sharp even if used to cut
+a battle.",117,66,67,70,,Dragon,611
+70,60,False,5,540,Haxorus,"Their sturdy tusks will stay sharp even if used to cut
 steel beams. These Pokémon are covered in
-hard armor."
-612,613,Cubchoo,Ice,,305,55,70,40,60,40,40,5,False,"Their snot is a barometer of health. When healthy,
+hard armor.",147,76,97,90,,Dragon,612
+40,60,False,5,305,Cubchoo,"Their snot is a barometer of health. When healthy,
 their snot is sticky and the power of their ice
-moves increases."
-613,614,Beartic,Ice,,485,95,110,80,70,80,50,5,False,"It freezes its breath to create fangs and claws of ice
-to fight with. Cold northern areas are its habitat."
-614,615,Cryogonal,Ice,,485,70,50,30,95,135,105,5,False,"They are composed of ice crystals. They capture
+moves increases.",70,55,40,40,,Ice,613
+80,70,False,5,485,Beartic,"It freezes its breath to create fangs and claws of ice
+to fight with. Cold northern areas are its habitat.",110,95,50,80,,Ice,614
+135,95,False,5,485,Cryogonal,"They are composed of ice crystals. They capture
 prey with chains of ice, freezing the prey at
--148 degrees Fahrenheit."
-615,616,Shelmet,Bug,,305,50,40,85,40,65,25,5,False,"It evolves when bathed in an electric-like energy
-along with Karrablast. The reason is still unknown."
-616,617,Accelgor,Bug,,495,80,70,40,100,60,145,5,False,"When its body dries out, it weakens. So, to prevent
+-148 degrees Fahrenheit.",50,70,105,30,,Ice,615
+65,40,False,5,305,Shelmet,"It evolves when bathed in an electric-like energy
+along with Karrablast. The reason is still unknown.",40,50,25,85,,Bug,616
+60,100,False,5,495,Accelgor,"When its body dries out, it weakens. So, to prevent
 dehydration, it wraps itself in many layers of
-thin membrane."
-617,618,Stunfisk,Ground,Electric,471,109,66,84,81,99,32,5,False,"It conceals itself in the mud of the seashore.
+thin membrane.",70,80,145,40,,Bug,617
+99,81,False,5,471,Stunfisk,"It conceals itself in the mud of the seashore.
 Then it waits. When prey touch it, it delivers a jolt
-of electricity."
-618,619,Mienfoo,Fighting,,350,45,85,50,55,50,65,5,False,"They can often be seen in packs in the morning,
+of electricity.",66,109,32,84,Electric,Ground,618
+50,55,False,5,350,Mienfoo,"They can often be seen in packs in the morning,
 slowly moving their bodies through a series
-of poses."
-619,620,Mienshao,Fighting,,510,65,125,60,95,60,105,5,False,"It overwhelms its opponents with continuous
+of poses.",85,45,65,50,,Fighting,619
+60,95,False,5,510,Mienshao,"It overwhelms its opponents with continuous
 attacks and then slowly stores up power
-before delivering the finishing blow."
-620,621,Druddigon,Dragon,,485,77,120,90,60,90,48,5,False,"The red skin on its face is harder than rock.
+before delivering the finishing blow.",125,65,105,60,,Fighting,620
+90,60,False,5,485,Druddigon,"The red skin on its face is harder than rock.
 In narrow caves, it squares off against its
-enemies and charges face-first right into them."
-621,622,Golett,Ground,Ghost,303,59,74,50,35,50,35,5,False,"Its movements are powered by a mysterious
+enemies and charges face-first right into them.",120,77,48,90,,Dragon,621
+50,35,False,5,303,Golett,"Its movements are powered by a mysterious
 energy. It has continued to move since ancient
-times, so its power may soon run out."
-622,623,Golurk,Ground,Ghost,483,89,124,80,55,80,55,5,False,"Some say that ancient people invented Golurk
+times, so its power may soon run out.",74,59,35,50,Ghost,Ground,622
+80,55,False,5,483,Golurk,"Some say that ancient people invented Golurk
 to serve as a laborer. It follows its master’s
-orders faithfully."
-623,624,Pawniard,Dark,Steel,340,45,85,70,40,40,60,5,False,"After shredding its prey, it sharpens its blades
+orders faithfully.",124,89,55,80,Ghost,Ground,623
+40,40,False,5,340,Pawniard,"After shredding its prey, it sharpens its blades
 on a stone by the river. Each Pawniard has its
-own favorite sharpening stone."
-624,625,Bisharp,Dark,Steel,490,65,125,100,60,70,70,5,False,"No matter how strong the Bisharp, it’s said
+own favorite sharpening stone.",85,45,60,70,Steel,Dark,624
+70,60,False,5,490,Bisharp,"No matter how strong the Bisharp, it’s said
 that if the blade on its head is chipped, it will
-retire from its position as the boss."
-625,626,Bouffalant,Normal,,490,95,110,95,40,95,55,5,False,"Their fluffy fur absorbs damage, even if they strike
-foes with a fierce headbutt."
-626,627,Rufflet,Normal,Flying,350,70,83,50,37,50,60,5,False,"With its powerful legs and sturdy claws, it can
+retire from its position as the boss.",125,65,70,100,Steel,Dark,625
+95,40,False,5,490,Bouffalant,"Their fluffy fur absorbs damage, even if they strike
+foes with a fierce headbutt.",110,95,55,95,,Normal,626
+50,37,False,5,350,Rufflet,"With its powerful legs and sturdy claws, it can
 crack even the hard shells of Shellder and pluck
-out their insides."
-627,628,Braviary,Normal,Flying,510,100,123,75,57,75,80,5,False,"The more scars it has on its front, the more
+out their insides.",83,70,60,50,Flying,Normal,627
+75,57,False,5,510,Braviary,"The more scars it has on its front, the more
 heroic it’s considered to be. Those with many
-scars on their back are mocked by the flock."
-628,629,Vullaby,Dark,Flying,370,70,55,75,45,65,60,5,False,"Mandibuzz gives it the bones it wears. Vullaby’s
+scars on their back are mocked by the flock.",123,100,80,75,Flying,Normal,628
+65,45,False,5,370,Vullaby,"Mandibuzz gives it the bones it wears. Vullaby’s
 wings are short, so it can’t fly yet, but it jumps
-around, dreaming of wide open skies."
-629,630,Mandibuzz,Dark,Flying,510,110,65,105,55,95,80,5,False,"It skillfully arranges the bones of its prey to
+around, dreaming of wide open skies.",55,70,60,75,Flying,Dark,629
+95,55,False,5,510,Mandibuzz,"It skillfully arranges the bones of its prey to
 construct its nest. Most of the bones
-are Cubone."
-630,631,Heatmor,Fire,,484,85,97,66,105,66,65,5,False,"It draws in air through its tail, transforms it into fire,
+are Cubone.",65,110,80,105,Flying,Dark,630
+66,105,False,5,484,Heatmor,"It draws in air through its tail, transforms it into fire,
 and uses it like a tongue. It melts Durant and
-eats them."
-631,632,Durant,Bug,Steel,484,58,109,112,48,48,109,5,False,"They attack in groups, covering themselves in steel
-armor to protect themselves from Heatmor."
-632,633,Deino,Dark,Dragon,300,52,65,50,45,50,38,5,False,"Lacking sight, it’s unaware of its surroundings,
+eats them.",97,85,65,66,,Fire,631
+48,48,False,5,484,Durant,"They attack in groups, covering themselves in steel
+armor to protect themselves from Heatmor.",109,58,109,112,Steel,Bug,632
+50,45,False,5,300,Deino,"Lacking sight, it’s unaware of its surroundings,
 so it bumps into things and eats anything
-that moves."
-633,634,Zweilous,Dark,Dragon,420,72,85,70,65,70,58,5,False,"After it has eaten up all the food in its territory,
+that moves.",65,52,38,50,Dragon,Dark,633
+70,65,False,5,420,Zweilous,"After it has eaten up all the food in its territory,
 it moves to another area. Its two heads do not
-get along."
-634,635,Hydreigon,Dark,Dragon,600,92,105,90,125,90,98,5,False,"It responds to movement by attacking. This scary,
+get along.",85,72,58,70,Dragon,Dark,634
+90,125,False,5,600,Hydreigon,"It responds to movement by attacking. This scary,
 three-headed Pokémon devours everything in
-its path!"
-635,636,Larvesta,Bug,Fire,360,55,85,55,50,55,60,5,False,"When battling opponents, it sprays fire from its
+its path!",105,92,98,90,Dragon,Dark,635
+55,50,False,5,360,Larvesta,"When battling opponents, it sprays fire from its
 five horns. The max temperature of the flames
-can reach nearly 5,500 degrees Fahrenheit."
-636,637,Volcarona,Bug,Fire,550,85,60,65,135,105,100,5,False,"As it flies, it scatters its flaming scales. It was
+can reach nearly 5,500 degrees Fahrenheit.",85,55,60,55,Fire,Bug,636
+105,135,False,5,550,Volcarona,"As it flies, it scatters its flaming scales. It was
 feared by ancient people, who referred to it as
-“the rage of the sun.”"
-637,638,Cobalion,Steel,Fighting,580,91,90,129,90,72,108,5,True,"It has a body and heart of steel. It worked with its
-allies to punish people when they hurt Pokémon."
-638,639,Terrakion,Rock,Fighting,580,91,129,90,72,90,108,5,True,"Spoken of in legend, this Pokémon used its
+“the rage of the sun.”",60,85,100,65,Fire,Bug,637
+72,90,True,5,580,Cobalion,"It has a body and heart of steel. It worked with its
+allies to punish people when they hurt Pokémon.",90,91,108,129,Fighting,Steel,638
+90,72,True,5,580,Terrakion,"Spoken of in legend, this Pokémon used its
 phenomenal power to destroy a castle in its effort
-to protect Pokémon."
-639,640,Virizion,Grass,Fighting,580,91,90,72,90,129,108,5,True,"Legends say this Pokémon confounded opponents
-with its swift movements."
-640,641,TornadusIncarnate Forme,Flying,,580,79,115,70,125,80,111,5,True,"Tornadus expels massive energy from its tail,
+to protect Pokémon.",129,91,108,90,Fighting,Rock,639
+129,90,True,5,580,Virizion,"Legends say this Pokémon confounded opponents
+with its swift movements.",90,91,108,72,Fighting,Grass,640
+80,125,True,5,580,TornadusIncarnate Forme,"Tornadus expels massive energy from its tail,
 causing severe storms. Its power is great enough
-to blow houses away."
-641,642,ThundurusIncarnate Forme,Electric,Flying,580,79,115,70,125,80,111,5,True,"As it flies around, it shoots lightning all over
+to blow houses away.",115,79,111,70,,Flying,641
+80,125,True,5,580,ThundurusIncarnate Forme,"As it flies around, it shoots lightning all over
 the place and causes forest fires. It is
-therefore disliked."
-642,643,Reshiram,Dragon,Fire,680,100,120,100,150,120,90,5,True,"When Reshiram’s tail flares, the heat energy moves
-the atmosphere and changes the world’s weather."
-643,644,Zekrom,Dragon,Electric,680,100,150,120,120,100,90,5,True,"Concealing itself in lightning clouds, it flies
+therefore disliked.",115,79,111,70,Flying,Electric,642
+120,150,True,5,680,Reshiram,"When Reshiram’s tail flares, the heat energy moves
+the atmosphere and changes the world’s weather.",120,100,90,100,Fire,Dragon,643
+100,120,True,5,680,Zekrom,"Concealing itself in lightning clouds, it flies
 throughout the Unova region. It creates electricity
-in its tail."
-644,645,LandorusIncarnate Forme,Ground,Flying,600,89,125,90,115,80,101,5,True,"From the forces of lightning and wind, it creates
+in its tail.",150,100,90,120,Electric,Dragon,644
+80,115,True,5,600,LandorusIncarnate Forme,"From the forces of lightning and wind, it creates
 energy to give nutrients to the soil and make the
-land abundant."
-645,646,Kyurem,Dragon,Ice,660,125,130,90,130,90,95,5,True,"It generates a powerful, freezing energy inside
+land abundant.",125,89,101,90,Flying,Ground,645
+90,130,True,5,660,Kyurem,"It generates a powerful, freezing energy inside
 itself, but its body became frozen when the energy
-leaked out."
-646,647,KeldeoOrdinary Forme,Water,Fighting,580,91,72,90,129,90,108,5,False,"When it is resolute, its body fills with power and it
+leaked out.",130,125,95,90,Ice,Dragon,646
+90,129,False,5,580,KeldeoOrdinary Forme,"When it is resolute, its body fills with power and it
 becomes swifter. Its jumps are then too fast
-to follow."
-647,648,MeloettaAria Forme,Normal,Psychic,600,100,77,77,128,128,90,5,False,"Its melodies are sung with a special vocalization
+to follow.",72,91,108,90,Fighting,Water,647
+128,128,False,5,600,MeloettaAria Forme,"Its melodies are sung with a special vocalization
 method that can control the feelings of those who
-hear it."
-648,649,Genesect,Bug,Steel,600,71,120,95,120,95,99,5,False,"This Pokémon existed 300 million years ago. Team
-Plasma altered it and attached a cannon to its back."
-649,650,Chespin,Grass,,313,56,61,65,48,45,38,6,False,"Such a thick shell of wood covers its head and back
-that even a direct hit from a truck wouldn’t faze it."
-650,651,Quilladin,Grass,,405,61,78,95,56,58,57,6,False,"They strengthen their lower bodies by
+hear it.",77,100,90,77,Psychic,Normal,648
+95,120,False,5,600,Genesect,"This Pokémon existed 300 million years ago. Team
+Plasma altered it and attached a cannon to its back.",120,71,99,95,Steel,Bug,649
+45,48,False,6,313,Chespin,"Such a thick shell of wood covers its head and back
+that even a direct hit from a truck wouldn’t faze it.",61,56,38,65,,Grass,650
+58,56,False,6,405,Quilladin,"They strengthen their lower bodies by
 running into one another. They are very
-kind and won’t start fights."
-651,652,Chesnaught,Grass,Fighting,530,88,107,122,74,75,64,6,False,"When it takes a defensive posture with its fists
-guarding its face, it could withstand a bomb blast."
-652,653,Fennekin,Fire,,307,40,45,40,62,60,60,6,False,"As it walks, it munches on a twig in place
+kind and won’t start fights.",78,61,57,95,,Grass,651
+75,74,False,6,530,Chesnaught,"When it takes a defensive posture with its fists
+guarding its face, it could withstand a bomb blast.",107,88,64,122,Fighting,Grass,652
+60,62,False,6,307,Fennekin,"As it walks, it munches on a twig in place
 of a snack. It intimidates opponents
-by puffing hot air out of its ears."
-653,654,Braixen,Fire,,409,59,59,58,90,70,73,6,False,"When the twig is plucked from its tail,
+by puffing hot air out of its ears.",45,40,60,40,,Fire,653
+70,90,False,6,409,Braixen,"When the twig is plucked from its tail,
 friction sets the twig alight. The flame
-is used to send signals to its allies."
-654,655,Delphox,Fire,Psychic,534,75,69,72,114,100,104,6,False,"Using psychic power, it generates a
+is used to send signals to its allies.",59,59,73,58,,Fire,654
+100,114,False,6,534,Delphox,"Using psychic power, it generates a
 fiery vortex of 5,400 degrees Fahrenheit,
-incinerating foes swept into this whirl of flame."
-655,656,Froakie,Water,,314,41,56,40,62,44,71,6,False,"It protects its skin by covering its body in
+incinerating foes swept into this whirl of flame.",69,75,104,72,Psychic,Fire,655
+44,62,False,6,314,Froakie,"It protects its skin by covering its body in
 delicate bubbles. Beneath its happy-go-lucky air,
-it keeps a watchful eye on its surroundings."
-656,657,Frogadier,Water,,405,54,63,52,83,56,97,6,False,"Its swiftness is unparalleled.
+it keeps a watchful eye on its surroundings.",56,41,71,40,,Water,656
+56,83,False,6,405,Frogadier,"Its swiftness is unparalleled.
 It can scale a tower of more
-than 2,000 feet in a minute’s time."
-657,658,Greninja,Water,Dark,530,72,95,67,103,71,122,6,False,"It appears and vanishes with a ninja’s grace.
+than 2,000 feet in a minute’s time.",63,54,97,52,,Water,657
+71,103,False,6,530,Greninja,"It appears and vanishes with a ninja’s grace.
 It toys with its enemies using swift movements, while
-slicing them with throwing stars of sharpest water."
-658,659,Bunnelby,Normal,,237,38,36,38,32,36,57,6,False,"It has ears like shovels. Digging holes
+slicing them with throwing stars of sharpest water.",95,72,122,67,Dark,Water,658
+36,32,False,6,237,Bunnelby,"It has ears like shovels. Digging holes
 strengthens its ears so much that they
-can sever thick roots effortlessly."
-659,660,Diggersby,Normal,Ground,423,85,56,77,50,77,78,6,False,"As powerful as an excavator, its ears
+can sever thick roots effortlessly.",36,38,57,38,,Normal,659
+77,50,False,6,423,Diggersby,"As powerful as an excavator, its ears
 can reduce dense bedrock to rubble.
-When it’s finished digging, it lounges lazily."
-660,661,Fletchling,Normal,Flying,278,45,50,43,40,38,62,6,False,"While it’s an amiable Pokémon, if you touch it
+When it’s finished digging, it lounges lazily.",56,85,78,77,Ground,Normal,660
+38,40,False,6,278,Fletchling,"While it’s an amiable Pokémon, if you touch it
 unexpectedly, it will heat up its body in an
-instant, and you’ll be burned."
-661,662,Fletchinder,Fire,Flying,382,62,73,55,56,52,84,6,False,"It scatters embers in the tall grass. Then bug
+instant, and you’ll be burned.",50,45,62,43,Flying,Normal,661
+52,56,False,6,382,Fletchinder,"It scatters embers in the tall grass. Then bug
 Pokémon, frightened by the flames, come
-flying out, and Fletchinder gobbles them up."
-662,663,Talonflame,Fire,Flying,499,78,81,71,74,69,126,6,False,"Its tough wings don’t allow fire to pass through
+flying out, and Fletchinder gobbles them up.",73,62,84,55,Flying,Fire,662
+69,74,False,6,499,Talonflame,"Its tough wings don’t allow fire to pass through
 them. A long time ago, firefighters’ outfits were
-made from Talonflame wings."
-663,664,Scatterbug,Bug,,200,38,35,40,27,25,35,6,False,"The powder that covers its body
+made from Talonflame wings.",81,78,126,71,Flying,Fire,663
+25,27,False,6,200,Scatterbug,"The powder that covers its body
 regulates its temperature, so it
-can live in any region or climate."
-664,665,Spewpa,Bug,,213,45,22,60,27,30,29,6,False,"The beaks of bird Pokémon can’t begin
+can live in any region or climate.",35,38,35,40,,Bug,664
+30,27,False,6,213,Spewpa,"The beaks of bird Pokémon can’t begin
 to scratch its stalwart body.
-To defend itself, it spews powder."
-665,666,Vivillon,Bug,Flying,411,80,52,50,90,50,89,6,False,"The patterns on this Pokémon’s wings
+To defend itself, it spews powder.",22,45,29,60,,Bug,665
+50,90,False,6,411,Vivillon,"The patterns on this Pokémon’s wings
 depend on the climate and topography
-of its habitat. It scatters colorful scales."
-666,667,Litleo,Fire,Normal,369,62,50,58,73,54,72,6,False,"When they’re young, they live with a pride. Once
+of its habitat. It scatters colorful scales.",52,80,89,50,Flying,Bug,666
+54,73,False,6,369,Litleo,"When they’re young, they live with a pride. Once
 they’re able to hunt prey on their own, they’re
-kicked out and have to make their own way."
-667,668,Pyroar,Fire,Normal,507,86,68,72,109,66,106,6,False,"The males are usually lazy, but when attacked
+kicked out and have to make their own way.",50,62,72,58,Normal,Fire,667
+66,109,False,6,507,Pyroar,"The males are usually lazy, but when attacked
 by a strong foe, a male will protect its friends
-with no regard for its own safety."
-668,669,Flabébé,Fairy,,303,44,38,39,61,79,42,6,False,"It’s not safe without the power of a flower, but
+with no regard for its own safety.",68,86,106,72,Normal,Fire,668
+79,61,False,6,303,Flabébé,"It’s not safe without the power of a flower, but
 it will keep traveling around until it finds one
-with the color and shape it wants."
-669,670,Floette,Fairy,,371,54,45,47,75,98,52,6,False,"It raises flowers and uses them as weapons.
+with the color and shape it wants.",38,44,42,39,,Fairy,669
+98,75,False,6,371,Floette,"It raises flowers and uses them as weapons.
 The more gorgeous the blossom, the more
-power it contains."
-670,671,Florges,Fairy,,552,78,65,68,112,154,75,6,False,"It controls the flowers it grows. The petal
+power it contains.",45,54,52,47,,Fairy,670
+154,112,False,6,552,Florges,"It controls the flowers it grows. The petal
 blizzards that Florges triggers are overwhelming
-in their beauty and power."
-671,672,Skiddo,Grass,,350,66,65,48,62,57,52,6,False,"If it has sunshine and water, it doesn’t
+in their beauty and power.",65,78,75,68,,Fairy,671
+57,62,False,6,350,Skiddo,"If it has sunshine and water, it doesn’t
 need to eat, because it can generate
-energy from the leaves on its back."
-672,673,Gogoat,Grass,,531,123,100,62,97,81,68,6,False,"They inhabit mountainous regions.
+energy from the leaves on its back.",65,66,52,48,,Grass,672
+81,97,False,6,531,Gogoat,"They inhabit mountainous regions.
 The leader of the herd is decided by
-a battle of clashing horns."
-673,674,Pancham,Fighting,,348,67,82,62,46,48,43,6,False,"It follows Pangoro around like a henchman.
+a battle of clashing horns.",100,123,68,62,,Grass,673
+48,46,False,6,348,Pancham,"It follows Pangoro around like a henchman.
 When Pancham makes a big mistake, its leaf
-gets taken away."
-674,675,Pangoro,Fighting,Dark,495,95,124,78,69,71,58,6,False,"This rowdy Pokémon boasts great physical
+gets taken away.",82,67,43,62,,Fighting,674
+71,69,False,6,495,Pangoro,"This rowdy Pokémon boasts great physical
 strength. Many Trainers are also smitten by its
-lively character."
-675,676,Furfrou,Normal,,472,75,80,60,65,90,102,6,False,"There was an era when aristocrats would
+lively character.",124,95,58,78,Dark,Fighting,675
+90,65,False,6,472,Furfrou,"There was an era when aristocrats would
 compete to see who could trim their Furfrou’s
-fur into the most exquisite style."
-676,677,Espurr,Psychic,,355,62,48,54,63,60,68,6,False,"It has enough psychic energy to blast
+fur into the most exquisite style.",80,75,102,60,,Normal,676
+60,63,False,6,355,Espurr,"It has enough psychic energy to blast
 everything within 300 feet of itself,
-but it has no control over its power."
-677,678,MeowsticMale,Psychic,,466,74,48,76,83,81,104,6,False,"The eyeball patterns on the interior of its ears
+but it has no control over its power.",48,62,68,54,,Psychic,677
+81,83,False,6,466,MeowsticMale,"The eyeball patterns on the interior of its ears
 emit psychic energy. It keeps the patterns tightly
-covered because that power is too immense."
-678,679,Honedge,Steel,Ghost,325,45,80,100,35,37,28,6,False,"If anyone dares to grab its hilt, it wraps
+covered because that power is too immense.",48,74,104,76,,Psychic,678
+37,35,False,6,325,Honedge,"If anyone dares to grab its hilt, it wraps
 a blue cloth around that person’s arm and
-drains that person’s life energy completely."
-679,680,Doublade,Steel,Ghost,448,59,110,150,45,49,35,6,False,"The complex attack patterns of its two swords
+drains that person’s life energy completely.",80,45,28,100,Ghost,Steel,679
+49,45,False,6,448,Doublade,"The complex attack patterns of its two swords
 are unstoppable, even for an opponent
-greatly accomplished at swordplay."
-680,681,AegislashBlade Forme,Steel,Ghost,520,60,150,50,150,50,60,6,False,"Apparently, it can detect the innate qualities
+greatly accomplished at swordplay.",110,59,35,150,Ghost,Steel,680
+50,150,False,6,520,AegislashBlade Forme,"Apparently, it can detect the innate qualities
 of leadership. According to legend, whoever it
-recognizes is destined to become king."
-681,682,Spritzee,Fairy,,341,78,52,60,63,65,23,6,False,"In the past, rather than using perfume,
+recognizes is destined to become king.",150,60,60,50,Ghost,Steel,681
+65,63,False,6,341,Spritzee,"In the past, rather than using perfume,
 royal ladies carried a Spritzee
-that would waft a fragrance they liked."
-682,683,Aromatisse,Fairy,,462,101,72,72,99,89,29,6,False,"Its scent is so overpowering that, unless a Trainer
+that would waft a fragrance they liked.",52,78,23,60,,Fairy,682
+89,99,False,6,462,Aromatisse,"Its scent is so overpowering that, unless a Trainer
 happens to really enjoy the smell, he or she will
-have a hard time walking alongside it."
-683,684,Swirlix,Fairy,,341,62,48,66,59,57,49,6,False,"Because it eats nothing but sweets,
-its fur is as sticky sweet as cotton candy."
-684,685,Slurpuff,Fairy,,480,82,80,86,85,75,72,6,False,"Its sense of smell is 100 million times better than
+have a hard time walking alongside it.",72,101,29,72,,Fairy,683
+57,59,False,6,341,Swirlix,"Because it eats nothing but sweets,
+its fur is as sticky sweet as cotton candy.",48,62,49,66,,Fairy,684
+75,85,False,6,480,Slurpuff,"Its sense of smell is 100 million times better than
 a human’s, so even the faintest scent tells it about
-everything in the area. It’s like it can see with its nose!"
-685,686,Inkay,Dark,Psychic,288,53,54,53,37,46,45,6,False,"It draws prey near with its blinking lights and
+everything in the area. It’s like it can see with its nose!",80,82,72,86,,Fairy,685
+46,37,False,6,288,Inkay,"It draws prey near with its blinking lights and
 then wraps them up in its long tentacles and
-holds them in place."
-686,687,Malamar,Dark,Psychic,482,86,92,88,68,75,73,6,False,"When it comes to strong hypnosis, there’s an
+holds them in place.",54,53,45,53,Psychic,Dark,686
+75,68,False,6,482,Malamar,"When it comes to strong hypnosis, there’s an
 endless number of people who utilize Malamar
-for their nefarious deeds."
-687,688,Binacle,Rock,Water,306,42,52,67,39,56,50,6,False,"They stretch and then contract, yanking their
+for their nefarious deeds.",92,86,73,88,Psychic,Dark,687
+56,39,False,6,306,Binacle,"They stretch and then contract, yanking their
 rocks along with them in bold hops. They eat
-seaweed that washes up on the shoreline."
-688,689,Barbaracle,Rock,Water,500,72,105,115,54,86,68,6,False,"Barbaracle’s legs and hands have minds
+seaweed that washes up on the shoreline.",52,42,50,67,Water,Rock,688
+86,54,False,6,500,Barbaracle,"Barbaracle’s legs and hands have minds
 of their own, and they will move independently.
-But they usually follow the head’s orders."
-689,690,Skrelp,Poison,Water,320,50,60,60,60,60,30,6,False,"It vanishes into seaweed and remains perfectly
+But they usually follow the head’s orders.",105,72,68,115,Water,Rock,689
+60,60,False,6,320,Skrelp,"It vanishes into seaweed and remains perfectly
 still to avoid attacks from large Pokémon.
-Rotten seaweed is its main food source."
-690,691,Dragalge,Poison,Dragon,494,65,75,90,97,123,44,6,False,"This vicious Pokémon sprays a poisonous liquid
+Rotten seaweed is its main food source.",60,50,30,60,Water,Poison,690
+123,97,False,6,494,Dragalge,"This vicious Pokémon sprays a poisonous liquid
 on opponents that come near. For whatever
-reason, it gets along really well with Dhelmise."
-691,692,Clauncher,Water,,330,50,53,62,58,63,44,6,False,"Its claws occasionally fall off, and it keeps a low
+reason, it gets along really well with Dhelmise.",75,65,44,90,Dragon,Poison,691
+63,58,False,6,330,Clauncher,"Its claws occasionally fall off, and it keeps a low
 profile until they grow back. The meat of its
-claws is so delicious!"
-692,693,Clawitzer,Water,,500,71,73,88,120,89,59,6,False,"It compresses the water it has sucked up and
+claws is so delicious!",53,50,44,62,,Water,692
+89,120,False,6,500,Clawitzer,"It compresses the water it has sucked up and
 then projects it with enough power to punch a
-hole right through a thick sheet of iron."
-693,694,Helioptile,Electric,Normal,289,44,38,33,61,43,70,6,False,"The frills on either side of its head have cells
-that generate electricity when exposed to sunlight."
-694,695,Heliolisk,Electric,Normal,481,62,55,52,109,94,109,6,False,"It stimulates its muscles with electricity,
+hole right through a thick sheet of iron.",73,71,59,88,,Water,693
+43,61,False,6,289,Helioptile,"The frills on either side of its head have cells
+that generate electricity when exposed to sunlight.",38,44,70,33,Normal,Electric,694
+94,109,False,6,481,Heliolisk,"It stimulates its muscles with electricity,
 boosting the strength in its legs and enabling
-it to run 100 yards in five seconds."
-695,696,Tyrunt,Rock,Dragon,362,58,89,77,45,45,48,6,False,"Its large jaw has incredible destructive power.
+it to run 100 yards in five seconds.",55,62,109,52,Normal,Electric,695
+45,45,False,6,362,Tyrunt,"Its large jaw has incredible destructive power.
 Some theories suggest that its restored form is
-different from its form of long ago."
-696,697,Tyrantrum,Rock,Dragon,521,82,121,119,69,59,71,6,False,"Complete restoration is impossible, allowing
+different from its form of long ago.",89,58,48,77,Dragon,Rock,696
+59,69,False,6,521,Tyrantrum,"Complete restoration is impossible, allowing
 room for theories that its entire body was
-once covered in a feather-like coat."
-697,698,Amaura,Rock,Ice,362,77,59,50,67,63,46,6,False,"It lived in cold areas in ancient times. It’s said
+once covered in a feather-like coat.",121,82,71,119,Dragon,Rock,697
+63,67,False,6,362,Amaura,"It lived in cold areas in ancient times. It’s said
 that when Amaura whinnies, auroras appear in
-the night sky."
-698,699,Aurorus,Rock,Ice,521,123,77,72,99,92,58,6,False,"An Aurorus was found frozen solid within a
+the night sky.",59,77,46,50,Ice,Rock,698
+92,99,False,6,521,Aurorus,"An Aurorus was found frozen solid within a
 glacier, just as it appeared long ago, which
-became quite a big event in the news."
-699,700,Sylveon,Fairy,,525,95,65,65,110,130,60,6,False,"Once a fight breaks out, it will unflinchingly
+became quite a big event in the news.",77,123,58,72,Ice,Rock,699
+130,110,False,6,525,Sylveon,"Once a fight breaks out, it will unflinchingly
 charge at dragon Pokémon that are many times
-larger than itself."
-700,701,Hawlucha,Fighting,Flying,500,78,92,75,74,63,118,6,False,"It overwhelms opponents with quick moves, but
+larger than itself.",65,95,60,65,,Fairy,700
+63,74,False,6,500,Hawlucha,"It overwhelms opponents with quick moves, but
 sometimes it showboats for too long when it’s
-using a special move and gets itself into a pinch."
-701,702,Dedenne,Electric,Fairy,431,67,58,57,81,67,101,6,False,"It sneaks into people’s homes and steals
+using a special move and gets itself into a pinch.",92,78,118,75,Flying,Fighting,701
+67,81,False,6,431,Dedenne,"It sneaks into people’s homes and steals
 electricity from their outlets. When your electric
-bill seems off, it’s the handiwork of this rascal."
-702,703,Carbink,Rock,Fairy,500,50,50,150,50,150,50,6,False,"Some say that deep beneath the surface of the
+bill seems off, it’s the handiwork of this rascal.",58,67,101,57,Fairy,Electric,702
+150,50,False,6,500,Carbink,"Some say that deep beneath the surface of the
 world, a pack of Carbink live with their queen in
-a kingdom of jewels."
-703,704,Goomy,Dragon,,300,45,50,35,55,75,40,6,False,"It uses its horns to check out its surroundings.
+a kingdom of jewels.",50,50,50,150,Fairy,Rock,703
+75,55,False,6,300,Goomy,"It uses its horns to check out its surroundings.
 They’re very sensitive, so if you grab them, it
-will feel a strong shock and be unable to move."
-704,705,Sliggoo,Dragon,,452,68,75,53,83,113,60,6,False,"It crawls along sluggishly. The swirly protrusion
+will feel a strong shock and be unable to move.",50,45,40,35,,Dragon,704
+113,83,False,6,452,Sliggoo,"It crawls along sluggishly. The swirly protrusion
 on its back is filled with its brain and
-other organs."
-705,706,Goodra,Dragon,,600,90,100,70,110,150,80,6,False,"It’s very friendly toward people. If you grow
+other organs.",75,68,60,53,,Dragon,705
+150,110,False,6,600,Goodra,"It’s very friendly toward people. If you grow
 close to it, Goodra will hug you with its sticky,
-slime-covered body. Don’t get mad."
-706,707,Klefki,Steel,Fairy,470,57,80,91,80,87,75,6,False,"Although it’s unclear why it collects keys, giving
+slime-covered body. Don’t get mad.",100,90,80,70,,Dragon,706
+87,80,False,6,470,Klefki,"Although it’s unclear why it collects keys, giving
 it a key makes Klefki very happy. However, it
-apparently only likes master keys."
-707,708,Phantump,Ghost,Grass,309,43,70,48,50,60,38,6,False,"By imitating the voice of a child, it causes
+apparently only likes master keys.",80,57,75,91,Fairy,Steel,707
+60,50,False,6,309,Phantump,"By imitating the voice of a child, it causes
 people to get hopelessly lost deep in the forest.
-It’s trying to make friends with them."
-708,709,Trevenant,Ghost,Grass,474,85,110,76,65,82,56,6,False,"It’s feared as a ghost of the forest.
+It’s trying to make friends with them.",70,43,38,48,Grass,Ghost,708
+82,65,False,6,474,Trevenant,"It’s feared as a ghost of the forest.
 Lumberjacks bring along Fire types, which
-Trevenant hates, when they enter the forest."
-709,710,PumpkabooAverage Size,Ghost,Grass,335,49,66,70,44,55,51,6,False,"It is said to carry wandering spirits
+Trevenant hates, when they enter the forest.",110,85,56,76,Grass,Ghost,709
+55,44,False,6,335,PumpkabooAverage Size,"It is said to carry wandering spirits
 to the place where they belong
-so they can move on."
-710,711,GourgeistAverage Size,Ghost,Grass,494,65,90,122,58,75,84,6,False,"It enwraps its prey in its hairlike arms.
+so they can move on.",66,49,51,70,Grass,Ghost,710
+75,58,False,6,494,GourgeistAverage Size,"It enwraps its prey in its hairlike arms.
 It sings joyfully as it observes the
-suffering of its prey."
-711,712,Bergmite,Ice,,304,55,69,85,32,35,28,6,False,"Using air of -150 degrees Fahrenheit, they
+suffering of its prey.",90,65,84,122,Grass,Ghost,711
+35,32,False,6,304,Bergmite,"Using air of -150 degrees Fahrenheit, they
 freeze opponents solid. They live in herds
-above the snow line on mountains."
-712,713,Avalugg,Ice,,514,95,117,184,44,46,28,6,False,"The way several Bergmite huddle
+above the snow line on mountains.",69,55,28,85,,Ice,712
+46,44,False,6,514,Avalugg,"The way several Bergmite huddle
 on its back makes it look like
-an aircraft carrier made of ice."
-713,714,Noibat,Flying,Dragon,245,40,30,35,45,40,55,6,False,"Fruits are its favorite foods. This gourmet
+an aircraft carrier made of ice.",117,95,28,184,,Ice,713
+40,45,False,6,245,Noibat,"Fruits are its favorite foods. This gourmet
 carefully picks out just the ripe ones using
-its sonar."
-714,715,Noivern,Flying,Dragon,535,85,70,80,97,80,123,6,False,"Although it has a violent disposition, if you give
+its sonar.",30,40,55,35,Dragon,Flying,714
+80,97,False,6,535,Noivern,"Although it has a violent disposition, if you give
 it a nice ripe fruit that it loves, Noivern will
-suddenly become tame."
-715,716,Xerneas,Fairy,,680,126,131,95,131,98,99,6,True,"When the horns on its head shine
+suddenly become tame.",70,85,123,80,Dragon,Flying,715
+98,131,True,6,680,Xerneas,"When the horns on its head shine
 in seven colors, it is said to be
-sharing everlasting life."
-716,717,Yveltal,Dark,Flying,680,126,131,95,131,98,99,6,True,"When its life comes to an end, it absorbs
+sharing everlasting life.",131,126,99,95,,Fairy,716
+98,131,True,6,680,Yveltal,"When its life comes to an end, it absorbs
 the life energy of every living thing
-and turns into a cocoon once more."
-717,718,Zygarde50% Forme,Dragon,Ground,600,108,100,121,81,95,95,6,True,"This is Zygarde’s form when about half of its
+and turns into a cocoon once more.",131,126,99,95,Flying,Dark,717
+95,81,True,6,600,Zygarde50% Forme,"This is Zygarde’s form when about half of its
 pieces have been assembled. It plays the role of
-monitoring the ecosystem."
-718,719,Diancie,Rock,Fairy,600,50,100,150,100,150,50,6,True,"It can instantly create many diamonds
+monitoring the ecosystem.",100,108,95,121,Ground,Dragon,718
+150,100,True,6,600,Diancie,"It can instantly create many diamonds
 by compressing the carbon in the air
-between its hands."
-719,720,HoopaHoopa Confined,Psychic,Ghost,600,80,110,60,150,130,70,6,True,"It is said to be able to seize anything it desires
+between its hands.",100,50,50,150,Fairy,Rock,719
+130,150,True,6,600,HoopaHoopa Confined,"It is said to be able to seize anything it desires
 with its six rings and six huge arms. With its power
-sealed, it is transformed into a much smaller form."
-720,721,Volcanion,Fire,Water,600,80,110,120,130,90,70,6,True,"It expels its internal steam from the
+sealed, it is transformed into a much smaller form.",110,80,70,60,Ghost,Psychic,720
+90,130,True,6,600,Volcanion,"It expels its internal steam from the
 arms on its back. It has enough
-power to blow away a mountain."
+power to blow away a mountain.",110,80,70,120,Water,Fire,721
