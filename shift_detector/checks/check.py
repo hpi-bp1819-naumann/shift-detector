@@ -52,7 +52,7 @@ class Report:
     def print_explanation(self):
         msg = ""
         for column, explanation in self.explanation.items():
-            msg += "Column '{}':\n{}\n".format(column, explanation)
+            msg += "Column '{}':\n\t{}\n".format(column, explanation)
         print(msg)
 
     def print_information(self):
