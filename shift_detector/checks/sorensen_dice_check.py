@@ -20,11 +20,11 @@ class SorensenDiceCheck(Check):
         shifted_columns = set()
 
         for column_name in data:
-            baseline1, baseline2, distance = data[column_name]
+            baseline1, baseline2, similarity = data[column_name]
 
             if (abs(baseline1 - baseline2) > self.threshold or
-                    distance - baseline1 < self.threshold or
-                    distance - baseline2 < self.threshold):
+                    baseline1 - similarity > self.threshold or
+                    baseline2 - similarity > self.threshold):
                 shifted_columns.add(column_name)
 
         return SorensenDiceReport("Sorensen Dice Check", examined_columns, shifted_columns,
