@@ -1,11 +1,13 @@
 import unittest
 from unittest import mock
 
+import pandas as pd
 from matplotlib.figure import Figure
 from mock import MagicMock
 
 from shift_detector.checks.statistical_checks.categorical_statistical_check import CategoricalStatisticalCheck
 from shift_detector.checks.statistical_checks.numerical_statistical_check import NumericalStatisticalCheck
+from shift_detector.checks.statistical_checks.text_metadata_statistical_check import TextMetadataStatisticalCheck
 
 
 class TestSimpleStatisticalCheck(unittest.TestCase):
@@ -35,3 +37,15 @@ class TestSimpleStatisticalCheck(unittest.TestCase):
             with self.subTest(sig_cols=sig_cols):
                 result = CategoricalStatisticalCheck().plot_functions(sig_cols, MagicMock(), MagicMock())
         self.assertEqual(len(sig_cols), len(result))
+
+    def test_size_adjustment(self):
+        df1 = pd.DataFrame([0] * 20)
+        df2 = pd.DataFrame([0] * 12)
+        for check, solution in [(CategoricalStatisticalCheck(sample_size=10), (10, 10)),
+                                (CategoricalStatisticalCheck(sample_size=15), (15, 12)),
+                                (NumericalStatisticalCheck(use_equal_dataset_sizes=True), (12, 12)),
+                                (TextMetadataStatisticalCheck(sample_size=15, use_equal_dataset_sizes=True), (12, 12))]:
+            with self.subTest(solution=solution):
+                result1, result2 = check.adjust_dataset_sizes(df1, df2)
+                self.assertEqual(len(result1), solution[0])
+                self.assertEqual(len(result2), solution[1])

@@ -42,10 +42,18 @@ class StatisticalCheck(Check):
         return set(column for column in pvalues.columns if self.is_significant(pvalues.loc['pvalue', column]))
 
     def adjust_dataset_sizes(self, df1, df2):
-        self.sample_size = min([len(df1), len(df2), self.sample_size]) if self.equal_sizes else self.sample_size
-        part1 = df1.sample(self.sample_size, random_state=self.seed) if self.sample_size is not None else df1
-        part2 = df2.sample(self.sample_size, random_state=self.seed) if self.sample_size is not None else df2
-        return part1, part2
+        if self.sample_size and self.equal_sizes:
+            sample_size = min([len(df1), len(df2), self.sample_size])
+            df1 = df1.sample(sample_size, random_state=self.seed)
+            df2 = df2.sample(sample_size, random_state=self.seed)
+        elif self.equal_sizes:
+            sample_size = min(len(df1), len(df2))
+            df1 = df1.sample(sample_size, random_state=self.seed)
+            df2 = df2.sample(sample_size, random_state=self.seed)
+        elif self.sample_size:
+            df1 = df1.sample(self.sample_size, random_state=self.seed) if len(df1) >= self.sample_size else df1
+            df2 = df2.sample(self.sample_size, random_state=self.seed) if len(df2) >= self.sample_size else df2
+        return df1, df2
 
     @abstractmethod
     def run(self, store) -> Report:
