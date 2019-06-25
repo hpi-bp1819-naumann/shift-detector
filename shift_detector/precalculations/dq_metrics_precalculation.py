@@ -68,9 +68,8 @@ class DQMetricsPrecalculation(Precalculation):
                 column_droppedna = df[column].dropna()
                 categorical_comparison[column]['num_distinct'][df_name] = column_droppedna.nunique()
                 categorical_comparison[column]['completeness'][df_name] = len(column_droppedna) / len(df[column])
-                categorical_comparison[column]['uniqueness'][df_name] = len(df.groupby(column)
-                                                                        .filter(lambda x: len(x) == 1)) / \
-                                                                        len(column_droppedna)
+                categorical_comparison[column]['uniqueness'][df_name] = \
+                    len(df.groupby(column).filter(lambda x: len(x) == 1)) / len(column_droppedna)
         return categorical_comparison
 
     @staticmethod
