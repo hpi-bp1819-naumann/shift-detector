@@ -2,8 +2,6 @@ import unittest
 from shift_detector.precalculations.lda_embedding import LdaEmbedding
 from shift_detector.precalculations.store import Store
 import pandas as pd
-import os
-import logging
 
 
 class TestLdaEmbedding(unittest.TestCase):
@@ -13,8 +11,7 @@ class TestLdaEmbedding(unittest.TestCase):
         self.lda2 = LdaEmbedding(cols=['text'], n_topics=2, n_iter=1, random_state=2, lib='sklearn')
         self.lda3 = LdaEmbedding(cols=['text'], n_topics=2, n_iter=1, random_state=2, lib='gensim')
         self.lda4 = LdaEmbedding(cols=['text', 'abc'], n_topics=2, n_iter=1, random_state=2, lib='sklearn')
-        logging.error(os.path.dirname(os.path.abspath(__file__)))
-        logging.error(os.getcwd())
+
         self.poems = pd.read_csv("../data/poems.csv")
         self.phrases = pd.read_csv("../data/phrases.csv")
 
