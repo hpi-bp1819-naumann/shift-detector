@@ -38,7 +38,7 @@ class TestCountVectorizer(unittest.TestCase):
         self.assertNotEqual(hash(self.count1), hash(self.count3))
 
     def test_process(self):
-        res1, res2 = self.count1.process(self.store)
+        res1, res2, feature_names, all_vecs = self.count1.process(self.store)
         expected_dict1 = {'col1': np.array([[1,0] if not i == 9 else [0,1] for i in range(10)])}
         expected_dict2 = {'col1': np.array([[0,1] if not i == 9 else [1,0] for i in range(10)])}
 

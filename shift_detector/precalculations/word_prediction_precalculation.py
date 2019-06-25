@@ -8,6 +8,8 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping
 from keras.layers import Dense
 from keras.layers import LSTM
 from keras.models import Sequential
+from numpy.random import seed
+from tensorflow import set_random_seed
 
 from shift_detector.precalculations.precalculation import Precalculation
 from shift_detector.precalculations.text_embedding_precalculation import TextEmbeddingPrecalculation
@@ -16,11 +18,12 @@ from shift_detector.utils.column_management import ColumnType
 
 class WordPredictionPrecalculation(Precalculation):
 
-    def __init__(self, column, ft_window_size=5, ft_size=100, ft_workers=4, ft_seed=None, lstm_window=5, num_epochs_predictor=100, verbose=1):
+    def __init__(self, column, ft_window_size=5, ft_size=100, ft_workers=4, seed=None,
+                 lstm_window=5, num_epochs_predictor=100, verbose=0):
         self.column = column
         self.ft_window_size = ft_window_size
         self.ft_size = ft_size
-        self.ft_seed = ft_seed
+        self.seed = seed
         self.ft_workers = ft_workers
         self.lstm_window = lstm_window
         self.num_epochs_predictor = num_epochs_predictor
@@ -40,25 +43,31 @@ class WordPredictionPrecalculation(Precalculation):
         return self.column == other.column \
             and self.ft_window_size == other.ft_window_size \
             and self.ft_size == other.ft_size \
-            and self.ft_seed == other.ft_seed \
+            and self.seed == other.seed \
             and self.lstm_window == other.lstm_window \
             and self.num_epochs_predictor == other.num_epochs_predictor
 
     def __hash__(self):
         return hash((self.column, self.ft_window_size, self.ft_size,
-                     self.ft_seed, self.lstm_window, self.num_epochs_predictor))
+                     self.seed, self.lstm_window, self.num_epochs_predictor))
 
     def process(self, store) -> Tuple[float, float]:
 
         if self.column not in store.column_names(ColumnType.text):
             raise ValueError('Column {} does not exist or is no textual column. '
-                             'Please pass one of [{}] instead.'.format(self.column, store.column_names(ColumnType.text)))
+                             'Please pass one of [{}] instead.'
+                             .format(self.column, store.column_names(ColumnType.text)))
 
         ft_model = FastText(size=self.ft_size, window=self.ft_window_size, min_count=1,
-                            workers=self.ft_workers, seed=self.ft_seed)
+                            workers=self.ft_workers, seed=self.seed)
         processed_df1, processed_df2 = store[TextEmbeddingPrecalculation(model=ft_model, agg=None)]
 
-        df1_prediction_loss, df2_prediction_loss = self.get_prediction_losses(processed_df1, processed_df2, self.column)
+        seed(self.seed)
+        set_random_seed(self.seed)
+
+        df1_prediction_loss, df2_prediction_loss = self.get_prediction_losses(processed_df1,
+                                                                              processed_df2,
+                                                                              self.column)
         return df1_prediction_loss, df2_prediction_loss
 
     def get_prediction_losses(self, processed_df1, processed_df2, column) -> Tuple[float, float]:
@@ -73,6 +82,7 @@ class WordPredictionPrecalculation(Precalculation):
 
         # build and train model
         prediction_model = self.create_model()
+
         prediction_model.fit(df1_train_x, df1_train_y,
                              epochs=self.num_epochs_predictor, batch_size=512,
                              callbacks=self.create_callbacks(),
@@ -80,8 +90,10 @@ class WordPredictionPrecalculation(Precalculation):
                              validation_data=(df1_test_x, df1_test_y))
 
         # get prediction loss for both datasets
-        df1_prediction_loss = prediction_model.evaluate(x=df1_test_x, y=df1_test_y)
-        df2_prediction_loss = prediction_model.evaluate(x=df2_test_x, y=df2_test_y)
+        df1_prediction_loss = prediction_model.evaluate(x=df1_test_x, y=df1_test_y,
+                                                        verbose=self.verbose)
+        df2_prediction_loss = prediction_model.evaluate(x=df2_test_x, y=df2_test_y,
+                                                        verbose=self.verbose)
 
         return df1_prediction_loss, df2_prediction_loss
 
@@ -108,7 +120,7 @@ class WordPredictionPrecalculation(Precalculation):
         train_data = np.array(train_data)
 
         if train_data.shape == (0,):
-            raise ValueError('Cannot execute Check. '
+            raise ValueError('Cannot execute Precalculation. '
                              'Text column does not contain any row with num words > lstm_window({})'
                              .format(self.lstm_window))
 

@@ -3,13 +3,13 @@ from collections import defaultdict
 from typing import Union
 
 import pandas as pd
-from IPython.display import display, Markdown
+from IPython.display import display
 
 from shift_detector.checks.check import Check, Report
 from shift_detector.precalculations.store import Store
 from shift_detector.utils.column_management import column_names
 from shift_detector.utils.data_io import read_from_csv
-from shift_detector.utils.neat_print import nprint
+from shift_detector.utils.custom_print import nprint, lprint
 
 
 class Detector:
@@ -25,6 +25,7 @@ class Detector:
                  df1: Union[pd.DataFrame, str],
                  df2: Union[pd.DataFrame, str],
                  delimiter=',',
+                 log_print=True,
                  **custom_column_types):
         if type(df1) is pd.DataFrame:
             self.df1 = df1
@@ -40,10 +41,11 @@ class Detector:
         else:
             raise Exception("df2 is not a dataframe or a string")
 
+        self.log_print = log_print
         self.check_reports = []
-        self.store = Store(self.df1, self.df2, custom_column_types)
+        self.store = Store(self.df1, self.df2, log_print=self.log_print, custom_column_types=custom_column_types)
 
-        print("Used columns: {}".format(', '.join(column_names(self.store.column_names()))))
+        lprint("Used columns: {}".format(', '.join(column_names(self.store.column_names()))), self.log_print)
 
     def run(self, *checks, logger_level=logger.ERROR):
         """
@@ -62,7 +64,7 @@ class Detector:
 
         check_reports = []
         for check in checks:
-            print("Executing {}".format(check.__class__.__name__))
+            lprint("Executing {}".format(check.__class__.__name__), self.log_print)
             try:
                 report = check.run(self.store)
                 check_reports.append(report)

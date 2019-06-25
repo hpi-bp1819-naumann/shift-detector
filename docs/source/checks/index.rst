@@ -9,8 +9,10 @@ Checks
 
     conditional_probabilities
     distinction
+    dq_metrics
     sorensen_dice
     embedding_distance
+    word_prediction
     guide
 
 

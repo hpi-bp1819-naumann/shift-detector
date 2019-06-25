@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 from collections import defaultdict
 from itertools import chain
 
-from shift_detector.utils.neat_print import nprint
+from shift_detector.utils.custom_print import nprint
 
 
 class Report:
@@ -52,7 +52,7 @@ class Report:
     def print_explanation(self):
         msg = ""
         for column, explanation in self.explanation.items():
-            msg += "Column '{}':\n{}\n".format(column, explanation)
+            msg += "Column '{}':\n\t{}\n".format(column, explanation)
         print(msg)
 
     def print_information(self):

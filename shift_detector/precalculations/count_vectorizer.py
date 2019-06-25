@@ -9,19 +9,18 @@ class CountVectorizer(Precalculation):
 
     def __init__(self, cols, stop_words='english', max_features=None):
         # potentially make min_df and max_df available
-        self.stopwords = None
         self.max_features = None
-        self.cols = None
 
         if isinstance(stop_words, str):
             if stop_words not in nltk_stopwords.fileids():
                 raise ValueError("The language you entered is not available. Received: {}".format(stop_words))
-            self.stop_words = nltk_stopwords.words(stop_words)
+            self.stop_words = set(nltk_stopwords.words(stop_words))
         elif isinstance(stop_words, list) and all(isinstance(elem, str) for elem in stop_words):
+            self.stop_words = set()
             for lang in stop_words:
                 if lang not in nltk_stopwords.fileids():
                     raise ValueError("The following language you entered is not available: {}".format(lang))
-                self.stopwords = self.stopwords.union(set(nltk_stopwords.words(lang)))
+                self.stop_words = self.stop_words.union(set(nltk_stopwords.words(lang)))
         else:
             raise TypeError("Please enter the language for your stop_words as a string or list of strings. Received: {}"
                             .format(type(stop_words)))
@@ -40,7 +39,9 @@ class CountVectorizer(Precalculation):
         else:
             raise TypeError("Cols has to be list of strings or a single string. Received: {}".format(type(cols)))
 
-        self.vectorizer = CountVectorizer_sklearn(stop_words=self.stopwords, max_features=self.max_features)
+        self.vectorizer = CountVectorizer_sklearn(stop_words=self.stop_words,
+                                                  max_features=self.max_features)
+                                                  #token_pattern=r'[^\w+\s]|\b[a-zA-Z]\b')
 
     def __eq__(self, other):
         """Overrides the default implementation"""
@@ -66,11 +67,14 @@ class CountVectorizer(Precalculation):
 
         dict_of_arrays1 = {}
         dict_of_arrays2 = {}
+        feature_names = {}
+        all_vecs = {}
 
         for col in col_names:
-            count_vec = self.vectorizer
-            count_vec = count_vec.fit(merged_texts[col])
-            dict_of_arrays1[col] = count_vec.transform(df1_texts[col]).A.astype(int)
-            dict_of_arrays2[col] = count_vec.transform(df2_texts[col]).A.astype(int)
+            all_vecs[col] = self.vectorizer
+            all_vecs[col] = all_vecs[col].fit(merged_texts[col])
+            feature_names[col] = all_vecs[col].get_feature_names()
+            dict_of_arrays1[col] = all_vecs[col].transform(df1_texts[col]).A.astype(int)
+            dict_of_arrays2[col] = all_vecs[col].transform(df2_texts[col]).A.astype(int)
 
-        return dict_of_arrays1, dict_of_arrays2
+        return dict_of_arrays1, dict_of_arrays2, feature_names, all_vecs
