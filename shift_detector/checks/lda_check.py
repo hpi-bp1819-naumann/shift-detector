@@ -24,7 +24,7 @@ class LdaCheck(Check):
         try:
             nltk.download('stopwords')
         except:
-            print('You cannot reach the nltk server, your nltk packages might be out of date.')
+            warnings.warn('You cannot reach the nltk server, your nltk packages might be out of date.', UserWarning)
         if not isinstance(significance, float):
             raise TypeError("Significance has to be a float. Received: {}".format(type(significance)))
         if not 0 < significance < 1:

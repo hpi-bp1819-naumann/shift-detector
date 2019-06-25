@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
+import warnings
 
 from shift_detector.checks.check import Report
 from shift_detector.checks.statistical_checks.categorical_statistical_check import CategoricalStatisticalCheck
@@ -23,7 +24,7 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
             nltk.download('punkt')
             nltk.download('averaged_perceptron_tagger')
         except:
-            print('You cannot reach the nltk server, your nltk packages might be out of date.')
+            warnings.warn('You cannot reach the nltk server, your nltk packages might be out of date.', UserWarning)
         super().__init__(significance, use_sampling, sampling_seed)
         self.metadata_precalculation = TextMetadata(text_metadata_types, language=language,
                                                     infer_language=infer_language)
