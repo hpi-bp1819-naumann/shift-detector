@@ -38,14 +38,15 @@ class DQMetricsCheck(Check):
     def run(self, store):
         df1_numerical, df2_numerical = store[ColumnType.numerical]
         self.data = store[DQMetricsPrecalculation()]
-        numerical_report = self.numerical_report(df1_numerical, df2_numerical)
-        categorical_report = self.categorical_report()
 
-        return numerical_report + categorical_report
+        numerical_report = self.numerical_categorical_report(df1_numerical, df2_numerical)
+        attribute_val_report = self.attribute_val_report()
 
-    def relative_metric_difference(self, column, metric_name):
-        metric_in_df1 = self.data['numerical_comparison'][column][metric_name]['df1']
-        metric_in_df2 = self.data['numerical_comparison'][column][metric_name]['df2']
+        return numerical_report + attribute_val_report
+
+    def relative_metric_difference(self, column, metric_name, comparison='numerical_comparison'):
+        metric_in_df1 = self.data[comparison][column][metric_name]['df1']
+        metric_in_df2 = self.data[comparison][column][metric_name]['df2']
 
         if metric_name in ['uniqueness', 'completeness']:
             return metric_in_df2 - metric_in_df1
@@ -54,7 +55,7 @@ class DQMetricsCheck(Check):
             return 0
 
         if metric_in_df1 == 0:
-            logger.warning("column {} \t \t {}: no comparison of distance possible, division by zero"
+            logger.warning("Column {} \t \t {}: no comparison of distance possible, division by zero"
                            .format(column, metric_name))
             return 0
 
@@ -73,35 +74,41 @@ class DQMetricsCheck(Check):
 
         return metrics_difference_string
 
-    def numerical_report(self, df1, df2):
+    def numerical_categorical_report(self, df1, df2):
         numerical_comparison = self.data['numerical_comparison']
+        categorical_comparison = self.data['categorical_comparison']
+
         examined_columns = set()
         shifted_columns = set()
         explanation = defaultdict(str)
 
-        for column_name, metrics in numerical_comparison.items():
-            examined_columns.add(column_name)
+        for comparison, comparison_name in [(numerical_comparison, 'numerical_comparison'), (categorical_comparison,
+                                                                                             'categorical_comparison')]:
 
-            for metric in metrics:
-                diff = self.relative_metric_difference(column_name, metric)
-                if abs(diff) > self.metrics_thresholds_percentage[metric]:
-                    shifted_columns.add(column_name)
-                    explanation[column_name] += "Metric: {}, Diff: {}, threshold: {}\n".\
-                        format(metric, self.difference_to_string(diff),
-                               self.difference_to_string(self.metrics_thresholds_percentage[metric]),
-                               print_plus_minus=True)
+            for column_name, metrics in comparison.items():
+                examined_columns.add(column_name)
+
+                for metric in metrics:
+                    diff = self.relative_metric_difference(column_name, metric, comparison=comparison_name)
+                    if abs(diff) > self.metrics_thresholds_percentage[metric]:
+                        shifted_columns.add(column_name)
+
+                        explanation[column_name] += "Metric: {}, Diff: {}, threshold: {}\n".\
+                            format(metric, self.difference_to_string(diff),
+                                   self.difference_to_string(self.metrics_thresholds_percentage[metric]),
+                                   print_plus_minus=True)
 
         return DQMetricsReport(examined_columns, shifted_columns, dict(explanation),
                                figures=[DQMetricsReport.numerical_plot(df1, df2)])
 
-    def categorical_report(self):
-        categorical_comparison = self.data['categorical_comparison']
+    def attribute_val_report(self):
+        attribute_val_comparison = self.data['attribute_val_comparison']
         examined_columns = set()
         shifted_columns = set()
         explanation = defaultdict(str)
         plot_infos = []
 
-        for column_name, attribute in categorical_comparison.items():
+        for column_name, attribute in attribute_val_comparison.items():
             examined_columns.add(column_name)
 
             bar_df1 = []
@@ -125,7 +132,7 @@ class DQMetricsCheck(Check):
             plot_infos.append((bar_df1, bar_df2, attribute_names, column_name))
 
         return DQMetricsReport(examined_columns, shifted_columns, dict(explanation),
-                               figures=[DQMetricsReport.categorical_plot(plot_infos)])
+                               figures=[DQMetricsReport.attribute_val_plot(plot_infos)])
 
 
 class DQMetricsReport(Report):
@@ -162,8 +169,7 @@ class DQMetricsReport(Report):
         return custom_plot
 
     @staticmethod
-    def categorical_plot(plot_infos):
-
+    def attribute_val_plot(plot_infos):
         def custom_plot():
             f = plt.figure(figsize=(20, 7))
             num_columns = len(list(plot_infos))

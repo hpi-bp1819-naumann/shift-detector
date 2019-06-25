@@ -107,7 +107,7 @@ class TestSimpleCheck(TestCase):
         self.assertFalse(mock_plt.figure.called)
 
         report = self.check.run(self.store)
-        custom_plot_categorical = report.categorical_plot([([1, 2, 3], [2, 4, 6], ['Heinz', 'Peter', 'Rudolf'],
+        custom_plot_categorical = report.attribute_val_plot([([1, 2, 3], [2, 4, 6], ['Heinz', 'Peter', 'Rudolf'],
                                                             'A very important plot')])
         custom_plot_categorical()
 
