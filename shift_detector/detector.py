@@ -63,7 +63,6 @@ class Detector:
         check_reports = []
         for check in checks:
             print("Executing {}".format(check.__class__.__name__))
-
             try:
                 report = check.run(self.store)
                 check_reports.append(report)
@@ -74,7 +73,6 @@ class Detector:
                                       shifted_columns=[],
                                       information=error_msg)
                 check_reports.append(error_report)
-
         self.check_reports = check_reports
 
     def evaluate(self):
