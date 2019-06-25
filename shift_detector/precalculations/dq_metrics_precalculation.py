@@ -1,4 +1,6 @@
 from copy import deepcopy
+
+from shift_detector.precalculations.low_cardinality_precalculation import LowCardinalityPrecalculation
 from shift_detector.precalculations.precalculation import Precalculation
 from shift_detector.utils.column_management import ColumnType
 
@@ -13,7 +15,7 @@ class DQMetricsPrecalculation(Precalculation):
 
     def process(self, store):
         df1_numerical, df2_numerical = store[ColumnType.numerical]
-        df1_categorical, df2_categorical = store[ColumnType.categorical]
+        df1_categorical, df2_categorical, _ = store[LowCardinalityPrecalculation()]
 
         numerical_comparison = self.compare_numerical_columns(df1_numerical, df2_numerical)
         categorical_comparison = self.compare_categorical_columns(df1_categorical, df2_categorical)
