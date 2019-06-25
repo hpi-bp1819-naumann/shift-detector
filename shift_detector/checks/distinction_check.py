@@ -2,15 +2,13 @@ from collections.abc import Iterable
 from numbers import Number
 
 import numpy as np
-from IPython.core.display import display
+from IPython.display import display_html
 from pandas import DataFrame
 from sklearn.metrics import precision_recall_fscore_support
 
 from shift_detector.checks.check import Check, Report
 from shift_detector.precalculations.distinction_precalculation import DistinctionPrecalculation
-from IPython.display import display_html
-
-from shift_detector.utils.neat_print import nprint, is_in_jupyter
+from shift_detector.utils.custom_print import nprint, is_in_jupyter
 
 
 class DistinctionCheck(Check):
