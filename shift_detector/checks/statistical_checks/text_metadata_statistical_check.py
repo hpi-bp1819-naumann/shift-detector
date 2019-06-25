@@ -15,8 +15,8 @@ from shift_detector.utils.visualization import PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT
 class TextMetadataStatisticalCheck(StatisticalCheck):
 
     def __init__(self, text_metadata_types=None, language='en', infer_language=False, significance=0.01,
-                 use_equal_dataset_sizes=False, sampling_seed=None):
-        super().__init__(significance, use_equal_dataset_sizes, sampling_seed)
+                 sample_size=None, use_equal_dataset_sizes=False, sampling_seed=0):
+        super().__init__(significance, sample_size, use_equal_dataset_sizes, sampling_seed)
         self.metadata_precalculation = TextMetadata(text_metadata_types, language=language,
                                                     infer_language=infer_language)
 
