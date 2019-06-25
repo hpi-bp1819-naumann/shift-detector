@@ -2,12 +2,13 @@ from collections.abc import Iterable
 from numbers import Number
 
 import numpy as np
-from IPython.core.display import display
+from IPython.display import display_html
 from pandas import DataFrame
 from sklearn.metrics import precision_recall_fscore_support
 
 from shift_detector.checks.check import Check, Report
 from shift_detector.precalculations.distinction_precalculation import DistinctionPrecalculation
+from shift_detector.utils.custom_print import nprint, is_in_jupyter
 
 
 class DistinctionCheck(Check):
@@ -38,11 +39,10 @@ class DistinctionCheck(Check):
             input_columns = store.column_names()
         input_columns = set(input_columns)
 
-        i = 1
         complete_examined_columns = []
         complete_shifted_columns = []
-        complete_explanation = {}
-        complete_information = {}
+        complete_explanation = []
+        complete_information = []
 
         while input_columns:
             examined_columns, precalculation_result = store[DistinctionPrecalculation(list(input_columns),
@@ -53,13 +53,13 @@ class DistinctionCheck(Check):
             shifted_columns, explanation = self.detect_shifts(examined_columns, precalculation_result)
 
             complete_shifted_columns.extend(shifted_columns)
-            complete_explanation['Run ' + str(i)] = explanation
-            complete_information['Classification Report - Run ' + str(i)] = self.information(precalculation_result)
+            complete_explanation.append(explanation)
+            information = self.information(precalculation_result)
+            complete_information.append(information)
 
             if not shifted_columns:
                 break
             input_columns -= set(shifted_columns)
-            i += 1
 
         return DistinctionReport("Distinction Check",
                                  complete_examined_columns,
@@ -75,16 +75,18 @@ class DistinctionCheck(Check):
 
         explanation = DataFrame(columns=['column', 'base accuracy in %', 'accuracy in %'])
 
+        relative_accuracy = base_accuracy * (1 - self.relative_threshold)
         for i, column in enumerate(examined_columns):
             accuracy = permuted_accuracies[column]
             explanation.loc[i] = [column, base_accuracy * 100, accuracy * 100]
-            if accuracy < base_accuracy * (1 - self.relative_threshold):
+            if accuracy < relative_accuracy:
                 shifted_columns.append(column)
 
         explanation.loc[:, 'diff'] = explanation['base accuracy in %'] - explanation['accuracy in %']
         explanation = explanation.round(2)
         explanation = explanation.sort_values(by=['diff'], ascending=False).reset_index(drop=True)
 
+        explanation = {'data': explanation, 'relative_accuracy': relative_accuracy * 100}
         return shifted_columns, explanation
 
     @staticmethod
@@ -112,11 +114,29 @@ class DistinctionCheck(Check):
 class DistinctionReport(Report):
 
     def print_explanation(self):
-        for run, explanation in self.explanation.items():
-            print("{}:".format(run))
-            display(explanation)
+        for i in range(len(self.explanation)):
+            run = i + 1
+            print("Run {}: Column Shifts / Classification Report".format(run))
+            explanation = self.explanation[i]['data']
+            information = self.information[i]
 
-    def print_information(self):
-        for tag, information in self.information.items():
-            print("{}:".format(tag))
-            display(information)
+            if is_in_jupyter():
+                relative_accuracy = self.explanation[i]['relative_accuracy']
+                explanation = explanation.style.apply(
+                    lambda x: ['background: #FF6A6A' if x['accuracy in %'] < relative_accuracy else ''] * len(x),
+                    axis=1)
+                html_str = ''
+                html_str += explanation.render()
+                html_str += information.to_html()
+                display_html(html_str.replace('table', 'table style="display:inline"'), raw=True)
+            else:
+                print(explanation, '\n')
+                print(information, '\n')
+
+    def print_report(self):
+        nprint(self.check_name, text_formatting='h2')
+        print("Examined Columns: {}".format(self.examined_columns))
+        print("Shifted Columns: {}".format(self.shifted_columns))
+        print()
+
+        self.print_explanation()
