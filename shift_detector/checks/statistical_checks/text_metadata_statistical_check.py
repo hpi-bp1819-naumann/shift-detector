@@ -1,6 +1,5 @@
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 from matplotlib import gridspec
 
 from shift_detector.checks.check import Report
@@ -16,8 +15,8 @@ from shift_detector.utils.visualization import PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT
 class TextMetadataStatisticalCheck(StatisticalCheck):
 
     def __init__(self, text_metadata_types=None, language='en', infer_language=False, significance=0.01,
-                 use_sampling=False, sampling_seed=None):
-        super().__init__(significance, use_sampling, sampling_seed)
+                 use_equal_dataset_sizes=False, sampling_seed=None):
+        super().__init__(significance, use_equal_dataset_sizes, sampling_seed)
         self.metadata_precalculation = TextMetadata(text_metadata_types, language=language,
                                                     infer_language=infer_language)
 
@@ -86,9 +85,7 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
 
     def run(self, store) -> Report:
         df1, df2 = store[self.metadata_precalculation]
-        sample_size = min(len(df1), len(df2))
-        part1 = df1.sample(sample_size, random_state=self.seed) if self.use_sampling else df1
-        part2 = df2.sample(sample_size, random_state=self.seed) if self.use_sampling else df2
+        part1, part2 = self.adjust_dataset_sizes(df1, df2)
         categorical_check = CategoricalStatisticalCheck()
         numerical_check = NumericalStatisticalCheck()
         pvalues = pd.DataFrame(columns=df1.columns, index=['pvalue'])
