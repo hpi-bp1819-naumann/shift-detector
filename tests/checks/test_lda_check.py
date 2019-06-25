@@ -13,10 +13,8 @@ class TestLdaCheck(unittest.TestCase):
         self.lda_report3 = LdaCheck(cols=['text'], significance=0.1, n_topics=2, n_iter=1, random_state=2)
         self.lda_report4 = LdaCheck(cols=['abcd'], significance=0.1, n_topics=2, n_iter=1, random_state=2)
 
-        logging.error(os.path.dirname(os.path.abspath(__file__)))
-        logging.error(os.getcwd())
-        self.poems = pd.read_csv("../data/poems.csv")
-        self.phrases = pd.read_csv("../data/phrases.csv")
+        self.poems = pd.read_csv("poems.csv")
+        self.phrases = pd.read_csv("phrases.csv")
 
         self.df1 = pd.DataFrame(self.poems, columns=['text'])
         self.df2 = pd.DataFrame(self.phrases, columns=['text'])

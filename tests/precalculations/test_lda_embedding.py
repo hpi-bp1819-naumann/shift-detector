@@ -12,8 +12,8 @@ class TestLdaEmbedding(unittest.TestCase):
         self.lda3 = LdaEmbedding(cols=['text'], n_topics=2, n_iter=1, random_state=2, lib='gensim')
         self.lda4 = LdaEmbedding(cols=['text', 'abc'], n_topics=2, n_iter=1, random_state=2, lib='sklearn')
 
-        self.poems = pd.read_csv("../data/poems.csv")
-        self.phrases = pd.read_csv("../data/phrases.csv")
+        self.poems = pd.read_csv("poems.csv")
+        self.phrases = pd.read_csv("phrases.csv")
 
         self.df1 = pd.DataFrame(self.poems, columns=['text'])
         self.df2 = pd.DataFrame(self.phrases, columns=['text'])
