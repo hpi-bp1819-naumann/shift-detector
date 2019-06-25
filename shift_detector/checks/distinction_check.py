@@ -41,11 +41,10 @@ class DistinctionCheck(Check):
             input_columns = store.column_names()
         input_columns = set(input_columns)
 
-        i = 1
         complete_examined_columns = []
         complete_shifted_columns = []
-        complete_explanation = {}
-        complete_information = {}
+        complete_explanation = []
+        complete_information = []
 
         while input_columns:
             examined_columns, precalculation_result = store[DistinctionPrecalculation(list(input_columns),
@@ -56,13 +55,13 @@ class DistinctionCheck(Check):
             shifted_columns, explanation = self.detect_shifts(examined_columns, precalculation_result)
 
             complete_shifted_columns.extend(shifted_columns)
-            complete_explanation[str(i)] = explanation
-            complete_information[str(i)] = self.information(precalculation_result)
+            complete_explanation.append(explanation)
+            information = self.information(precalculation_result)
+            complete_information.append(information)
 
             if not shifted_columns:
                 break
             input_columns -= set(shifted_columns)
-            i += 1
 
         return DistinctionReport("Distinction Check",
                                  complete_examined_columns,
@@ -117,15 +116,16 @@ class DistinctionCheck(Check):
 class DistinctionReport(Report):
 
     def print_explanation(self):
-        for run in self.explanation.keys():
+        for i in range(len(self.explanation)):
+            run = i + 1
             print("Run {}: Column Shifts / Classification Report".format(run))
-            explanation = self.explanation[run]['data']
-            information = self.information[run]
+            explanation = self.explanation[i]['data']
+            information = self.information[i]
 
             if is_in_jupyter():
-                relative_accuracy = self.explanation[run]['relative_accuracy']
+                relative_accuracy = self.explanation[i]['relative_accuracy']
                 explanation = explanation.style.apply(
-                    lambda x: ['background: #FF6A6A' if x['accuracy in %'] < relative_accuracy else '' for i in x],
+                    lambda x: ['background: #FF6A6A' if x['accuracy in %'] < relative_accuracy else ''] * len(x),
                     axis=1)
                 html_str = ''
                 html_str += explanation.render()
