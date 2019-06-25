@@ -7,14 +7,14 @@ Description
 -----------
 
 The :ref:`dq_metrics` gives you basic information about your datasets and detects the most obvious of datashifts. The
-'dq' stands for data quality, the metrics are in the style of the 'Unit Test for data'-framework Amazon Deequ.
+'DQ' stands for data quality, the metrics are in the style of the 'Unit tests for data'-libreary Deequ by amazon.
 For more information on Deequ see [SLSCB18]_.
 
-Some shifts result in the change of basic metrics, that are commonly used for the analysis and exploration of datasets.
-Those metrics and statistics are calculated on both datasets and compared afterwards.
+Some data shifts result in the change of basic metrics, that are commonly used for the analysis and exploration of
+datasets. This check calculates those metrics and statistics on both datasets and compares them.
 
-The check should be used in most analyses, its metrics are commonly used to describe datasets.
-It works directly on categorical and numerical data and, with additional Precalculations, also on text data.
+The :ref:`dq_metrics` works directly on categorical and numerical data and, with additional Precalculations, also on
+text data.
 
 
 Example
@@ -98,8 +98,11 @@ by the absolute value of -29.4%. All thresholds are customizable through the API
 Categorical
 ~~~~~~~~~~~
 
-Using the :ref:`dq_metrics` shifts can also be detected on categorical columns. Here the histograms over the attribute-values are
-compared. If the difference between those values exceeds the *categorical_threshold* the check calls shift on this
+Using the :ref:`dq_metrics`, shifts can also be detected on categorical columns. Most of the numerical metrics, with
+exception of *uniqueness* and *completeness* are not applicable for non-numerical data.
+
+For the categorical columns, the histograms over the attribute-values are compared. If the difference between those
+values exceeds the *categorical_threshold* the check calls shift on this
 column.
 
 The example above shows a shift in the categorical column 'payment_option'. There are different
@@ -107,6 +110,8 @@ attribute-values in this column, i.e. 'debit and 'cash'. In those, the differenc
 -6.5% which both exceed the threshold of 5%. This indicates that in dataset2 more people use
 cash as a payment-option and fewer use debit, the check calls shift on the column.
 
+In addition, the metric *num_distinct*, which counts the number of distinct values in a column, is applied on
+categorical columns.
 
 .. _dq_metrics_check_parameters:
 
