@@ -30,18 +30,17 @@ Code
 
     from shift_detector.detector import Detector
     from shift_detector.checks.conditional_probabilities_check import ConditionalProbabilitiesCheck
+    from shift_detector.utils.column_management import ColumnType
 
-    data_set_1 = 'examples/shoes_first.csv'
-    data_set_2 = 'examples/shoes_second.csv'
+    data_set_1 = 'data/pokedex1.csv'
+    data_set_2 = 'data/pokedex2.csv'
 
-    detector = Detector(
-        data_set_1,
-        data_set_2,
-        delimiter=','
-    )
-    detector.run(
-        ConditionalProbabilitiesCheck()
-    )
+    custom_column_types = {
+        'Type 1': ColumnType.categorical,
+        'Generation': ColumnType.categorical
+    }
+    detector = Detector(data_set_1, data_set_2, delimiter=',', **custom_column_types)
+    detector.run(ConditionalProbabilitiesCheck())
     detector.evaluate()
 
 The code works as follows:
@@ -56,28 +55,26 @@ The code works as follows:
 Result
 ++++++
 
-.. image:: ../images/bild.png
+.. image:: ../images/conditional_probabilities.png
   :width: 1200
 
 Interpretation
 ++++++++++++++
 
-The above rule can be read as follows:
+The above result can be interpreted as follows:
 
-1. 30% of the tuples in ``data_set_1`` and 7% of the tuples in ``data_set_2``
-   are about black Nike shoes. This accounts to a difference of 23%.
-2. 3% of the tuples in ``data_set_1`` and 5% of the tuples in ``data_set_2``
-   are about black Nike football shoes. This accounts to a difference of -2%.
-3. If a tuple is about black Nike shoes the conditional probability that
-   the category is football is 10% in ``data_set_1`` and 71% in ``data_set_2``.
-   This accounts to a difference of -61%.
-
-This tells you that:
-
-1. ``data_set_1`` contains way more tuples about black Nike shoes than
-   ``data_set_2``, however,
-2. the probability that a black Nike shoe is made for football is way higher
-   in ``data_set_2`` than in ``data_set_1``.
+1. First, a listing of all columns considered by the check is displayed.
+2. For each data set, attribute value pairs that are unique to this data
+   set are displayed together with their support (relative number of tuples
+   that contain these values). Keep in mind, that it is still possible that
+   those values also appear in the other data set. In this case, they don't
+   exceed min_support and/or min_confidence.
+3. Mutual rules that exceed min_delta_support and min_delta_confidence are
+   displayed. Take a look at the reading aid for information on how to read them.
+4. Mutual rules that only exceed min_delta_support or min_delta_confidence
+   (exclusive or) are displayed.
+5. A diagram is displayed that plots all mutual rules according to their
+   delta_supports and delta_confidences values.
 
 .. _conditional_probabilities_parameters:
 
@@ -85,7 +82,7 @@ Parameters
 ----------
 
 :ref:`conditional_probabilities` provides several tuning knobs and adjustable
-thresholds that control (a) the computational complexity,
+thresholds that control (a) the runtime,
 (b) the size of the result and (c) the applied pre-processing:
 
 ``min_support``:
@@ -113,24 +110,24 @@ thresholds that control (a) the computational complexity,
 ``rule_limit``:
     This parameter expects an int and controls the maximum number of rules that are
     printed in each section of the report as a result of executing
-    :ref:`conditional_probabilities`.
-    The default value is 5. This parameter does not have any impact on the diagram.
+    :ref:`conditional_probabilities`. The default value is 5.
+    This parameter does not have any impact on the visualization.
 
 ``min_delta_supports``:
     This parameter expects a float between 0 and 1 and affects the granularity of the
     comparison of the two data sets. Only rules whose support values exhibit an absolute
     difference of more than ``min_delta_supports`` are considered to indicate a shift.
     A rule has to exceed ``min_delta_supports`` to be classified as an orange rule. If it
-    also exceeds ``min_delta_confidences`` it is classiefied as a red rule.
-    The default value is 0.05. This parameter does not impact the diagram. 
+    also exceeds ``min_delta_confidences`` it is classified as a red rule.
+    The default value is 0.05.
 
 ``min_delta_confidences``:
     This parameter expects a float between 0 and 1 and affects the granularity of the
     comparison of the two data sets. Only rules whose confidence values exhibit an absolute
     difference of more than ``min_delta_confidences`` are considered to indicate a shift.
     A rule has to exceed ``min_delta_confidences`` to be classified as an orange rule. If it
-    also exceeds ``min_delta_supports`` it is classiefied as a red rule.
-    The default value is 0.05. This parameter does not impact the diagram.
+    also exceeds ``min_delta_supports`` it is classified as a red rule.
+    The default value is 0.05.
 
 ``number_of_bins``:
     This parameter affects pre-processing of numerical columns.
@@ -179,19 +176,19 @@ Rule Computation
 Rule Reduction
 ##############
 
-6. Intermediate result rules are partitioned in those rules that only appear in
-   the first data set, those rules that only appear in the second data set, and
-   those rules that appear in both data sets and consist of a left and a
+6. Intermediate result rules are partitioned in those that only appear in
+   the first data set, those that only appear in the second data set, and
+   those that appear in both data sets and have a non-empty
    right side (called mutual rules).
 7. Mutual rules are filtered for those exceeding ``min_delta_supports`` and
    ``min_delta_confidences`` and sorted in descending order according to the
    absolute difference of their confidence values and the maximum of their
-   supports of left side values. Rules whose support value is 0 in one data
+   supports of left side values. Rules whose support value are 0 in one data
    set come last.
 8. Rules that only appear in one data set are filtered for significant
    rules. A rule is significant if there exists no other rule whose set of
-   attribute value combinations is a subset of the set of attribute value
-   combinations of the significant rule. Significant rules are then sorted
+   attribute value pairs is a proper subset of the set of attribute value
+   pairs of the significant rule. Significant rules are then sorted
    in descending order according to their support of left side and their
    support.
 
