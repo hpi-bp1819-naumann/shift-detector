@@ -131,15 +131,18 @@ class WordPredictionPrecalculation(Precalculation):
 
     def create_callbacks(self):
         callbacks = []
-        dir = 'wordPredictionCheck_model_checkpoints'
+        output_name = 'wordPredictionCheck_model_checkpoints'
 
-        callbacks += [ModelCheckpoint(dir + '/model.h5', verbose=self.verbose,
+        callbacks += [ModelCheckpoint(output_name + '/model.h5', verbose=self.verbose,
                                       monitor='loss', save_best_only=True, mode='auto')]
         callbacks += [EarlyStopping(monitor='loss', patience=3, verbose=self.verbose,
                                     mode='auto', restore_best_weights=True)]
 
-        if not os.path.exists(dir):
-            os.mkdir(dir)
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        output_path = os.path.join(dir_path, output_name)
+
+        if not os.path.exists(output_path):
+            os.mkdir(output_path)
 
         return callbacks
 
