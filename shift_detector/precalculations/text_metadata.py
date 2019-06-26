@@ -30,6 +30,18 @@ class GenericTextMetadata(Precalculation):
     def __hash__(self):
         return hash(self.__class__)
 
+    def __lt__(self, other):
+        return self.metadata_name() < other.metadata_name()
+
+    def __le__(self, other):
+        return self.metadata_name() <= other.metadata_name()
+
+    def __gt__(self, other):
+        return self.metadata_name() > other.metadata_name()
+
+    def __ge__(self, other):
+        return self.metadata_name() >= other.metadata_name()
+
     @staticmethod
     @abstractmethod
     def metadata_name() -> str:
