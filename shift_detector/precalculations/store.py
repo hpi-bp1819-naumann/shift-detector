@@ -63,6 +63,8 @@ class Store:
 
         lprint("- Executing {}".format(needed_preprocessing.__class__.__name__), self.log_print)
         preprocessing = needed_preprocessing.process(self)
+        lprint("- Finished Precalculation", self.log_print)
+
         self.preprocessings[needed_preprocessing] = preprocessing
         return preprocessing
 
