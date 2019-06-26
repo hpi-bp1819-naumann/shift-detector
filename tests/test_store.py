@@ -106,3 +106,9 @@ class TestStore(unittest.TestCase):
 
         with self.subTest("Incorrect column_types"):
             self.assertRaises(TypeError, lambda: store(ColumnType.numerical, 'no_column_type'))
+
+    def test_wrong_item_access(self):
+        df1 = pd.DataFrame(list(range(10)))
+        df2 = pd.DataFrame(list(range(10)))
+        store = Store(df1=df1, df2=df2)
+        self.assertRaises(TypeError, lambda: store['Not a Precalculation'])
