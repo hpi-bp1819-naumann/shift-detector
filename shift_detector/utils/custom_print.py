@@ -7,7 +7,7 @@ def nprint(input_str, num_tabs=0, text_formatting='normal'):
     for i in range(num_tabs):
         input_str = '\t' + input_str
 
-    if not is_in_jupyter() or text_formatting == 'normal':
+    if not is_in_jupyter():
         print(input_str)
     else:
         if text_formatting == 'h1':
@@ -18,13 +18,17 @@ def nprint(input_str, num_tabs=0, text_formatting='normal'):
 
         elif text_formatting == 'h3':
             display(Markdown('### {}'.format(input_str)))
+        else:
+            display(input_str)
 
 
 # prints inline markdown
 def mdprint(input_str):
     if not is_in_jupyter():
         print(input_str)
+        print('not in jupyter')
     else:
+        print('in jupyter')
         display(Markdown(input_str))
 
 

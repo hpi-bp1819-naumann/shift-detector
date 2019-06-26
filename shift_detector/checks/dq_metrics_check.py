@@ -1,13 +1,16 @@
 import logging as logger
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 from shift_detector.checks.check import Check, Report
 from shift_detector.precalculations.dq_metrics_precalculation import DQMetricsPrecalculation
 from shift_detector.utils.column_management import ColumnType
 from shift_detector.utils.custom_print import nprint
+
+ReportRow = namedtuple('ReportRow', 'metric_name val1 val2 threshold diff')
 
 
 class DQMetricsCheck(Check):
@@ -42,37 +45,30 @@ class DQMetricsCheck(Check):
         numerical_report = self.numerical_categorical_report(df1_numerical, df2_numerical)
         attribute_val_report = self.attribute_val_report()
 
-        return numerical_report + attribute_val_report
+        both_explanations = numerical_report.explanation.copy()
+        both_explanations.update(attribute_val_report.explanation)
+        both_reports = DQMetricsReport(numerical_report.examined_columns + attribute_val_report.examined_columns,
+                                       numerical_report.shifted_columns + attribute_val_report.shifted_columns,
+                                       both_explanations, {},
+                                       numerical_report.figures + attribute_val_report.figures)
+
+        return both_reports
 
     def relative_metric_difference(self, column, metric_name, comparison='numerical_comparison'):
         metric_in_df1 = self.data[comparison][column][metric_name]['df1']
         metric_in_df2 = self.data[comparison][column][metric_name]['df2']
+        relative_difference = 0
 
         if metric_name in ['uniqueness', 'completeness']:
-            return metric_in_df2 - metric_in_df1
+            relative_difference = metric_in_df2 - metric_in_df1
 
-        if metric_in_df1 == 0 and metric_in_df2 == 0:
-            return 0
-
-        if metric_in_df1 == 0:
+        elif metric_in_df1 == 0:
             logger.warning("Column {} \t \t {}: no comparison of distance possible, division by zero"
                            .format(column, metric_name))
-            return 0
+        else:
+            relative_difference = (metric_in_df2 / metric_in_df1 - 1)
 
-        relative_difference = (metric_in_df2 / metric_in_df1 - 1)
-        return relative_difference
-
-    @staticmethod
-    def difference_to_string(metrics_difference, print_plus_minus=False):
-        metrics_difference = round(metrics_difference*100, 2)
-        metrics_difference_string = str(metrics_difference) + ' %'
-
-        if print_plus_minus:
-            metrics_difference_string = '+/- ' + metrics_difference_string
-        elif metrics_difference > 0:
-            metrics_difference_string = '+' + metrics_difference_string
-
-        return metrics_difference_string
+        return metric_in_df1, metric_in_df2, relative_difference
 
     def numerical_categorical_report(self, df1, df2):
         numerical_comparison = self.data['numerical_comparison']
@@ -80,32 +76,31 @@ class DQMetricsCheck(Check):
 
         examined_columns = set()
         shifted_columns = set()
-        explanation = defaultdict(str)
+        explanation = defaultdict(list)
 
         for comparison, comparison_name in [(numerical_comparison, 'numerical_comparison'), (categorical_comparison,
                                                                                              'categorical_comparison')]:
-
             for column_name, metrics in comparison.items():
                 examined_columns.add(column_name)
 
-                for metric in metrics:
-                    diff = self.relative_metric_difference(column_name, metric, comparison=comparison_name)
-                    if abs(diff) > self.metrics_thresholds_percentage[metric]:
+                for metric_name in metrics:
+                    print('DEBUGGING', column_name, metric_name)
+                    val1, val2, diff = self.relative_metric_difference(column_name, metric_name,
+                                                                       comparison=comparison_name)
+                    if abs(diff) > self.metrics_thresholds_percentage[metric_name]:
                         shifted_columns.add(column_name)
 
-                        explanation[column_name] += "Metric: {}, Diff: {}, threshold: {}\n".\
-                            format(metric, self.difference_to_string(diff),
-                                   self.difference_to_string(self.metrics_thresholds_percentage[metric]),
-                                   print_plus_minus=True)
+                        explanation[column_name].append(
+                            ReportRow(metric_name, val1, val2, self.metrics_thresholds_percentage[metric_name], diff))
 
-        return DQMetricsReport(examined_columns, shifted_columns, dict(explanation),
+        return DQMetricsReport(examined_columns, shifted_columns, explanation={'numerical_categorical': explanation},
                                figures=[DQMetricsReport.numerical_plot(df1, df2)])
 
     def attribute_val_report(self):
         attribute_val_comparison = self.data['attribute_val_comparison']
         examined_columns = set()
         shifted_columns = set()
-        explanation = defaultdict(str)
+        explanation = defaultdict(list)
         plot_infos = []
 
         for column_name, attribute in attribute_val_comparison.items():
@@ -116,40 +111,70 @@ class DQMetricsCheck(Check):
             attribute_names = []
 
             for attribute_name, attribute_values in attribute.items():
-                diff = attribute_values['df1'] - attribute_values['df2']
+                val1 = attribute_values['df1']
+                val2 = attribute_values['df2']
+                diff = val1 - val2
 
-                bar_df1.append(attribute_values['df1'])
-                bar_df2.append(attribute_values['df2'])
+                bar_df1.append(val1)
+                bar_df2.append(val2)
                 attribute_names.append(attribute_name)
 
                 if diff > self.categorical_threshold:
                     shifted_columns.add(column_name)
-                    explanation[column_name] += "Attribute: '{}' with Diff: {}, categorical threshold: {}\n"\
-                        .format(attribute_name, self.difference_to_string(diff),
-                                self.difference_to_string(self.categorical_threshold, print_plus_minus=True))
+                    explanation[column_name].append(
+                        ReportRow(attribute_name, val1, val2, self.categorical_threshold, diff))
 
             plot_infos.append((bar_df1, bar_df2, attribute_names, column_name))
 
-        return DQMetricsReport(examined_columns, shifted_columns, dict(explanation),
-                               figures=[DQMetricsReport.attribute_val_plot(plot_infos)])
+        return DQMetricsReport(examined_columns, shifted_columns, explanation={'attribute_val': explanation},
+                               information={}, figures=[DQMetricsReport.attribute_val_plot(plot_infos)])
 
 
 class DQMetricsReport(Report):
 
-    def __init__(self, examined_columns, shifted_columns, information={}, explanation={}, figures=[]):
-        super().__init__("DQ Metrics Check", examined_columns, shifted_columns, information, explanation, figures)
+    def __init__(self, examined_columns, shifted_columns, explanation=[], information={}, figures=[]):
+        super().__init__("DQ Metrics Check", examined_columns, shifted_columns, explanation, information, figures)
 
     def print_explanation(self):
-        categorical_found = False
-        nprint("Numerical columns", text_formatting='h3')
 
-        for column, explanation in self.explanation.items():
-            if not categorical_found:
-                if 'categorical' in explanation:
-                    categorical_found = True
-                    nprint("Categorical columns", text_formatting='h3')
+        for metric_name, name, sub_name, heading in \
+                [('numerical_categorical', 'Metric', 'Column', 'Numerical Columns'),
+                 ('attribute_val', 'Attribute Value', 'Attribute', 'Categorical Columns')]:
 
-            print("Column '{}':\n{}\n".format(column, explanation))
+            nprint(heading, text_formatting='h3')
+            for column_name, data in self.explanation[metric_name].items():
+                names = []
+                val1s = []
+                val2s = []
+                thresholds = []
+                diffs = []
+
+                for row in data:
+                    names.append(row.metric_name)
+                    val1s.append(round(row.val1, 2))
+                    val2s.append(round(row.val2, 2))
+                    thresholds.append(self.difference_to_string(row.threshold, print_plus_minus=True))
+                    diffs.append(self.difference_to_string(row.diff))
+
+                table_data = {name: names, 'Val in DS1': val1s, 'Val in DS2': val2s, 'Threshold': thresholds,
+                              'Relative Diff': diffs}
+                table = pd.DataFrame(table_data)
+
+                print("{} '{}':".format(sub_name, column_name))
+                nprint(table)
+                print("\n")
+
+    @staticmethod
+    def difference_to_string(metrics_difference, print_plus_minus=False):
+        metrics_difference = round(metrics_difference * 100, 2)
+        metrics_difference_string = str(metrics_difference) + ' %'
+
+        if print_plus_minus:
+            metrics_difference_string = '+/- ' + metrics_difference_string
+        elif metrics_difference > 0:
+            metrics_difference_string = '+' + metrics_difference_string
+
+        return metrics_difference_string
 
     @staticmethod
     def numerical_plot(df1, df2):
