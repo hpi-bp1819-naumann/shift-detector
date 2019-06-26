@@ -28,8 +28,10 @@ class TestWordPredictionPrecalculation(TestCase):
         for idx in range(len(col)):
             error_col += [alphabet[idx]]
 
-        data1 = {'shift': col, 'no_shift': col, 'error_col': error_col}
-        data2 = {'shift': ['B B B B B B'] * len(col), 'no_shift': col, 'error_col': error_col}
+        num_col = range(len(col))
+
+        data1 = {'shift': col, 'no_shift': col, 'num_col': error_col}
+        data2 = {'shift': ['B B B B B B'] * len(col), 'no_shift': col, 'num_col': error_col}
         self.df1 = DataFrame.from_dict(data1)
         self.df2 = DataFrame.from_dict(data2)
         self.store = Store(self.df1, self.df2)
@@ -39,7 +41,7 @@ class TestWordPredictionPrecalculation(TestCase):
         self.precalculation_no_shift = WordPredictionPrecalculation('no_shift',
                                                                     num_epochs_predictor=10,
                                                                     ft_workers=1, seed=1)
-        self.precalculation_error = WordPredictionPrecalculation('error_col',
+        self.precalculation_error = WordPredictionPrecalculation('num_col',
                                                                  num_epochs_predictor=10,
                                                                  ft_workers=1, seed=1)
 
@@ -55,8 +57,17 @@ class TestWordPredictionPrecalculation(TestCase):
                 self.precalculation_no_shift.process(self.store)
             self.assertTrue(df2_prediction_loss <= df1_prediction_loss)
 
-    def test_error_raising(self):
-        self.assertRaises(ValueError, lambda: self.precalculation_error.process(self.store))
+    def test_error_handling(self):
+
+        with self.subTest("Test column type error handling"):
+            self.assertRaises(ValueError, lambda: WordPredictionPrecalculation(1))
+
+        with self.subTest("Test lstm window size error handling"):
+            self.assertRaises(ValueError, lambda: WordPredictionPrecalculation('shift',
+                                                                               lstm_window=0))
+
+        with self.subTest("Test no string column error handling"):
+            self.assertRaises(ValueError, lambda: self.precalculation_error.process(self.store))
 
     def test_equal(self):
         with self.subTest("Test equality"):

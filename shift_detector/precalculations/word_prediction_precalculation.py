@@ -19,7 +19,8 @@ from shift_detector.utils.column_management import ColumnType
 class WordPredictionPrecalculation(Precalculation):
 
     def __init__(self, column, ft_window_size=5, ft_size=100, ft_workers=4, seed=None,
-                 lstm_window=5, num_epochs_predictor=100, verbose=0):
+                 lstm_window=5, num_epochs_predictor=100, verbose=0,
+                 output_path="model_checkpoints"):
         self.column = column
         self.ft_window_size = ft_window_size
         self.ft_size = ft_size
@@ -29,7 +30,7 @@ class WordPredictionPrecalculation(Precalculation):
         self.num_epochs_predictor = num_epochs_predictor
         self.verbose = verbose
 
-        self.output_path = self.create_output_path()
+        self.output_path = self.create_output_path(output_path)
 
         if not isinstance(self.column, str):
             raise ValueError('Column argument {} should be of type string. '
@@ -131,14 +132,10 @@ class WordPredictionPrecalculation(Precalculation):
 
         return features, labels
 
-    def create_output_path(self):
-        output_name = 'wordPredictionCheck_model_checkpoints'
-
-        dir_path = os.path.dirname(os.path.realpath(__file__))
-        output_path = os.path.join(dir_path, output_name)
+    def create_output_path(self, output_path):
 
         if not os.path.exists(output_path):
-            os.mkdir(output_path)
+            os.makedirs(output_path)
 
         return output_path
 
