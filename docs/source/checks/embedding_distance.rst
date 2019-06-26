@@ -87,6 +87,15 @@ Parameters
 ``trained_model``:
     This parameter expects a trained gensim model, which will be used instead of training a new model.
 
+``threshold``:
+    This parameter expects a float, that determines the relative threshold for the check. The test calls shift in the following cases:
+
+    1. the distance within dataset 1 is more than ``threshold`` times bigger than the distance within dataset 2
+    2. the distance within dataset 2 is more than ``threshold`` times bigger than the distance within dataset 1
+    3. the distance between the two datsets is more than ``threshold`` times bigger than the distances within the datasets
+
+    The default value is 3.0.
+
 Implementation
 --------------
 
