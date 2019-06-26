@@ -1,5 +1,6 @@
-from shift_detector.precalculations.preprocessor import Preprocessor
 from enum import Enum
+
+from shift_detector.precalculations.precalculation import Precalculation
 from shift_detector.precalculations.store import Store
 from shift_detector.utils.column_management import ColumnType
 
@@ -9,7 +10,7 @@ class NGramType(Enum):
     character = "character"
 
 
-class NGram(Preprocessor):
+class NGram(Precalculation):
 
     def __init__(self, n: int, ngram_type: NGramType):
         self.n = n
