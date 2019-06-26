@@ -1,8 +1,9 @@
 from unittest import TestCase
 
+import mock
 from pandas import DataFrame
 
-from shift_detector.checks.conditional_probabilities_check import ConditionalProbabilitiesCheck
+import shift_detector.checks.conditional_probabilities_check as conditional_probabilities_check
 from shift_detector.precalculations.store import Store
 
 
@@ -14,7 +15,11 @@ class TestConditionalProbabilitiesCheck(TestCase):
         self.df1 = DataFrame.from_dict(sales1)
         self.df2 = DataFrame.from_dict(sales2)
         self.store = Store(self.df1, self.df2)
-        self.check = ConditionalProbabilitiesCheck()
+        self.check = conditional_probabilities_check.ConditionalProbabilitiesCheck()
 
-    def test_run(self):
-        self.check.run(self.store)
+    @mock.patch('shift_detector.checks.conditional_probabilities_check.plt')
+    def test_run(self, mock_plt):
+        report = self.check.run(self.store)
+        report.print_report()
+        report.print_explanation()
+        self.assertTrue(mock_plt.show.called)
