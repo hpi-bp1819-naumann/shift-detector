@@ -39,13 +39,17 @@ class TestSorensenDiceCheck(unittest.TestCase):
     def test_calls_embedding_distance_report(self):
         self.assertEqual(self.report.__class__, SorensenDiceReport)
 
+    def test_threshold(self):
+        report2 = SorensenDiceCheck(ngram_type=NGramType.character, n=3, threshold=1.1).run(self.store)
+        self.assertEqual(report2.shifted_columns, [])
+
 
 class TestEmbeddingDistanceReport(unittest.TestCase):
 
     def setUp(self):
         result = {'Col1': (0.1, 0.2, 1.0),
                   'Col2': (0.2, 0.2, 0.2)}
-        self.report = SorensenDiceReport('Test Check', ['Col1', 'Col2'], ['Col1'], information=result)
+        self.report = SorensenDiceReport('Test Check', ['Col1', 'Col2'], ['Col1'], information=(0.1, result))
 
     @mock.patch('shift_detector.checks.sorensen_dice_check.display')
     def test_report_calls_display(self, mock_display):
