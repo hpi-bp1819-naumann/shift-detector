@@ -116,7 +116,6 @@ class DQMetricsCheck(Check):
             attribute_names = []
 
             for attribute_name, attribute_values in attribute.items():
-
                 diff = attribute_values['df1'] - attribute_values['df2']
 
                 bar_df1.append(attribute_values['df1'])
@@ -155,11 +154,15 @@ class DQMetricsReport(Report):
     @staticmethod
     def numerical_plot(df1, df2):
         def custom_plot():
-            f = plt.figure(figsize=(20, 7))
+            f = plt.figure()
             num_columns = len(list(df1.columns))
+            # f.tight_layout()
+            f.set_figheight(25)
+            f.set_figwidth(20)
+
             for num, column in enumerate(list(df1.columns)):
                 a, b = df1[column], df2[column]
-                ax = f.add_subplot(1, num_columns, num + 1)
+                ax = f.add_subplot(4, 5, num + 1)
 
                 ax.boxplot([a, b])
                 ax.set_title(column)
@@ -172,12 +175,14 @@ class DQMetricsReport(Report):
     def attribute_val_plot(plot_infos):
         def custom_plot():
             f = plt.figure(figsize=(20, 7))
+            f.set_figheight(50)
+            f.set_figwidth(18)
             num_columns = len(list(plot_infos))
 
             for i, plot_info in enumerate(list(plot_infos)):
                 bars1, bars2, attribute_names, column_name = plot_info[0], plot_info[1], plot_info[2], plot_info[3]
 
-                subplot = f.add_subplot(1, num_columns, i + 1)
+                subplot = f.add_subplot(num_columns, 3, i + 1)
                 bar_width = 0.25
 
                 ind = np.arange(len(bars1))
