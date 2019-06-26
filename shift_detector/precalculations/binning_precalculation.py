@@ -45,4 +45,4 @@ class BinningPrecalculation(Precalculation):
         df1_binned = dfs_binned.head(df1_size)
         df2_binned = dfs_binned.tail(df2_size)
 
-        return df1_binned, df2_binned
+        return df1_binned, df2_binned, set(dfs_binned.columns)

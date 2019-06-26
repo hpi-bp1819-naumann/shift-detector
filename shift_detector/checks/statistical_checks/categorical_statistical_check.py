@@ -1,11 +1,13 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-from matplotlib import gridspec
 from scipy import stats
 
 from shift_detector.checks.statistical_checks.statistical_check import SimpleStatisticalCheck
+from shift_detector.precalculations.binning_precalculation import BinningPrecalculation
+from shift_detector.precalculations.lda_embedding import LdaEmbedding
 from shift_detector.precalculations.low_cardinality_precalculation import LowCardinalityPrecalculation
 from shift_detector.utils import visualization as vis
+from shift_detector.utils.column_management import ColumnType
 
 
 def chi2_test(part1: pd.Series, part2: pd.Series):
@@ -25,7 +27,12 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
         return 'Chi^2-Test with Log-Likelihood (G-Test)'
 
     def data_to_process(self, store):
-        df1, df2, columns = store[LowCardinalityPrecalculation()]
+        cat1, cat2, cat_col = store[LowCardinalityPrecalculation()]
+        num1, num2, num_col = store[BinningPrecalculation(bins=20)]
+        #lda_text = store[LdaEmbedding(store.column_names(ColumnType.text))]
+        df1 = pd.concat([cat1, num1], axis='columns')
+        df2 = pd.concat([cat2, num2], axis='columns')
+        columns = set(cat_col).union(set(num_col))
         return df1, df2, columns
 
     def statistical_test(self, part1: pd.Series, part2: pd.Series) -> float:
