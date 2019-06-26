@@ -28,8 +28,6 @@ class TestWordPredictionPrecalculation(TestCase):
         for idx in range(len(col)):
             error_col += [alphabet[idx]]
 
-        num_col = range(len(col))
-
         data1 = {'shift': col, 'no_shift': col, 'num_col': error_col}
         data2 = {'shift': ['B B B B B B'] * len(col), 'no_shift': col, 'num_col': error_col}
         self.df1 = DataFrame.from_dict(data1)
