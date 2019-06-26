@@ -56,7 +56,7 @@ class Store:
             return self.splitted_dfs[needed_preprocessing]
 
         if not isinstance(needed_preprocessing, Precalculation):
-            raise Exception("Needed Preprocessing must be of type Precalculation or ColumnType")
+            raise TypeError("Needed Preprocessing must be of type Precalculation or ColumnType")
 
         if needed_preprocessing in self.preprocessings:
             lprint("- Use already executed {}".format(needed_preprocessing.__class__.__name__), self.log_print)

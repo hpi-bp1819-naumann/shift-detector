@@ -111,4 +111,4 @@ class TestStore(unittest.TestCase):
         df1 = pd.DataFrame(list(range(10)))
         df2 = pd.DataFrame(list(range(10)))
         store = Store(df1=df1, df2=df2)
-        self.assertRaises(Exception, lambda: store['Not a Precalculation'])
+        self.assertRaises(TypeError, lambda: store['Not a Precalculation'])
