@@ -57,7 +57,7 @@ class StatisticalCheck(Check):
 
     @abstractmethod
     def run(self, store) -> Report:
-        pass
+        raise NotImplementedError
 
 
 class SimpleStatisticalCheck(StatisticalCheck):
@@ -74,7 +74,7 @@ class SimpleStatisticalCheck(StatisticalCheck):
         :param part2: second sample
         :return: p-value of statistical test
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def check_name(self) -> str:
@@ -82,7 +82,7 @@ class SimpleStatisticalCheck(StatisticalCheck):
         Returns the name of the check as String.
         :return: name of the check
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def statistical_test_name(self) -> str:
@@ -90,7 +90,7 @@ class SimpleStatisticalCheck(StatisticalCheck):
         Returns the name of the statistical test performed in statistical_test as String.
         :return: name of the statistical test
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def data_to_process(self, store):
@@ -124,11 +124,11 @@ class SimpleStatisticalCheck(StatisticalCheck):
     @staticmethod
     @abstractmethod
     def column_plot(figure, tile, column, df1, df2):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def number_of_columns_of_plots(self) -> int:
-        pass
+        raise NotImplementedError
 
     def plot_all_columns(self, plot_functions):
         cols = self.number_of_columns_of_plots()
