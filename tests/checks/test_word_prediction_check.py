@@ -61,5 +61,6 @@ class TestWordPredictionCheck(TestCase):
                                   report_automatic_col_detection.examined_columns)
 
         with self.subTest("Test failure columns"):
-            self.assertIsInstance(report_automatic_col_detection.explanation['too_short'],
+            self.assertTrue('too_short' in report_automatic_col_detection.information.keys())
+            self.assertIsInstance(report_automatic_col_detection.information['too_short'],
                                   ValueError)
