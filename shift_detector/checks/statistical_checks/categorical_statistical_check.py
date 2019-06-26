@@ -20,10 +20,10 @@ def chi2_test(part1: pd.Series, part2: pd.Series):
 
 class CategoricalStatisticalCheck(SimpleStatisticalCheck):
 
-    def __init__(self, significance=0.01, use_sampling=False, sampling_seed=0, use_binning=False, use_embedding=False):
+    def __init__(self, significance=0.01, sample_size=None, use_equal_dataset_sizes=False, sampling_seed=0, use_binning=False, use_embedding=False):
         self.use_binning = use_binning
         self.use_embedding = use_embedding
-        super().__init__(significance, use_sampling, sampling_seed)
+        super().__init__(significance, sample_size, use_equal_dataset_sizes, sampling_seed)
 
     def check_name(self) -> str:
         return 'Categorical Statistical Check'

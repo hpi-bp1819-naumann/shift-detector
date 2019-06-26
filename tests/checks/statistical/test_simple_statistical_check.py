@@ -8,6 +8,7 @@ from mock import MagicMock
 from shift_detector.checks.statistical_checks.categorical_statistical_check import CategoricalStatisticalCheck
 from shift_detector.checks.statistical_checks.numerical_statistical_check import NumericalStatisticalCheck
 from shift_detector.checks.statistical_checks.text_metadata_statistical_check import TextMetadataStatisticalCheck
+from shift_detector.precalculations.store import Store
 
 
 class TestSimpleStatisticalCheck(unittest.TestCase):
@@ -49,3 +50,14 @@ class TestSimpleStatisticalCheck(unittest.TestCase):
                 result1, result2 = check.adjust_dataset_sizes(df1, df2)
                 self.assertEqual(len(result1), solution[0])
                 self.assertEqual(len(result2), solution[1])
+
+    def test_column_order_in_report(self):
+        df1 = pd.DataFrame([[1, 0]] * 10, columns=['abc', 'def'])
+        df2 = pd.DataFrame([[0, 1]] * 10, columns=['abc', 'def'])
+        store = Store(df1, df2)
+        for check in [CategoricalStatisticalCheck(), NumericalStatisticalCheck()]:
+            with self.subTest(check=check):
+                result = check.run(store)
+                self.assertEqual('abc', result.examined_columns[0])
+                self.assertEqual('abc', result.shifted_columns[0])
+                self.assertEqual(result.examined_columns, result.shifted_columns)
