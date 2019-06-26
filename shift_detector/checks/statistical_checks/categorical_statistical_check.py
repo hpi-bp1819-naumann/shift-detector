@@ -20,6 +20,11 @@ def chi2_test(part1: pd.Series, part2: pd.Series):
 
 class CategoricalStatisticalCheck(SimpleStatisticalCheck):
 
+    def __init__(self, significance=0.01, use_sampling=False, sampling_seed=0, use_binning=False, use_embedding=False):
+        self.use_binning = use_binning
+        self.use_embedding = use_embedding
+        super().__init__(significance, use_sampling, sampling_seed)
+
     def check_name(self) -> str:
         return 'Categorical Statistical Check'
 
@@ -27,12 +32,29 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
         return 'Chi^2-Test with Log-Likelihood (G-Test)'
 
     def data_to_process(self, store):
-        cat1, cat2, cat_col = store[LowCardinalityPrecalculation()]
-        num1, num2, num_col = store[BinningPrecalculation(bins=20)]
-        #lda_text = store[LdaEmbedding(store.column_names(ColumnType.text))]
-        df1 = pd.concat([cat1, num1], axis='columns')
-        df2 = pd.concat([cat2, num2], axis='columns')
-        columns = set(cat_col).union(set(num_col))
+        if not self.use_binning:
+            cat1, cat2, cat_col = store[LowCardinalityPrecalculation()]
+        else:
+            cat1, cat2 = store[ColumnType.categorical]
+            cat_col = store.column_names(ColumnType.categorical)
+        df1 = cat1
+        df2 = cat2
+        columns = set(cat_col)
+        if self.use_binning:
+            num1, num2, num_col = store[BinningPrecalculation(bins=20)]
+            df1 = pd.concat([df1, num1], axis='columns')
+            df2 = pd.concat([df2, num2], axis='columns')
+            columns = columns.union(set(num_col))
+        if self.use_embedding:
+            embedding = LdaEmbedding(store.column_names(ColumnType.text))
+            lda_text = store[embedding]
+            topic_num_to_label = dict(zip(range(embedding.n_topics),
+                                          ['topic_{}'.format(i) for i in range(embedding.n_topics)]))
+            lda1 = lda_text[0].replace(topic_num_to_label)
+            lda2 = lda_text[1].replace(topic_num_to_label)
+            df1 = pd.concat([df1, lda1], axis='columns')
+            df2 = pd.concat([df2, lda2], axis='columns')
+            columns = columns.union(set(lda1.columns))
         return df1, df2, columns
 
     def statistical_test(self, part1: pd.Series, part2: pd.Series) -> float:
