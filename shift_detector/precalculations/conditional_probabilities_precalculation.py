@@ -14,7 +14,7 @@ class ConditionalProbabilitiesPrecalculation(Precalculation):
 
     def process(self, store):
         df1_cat, df2_cat = store[ColumnType.categorical]
-        df1_num, df2_num = store[BinningPrecalculation()]
+        df1_num, df2_num, _ = store[BinningPrecalculation()]
 
         df1 = pd.concat([df1_cat, df1_num], axis=1)
         df2 = pd.concat([df2_cat, df2_num], axis=1)

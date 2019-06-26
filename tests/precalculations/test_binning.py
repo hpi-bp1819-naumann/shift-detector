@@ -30,7 +30,7 @@ class TestBinningPrecalculation(TestCase):
         self.assertEqual(hash(self.precalculation), hash(other_precalculation))
 
     def test_process(self):
-        df1_binned, df2_binned = self.precalculation.process(self.store)
+        df1_binned, df2_binned, columns = self.precalculation.process(self.store)
 
         with self.subTest("Test numerical binning"):
             column_name = 'num_binned'
@@ -51,3 +51,6 @@ class TestBinningPrecalculation(TestCase):
 
             self.assertEqual(1, len(df1_binned_expected_values))
             self.assertEqual(1, len(df2_binned_expected_values))
+
+        with self.subTest("Returning correct column labels"):
+            self.assertEqual(set(df1_binned.columns).union(set(df2_binned.columns)), columns)
