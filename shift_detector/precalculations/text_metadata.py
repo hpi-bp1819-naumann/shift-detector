@@ -45,15 +45,15 @@ class GenericTextMetadata(Precalculation):
     @staticmethod
     @abstractmethod
     def metadata_name() -> str:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def metadata_return_type(self) -> ColumnType:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def metadata_function(self, text):
-        pass
+        raise NotImplementedError
 
     def process(self, store):
         metadata1 = pd.DataFrame()
@@ -74,15 +74,15 @@ class GenericTextMetadataWithTokenizing(GenericTextMetadata):
     @staticmethod
     @abstractmethod
     def metadata_name() -> str:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def metadata_return_type(self) -> ColumnType:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def metadata_function(self, words):
-        pass
+        raise NotImplementedError
 
     def process(self, store):
         metadata1 = pd.DataFrame()
@@ -104,15 +104,15 @@ class GenericTextMetadataWithTokenizingAndLanguage(GenericTextMetadata):
     @staticmethod
     @abstractmethod
     def metadata_name() -> str:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def metadata_return_type(self) -> ColumnType:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def metadata_function(self, language, words):
-        pass
+        raise NotImplementedError
 
     def process(self, store):
         metadata1 = pd.DataFrame()
@@ -146,15 +146,15 @@ class GenericTextMetadataWithLanguage(GenericTextMetadata):
     @staticmethod
     @abstractmethod
     def metadata_name() -> str:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def metadata_return_type(self) -> ColumnType:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def metadata_function(self, language, text):
-        pass
+        raise NotImplementedError
 
     def process(self, store):
         metadata1 = pd.DataFrame()
