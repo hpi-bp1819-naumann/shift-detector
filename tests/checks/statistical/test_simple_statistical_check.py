@@ -15,7 +15,7 @@ class TestSimpleStatisticalCheck(unittest.TestCase):
     @mock.patch('shift_detector.checks.statistical_checks.statistical_check.plt')
     def test_all_plot_functions_are_called_and_plot_is_shown(self, mock_plt):
         plot_functions = [MagicMock(), MagicMock(), MagicMock()]
-        for check, height in [(CategoricalStatisticalCheck(), 10), (NumericalStatisticalCheck(), 15.0)]:
+        for check, height in [(CategoricalStatisticalCheck(), 15.0), (NumericalStatisticalCheck(), 15.0)]:
             with self.subTest(check=check):
                 check.plot_all_columns(plot_functions)
                 mock_plt.figure.assert_called_with(figsize=(12, height), tight_layout=True)
@@ -27,7 +27,7 @@ class TestSimpleStatisticalCheck(unittest.TestCase):
     @mock.patch('shift_detector.checks.statistical_checks.statistical_check.gridspec')
     def test_grid_is_created(self, mock_grid, mock_plt_figure):
         plot_functions = [MagicMock(), MagicMock(), MagicMock()]
-        for check, shape in [(CategoricalStatisticalCheck(), (2, 2)), (NumericalStatisticalCheck(), (3, 1))]:
+        for check, shape in [(CategoricalStatisticalCheck(), (3, 1)), (NumericalStatisticalCheck(), (3, 1))]:
             with self.subTest(check=check):
                 check.plot_all_columns(plot_functions)
                 mock_grid.GridSpec.assert_called_with(shape[0], shape[1])

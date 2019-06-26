@@ -88,6 +88,14 @@ Parameters
 ``n``:
     This parameter expects an integer, that determines the number of characters/words a tuple in the ngram is containing.
 
+``threshold``:
+    This parameter expects a float, that determines the threshold for the check. The test calls shift in the following cases:
+
+    1. the absolute difference between the similarities within the datasets exceeds ``threshold``
+    2. the similarity between the datasets is more than ``threshold`` smaller than the similarities within the datasets
+
+    The default value is 0.1.
+
 Implementation
 --------------
 

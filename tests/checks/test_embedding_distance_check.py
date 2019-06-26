@@ -38,13 +38,18 @@ class TestEmbeddingDistanceCheck(unittest.TestCase):
     def test_calls_embedding_distance_report(self):
         self.assertEqual(self.report.__class__, EmbeddingDistanceReport)
 
+    def test_threshold(self):
+        report2 = EmbeddingDistanceCheck(model='word2vec', threshold=-0.5).run(self.store)
+        self.assertIn('col1', report2.shifted_columns)
+        self.assertIn('col2', report2.shifted_columns)
+
 
 class TestEmbeddingDistanceReport(unittest.TestCase):
 
     def setUp(self):
         result = {'Col1': (0.1, 0.2, 20.0),
                   'Col2': (0.2, 0.2, 0.2)}
-        self.report = EmbeddingDistanceReport('Test Check', ['Col1', 'Col2'], ['Col1'], information=result)
+        self.report = EmbeddingDistanceReport('Test Check', ['Col1', 'Col2'], ['Col1'], information=(3.0, result))
 
     @mock.patch('shift_detector.checks.embedding_distance_check.display')
     def test_report_calls_display(self, mock_display):
