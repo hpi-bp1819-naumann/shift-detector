@@ -71,4 +71,4 @@ class Check(metaclass=ABCMeta):
         :param store:
         :return: Anything
         """
-        pass
+        raise NotImplementedError
