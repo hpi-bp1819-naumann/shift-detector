@@ -510,7 +510,6 @@ class TextMetadata(Precalculation):
         return hash((self.__class__, self.text_metadata_types))
 
     def process(self, store):
-        df1, _ = store[ColumnType.text]
         columns = store.column_names(ColumnType.text)
 
         metadata_names = sorted([mdtype.metadata_name() for mdtype in self.text_metadata_types])
