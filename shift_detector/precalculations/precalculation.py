@@ -6,13 +6,13 @@ class Precalculation(metaclass=ABCMeta):
     @abstractmethod
     def __eq__(self, other):
         """Overrides the default implementation"""
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def __hash__(self):
         """Overrides the default implementation"""
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def process(self, store):
-        pass
+        raise NotImplementedError
