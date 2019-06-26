@@ -71,7 +71,7 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
         figure.add_subplot(axes)
 
     def number_of_columns_of_plots(self) -> int:
-        return 2
+        return 1
 
     @staticmethod
     def column_plot(figure, tile, column, df1, df2):

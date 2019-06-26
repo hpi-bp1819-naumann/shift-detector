@@ -1,6 +1,7 @@
 import pandas as pd
 from pandas import DataFrame
 
+from shift_detector.precalculations.precalculation import Precalculation
 from shift_detector.utils.column_management import detect_column_types, ColumnType, \
     CATEGORICAL_MAX_RELATIVE_CARDINALITY, column_names
 from shift_detector.utils.custom_print import lprint
@@ -53,16 +54,18 @@ class Store:
     def __getitem__(self, needed_preprocessing) -> DataFrame:
         if isinstance(needed_preprocessing, ColumnType):
             return self.splitted_dfs[needed_preprocessing]
-        '''
+
         if not isinstance(needed_preprocessing, Precalculation):
-            raise Exception("Needed Preprocessing must be of type Precalculation or ColumnType")
-        '''
+            raise TypeError("Needed Preprocessing must be of type Precalculation or ColumnType")
+
         if needed_preprocessing in self.preprocessings:
             lprint("- Use already executed {}".format(needed_preprocessing.__class__.__name__), self.log_print)
             return self.preprocessings[needed_preprocessing]
 
         lprint("- Executing {}".format(needed_preprocessing.__class__.__name__), self.log_print)
         preprocessing = needed_preprocessing.process(self)
+        lprint("- Finished Precalculation", self.log_print)
+
         self.preprocessings[needed_preprocessing] = preprocessing
         return preprocessing
 
