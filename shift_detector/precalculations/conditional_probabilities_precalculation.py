@@ -65,12 +65,13 @@ class ConditionalProbabilitiesPrecalculation(Precalculation):
                           reverse=True)
 
         Result = namedtuple('Result', ['examined_columns', 'significant_rules_of_first', 'significant_rules_of_second',
-                                       'sorted_filtered_mutual_rules', 'mutual_rules'])
+                                       'sorted_filtered_mutual_rules', 'mutual_rules', 'total_number_of_rules'])
         return Result(examined_columns=list(df1.columns),
                       significant_rules_of_first=get_significant_rules(exclusive_rules_of_first, 0),
                       significant_rules_of_second=get_significant_rules(exclusive_rules_of_second, 1),
                       sorted_filtered_mutual_rules=sorted_filtered_mutual_rules,
-                      mutual_rules=mutual_rules
+                      mutual_rules=mutual_rules,
+                      total_number_of_rules=len(rules)
                       )
 
     def __eq__(self, other):

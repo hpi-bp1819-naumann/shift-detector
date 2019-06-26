@@ -1,4 +1,5 @@
 from collections import defaultdict
+from pprint import pprint
 
 import matplotlib.pyplot as plt
 
@@ -9,34 +10,47 @@ from shift_detector.utils.custom_print import nprint, mdprint
 
 
 class ConditionalProbabilitiesReport(Report):
-    def __init__(self, check_name, examined_columns, shifted_column_combinations, explanation={}, information={},
-                 figures=[]):
+    def __init__(self, check_name, examined_columns, figure, number_of_red_rules, number_of_orange_rules,
+                 total_number_of_rules, explanation={}, information={}, figures=[]):
         super().__init__(check_name, examined_columns=[], shifted_columns=[], explanation=explanation,
                          information=information, figures=figures)
-        self.shifted_column_combinations = shifted_column_combinations
         self.__examined_columns = examined_columns
+        self.figure = figure
+        self.number_of_red_rules = number_of_red_rules
+        self.number_of_orange_rules = number_of_orange_rules
+        self.total_number_of_rules = total_number_of_rules
 
     def print_report(self):
         nprint(self.check_name, text_formatting='h2')
-        print("Considered Columns: {}".format(self.__examined_columns))
+        print('Examined Columns:')
+        pprint(self.__examined_columns, indent=2, compact=True)
+        mdprint('Found **{} red rules** and **{} orange rules** in a total of **{} rules**.\n'.format(
+            self.number_of_red_rules,
+            self.number_of_orange_rules,
+            self.total_number_of_rules)
+        )
         self.print_explanation()
         self.print_information()
 
     def print_explanation(self):
         if 'significant_rules_of_first' in self.explanation or 'significant_rules_of_second' in self.explanation:
+            nprint('Exclusive Rules', text_formatting='h3')
+
             def to_str(rule, index):
                 return 'Support: {:.0%}\n[{}]\n'.format(rule.supports[index], ', '.join(
                     f'{attr}: {value}' for attr, value in rule.left_side + rule.right_side))
 
             if 'significant_rules_of_first' in self.explanation:
-                nprint('Attribute-value combinations exclusive to first data set', text_formatting='h3')
+                nprint('Exclusive attribute-value combinations of first data set', text_formatting='h4')
                 print('\n'.join(to_str(rule, 0) for rule in self.explanation['significant_rules_of_first']))
             if 'significant_rules_of_second' in self.explanation:
-                nprint('Attribute-value combinations exclusive to second data set', text_formatting='h3')
+                nprint('Exclusive attribute-value combinations of second data set', text_formatting='h4')
                 print('\n'.join(to_str(rule, 1) for rule in self.explanation['significant_rules_of_second']))
+        nprint('Mutual Rules', text_formatting='h3')
+        self.figure()
         if 'sorted_filtered_mutual_rules' in self.explanation:
-            nprint('Red rules', text_formatting='h3')
-            mdprint('**Red rules exceed both min_delta_supports and min_delta_confidences.**\n')
+            nprint('Red Rules', text_formatting='h4')
+            mdprint('*Red rules exceed both min_delta_supports and min_delta_confidences.*\n')
             mdprint('The first rule can be read as follows:\n')
             for i, rule in enumerate(self.explanation['sorted_filtered_mutual_rules']):
                 if i == 0:
@@ -66,14 +80,14 @@ class ConditionalProbabilitiesReport(Report):
                     print('\n')
         if ('orange_rules_falling_below_min_delta_supports' in self.explanation
                 or 'orange_rules_falling_below_min_delta_confidences' in self.explanation):
-            nprint('Orange rules', text_formatting='h3')
+            nprint('Orange Rules', text_formatting='h4')
             if 'orange_rules_falling_below_min_delta_supports' in self.explanation:
-                mdprint('**The following rules fall below min_delta_supports but exceed min_delta_confidences:**\n')
+                mdprint('*The following rules fall below min_delta_supports but exceed min_delta_confidences:*\n')
                 print('\n\n'.join(
                     str(rule) for rule in self.explanation['orange_rules_falling_below_min_delta_supports']),
                     end='\n\n')
             if 'orange_rules_falling_below_min_delta_confidences' in self.explanation:
-                mdprint('**The following rules fall below min_delta_confidences but exceed min_delta_supports:**\n')
+                mdprint('*The following rules fall below min_delta_confidences but exceed min_delta_supports:*\n')
                 print('\n\n'.join(
                     str(rule) for rule in self.explanation['orange_rules_falling_below_min_delta_confidences']),
                     end='\n\n')
@@ -157,22 +171,20 @@ class ConditionalProbabilitiesCheck(Check):
         add_to_explanation(orange_rules_falling_below_min_delta_confidences,
                            'orange_rules_falling_below_min_delta_confidences')
 
-        shifted_columns = set(tuple(sorted(attribute for attribute, _ in rule.left_side + rule.right_side))
-                              for rule in pre_calculation_result.sorted_filtered_mutual_rules)
+        coordinates = [(abs(rule.delta_supports), abs(rule.delta_confidences)) for rule in
+                       pre_calculation_result.mutual_rules]
+        green_x = [x for x, y in coordinates if x <= self.min_delta_supports and y <= self.min_delta_confidences]
+        green_y = [y for x, y in coordinates if x <= self.min_delta_supports and y <= self.min_delta_confidences]
+        orange_x = [x for x, y in coordinates if x > self.min_delta_supports
+                    and y <= self.min_delta_confidences or x <= self.min_delta_supports
+                    and y > self.min_delta_confidences]
+        orange_y = [y for x, y in coordinates if x > self.min_delta_supports
+                    and y <= self.min_delta_confidences or x <= self.min_delta_supports
+                    and y > self.min_delta_confidences]
+        red_x = [x for x, y in coordinates if x > self.min_delta_supports and y > self.min_delta_confidences]
+        red_y = [y for x, y in coordinates if x > self.min_delta_supports and y > self.min_delta_confidences]
 
         def plot_result():
-            coordinates = [(abs(rule.delta_supports), abs(rule.delta_confidences)) for rule in
-                           pre_calculation_result.mutual_rules]
-            green_x = [x for x, y in coordinates if x <= self.min_delta_supports and y <= self.min_delta_confidences]
-            green_y = [y for x, y in coordinates if x <= self.min_delta_supports and y <= self.min_delta_confidences]
-            orange_x = [x for x, y in coordinates if x > self.min_delta_supports
-                        and y <= self.min_delta_confidences or x <= self.min_delta_supports
-                        and y > self.min_delta_confidences]
-            orange_y = [y for x, y in coordinates if x > self.min_delta_supports
-                        and y <= self.min_delta_confidences or x <= self.min_delta_supports
-                        and y > self.min_delta_confidences]
-            red_x = [x for x, y in coordinates if x > self.min_delta_supports and y > self.min_delta_confidences]
-            red_y = [y for x, y in coordinates if x > self.min_delta_supports and y > self.min_delta_confidences]
             plt.rcParams['figure.figsize'] = (10, 8)
             plt.scatter(green_x, green_y, color='green')
             plt.scatter(orange_x, orange_y, color='orange')
@@ -187,4 +199,5 @@ class ConditionalProbabilitiesCheck(Check):
             plt.show()
 
         return ConditionalProbabilitiesReport('Conditional Probabilities', pre_calculation_result.examined_columns,
-                                              shifted_columns, explanation, figures=[plot_result])
+                                              plot_result, len(red_x), len(orange_x),
+                                              pre_calculation_result.total_number_of_rules, explanation)
