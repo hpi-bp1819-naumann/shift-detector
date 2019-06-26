@@ -29,6 +29,8 @@ class WordPredictionPrecalculation(Precalculation):
         self.num_epochs_predictor = num_epochs_predictor
         self.verbose = verbose
 
+        self.output_path = self.create_output_path()
+
         if not isinstance(self.column, str):
             raise ValueError('Column argument {} should be of type string. '
                              'Received {}.'.format(self.column, type(self.column)))
@@ -129,20 +131,24 @@ class WordPredictionPrecalculation(Precalculation):
 
         return features, labels
 
-    def create_callbacks(self):
-        callbacks = []
+    def create_output_path(self):
         output_name = 'wordPredictionCheck_model_checkpoints'
-
-        callbacks += [ModelCheckpoint(output_name + '/model.h5', verbose=self.verbose,
-                                      monitor='loss', save_best_only=True, mode='auto')]
-        callbacks += [EarlyStopping(monitor='loss', patience=3, verbose=self.verbose,
-                                    mode='auto', restore_best_weights=True)]
 
         dir_path = os.path.dirname(os.path.realpath(__file__))
         output_path = os.path.join(dir_path, output_name)
 
         if not os.path.exists(output_path):
             os.mkdir(output_path)
+
+        return output_path
+
+    def create_callbacks(self):
+        callbacks = []
+
+        callbacks += [ModelCheckpoint(self.output_path + '/model.h5', verbose=self.verbose,
+                                      monitor='loss', save_best_only=True, mode='auto')]
+        callbacks += [EarlyStopping(monitor='loss', patience=3, verbose=self.verbose,
+                                    mode='auto', restore_best_weights=True)]
 
         return callbacks
 
