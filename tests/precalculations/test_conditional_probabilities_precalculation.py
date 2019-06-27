@@ -91,40 +91,40 @@ class TestFPGrowth(unittest.TestCase):
                          confidences=(1.0, 1.0), delta_confidences=0.0),
                     Rule(left_side=(('c1', 'exclusive 1'), ('c2', 1)), right_side=(), supports_of_left_side=(0.5, 0.0),
                          delta_supports_of_left_side=0.5, supports=(0.5, 0.0), delta_supports=0.5,
-                         confidences=(1.0, 0.0), delta_confidences=1.0),
+                         confidences=(1.0, 1.0), delta_confidences=0.0),
                     Rule(left_side=(('c1', 'exclusive 1'),), right_side=(('c2', 1),), supports_of_left_side=(0.5, 0.0),
                          delta_supports_of_left_side=0.5, supports=(0.5, 0.0), delta_supports=0.5,
-                         confidences=(1.0, 0.0), delta_confidences=1.0),
+                         confidences=(1.0, 1.0), delta_confidences=0.0),
                     Rule(left_side=(('c2', 1),), right_side=(), supports_of_left_side=(0.5, 0.0),
                          delta_supports_of_left_side=0.5, supports=(0.5, 0.0), delta_supports=0.5,
-                         confidences=(1.0, 0.0), delta_confidences=1.0),
+                         confidences=(1.0, 1.0), delta_confidences=0.0),
                     Rule(left_side=(('c1', 'exclusive 1'),), right_side=(), supports_of_left_side=(0.5, 0.0),
                          delta_supports_of_left_side=0.5, supports=(0.5, 0.0), delta_supports=0.5,
-                         confidences=(1.0, 0.0), delta_confidences=1.0),
+                         confidences=(1.0, 1.0), delta_confidences=0.0),
                     Rule(left_side=(('c2', 1),), right_side=(('c1', 'exclusive 1'),), supports_of_left_side=(0.5, 0.0),
                          delta_supports_of_left_side=0.5, supports=(0.5, 0.0), delta_supports=0.5,
-                         confidences=(1.0, 0.0), delta_confidences=1.0),
+                         confidences=(1.0, 1.0), delta_confidences=0.0),
                     Rule(left_side=(('c2', 2),), right_side=(('c1', 'exclusive 2'),), supports_of_left_side=(0.0, 0.5),
                          delta_supports_of_left_side=-0.5, supports=(0.0, 0.5), delta_supports=-0.5,
-                         confidences=(0.0, 1.0), delta_confidences=-1.0),
+                         confidences=(1.0, 1.0), delta_confidences=-0.0),
                     Rule(left_side=(('c2', 2),), right_side=(), supports_of_left_side=(0.0, 0.5),
                          delta_supports_of_left_side=-0.5, supports=(0.0, 0.5), delta_supports=-0.5,
-                         confidences=(0.0, 1.0), delta_confidences=-1.0),
+                         confidences=(1.0, 1.0), delta_confidences=0.0),
                     Rule(left_side=(('c1', 'exclusive 2'), ('c2', 2)), right_side=(), supports_of_left_side=(0.0, 0.5),
                          delta_supports_of_left_side=-0.5, supports=(0.0, 0.5), delta_supports=-0.5,
-                         confidences=(0.0, 1.0), delta_confidences=-1.0),
+                         confidences=(1.0, 1.0), delta_confidences=0.0),
                     Rule(left_side=(('c1', 'exclusive 2'),), right_side=(('c2', 2),), supports_of_left_side=(0.0, 0.5),
                          delta_supports_of_left_side=-0.5, supports=(0.0, 0.5), delta_supports=-0.5,
-                         confidences=(0.0, 1.0), delta_confidences=-1.0),
+                         confidences=(1.0, 1.0), delta_confidences=0.0),
                     Rule(left_side=(('c1', 'exclusive 2'),), right_side=(), supports_of_left_side=(0.0, 0.5),
                          delta_supports_of_left_side=-0.5, supports=(0.0, 0.5), delta_supports=-0.5,
-                         confidences=(0.0, 1.0), delta_confidences=-1.0)]
+                         confidences=(1.0, 1.0), delta_confidences=0.0)]
         self.assertCountEqual(rules, expected)
 
     def test_equal_and_hash(self):
-        a = ConditionalProbabilitiesPrecalculation(0.5, 0.4)
-        b = ConditionalProbabilitiesPrecalculation(0.5, 0.4)
-        c = ConditionalProbabilitiesPrecalculation(0.5, 0.5)
+        a = ConditionalProbabilitiesPrecalculation(0.5, 0.4, 50, 50, 0.1, 0.1)
+        b = ConditionalProbabilitiesPrecalculation(0.5, 0.4, 50, 50, 0.1, 0.1)
+        c = ConditionalProbabilitiesPrecalculation(0.5, 0.5, 50, 50, 0.1, 0.1)
         self.assertEqual(a, b)
         self.assertNotEqual(a, c)
         self.assertEqual(hash(a), hash(b))

@@ -8,8 +8,8 @@ from IPython.display import display
 from shift_detector.checks.check import Check, Report
 from shift_detector.precalculations.store import Store
 from shift_detector.utils.column_management import column_names
-from shift_detector.utils.data_io import read_from_csv
 from shift_detector.utils.custom_print import nprint, lprint
+from shift_detector.utils.data_io import read_from_csv
 
 
 class Detector:
