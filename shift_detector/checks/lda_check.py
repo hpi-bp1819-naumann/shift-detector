@@ -107,7 +107,7 @@ class LdaCheck(Check):
                       examined_columns=col_names,
                       shifted_columns=shifted_columns,
                       explanation=explanation,
-                      figures=self.column_figures(col_names, df1_embedded, df2_embedded, topic_words,
+                      figures=self.column_figures(shifted_columns, df1_embedded, df2_embedded, topic_words,
                                                   all_models, all_dtms, all_vecs, all_corpora, all_dicts,
                                                   self.word_clouds, self.ldavis))
 
@@ -120,11 +120,11 @@ class LdaCheck(Check):
         if ldavis:
             self.py_lda_vis(column, self.lib, all_models, all_dtms, all_vecs, all_corpora, all_dicts)
 
-    def column_figures(self, significant_columns, df1, df2, topic_words,
+    def column_figures(self, shifted_columns, df1, df2, topic_words,
                        all_models, all_dtms, all_vecs, all_corpora, all_dicts,
                        word_clouds, ldavis):
         plot_functions = []
-        for column in significant_columns:
+        for column in shifted_columns:
             plot_functions.append(lambda col=column: self.column_figure(col, df1, df2, topic_words,
                                                                         all_models, all_dtms, all_vecs,
                                                                         all_corpora, all_dicts,
@@ -149,7 +149,8 @@ class LdaCheck(Check):
         axes.set_ylabel('topics', fontsize='medium')
         plt.show()
 
-    def word_cloud(self, column, topic_words, n_topics, lib):
+    @staticmethod
+    def word_cloud(column, topic_words, n_topics, lib):
         custom_XKCD_COLORS = mcolors.XKCD_COLORS
         # remove very light colors that are hard to see on white background
         custom_XKCD_COLORS.pop('xkcd:yellowish tan', None)
@@ -175,7 +176,7 @@ class LdaCheck(Check):
             fig.add_subplot(ax)
             if lib == 'gensim':
                 topics = dict(topic_words[column][i][1])
-                cloud.generate_from_frequencies(topics, max_font_size=300)
+                cloud.generate_from_frequencies(topics, max_font_size=50)
             else:
                 topics = ' '.join(set(topic_words[column][i]))
                 cloud.generate_from_text(topics)
