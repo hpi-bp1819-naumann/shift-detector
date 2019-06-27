@@ -177,7 +177,7 @@ class TestTextMetadataPrecalculations(unittest.TestCase):
 class TestTextMetadataFunctions(unittest.TestCase):
 
     def setUp(self):
-        self.assertIsNaN = NumericAssertions().assertIsNaN
+        self.assert_is_NaN = NumericAssertions().assert_is_NaN
         self.nan = float('nan')
 
         self.empty_string = ""
@@ -225,7 +225,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual(TmUtils.dictionary_to_sorted_string(self.many_entries_dict), "b, e, f, c, a, d")
         self.assertEqual(TmUtils.dictionary_to_sorted_string(self.one_entry_dict), "a")
         self.assertEqual(TmUtils.dictionary_to_sorted_string(self.empty_dict), "")
-        self.assertIsNaN(TmUtils.dictionary_to_sorted_string(self.nan))
+        self.assert_is_NaN(TmUtils.dictionary_to_sorted_string(self.nan))
 
     def test_num_chars(self):
         num_chars = NumCharsMetadata().metadata_function
@@ -233,7 +233,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual(num_chars(self.unicode_string), 66)
         self.assertEqual(num_chars(self.punctuation_string), 9)
         self.assertEqual(num_chars(self.empty_string), 0)
-        self.assertIsNaN(num_chars(self.nan))
+        self.assert_is_NaN(num_chars(self.nan))
 
     def test_ratio_upper(self):
         ratio_upper = RatioUppercaseLettersMetadata().metadata_function
@@ -241,7 +241,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual(ratio_upper(self.upper_string), 1.00)
         self.assertAlmostEqual(ratio_upper(self.english_string), 0.05405405)
         self.assertEqual(ratio_upper(self.empty_string), 0.00)
-        self.assertIsNaN(ratio_upper(self.nan))
+        self.assert_is_NaN(ratio_upper(self.nan))
 
     def test_unicode_category(self):
         unicode_category_histogram = UnicodeCategoriesMetadata().unicode_category_histogram
@@ -252,7 +252,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
                                                                            'Sm': 6, 'Sk': 3, 'Nd': 2, 'So': 2, 'Pf': 2,
                                                                            'Pi': 3, 'Sc': 3})
         self.assertEqual(unicode_category_histogram(self.empty_string), {})
-        self.assertIsNaN(unicode_category_histogram(self.nan))
+        self.assert_is_NaN(unicode_category_histogram(self.nan))
 
     def test_unicode_block(self):
         latin = "Latin Letters! *with punctuation,!./ and numbers 983"
@@ -270,14 +270,14 @@ class TestTextMetadataFunctions(unittest.TestCase):
                                                                         'Alphabetic Presentation Forms': 1,
                                                                         'Currency Symbols': 1, 'Letterlike Symbols': 1})
         self.assertEqual(unicode_block_histogram(self.empty_string), {})
-        self.assertIsNaN(unicode_block_histogram(self.nan))
+        self.assert_is_NaN(unicode_block_histogram(self.nan))
 
     def test_num_words(self):
         num_words = NumWordsMetadata().metadata_function
         self.assertEqual(num_words(self.distinct_words_array), 5)
         self.assertEqual(num_words(self.same_words_array), 4)
         self.assertEqual(num_words(self.empty_array), 0)
-        self.assertIsNaN(num_words(self.nan))
+        self.assert_is_NaN(num_words(self.nan))
 
     def test_distinct_words_ratio(self):
         distinct_words_ratio = DistinctWordsRatioMetadata().metadata_function
@@ -285,7 +285,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual(distinct_words_ratio(self.same_words_array), 0.25)
         self.assertAlmostEqual(distinct_words_ratio(self.mixed_words_array), 0.66666666)
         self.assertEqual(distinct_words_ratio(self.empty_array), 0.0)
-        self.assertIsNaN(distinct_words_ratio(self.nan))
+        self.assert_is_NaN(distinct_words_ratio(self.nan))
 
     def test_unique_words(self):
         unique_words_ratio = UniqueWordsRatioMetadata().metadata_function
@@ -293,7 +293,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual(unique_words_ratio(self.same_words_array), 0.0)
         self.assertAlmostEqual(unique_words_ratio(self.mixed_words_array), 0.3333333)
         self.assertEqual(unique_words_ratio(self.empty_array), 0.0)
-        self.assertIsNaN(unique_words_ratio(self.nan))
+        self.assert_is_NaN(unique_words_ratio(self.nan))
 
     def test_unknown_words(self):
         unknown_word_ratio = UnknownWordRatioMetadata().metadata_function
@@ -301,9 +301,9 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual(unknown_word_ratio('en', self.incorrect_english_array), 0.4)
         self.assertAlmostEqual(unknown_word_ratio('fr', self.french_array), 0.1142857, places=5)
         self.assertEqual(unknown_word_ratio('en', self.empty_array), 00.00)
-        self.assertIsNaN(unknown_word_ratio('so', self.unsupported_language_array))
-        self.assertIsNaN(unknown_word_ratio('en', self.nan))
-        self.assertIsNaN(unknown_word_ratio(self.nan, self.nan))
+        self.assert_is_NaN(unknown_word_ratio('so', self.unsupported_language_array))
+        self.assert_is_NaN(unknown_word_ratio('en', self.nan))
+        self.assert_is_NaN(unknown_word_ratio(self.nan, self.nan))
 
     def test_stopwords(self):
         stopword_ratio = StopwordRatioMetadata().metadata_function
@@ -312,9 +312,9 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual(stopword_ratio('en', self.english_array), 0.6)
         self.assertAlmostEqual(stopword_ratio('fr', self.french_array), 0.4285714, places=5)
         self.assertEqual(stopword_ratio('en', self.empty_array), 0.0)
-        self.assertIsNaN(stopword_ratio('so', self.unsupported_language_array))
-        self.assertIsNaN(stopword_ratio('en', self.nan))
-        self.assertIsNaN(stopword_ratio(self.nan, self.nan))
+        self.assert_is_NaN(stopword_ratio('so', self.unsupported_language_array))
+        self.assert_is_NaN(stopword_ratio('en', self.nan))
+        self.assert_is_NaN(stopword_ratio(self.nan, self.nan))
 
     def test_category(self):
         delimiter_type = DelimiterTypeMetadata().metadata_function
@@ -326,7 +326,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual(delimiter_type(self.sentence_other_string), "sentence")
         self.assertEqual(delimiter_type(self.html_sentence_other_string), "HTML")
         self.assertEqual(delimiter_type(self.empty_string), "no delimiter")
-        self.assertIsNaN(delimiter_type(self.nan))
+        self.assert_is_NaN(delimiter_type(self.nan))
 
     def test_num_parts(self):
         num_parts = NumPartsMetadata().metadata_function
@@ -338,7 +338,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual(num_parts(self.sentence_other_string), 2)
         self.assertEqual(num_parts(self.html_sentence_other_string), 2)
         self.assertEqual(num_parts(self.empty_string), 0)
-        self.assertIsNaN(num_parts(self.nan))
+        self.assert_is_NaN(num_parts(self.nan))
 
     def test_languages(self):
         language = LanguagePerParagraph().detect_languages
@@ -348,9 +348,9 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual(language(self.html_string), {'en': 1, 'de': 1})
         self.assertEqual(language(self.multiple_languages_string), {'en': 2, 'de': 1, 'fr': 1, 'es': 1, 'id': 1})
         self.assertEqual(language(self.english_punctuation_string), {'en': 2})
-        self.assertIsNaN(language(self.punctuation_string))
-        self.assertIsNaN(language(self.empty_string))
-        self.assertIsNaN(language(self.nan))
+        self.assert_is_NaN(language(self.punctuation_string))
+        self.assert_is_NaN(language(self.empty_string))
+        self.assert_is_NaN(language(self.nan))
 
     def test_complexity(self):
         # hard = "Quantum mechanics (QM; also known as quantum physics, quantum theory, the wave mechanical model, "\
@@ -360,9 +360,9 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual(text_complexity('en', self.empty_string), 0.0)
         self.assertEqual(text_complexity('en', self.punctuation_string), 0.0)
         self.assertEqual(text_complexity('en', self.english_string), text_complexity('en', self.english_string))
-        self.assertIsNaN(text_complexity('de', self.german_string))
-        self.assertIsNaN(text_complexity('en', self.nan))
-        self.assertIsNaN(text_complexity(self.nan, self.nan))
+        self.assert_is_NaN(text_complexity('de', self.german_string))
+        self.assert_is_NaN(text_complexity('en', self.nan))
+        self.assert_is_NaN(text_complexity(self.nan, self.nan))
         # Works in Travis for Python 3.6 but not for 3.5. 3.5 seems to not support the complexity metric.
         # self.assertGreater(text_complexity(hard), text_complexity(easy))
 
@@ -371,6 +371,6 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.assertEqual('DET, VERB, ., ADJ, ADP, NOUN', pos_tags('en', self.english_string))
         self.assertEqual('.', pos_tags('en', self.punctuation_string))
         self.assertEqual('', pos_tags('en', self.empty_string))
-        self.assertIsNaN(pos_tags('de', self.german_string))
-        self.assertIsNaN(pos_tags('en', self.nan))
-        self.assertIsNaN(pos_tags(self.nan, self.nan))
+        self.assert_is_NaN(pos_tags('de', self.german_string))
+        self.assert_is_NaN(pos_tags('en', self.nan))
+        self.assert_is_NaN(pos_tags(self.nan, self.nan))

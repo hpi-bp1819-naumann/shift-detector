@@ -442,7 +442,7 @@ class LanguagePerParagraph(GenericTextMetadata):
                 lang = detect(part)
                 detected_languages[lang] += 1
             except:
-                print('blah')
+                pass
         if detected_languages == {}:
             return float('nan')
         return detected_languages
