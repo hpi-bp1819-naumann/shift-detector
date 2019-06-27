@@ -11,6 +11,7 @@ from shift_detector.detector import Detector
 from shift_detector.checks.statistical_checks.categorical_statistical_check import chi2_test, \
     CategoricalStatisticalCheck
 from shift_detector.precalculations.store import Store
+from tests.test_data import phrases
 
 
 class TestCategoricalStatisticalCheck(unittest.TestCase):
@@ -81,3 +82,33 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
         self.assertTrue(mock_plot.return_value.set_ylabel.called)
         self.assertTrue(mock_plot.return_value.invert_yaxis.called)
         self.assertFalse(mock_plt.show.called)
+
+    @mock.patch('shift_detector.checks.statistical_checks.categorical_statistical_check'
+                '.plt.Subplot')
+    @mock.patch('shift_detector.checks.statistical_checks.categorical_statistical_check'
+                '.CategoricalStatisticalCheck.paired_total_ratios_plot')
+    def test_plot_type(self, mock_plot, mock_subplot):
+        figure = MagicMock(autospec=Figure)
+        tile = MagicMock()
+        CategoricalStatisticalCheck().column_plot(figure, tile, 'vaccination_reaction', self.df1_significant,
+                                                  self.df2_significant)
+        mock_subplot.assert_called_with(figure, tile)
+        self.assertTrue(mock_plot.called)
+
+    def test_data_to_process(self):
+        df1 = pd.DataFrame.from_dict({'cat': ['value'] * 10, 'num': list(range(10)),
+                                      'low_num': [0] * 10,'text': phrases})
+        df2 = pd.DataFrame.from_dict({'cat': ['value'] * 10, 'num': list(range(10)),
+                                      'low_num': [0] * 10,'text': phrases})
+        store = Store(df1, df2)
+        for check, solution in [(CategoricalStatisticalCheck(), ['cat', 'low_num']),
+                                (CategoricalStatisticalCheck(use_binning=True), ['cat', 'low_num', 'num_binned']),
+                                (CategoricalStatisticalCheck(use_embedding=True), ['cat', 'low_num', 'topics text']),
+                                (CategoricalStatisticalCheck(use_binning=True,
+                                                             use_embedding=True), ['cat', 'low_num', 'num_binned',
+                                                                                   'topics text'])]:
+            with self.subTest(solution=solution):
+                result = check.data_to_process(store)
+                self.assertEqual(solution, sorted(result[0].columns))
+                self.assertEqual(solution, sorted(result[1].columns))
+                self.assertEqual(set(solution), result[2])
