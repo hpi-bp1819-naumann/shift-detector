@@ -16,7 +16,8 @@ import warnings
 class LdaCheck(Check):
 
     def __init__(self, significance=0.1, n_topics=20, n_iter=10, lib='sklearn', random_state=0,
-                 cols=None, trained_model=None, stop_words='english', max_features=None):
+                 cols=None, trained_model=None, stop_words='english', max_features=None,
+                 word_clouds=True, ldavis=True):
         """
         significance here is the difference between the percentages of each topic between both datasets,
         meaning a difference above 10% is significant
@@ -47,6 +48,8 @@ class LdaCheck(Check):
         self.random_state = random_state
         self.stop_words = stop_words
         self.max_features = max_features
+        self.word_clouds = word_clouds
+        self.ldavis = ldavis
 
     def run(self, store) -> Report:
         shifted_columns = set()
@@ -105,25 +108,31 @@ class LdaCheck(Check):
                       shifted_columns=shifted_columns,
                       explanation=explanation,
                       figures=self.column_figures(col_names, df1_embedded, df2_embedded, topic_words,
-                                                  all_models, all_dtms, all_vecs, all_corpora, all_dicts))
+                                                  all_models, all_dtms, all_vecs, all_corpora, all_dicts,
+                                                  self.word_clouds, self.ldavis))
 
     def column_figure(self, column, df1, df2, topic_words,
-                      all_models, all_dtms, all_vecs, all_corpora, all_dicts):
-        self.paired_total_ratios_figure(column, df1, df2)
-        self.word_cloud(column, topic_words, self.n_topics, self.lib)
-        self.py_lda_vis(column, self.lib, all_models, all_dtms, all_vecs, all_corpora, all_dicts)
+                      all_models, all_dtms, all_vecs, all_corpora, all_dicts,
+                      word_clouds, ldavis):
+        self.paired_total_ratios_figure(column, df1, df2, self.n_topics)
+        if word_clouds:
+            self.word_cloud(column, topic_words, self.n_topics, self.lib)
+        if ldavis:
+            self.py_lda_vis(column, self.lib, all_models, all_dtms, all_vecs, all_corpora, all_dicts)
 
     def column_figures(self, significant_columns, df1, df2, topic_words,
-                       all_models, all_dtms, all_vecs, all_corpora, all_dicts):
+                       all_models, all_dtms, all_vecs, all_corpora, all_dicts,
+                       word_clouds, ldavis):
         plot_functions = []
         for column in significant_columns:
             plot_functions.append(lambda col=column: self.column_figure(col, df1, df2, topic_words,
                                                                         all_models, all_dtms, all_vecs,
-                                                                        all_corpora, all_dicts))
+                                                                        all_corpora, all_dicts,
+                                                                        word_clouds, ldavis))
         return plot_functions
 
     @staticmethod
-    def paired_total_ratios_figure(column, df1, df2):
+    def paired_total_ratios_figure(column, df1, df2, n_topics):
         value_counts = pd.concat([df1['topics ' + column].value_counts(), df2['topics ' + column].value_counts()],
                                  axis=1).sort_index()
         value_ratios = value_counts.fillna(0).apply(axis='columns',
@@ -131,9 +140,9 @@ class LdaCheck(Check):
                                                                                 len(df1['topics ' + column]),
                                                                                 row.iloc[1] /
                                                                                 len(df2['topics ' + column])],
-                                                                               index=[str(column) + ' 1',
-                                                                                      str(column) + ' 2']))
-        axes = value_ratios.plot(kind='barh', fontsize='medium')
+                                                                               index=['DS1',
+                                                                                      'DS2']))
+        axes = value_ratios.plot(kind='barh', fontsize='medium', figsize=(10, 2+np.ceil(n_topics/2)))
         axes.invert_yaxis()  # to match order of legend
         axes.set_title(str(column), fontsize='x-large')
         axes.set_xlabel('ratio', fontsize='medium')
@@ -181,12 +190,10 @@ class LdaCheck(Check):
 
     @staticmethod
     def py_lda_vis(column, lib, lda_models, dtm=None, vectorizer=None, corpus=None, dictionary=None):
-        #print('prepare')
         if lib == 'sklearn':
             vis_data = pyLDAvis.sklearn.prepare(lda_models[column], np.asmatrix(dtm[column]), vectorizer[column])
         else:
             vis_data = pyLDAvis.gensim.prepare(lda_models[column], corpus[column], dictionary[column])
-        #print('display')
         display(pyLDAvis.display(vis_data))
 
 

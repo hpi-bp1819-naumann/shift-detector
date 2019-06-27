@@ -4,12 +4,13 @@ from shift_detector.precalculations.precalculation import Precalculation
 from shift_detector.utils.column_management import ColumnType
 from nltk.corpus import stopwords as nltk_stopwords
 import re
+from bs4 import BeautifulSoup
 
 
 class LdaGensimTokenizer(Precalculation):
 
     def __init__(self, cols, stop_words='english'):
-        self.stopwords = set()
+        self.stop_words = set()
         self.cols = None
 
         if isinstance(stop_words, str):
@@ -20,7 +21,7 @@ class LdaGensimTokenizer(Precalculation):
             for lang in stop_words:
                 if lang not in nltk_stopwords.fileids():
                     raise ValueError("The following language you entered is not available: {}".format(lang))
-                self.stopwords = self.stopwords.union(set(nltk_stopwords.words(lang)))
+                self.stop_words = self.stop_words.union(set(nltk_stopwords.words(lang)))
         else:
             raise TypeError("Please enter the language for your stop_words as a string or list of strings. Received: {}"
                             .format(type(stop_words)))
@@ -43,6 +44,25 @@ class LdaGensimTokenizer(Precalculation):
         hash_list.extend(self.cols)
         return hash(tuple(hash_list))
 
+    def make_usable_list(self, texts):
+        """
+        Make all words lowercase, remove stopwords, remove accents,
+        remove words that are shorter than 2 chars or longer than 20 chars or that start with '_',
+        convert words to unicode
+        """
+        tokenized = []
+        for entry in texts:
+            wordlist = []
+            entry = BeautifulSoup(entry).get_text(separator="")
+            for word in re.sub(r"[^\w+\s]|\b[a-zA-Z]\b", ' ', entry).split():
+
+                if word == '' or word.lower() in self.stop_words:
+                    continue
+                if len(gensim.utils.simple_preprocess(word)) > 0:
+                    wordlist.append(gensim.utils.simple_preprocess(word, max_len=20, deacc=True).pop())
+            tokenized.append(wordlist)
+        return tokenized
+
     def process(self, store):
         df1_texts, df2_texts = store[ColumnType.text]
 
@@ -55,25 +75,8 @@ class LdaGensimTokenizer(Precalculation):
         processed1 = pd.DataFrame()
         processed2 = pd.DataFrame()
 
-        def make_usable_list(texts):
-            """
-            Make all words lowercase, remove stopwords, remove accents,
-            remove words that are shorter than 2 chars or longer than 15 chars or that start with '_',
-            convert words to unicode
-            """
-            tokenized =[]
-            for entry in texts:
-                wordlist = []
-                for word in re.sub(r"[^\w+\s]|\b[a-zA-Z]\b", ' ', entry).split():
-                    if word == '' or word.lower() in self.stop_words:
-                        continue
-                    if len(gensim.utils.simple_preprocess(word)) > 0:
-                        wordlist.append(gensim.utils.simple_preprocess(word, deacc=True).pop())
-                tokenized.append(wordlist)
-            return tokenized
-
         for col in col_names:
-            processed1[col] = make_usable_list(df1_texts[col])
-            processed2[col] = make_usable_list(df2_texts[col])
+            processed1[col] = self.make_usable_list(df1_texts[col])
+            processed2[col] = self.make_usable_list(df2_texts[col])
 
         return processed1, processed2

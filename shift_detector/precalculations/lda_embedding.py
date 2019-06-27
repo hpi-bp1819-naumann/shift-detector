@@ -100,7 +100,7 @@ class LdaEmbedding(Precalculation):
     @staticmethod
     def topic_probabilities_to_topics(lda_model, dtm):
         # Always takes the topic with the highest probability as the dominant topic
-        return [arr.argmax() for arr in lda_model.transform(dtm)]
+        return [arr.argmax()+1 for arr in lda_model.transform(dtm)]
 
     @staticmethod
     def get_topic_word_distribution_gensim(lda_model, n_topics, n_top_words):
@@ -112,7 +112,7 @@ class LdaEmbedding(Precalculation):
     @staticmethod
     def get_topic_word_distribution_sklearn(lda_model, dtm, vocab, n_top_words):
         topic_words = {}
-        term_frequencies = dict(zip(vocab, dtm/np.sum(dtm)))
+        #term_frequencies = dict(zip(vocab, dtm/np.sum(dtm)))
         for topic, comp in enumerate(lda_model.components_):
             word_idx = np.argsort(comp)[::-1][:n_top_words]
             topic_words[topic] = [vocab[i] for i in word_idx]
