@@ -9,8 +9,7 @@ from matplotlib.figure import Figure
 from pandas.util.testing import assert_frame_equal
 
 import tests.test_data as td
-from shift_detector.checks.statistical_checks import numerical_statistical_check, categorical_statistical_check, \
-    text_metadata_statistical_check
+from shift_detector.checks.statistical_checks import numerical_statistical_check, categorical_statistical_check
 from shift_detector.checks.statistical_checks.categorical_statistical_check import CategoricalStatisticalCheck
 from shift_detector.checks.statistical_checks.numerical_statistical_check import NumericalStatisticalCheck
 from shift_detector.checks.statistical_checks.text_metadata_statistical_check import TextMetadataStatisticalCheck

@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-from matplotlib import gridspec
 from scipy import stats
 
 from shift_detector.checks.statistical_checks.statistical_check import SimpleStatisticalCheck
@@ -42,7 +41,7 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
         figure.add_subplot(axes)
 
     def number_of_columns_of_plots(self) -> int:
-        return 2
+        return 1
 
     @staticmethod
     def column_plot(figure, tile, column, df1, df2):

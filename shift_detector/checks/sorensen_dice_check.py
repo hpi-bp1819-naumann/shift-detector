@@ -8,9 +8,10 @@ import pandas as pd
 
 class SorensenDiceCheck(Check):
 
-    def __init__(self, ngram_type=NGramType.character, n=3):
+    def __init__(self, ngram_type=NGramType.character, n=3, threshold=0.1):
         self.ngram_type = ngram_type
         self.n = n
+        self.threshold = threshold
 
     def run(self, store):
         data = store[SorensenDicePrecalculations(ngram_type=self.ngram_type, n=self.n)]
@@ -19,19 +20,22 @@ class SorensenDiceCheck(Check):
         shifted_columns = set()
 
         for column_name in data:
-            baseline1, baseline2, distance = data[column_name]
+            baseline1, baseline2, similarity = data[column_name]
 
-            if (abs(baseline1 - baseline2) > 0.1 or
-                    distance - baseline1 < 0.1 or
-                    distance - baseline2 < 0.1):
+            if (abs(baseline1 - baseline2) > self.threshold or
+                    baseline1 - similarity > self.threshold or
+                    baseline2 - similarity > self.threshold):
                 shifted_columns.add(column_name)
 
-        return SorensenDiceReport("Sorensen Dice Check", examined_columns, shifted_columns, information=data)
+        return SorensenDiceReport("Sorensen Dice Check", examined_columns, shifted_columns,
+                                  information=(self.threshold, data))
 
 
 class SorensenDiceReport(Report):
 
     def print_information(self):
-        result_df = pd.DataFrame.from_dict(self.information, orient='index')
-        result_df.columns=['Baseline in Dataset 1', 'Baseline in Dataset 2', 'Distance between Datasets']
-        display(result_df)
+        result_df = pd.DataFrame.from_dict(self.information[1], orient='index')
+        result_df.columns = ['Similarity within Dataset 1', 'Similarity within Dataset 2',
+                             'Similarity between Datasets']
+        result_df['Threshold'] = self.information[0]
+        display(result_df.loc[self.shifted_columns])

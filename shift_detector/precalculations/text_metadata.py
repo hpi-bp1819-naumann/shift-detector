@@ -45,15 +45,15 @@ class GenericTextMetadata(Precalculation):
     @staticmethod
     @abstractmethod
     def metadata_name() -> str:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def metadata_return_type(self) -> ColumnType:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def metadata_function(self, text):
-        pass
+        raise NotImplementedError
 
     def process(self, store):
         metadata1 = pd.DataFrame()
@@ -74,15 +74,15 @@ class GenericTextMetadataWithTokenizing(GenericTextMetadata):
     @staticmethod
     @abstractmethod
     def metadata_name() -> str:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def metadata_return_type(self) -> ColumnType:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def metadata_function(self, words):
-        pass
+        raise NotImplementedError
 
     def process(self, store):
         metadata1 = pd.DataFrame()
@@ -104,15 +104,15 @@ class GenericTextMetadataWithTokenizingAndLanguage(GenericTextMetadata):
     @staticmethod
     @abstractmethod
     def metadata_name() -> str:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def metadata_return_type(self) -> ColumnType:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def metadata_function(self, language, words):
-        pass
+        raise NotImplementedError
 
     def process(self, store):
         metadata1 = pd.DataFrame()
@@ -146,15 +146,15 @@ class GenericTextMetadataWithLanguage(GenericTextMetadata):
     @staticmethod
     @abstractmethod
     def metadata_name() -> str:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def metadata_return_type(self) -> ColumnType:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def metadata_function(self, language, text):
-        pass
+        raise NotImplementedError
 
     def process(self, store):
         metadata1 = pd.DataFrame()
@@ -510,7 +510,6 @@ class TextMetadata(Precalculation):
         return hash((self.__class__, self.text_metadata_types))
 
     def process(self, store):
-        df1, _ = store[ColumnType.text]
         columns = store.column_names(ColumnType.text)
 
         metadata_names = sorted([mdtype.metadata_name() for mdtype in self.text_metadata_types])
