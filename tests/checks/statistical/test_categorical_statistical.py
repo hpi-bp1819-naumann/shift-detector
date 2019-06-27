@@ -97,9 +97,9 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
 
     def test_data_to_process(self):
         df1 = pd.DataFrame.from_dict({'cat': ['value'] * 10, 'num': list(range(10)),
-                                      'low_num': [0] * 10,'text': phrases})
+                                      'low_num': [0] * 10, 'text': phrases})
         df2 = pd.DataFrame.from_dict({'cat': ['value'] * 10, 'num': list(range(10)),
-                                      'low_num': [0] * 10,'text': phrases})
+                                      'low_num': [0] * 10, 'text': phrases})
         store = Store(df1, df2)
         for check, solution in [(CategoricalStatisticalCheck(), ['cat', 'low_num']),
                                 (CategoricalStatisticalCheck(use_binning=True), ['cat', 'low_num', 'num_binned']),
