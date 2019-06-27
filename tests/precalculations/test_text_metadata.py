@@ -15,7 +15,7 @@ import math
 
 
 class NumericAssertions:
-    def assertIsNaN(self, value, msg=None):
+    def assert_is_NaN(self, value, msg=None):
         standardMsg = "%s is not NaN" % str(value)
         try:
             if not math.isnan(value):
@@ -23,7 +23,7 @@ class NumericAssertions:
         except:
             self.fail(self._formatMessage(msg, standardMsg))
 
-    def assertIsNotNaN(self, value, msg=None):
+    def assert_is_not_NaN(self, value, msg=None):
         standardMsg = "Provided value is NaN"
         try:
             if math.isnan(value):
@@ -199,7 +199,8 @@ class TestTextMetadataFunctions(unittest.TestCase):
                                          "there actually is some french coming. \n Ce n'est pas anglais. \n "\
                                          "No puedo hablar español. \n Beberapa bahasa untuk diuji."
         self.incorrect_english_string = "Thhis is a nirnal sentense. Lanquage detecction is esay."
-        self.english_punctuation_string = "This is an english sentence \n ..;#@ \n This was some punctuation. This should not break."
+        self.english_punctuation_string = "This is an english sentence \n ..;#@ \n "\
+                                          "This was some punctuation. This should not break."
 
         self.empty_array = []
         self.distinct_words_array = ['this', 'are', 'all', 'different', 'words']
