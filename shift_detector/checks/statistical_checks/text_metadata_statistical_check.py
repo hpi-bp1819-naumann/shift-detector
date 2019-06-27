@@ -16,7 +16,7 @@ from shift_detector.utils.visualization import PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT
 class TextMetadataStatisticalCheck(StatisticalCheck):
 
     def __init__(self, text_metadata_types=None, language='en', infer_language=False, significance=0.01,
-                 use_sampling=False, sample_size=None, use_equal_dataset_sizes=False, sampling_seed=0):
+                 sample_size=None, use_equal_dataset_sizes=False, sampling_seed=0):
         try:
             nltk.download('stopwords')
             nltk.download('universal_tagset')
