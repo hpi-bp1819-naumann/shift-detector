@@ -13,6 +13,8 @@ delimiters['whitespace'] = r'\s'
 
 
 def dictionary_to_sorted_string(histogram):
+    if not isinstance(histogram, dict):
+        return float('nan')
     sorted_histo = sorted(histogram.items(), key=lambda kv: (-kv[1], kv[0]))
     only_keys = [item[0] for item in sorted_histo]
     return ', '.join(only_keys)
