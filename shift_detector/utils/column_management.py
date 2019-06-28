@@ -40,7 +40,7 @@ def is_binary(col: pd.Series, allow_na=True):
     if allow_na:
         col = col.dropna()
     values = sorted(col.unique())
-    return values == [0, 1] #or values == [1, 0]
+    return values == [0, 1]
 
 
 def column_names(columns) -> List[str]:
