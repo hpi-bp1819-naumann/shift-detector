@@ -176,3 +176,12 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
             with self.subTest(num_sig_metadata=num_sig_metadata, pvalues=pvalues):
                 result = check.plot_functions(['text'], pvalues, df1, df2)
                 self.assertEqual(num_sig_metadata, len(result))
+
+    def test_column_order_in_report(self):
+        df1 = pd.DataFrame.from_dict({'text': self.poems, 'abc': self.poems})
+        df2 = pd.DataFrame.from_dict({'text': self.phrases, 'abc': self.phrases})
+        store = Store(df1, df2)
+        result = TextMetadataStatisticalCheck([NumCharsMetadata()]).run(store)
+        self.assertEqual('abc', result.examined_columns[0])
+        self.assertEqual('abc', result.shifted_columns[0])
+        self.assertEqual(result.examined_columns, result.shifted_columns)
