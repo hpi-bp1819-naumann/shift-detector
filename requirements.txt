@@ -6,6 +6,7 @@ iso-639==0.4.5
 Keras==2.2.4
 langdetect==1.0.7
 lda==1.1.0
+lxml==4.3.2
 matplotlib==2.2.4
 mock==2.0.0
 nltk==3.4.3
