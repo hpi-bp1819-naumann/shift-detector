@@ -10,9 +10,6 @@ from shift_detector.precalculations.text_metadata import *
 import tests.test_data as td
 
 
-import math
-
-
 class TestTextMetadataPrecalculations(unittest.TestCase):
 
     def setUp(self):
