@@ -13,24 +13,6 @@ import tests.test_data as td
 import math
 
 
-class NumericAssertions:
-    def assert_is_NaN(self, value, msg=None):
-        standardMsg = "%s is not NaN" % str(value)
-        try:
-            if not math.isnan(value):
-                self.fail(self._formatMessage(msg, standardMsg))
-        except:
-            self.fail(self._formatMessage(msg, standardMsg))
-
-    def assert_is_not_NaN(self, value, msg=None):
-        standardMsg = "Provided value is NaN"
-        try:
-            if math.isnan(value):
-                self.fail(self._formatMessage(msg, standardMsg))
-        except:
-            pass
-
-
 class TestTextMetadataPrecalculations(unittest.TestCase):
 
     def setUp(self):
@@ -175,8 +157,14 @@ class TestTextMetadataPrecalculations(unittest.TestCase):
 
 class TestTextMetadataFunctions(unittest.TestCase):
 
+    def assert_is_NaN(self, value, msg=None):
+        standardMsg = "%s is not NaN" % str(value)
+        try:
+            self.assertTrue(math.isnan(value))
+        except ValueError:
+            self.fail(self._formatMessage(msg, standardMsg))
+
     def setUp(self):
-        self.assert_is_NaN = NumericAssertions().assert_is_NaN
         self.nan = float('nan')
 
         self.empty_string = ""
