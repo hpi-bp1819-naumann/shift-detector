@@ -429,7 +429,7 @@ class LanguagePerParagraph(GenericTextMetadata):
 
     @staticmethod
     def detect_languages(text):
-        if len(text) == 0 or not isinstance(text, str):
+        if not isinstance(text, str) or len(text) == 0:
             return float('nan')
         if DelimiterTypeMetadata().metadata_function(text) == 'HTML':
             parts = re.split(r'<\s*br\s*/?\s*>', text)
@@ -481,7 +481,7 @@ class ComplexityMetadata(GenericTextMetadataWithLanguage):
         return ColumnType.numerical
 
     def metadata_function(self, language, text):
-        if language != 'en' or not isinstance(text, str):
+        if not isinstance(text, str) or language != 'en':
             return float('nan')
         return textstat.text_standard(text, True)
 
@@ -506,7 +506,7 @@ class PartOfSpeechMetadata(GenericTextMetadataWithLanguage):
         return tagdict
 
     def metadata_function(self, language, text):
-        if language != 'en' or not isinstance(text, str):
+        if not isinstance(text, str) or language != 'en':
             return float('nan')
         return dictionary_to_sorted_string(self.tag_histogram(text))
 
