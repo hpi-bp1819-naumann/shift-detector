@@ -53,9 +53,9 @@ class LdaGensimTokenizer(Precalculation):
         tokenized = []
         for entry in texts:
             wordlist = []
-            entry = BeautifulSoup(entry).get_text(separator="")
+            # Remove HTML tags
+            entry = BeautifulSoup(entry, features="lxml").get_text(separator="")
             for word in re.sub(r"[^\w+\s]|\b[a-zA-Z]\b", ' ', entry).split():
-
                 if word == '' or word.lower() in self.stop_words:
                     continue
                 if len(gensim.utils.simple_preprocess(word)) > 0:

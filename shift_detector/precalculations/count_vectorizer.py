@@ -3,6 +3,7 @@ from shift_detector.precalculations.precalculation import Precalculation
 from nltk.corpus import stopwords as nltk_stopwords
 from sklearn.feature_extraction.text import CountVectorizer as CountVectorizer_sklearn
 from shift_detector.utils.column_management import ColumnType
+from bs4 import BeautifulSoup
 
 
 class CountVectorizer(Precalculation):
@@ -40,8 +41,8 @@ class CountVectorizer(Precalculation):
             raise TypeError("Cols has to be list of strings or a single string. Received: {}".format(type(cols)))
 
         self.vectorizer = CountVectorizer_sklearn(stop_words=self.stop_words,
-                                                  max_features=self.max_features)
-                                                  #token_pattern=r'[^\w+\s]|\b[a-zA-Z]\b')
+                                                  max_features=self.max_features,
+                                                  preprocessor=self.remove_html)
 
     def __eq__(self, other):
         """Overrides the default implementation"""
@@ -54,6 +55,10 @@ class CountVectorizer(Precalculation):
         hash_list.extend(sorted(self.stop_words))
         hash_list.extend(self.cols)
         return hash(tuple(hash_list))
+
+    @staticmethod
+    def remove_html(string):
+        return BeautifulSoup(string, features="lxml").get_text(separator="")
 
     def process(self, store):
         df1_texts, df2_texts = store[ColumnType.text]
