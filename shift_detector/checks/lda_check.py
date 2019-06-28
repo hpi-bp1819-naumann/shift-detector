@@ -91,8 +91,12 @@ class LdaCheck(Check):
             all_dtms, all_vecs = (None, None)
 
         for col in col_names:
-            count_topics1 = df1_embedded['topics ' + col].value_counts().sort_index()
-            count_topics2 = df2_embedded['topics ' + col].value_counts().sort_index()
+            count_topics1 = df1_embedded['topics ' + col].value_counts()\
+                            .reindex(np.arange(1, self.n_topics + 1))\
+                            .sort_index()
+            count_topics2 = df2_embedded['topics ' + col].value_counts()\
+                            .reindex(np.arange(1, self.n_topics + 1))\
+                            .sort_index()
 
             values1_ratio = [x / len(df1_embedded['topics ' + col]) for x in count_topics1.values]
             values2_ratio = [x / len(df2_embedded['topics ' + col]) for x in count_topics2.values]
@@ -116,7 +120,7 @@ class LdaCheck(Check):
                       word_clouds, ldavis):
         self.paired_total_ratios_figure(column, df1, df2, self.n_topics)
         if word_clouds:
-            self.word_cloud(column, topic_words, self.n_topics, self.lib)
+            self.word_cloud(column, topic_words, self.n_topics)
         if ldavis:
             self.py_lda_vis(column, self.lib, all_models, all_dtms, all_vecs, all_corpora, all_dicts)
 
@@ -133,8 +137,14 @@ class LdaCheck(Check):
 
     @staticmethod
     def paired_total_ratios_figure(column, df1, df2, n_topics):
-        value_counts = pd.concat([df1['topics ' + column].value_counts(), df2['topics ' + column].value_counts()],
-                                 axis=1).sort_index()
+        count_topics1 = df1['topics ' + column].value_counts() \
+            .reindex(np.arange(1, n_topics + 1)) \
+            .sort_index()
+        count_topics2 = df2['topics ' + column].value_counts() \
+            .reindex(np.arange(1, n_topics + 1)) \
+            .sort_index()
+        value_counts = pd.concat([count_topics1, count_topics2], axis=1)
+
         value_ratios = value_counts.fillna(0).apply(axis='columns',
                                                     func=lambda row: pd.Series([row.iloc[0] /
                                                                                 len(df1['topics ' + column]),
@@ -150,11 +160,12 @@ class LdaCheck(Check):
         plt.show()
 
     @staticmethod
-    def word_cloud(column, topic_words, n_topics, lib):
+    def word_cloud(column, topic_words, n_topics):
         custom_XKCD_COLORS = mcolors.XKCD_COLORS
         # remove very light colors that are hard to see on white background
         custom_XKCD_COLORS.pop('xkcd:yellowish tan', None)
         custom_XKCD_COLORS.pop('xkcd:really light blue', None)
+
         cols = [color for name, color in custom_XKCD_COLORS.items()]
 
         cloud = WordCloud(background_color='white',
@@ -165,7 +176,6 @@ class LdaCheck(Check):
                           color_func=lambda *args, **kwargs: cols[i],
                           prefer_horizontal=1.0)
         j = int(np.ceil(n_topics / 2))
-
         fig, axes = plt.subplots(j, 2, figsize=(10, 10+n_topics))
 
         for i, ax in enumerate(axes.flatten()):
@@ -174,12 +184,8 @@ class LdaCheck(Check):
                 ax.axis('off')
                 break
             fig.add_subplot(ax)
-            if lib == 'gensim':
-                topics = dict(topic_words[column][i][1])
-                cloud.generate_from_frequencies(topics, max_font_size=50)
-            else:
-                topics = ' '.join(set(topic_words[column][i]))
-                cloud.generate_from_text(topics)
+            topics = dict(topic_words[column][i][1])
+            cloud.generate_from_frequencies(topics, max_font_size=300)
 
             ax.imshow(cloud)
             ax.set_title('Topic ' + str(i+1), fontdict=dict(size=16))
@@ -192,6 +198,8 @@ class LdaCheck(Check):
     @staticmethod
     def py_lda_vis(column, lib, lda_models, dtm=None, vectorizer=None, corpus=None, dictionary=None):
         if lib == 'sklearn':
+            print(len((dtm[column].sum(axis=0))))
+            print(len(vectorizer[column].get_feature_names()))
             vis_data = pyLDAvis.sklearn.prepare(lda_models[column], np.asmatrix(dtm[column]), vectorizer[column])
         else:
             vis_data = pyLDAvis.gensim.prepare(lda_models[column], corpus[column], dictionary[column])
