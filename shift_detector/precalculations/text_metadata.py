@@ -15,6 +15,7 @@ from nltk.corpus import stopwords
 # noinspection PyPackageRequirements
 from spellchecker import SpellChecker
 from textstat import textstat
+from langdetect.lang_detect_exception import LangDetectException
 
 from shift_detector.precalculations.precalculation import Precalculation
 from shift_detector.precalculations.text_precalculation import TokenizeIntoLowerWordsPrecalculation
@@ -441,8 +442,8 @@ class LanguagePerParagraph(GenericTextMetadata):
             try:
                 lang = detect(part)
                 detected_languages[lang] += 1
-            except:
-                pass
+            except LangDetectException:
+                continue
         if detected_languages == {}:
             return float('nan')
         return detected_languages
