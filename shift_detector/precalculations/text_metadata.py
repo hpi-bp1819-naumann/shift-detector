@@ -4,6 +4,7 @@ import regex
 import unicodedata
 from abc import abstractmethod
 from collections import defaultdict
+import numpy as np
 
 import pandas as pd
 import nltk
@@ -190,7 +191,7 @@ class NumCharsMetadata(GenericTextMetadata):
         return ColumnType.numerical
 
     def metadata_function(self, text):
-        if text != text:
+        if not isinstance(text, str):
             return float('nan')
         return len(text)
 
@@ -205,7 +206,7 @@ class RatioUppercaseLettersMetadata(GenericTextMetadata):
         return ColumnType.numerical
 
     def metadata_function(self, text):
-        if text != text:
+        if not isinstance(text, str):
             return float('nan')
         if text == "":
             return 0
@@ -225,7 +226,7 @@ class UnicodeCategoriesMetadata(GenericTextMetadata):
 
     @staticmethod
     def unicode_category_histogram(text):
-        if text != text:
+        if not isinstance(text, str):
             return float('nan')
         characters = defaultdict(int)
         for c in text:
@@ -248,7 +249,7 @@ class UnicodeBlocksMetadata(GenericTextMetadata):
 
     @staticmethod
     def unicode_block_histogram(text):
-        if text != text:
+        if not isinstance(text, str):
             return float('nan')
         characters = defaultdict(int)
         for c in text:
@@ -270,7 +271,7 @@ class NumWordsMetadata(GenericTextMetadataWithTokenizing):
         return ColumnType.numerical
 
     def metadata_function(self, words):
-        if words != words:
+        if not isinstance(words, list):
             return float('nan')
         return len(words)
 
@@ -285,7 +286,7 @@ class DistinctWordsRatioMetadata(GenericTextMetadataWithTokenizing):
         return ColumnType.numerical
 
     def metadata_function(self, words):
-        if words != words:
+        if not isinstance(words, list):
             return float('nan')
         distinct_words = set()
         if len(words) == 0:
@@ -306,7 +307,7 @@ class UniqueWordsRatioMetadata(GenericTextMetadataWithTokenizing):
         return ColumnType.numerical
 
     def metadata_function(self, words):
-        if words != words:
+        if not isinstance(words, list):
             return float('nan')
         if len(words) == 0:
             return 0.0
@@ -334,7 +335,7 @@ class UnknownWordRatioMetadata(GenericTextMetadataWithTokenizingAndLanguage):
     def metadata_function(self, language, words):
         # pyspellchecker supports multiple languages including English, Spanish, German, French, and Portuguese
 
-        if words != words:
+        if not isinstance(words, list):
             return float('nan')
         try:
             spell = SpellChecker(language)
@@ -359,7 +360,7 @@ class StopwordRatioMetadata(GenericTextMetadataWithTokenizingAndLanguage):
     def metadata_function(self, language, words):
         # not working for every language
 
-        if words != words:
+        if not isinstance(words, list):
             return float('nan')
         stopword_count = 0
         try:
@@ -384,7 +385,7 @@ class DelimiterTypeMetadata(GenericTextMetadata):
         return ColumnType.categorical
 
     def metadata_function(self, text):
-        if text != text:
+        if not isinstance(text, str):
             return float('nan')
         for key, value in delimiters.items():
             if regex.compile(value).search(text):
@@ -404,7 +405,7 @@ class NumPartsMetadata(GenericTextMetadata):
         return ColumnType.numerical
 
     def metadata_function(self, text):
-        if text != text:
+        if not isinstance(text, str):
             return float('nan')
         delimiter = DelimiterTypeMetadata().metadata_function(text)
         for key, value in delimiters.items():
@@ -429,7 +430,7 @@ class LanguagePerParagraph(GenericTextMetadata):
 
     @staticmethod
     def detect_languages(text):
-        if text != text or len(text) == 0:
+        if len(text) == 0 or not isinstance(text, str):
             return float('nan')
         if DelimiterTypeMetadata().metadata_function(text) == 'HTML':
             parts = re.split(r'<\s*br\s*/?\s*>', text)
@@ -465,7 +466,7 @@ class LanguageMetadata(GenericTextMetadata):
         return ColumnType.categorical
 
     def metadata_function(self, text):
-        if text != text:
+        if not isinstance(text, str):
             return float('nan')
         DetectorFactory.seed = self.seed
         return detect(text)
@@ -481,7 +482,7 @@ class ComplexityMetadata(GenericTextMetadataWithLanguage):
         return ColumnType.numerical
 
     def metadata_function(self, language, text):
-        if text != text or language != 'en':
+        if language != 'en' or not isinstance(text, str):
             return float('nan')
         return textstat.text_standard(text, True)
 
@@ -506,7 +507,7 @@ class PartOfSpeechMetadata(GenericTextMetadataWithLanguage):
         return tagdict
 
     def metadata_function(self, language, text):
-        if text != text or language != 'en':
+        if language != 'en' or not isinstance(text, str):
             return float('nan')
         return dictionary_to_sorted_string(self.tag_histogram(text))
 
