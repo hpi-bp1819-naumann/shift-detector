@@ -7,10 +7,10 @@ import pandas as pd
 class TestLdaCheck(unittest.TestCase):
 
     def setUp(self):
-        self.lda_report1 = LdaCheck(significance=0.1, n_topics=2, n_iter=1, random_state=2)
-        self.lda_report2 = LdaCheck(significance=0.1, n_topics=2, n_iter=1, random_state=2)
-        self.lda_report3 = LdaCheck(cols=['text'], significance=0.1, n_topics=2, n_iter=1, random_state=2)
-        self.lda_report4 = LdaCheck(cols=['abcd'], significance=0.1, n_topics=2, n_iter=1, random_state=2)
+        self.lda_report1 = LdaCheck(significance=0.1, n_topics=2, n_iter=1, random_state=0)
+        self.lda_report2 = LdaCheck(significance=0.1, n_topics=2, n_iter=1, random_state=0)
+        self.lda_report3 = LdaCheck(cols=['text'], significance=0.1, n_topics=2, n_iter=1, random_state=0)
+        self.lda_report4 = LdaCheck(cols=['abcd'], significance=0.1, n_topics=2, n_iter=1, random_state=0)
 
         self.poems = [
             'Tell me not, in mournful numbers,\nLife is but an empty dream!\nFor the soul is dead that slumbers,\nAnd things are not what they seem.',
@@ -176,15 +176,14 @@ class TestLdaCheck(unittest.TestCase):
     def test_run(self):
         with self.subTest("Test successful run without specifying the 'cols' parameter"):
             report = self.lda_report1.run(self.store)
-            print(report.explanation)
-            self.assertAlmostEqual(report.explanation['Topic 1 diff in column text'], 0.405)
-            self.assertAlmostEqual(report.explanation['Topic 2 diff in column text'], -0.405)
+            self.assertAlmostEqual(report.explanation['Topic 1 diff in column text'], 0.5)
+            self.assertAlmostEqual(report.explanation['Topic 2 diff in column text'], -0.5)
 
         with self.subTest("Test successful run with specifying the 'cols' parameter"):
             report = self.lda_report3.run(self.store)
 
-            self.assertAlmostEqual(report.explanation['Topic 1 diff in column text'], 0.405)
-            self.assertAlmostEqual(report.explanation['Topic 2 diff in column text'], -0.405)
+            self.assertAlmostEqual(report.explanation['Topic 1 diff in column text'], 0.5)
+            self.assertAlmostEqual(report.explanation['Topic 2 diff in column text'], -0.5)
 
         with self.subTest("Test unsuccessful run with specifying a wrong 'cols' parameter"):
             self.assertRaises(ValueError, lambda: self.lda_report4.run(self.store))
