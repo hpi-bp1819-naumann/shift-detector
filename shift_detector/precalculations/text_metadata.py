@@ -4,7 +4,6 @@ import regex
 import unicodedata
 from abc import abstractmethod
 from collections import defaultdict
-import numpy as np
 
 import pandas as pd
 import nltk
