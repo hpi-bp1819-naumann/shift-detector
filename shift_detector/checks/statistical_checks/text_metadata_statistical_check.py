@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib import gridspec
 import warnings
+import nltk
 
 from shift_detector.checks.check import Report
 from shift_detector.checks.statistical_checks.categorical_statistical_check import CategoricalStatisticalCheck
@@ -17,13 +18,10 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
 
     def __init__(self, text_metadata_types=None, language='en', infer_language=False, significance=0.01,
                  sample_size=None, use_equal_dataset_sizes=False, sampling_seed=0):
-        try:
-            nltk.download('stopwords')
-            nltk.download('universal_tagset')
-            nltk.download('punkt')
-            nltk.download('averaged_perceptron_tagger')
-        except:
-            warnings.warn('You cannot reach the nltk server, your nltk packages might be out of date.', UserWarning) 
+        nltk.download('stopwords')
+        nltk.download('universal_tagset')
+        nltk.download('punkt')
+        nltk.download('averaged_perceptron_tagger')
         super().__init__(significance, sample_size, use_equal_dataset_sizes, sampling_seed)
         self.metadata_precalculation = TextMetadata(text_metadata_types, language=language,
                                                     infer_language=infer_language)

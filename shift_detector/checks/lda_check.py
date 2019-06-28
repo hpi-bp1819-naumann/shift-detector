@@ -11,6 +11,7 @@ from IPython.display import display
 import pandas as pd
 import numpy as np
 import warnings
+import nltk
 
 
 class LdaCheck(Check):
@@ -21,10 +22,7 @@ class LdaCheck(Check):
         significance here is the difference between the percentages of each topic between both datasets,
         meaning a difference above 10% is significant
         """
-        try:
-            nltk.download('stopwords')
-        except:
-            warnings.warn('You cannot reach the nltk server, your nltk packages might be out of date.', UserWarning)
+        nltk.download('stopwords')
         if not isinstance(significance, float):
             raise TypeError("Significance has to be a float. Received: {}".format(type(significance)))
         if not 0 < significance < 1:
