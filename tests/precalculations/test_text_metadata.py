@@ -1,6 +1,7 @@
 import unittest
 
 from pandas.util.testing import assert_frame_equal
+import math
 
 import shift_detector.utils.text_metadata_utils as TmUtils
 
