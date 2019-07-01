@@ -98,7 +98,7 @@ class LdaCheck(Check):
                 # number of rounded digits is 3 per default
                 if abs(round(v1 - v2, 3)) >= self.significance:
                     shifted_columns.add(col)
-                    explanation['Topic '+str(i+1)+' diff in column '+col] = round(v1 - v2, 3)
+                    explanation[col + ' has a diff in topic '+str(i+1)+' of '] = round(v1 - v2, 3)
 
         return Report(check_name='LDA Check',
                       examined_columns=col_names,
