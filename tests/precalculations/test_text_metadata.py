@@ -37,8 +37,8 @@ class TestTextMetadataPrecalculations(unittest.TestCase):
     def test_unicode_categories(self):
         md1, md2 = UnicodeCategoriesMetadata().process(self.store)
         solution1 = pd.DataFrame(['Ll, Zs, Po, Lu, Cc', 'Ll, Zs, Po, Lu, Cc', 'Ll, Zs, Po, Lu, Cc',
-                                  'Ll, Zs, Po, Lu, Cc', 'Ll, Zs, Po, Lu, Cc', 'Ll, Zs, Lu, Po, Cc, Pf, Pd',
-                                  'Ll, Zs, Lu, Po, Cc, Pd', 'Ll, Zs, Po, Lu, Cc', 'Ll, Zs, Lu, Cc, Po',
+                                  'Ll, Zs, Po, Lu, Cc', 'Ll, Zs, Po, Lu, Cc', 'Ll, Zs, Lu, Po, Cc',
+                                  'Ll, Zs, Lu, Po, Cc', 'Ll, Zs, Po, Lu, Cc', 'Ll, Zs, Lu, Cc, Po',
                                   'Ll, Zs, Po, Lu, Cc'], columns=['text'])
         solution2 = pd.DataFrame(['Ll, Zs, Lu, Pd', 'Ll, Zs, Lu, Pd', 'Ll, Zs, Lu', 'Ll, Zs, Lu', 'Ll, Zs, Lu',
                                   'Ll, Zs, Lu, Pd', 'Ll, Zs, Lu, Nd', 'Ll, Zs, Lu, Pd', 'Ll, Nd, Zs, Lu, Po',
@@ -127,8 +127,7 @@ class TestTextMetadataPrecalculations(unittest.TestCase):
 
     def test_pos_tags(self):
         md1, md2 = PartOfSpeechMetadata().process(self.store)
-        solution1 = pd.DataFrame(['NOUN, ., VERB, ADJ, ADP, PRON, ADV, CONJ, DET',
-                                  'NOUN, ., VERB, ADV, ADJ, DET, ADP, CONJ, PRON, PRT'], columns=['text'])
+        solution1 = pd.DataFrame(['NOUN, ., VERB, ADJ, ADP', 'NOUN, ., VERB, ADV, ADJ'], columns=['text'])
         solution2 = pd.DataFrame(['NOUN, ADJ, VERB', 'ADJ, NOUN'], columns=['text'])
         assert_frame_equal(solution1, md1.iloc[:2, :])
         assert_frame_equal(solution2, md2.iloc[:2, :])
@@ -365,7 +364,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
 
     def test_pos_tags(self):
         pos_tags = PartOfSpeechMetadata().metadata_function
-        self.assertEqual('DET, VERB, ., ADJ, ADP, NOUN', pos_tags('en', self.english_string))
+        self.assertEqual('DET, VERB, ., ADJ, ADP', pos_tags('en', self.english_string))
         self.assertEqual('.', pos_tags('en', self.punctuation_string))
         self.assertEqual('', pos_tags('en', self.empty_string))
         self.assertIsNaN(pos_tags('de', self.german_string))
