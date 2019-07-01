@@ -126,7 +126,8 @@ class WordPredictionReport(Report):
         print("Results per column:")
 
         self.explanation = self.explanation.style.apply(
-            lambda x: ['background: #FF6A6A' if x['column'] in self.shifted_columns else ''] * len(x),
+            lambda row: ['background: #FF6A6A' if row['column'] in self.shifted_columns else ''] *
+                        len(row),
             axis=1)
 
         display(self.explanation)

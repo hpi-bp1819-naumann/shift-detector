@@ -30,7 +30,8 @@ class WordPredictionPrecalculation(Precalculation):
         self.num_epochs_predictor = num_epochs_predictor
         self.verbose = verbose
 
-        self.output_path = self.create_output_path(output_path)
+        self.output_path = output_path
+        self.create_output_path(self.output_path)
 
         if not isinstance(self.column, str):
             raise ValueError('Column argument {} should be of type string. '
@@ -136,8 +137,6 @@ class WordPredictionPrecalculation(Precalculation):
 
         if not os.path.exists(output_path):
             os.makedirs(output_path)
-
-        return output_path
 
     def create_callbacks(self):
         callbacks = []
