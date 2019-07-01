@@ -46,8 +46,12 @@ def plot_binned_ratio_histogram(axes, columns, bin_edges):
 
 
 def calculate_value_ratios(columns, top_k):
-    value_counts = pd.concat([columns[0].value_counts().head(top_k), columns[1].value_counts().head(top_k)],
-                             axis=1).sort_index()
+    value_counts1 = columns[0].value_counts().sort_values(ascending=False)
+    value_counts1.index = [str(ix) for ix in value_counts1.index]
+    value_counts2 = columns[1].value_counts().sort_values(ascending=False)
+    value_counts2.index = [str(ix) for ix in value_counts2.index]
+    indices = set(value_counts1.head(top_k).index).union(set(value_counts2.head(top_k).index))
+    value_counts = pd.concat([value_counts1[indices], value_counts2[indices]], axis=1).sort_index().fillna(0.0)
     return value_counts.fillna(0).apply(axis='columns',
                                         func=lambda row: pd.Series([row.iloc[0] / len(columns[0]),
                                                                     row.iloc[1] / len(columns[1])],

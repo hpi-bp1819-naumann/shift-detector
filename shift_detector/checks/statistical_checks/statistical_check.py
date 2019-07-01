@@ -107,7 +107,7 @@ class SimpleStatisticalCheck(StatisticalCheck):
         :return: dictionary of column-explanation-pairs
         """
         explanations = {}
-        for column in self.significant_columns(pvalues):
+        for column in sorted(self.significant_columns(pvalues)):
             explanations[column] = 'p = {pvalue}\n'.format(
                                         pvalue=str(pvalues.loc['pvalue', column])
                                     )
@@ -162,8 +162,8 @@ class SimpleStatisticalCheck(StatisticalCheck):
             pvalues[column] = [p]
         significant_columns = self.significant_columns(pvalues)
         return StatisticalReport(self.check_name(),
-                                 examined_columns=columns,
-                                 shifted_columns=significant_columns,
+                                 examined_columns=sorted(columns),
+                                 shifted_columns=sorted(significant_columns),
                                  explanation=self.explain(pvalues),
                                  explanation_header=self.explanation_header(),
                                  information={'test_results': pvalues},
