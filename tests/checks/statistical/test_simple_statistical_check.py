@@ -36,7 +36,7 @@ class TestSimpleStatisticalCheck(unittest.TestCase):
     def test_correct_number_of_plot_functions(self):
         for sig_cols in [['col1', 'col2'], ['col1'], []]:
             with self.subTest(sig_cols=sig_cols):
-                result = CategoricalStatisticalCheck().plot_functions(sig_cols, MagicMock(), MagicMock())
+                result = CategoricalStatisticalCheck().plot_data(sig_cols, MagicMock(), MagicMock())
         self.assertEqual(len(sig_cols), len(result))
 
     def test_size_adjustment(self):

@@ -60,6 +60,14 @@ class NumericalStatisticalCheck(SimpleStatisticalCheck):
     def number_of_columns_of_plots(self) -> int:
         return 1
 
+    def plot_data(self, significant_columns, df1, df2):
+        plot_data = []
+        for column in sorted(significant_columns):
+            plot_data.append(
+                vis.PlotData(lambda figure, tile, col=column: self.column_plot(figure, tile, col, df1, df2), 1)
+            )
+        return plot_data
+
     @staticmethod
     def column_plot(figure, tile, column, df1, df2):
         inner_grid = gridspec.GridSpecFromSubplotSpec(1, 2, subplot_spec=tile, wspace=0.2)

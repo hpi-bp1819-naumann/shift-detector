@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 from matplotlib import gridspec
 
 from shift_detector.checks.check import Report
@@ -9,7 +10,7 @@ from shift_detector.checks.statistical_checks.statistical_check import Statistic
 from shift_detector.precalculations.text_metadata import TextMetadata
 from shift_detector.utils.column_management import ColumnType
 from shift_detector.utils.errors import UnknownMetadataReturnColumnTypeError
-from shift_detector.utils.visualization import PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT
+from shift_detector.utils.visualization import PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT, PlotData
 
 
 class TextMetadataStatisticalCheck(StatisticalCheck):
@@ -59,28 +60,39 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
             raise UnknownMetadataReturnColumnTypeError(mdtype)
 
     @staticmethod
-    def plot_all_metadata(plot_functions):
-        rows = len(plot_functions)
+    def plot_all_metadata(plot_data):
+        rows = sum([plot.required_rows for plot in plot_data])
         cols = 1
         fig = plt.figure(figsize=(PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT * rows), tight_layout=True)
         grid = gridspec.GridSpec(rows, cols)
-        for plot_function, tile in zip(plot_functions, grid):
-            plot_function(fig, tile)
+        occupied_rows = 0
+        for i, plot in enumerate(plot_data):
+            plot.plot_function(fig, tile=grid[occupied_rows:(occupied_rows + plot.required_rows), i % cols])
+            occupied_rows += plot.required_rows
         plt.show()
 
-    def plot_functions(self, significant_columns, pvalues, df1, df2):
-        plot_functions = []
+    def plot_data(self, significant_columns, pvalues, df1, df2):
+        plot_data = []
         for column in sorted(significant_columns):
             for mdtype in sorted(self.significant_metadata(pvalues[column])):
-                plot_functions.append(lambda figure, tile, col=column, meta=mdtype:
-                                      self.metadata_plot(figure, tile, col, meta, df1, df2))
-        return plot_functions
+                if mdtype.metadata_return_type == ColumnType.categorical:
+                    distinct_count = len(set(df1[(column, mdtype)].unique()).union(set(df2[(column, mdtype)].unique())))
+                    required_height = 1.5 + 0.3 * distinct_count
+                    required_rows = int(np.ceil(required_height / PLOT_ROW_HEIGHT))
+                else:
+                    required_rows = 1
+                plot_data.append(
+                    PlotData(lambda figure, tile, col=column, meta=mdtype:
+                             self.metadata_plot(figure, tile, col, meta, df1, df2),
+                             required_rows)
+                )
+        return plot_data
 
     def metadata_figure(self, pvalues, df1, df2):
         significant_columns = self.significant_columns(pvalues)
         if not significant_columns:
             return []
-        return [lambda plots=tuple(self.plot_functions(significant_columns, pvalues, df1, df2)):
+        return [lambda plots=tuple(self.plot_data(significant_columns, pvalues, df1, df2)):
                 self.plot_all_metadata(plots)]
 
     def run(self, store) -> Report:

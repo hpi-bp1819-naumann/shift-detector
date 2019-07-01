@@ -130,25 +130,25 @@ class SimpleStatisticalCheck(StatisticalCheck):
     def number_of_columns_of_plots(self) -> int:
         raise NotImplementedError
 
-    def plot_all_columns(self, plot_functions):
+    @abstractmethod
+    def plot_data(self, significant_columns, df1, df2):
+        raise NotImplementedError
+
+    def plot_all_columns(self, plot_data):
         cols = self.number_of_columns_of_plots()
-        rows = int(np.ceil(len(plot_functions) / cols))
+        rows = int(np.ceil(sum([plot.required_rows for plot in plot_data]) / cols))
         fig = plt.figure(figsize=(PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT * rows), tight_layout=True)
         grid = gridspec.GridSpec(rows, cols)
-        for plot_function, tile in zip(plot_functions, grid):
-            plot_function(fig, tile)
+        occupied_rows = 0
+        for i, plot in enumerate(plot_data):
+            plot.plot_function(fig, tile=grid[occupied_rows:(occupied_rows+plot.required_rows), i % cols])
+            occupied_rows += plot.required_rows
         plt.show()
-
-    def plot_functions(self, significant_columns, df1, df2):
-        plot_functions = []
-        for column in sorted(significant_columns):
-            plot_functions.append(lambda figure, tile, col=column: self.column_plot(figure, tile, col, df1, df2))
-        return plot_functions
 
     def column_figure(self, significant_columns, df1, df2):
         if not significant_columns:
             return []
-        return [lambda plots=tuple(self.plot_functions(significant_columns, df1, df2)): self.plot_all_columns(plots)]
+        return [lambda plots=tuple(self.plot_data(significant_columns, df1, df2)): self.plot_all_columns(plots)]
 
     def run(self, store) -> Report:
         pvalues = pd.DataFrame(index=['pvalue'])

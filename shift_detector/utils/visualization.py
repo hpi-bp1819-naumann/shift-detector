@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 import numpy as np
 import pandas as pd
 
@@ -6,6 +8,8 @@ COLOR_2 = 'seagreen'
 
 PLOT_ROW_HEIGHT = 5.0
 PLOT_GRID_WIDTH = 12.0
+
+PlotData = namedtuple('PlotData', ['plot_function', 'required_rows'])
 
 
 def calculate_bin_counts(bin_edges, columns):
