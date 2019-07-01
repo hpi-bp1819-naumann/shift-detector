@@ -17,6 +17,7 @@ from shift_detector.detector import Detector
 from shift_detector.precalculations.store import Store
 from shift_detector.precalculations.text_metadata import NumCharsMetadata, NumWordsMetadata, \
     DistinctWordsRatioMetadata, LanguagePerParagraph, UnknownWordRatioMetadata, StopwordRatioMetadata, LanguageMetadata
+from shift_detector.utils.visualization import PlotData
 
 
 class TestTextMetadataStatisticalCheck(unittest.TestCase):
@@ -105,10 +106,10 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
 
     @mock.patch('shift_detector.checks.statistical_checks.text_metadata_statistical_check.plt')
     def test_all_plot_functions_are_called_and_plot_is_shown(self, mock_plt):
-        plot_functions = [MagicMock(), MagicMock(), MagicMock()]
-        TextMetadataStatisticalCheck.plot_all_metadata(plot_functions)
-        mock_plt.figure.assert_called_with(figsize=(12.0, 15.0), tight_layout=True)
-        for func in plot_functions:
+        plot_data = [PlotData(MagicMock(), 1), PlotData(MagicMock(), 2), PlotData(MagicMock(), 3)]
+        TextMetadataStatisticalCheck.plot_all_metadata(plot_data)
+        mock_plt.figure.assert_called_with(figsize=(12.0, 30.0), tight_layout=True)
+        for func, rows in plot_data:
             self.assertTrue(func.called)
         mock_plt.show.assert_called_with()
 
@@ -162,7 +163,7 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
             TextMetadataStatisticalCheck.metadata_plot(figure, tile, 'text', NumCharsMetadata(), None, None)
         self.assertTrue(mock_plot.called)
 
-    def test_correct_number_of_plot_functions(self):
+    def test_correct_number_of_plot_data(self):
         df1 = pd.DataFrame.from_dict({'text': ['blub'] * 10})
         df2 = pd.DataFrame.from_dict({'text': ['blub'] * 10})
         metadata_names = ['num_chars', 'num_words']
@@ -174,7 +175,7 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
             pvalues[('text', 'num_chars')] = p[0]
             pvalues[('text', 'num_words')] = p[1]
             with self.subTest(num_sig_metadata=num_sig_metadata, pvalues=pvalues):
-                result = check.plot_functions(['text'], pvalues, df1, df2)
+                result = check.plot_data(['text'], pvalues, df1, df2)
                 self.assertEqual(num_sig_metadata, len(result))
 
     def test_column_order_in_report(self):
