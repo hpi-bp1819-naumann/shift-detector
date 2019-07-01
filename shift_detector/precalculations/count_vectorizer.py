@@ -41,8 +41,7 @@ class CountVectorizer(Precalculation):
             raise TypeError("Cols has to be list of strings or a single string. Received: {}".format(type(cols)))
 
         self.vectorizer = CountVectorizer_sklearn(stop_words=self.stop_words,
-                                                  max_features=self.max_features,
-                                                  preprocessor=self.remove_html)
+                                                  max_features=self.max_features)
 
     def __eq__(self, other):
         """Overrides the default implementation"""
@@ -56,13 +55,11 @@ class CountVectorizer(Precalculation):
         hash_list.extend(self.cols)
         return hash(tuple(hash_list))
 
-    @staticmethod
-    def remove_html(string):
-        return BeautifulSoup(string, features="lxml").get_text(separator="")
-
     def process(self, store):
         df1_texts, df2_texts = store[ColumnType.text]
         merged_texts = pd.concat([df1_texts, df2_texts], ignore_index=True)
+        # Remove HTML tags
+        cleaned_texts = merged_texts.applymap(lambda text: BeautifulSoup(text, features="lxml").get_text())
 
         for col in self.cols:
             if col not in store.column_names(ColumnType.text):
@@ -77,9 +74,9 @@ class CountVectorizer(Precalculation):
 
         for col in col_names:
             all_vecs[col] = self.vectorizer
-            all_vecs[col] = all_vecs[col].fit(merged_texts[col])
+            all_vecs[col] = all_vecs[col].fit(cleaned_texts[col])
             feature_names[col] = all_vecs[col].get_feature_names()
-            dict_of_arrays1[col] = all_vecs[col].transform(df1_texts[col]).A.astype(int)
-            dict_of_arrays2[col] = all_vecs[col].transform(df2_texts[col]).A.astype(int)
+            dict_of_arrays1[col] = all_vecs[col].transform(df1_texts[col]).toarray().astype(int)
+            dict_of_arrays2[col] = all_vecs[col].transform(df2_texts[col]).toarray().astype(int)
 
         return dict_of_arrays1, dict_of_arrays2, feature_names, all_vecs
