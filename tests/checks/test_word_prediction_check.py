@@ -41,6 +41,11 @@ class TestWordPredictionCheck(TestCase):
             self.assertRaises(TypeError, lambda: WordPredictionCheck(relative_thresh='wrong'))
             self.assertRaises(ValueError, lambda: WordPredictionCheck(relative_thresh=-1))
 
+        with self.subTest("Test correct relative_thresh"):
+            WordPredictionCheck(relative_thresh=0)
+            WordPredictionCheck(relative_thresh=.1)
+            WordPredictionCheck(relative_thresh=5)
+
         with self.subTest("Test wrong lstm_window"):
             self.assertRaises(TypeError, lambda: WordPredictionCheck(lstm_window='wrong'))
             self.assertRaises(TypeError, lambda: WordPredictionCheck(lstm_window=.9))

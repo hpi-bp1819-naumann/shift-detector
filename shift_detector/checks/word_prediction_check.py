@@ -34,7 +34,7 @@ class WordPredictionCheck(Check):
             raise TypeError('Expected argument relative_thresh to be of types [float, int]. '
                             'Received {}.'.format(self.relative_thresh.__class__.__name__))
 
-        if self.relative_thresh <= .0:
+        if self.relative_thresh < .0:
             raise ValueError('Expected argument relative_thresh to be >= 0. '
                              'Received {}.'.format(self.relative_thresh))
 
@@ -125,9 +125,11 @@ class WordPredictionReport(Report):
     def print_explanation(self):
         print("Results per column:")
 
+        def color_style(row, shifted_columns):
+            return ['background: #FF6A6A' if row['column'] in shifted_columns else ''] * len(row)
+
         self.explanation = self.explanation.style.apply(
-            lambda row: ['background: #FF6A6A' if row['column'] in self.shifted_columns else ''] *
-                        len(row),
+            lambda row: color_style(row, self.shifted_columns),
             axis=1)
 
         display(self.explanation)
