@@ -81,3 +81,15 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
         self.assertTrue(mock_plot.return_value.set_ylabel.called)
         self.assertTrue(mock_plot.return_value.invert_yaxis.called)
         self.assertFalse(mock_plt.show.called)
+
+    @mock.patch('shift_detector.checks.statistical_checks.categorical_statistical_check'
+                '.plt.Subplot')
+    @mock.patch('shift_detector.checks.statistical_checks.categorical_statistical_check'
+                '.CategoricalStatisticalCheck.paired_total_ratios_plot')
+    def test_plot_type(self, mock_plot, mock_subplot):
+        figure = MagicMock(autospec=Figure)
+        tile = MagicMock()
+        CategoricalStatisticalCheck().column_plot(figure, tile, 'vaccination_reaction', self.df1_significant,
+                                                  self.df2_significant)
+        mock_subplot.assert_called_with(figure, tile)
+        self.assertTrue(mock_plot.called)

@@ -29,7 +29,7 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
                    if mdtype.metadata_name() in super(type(self), self).significant_columns(mdtype_pvalues))
 
     def significant_metadata_names(self, mdtype_pvalues):
-        return [mdtype.metadata_name() for mdtype in self.significant_metadata(mdtype_pvalues)]
+        return sorted([mdtype.metadata_name() for mdtype in self.significant_metadata(mdtype_pvalues)])
 
     def explanation_header(self, numerical_test_name, categorical_test_name, any_significant):
         header = 'Statistical tests performed:\n' + \
@@ -42,7 +42,7 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
 
     def explain(self, pvalues):
         explanation = {}
-        for column in self.significant_columns(pvalues):
+        for column in sorted(self.significant_columns(pvalues)):
             explanation[column] = 'Significant metadata:\n\t\t- {significant_metadata}'.format(
                 significant_metadata='\n\t\t- '.join(self.significant_metadata_names(pvalues[column]))
             )
@@ -102,8 +102,8 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
                 pvalues[(column, mdtype.metadata_name())] = [p]
         significant_columns = self.significant_columns(pvalues)
         return StatisticalReport("Text Metadata Check",
-                                 examined_columns=list(df1.columns.levels[0]),
-                                 shifted_columns=significant_columns,
+                                 examined_columns=sorted(df1.columns.levels[0]),
+                                 shifted_columns=sorted(significant_columns),
                                  explanation=self.explain(pvalues),
                                  explanation_header=self.explanation_header(numerical_check.statistical_test_name(),
                                                                             categorical_check.statistical_test_name(),
