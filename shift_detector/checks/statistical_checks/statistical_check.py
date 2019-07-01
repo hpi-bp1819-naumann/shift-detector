@@ -98,7 +98,7 @@ class SimpleStatisticalCheck(StatisticalCheck):
         Receive the data to run on.
         :return: Processed df1, df2 and the columns
         """
-        return pd.DataFrame(), pd.DataFrame(), []
+        raise NotImplementedError
 
     def explain(self, pvalues):
         """
