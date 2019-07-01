@@ -177,8 +177,8 @@ class TestLdaCheck(unittest.TestCase):
     def test_run(self):
         with self.subTest("Test successful run without specifying the 'cols' parameter with sklearn"):
             report1 = self.lda_report1.run(self.store)
-            self.assertAlmostEqual(report1.explanation['Topic 1 diff in column text'], 0.5)
-            self.assertAlmostEqual(report1.explanation['Topic 2 diff in column text'], -0.5)
+            self.assertAlmostEqual(report1.explanation['Topic 1 diff in column text'], -0.419)
+            self.assertAlmostEqual(report1.explanation['Topic 2 diff in column text'], 0.419)
 
         with self.subTest("Test successful run with specifying the 'cols' parameter with gensim"):
             report2 = self.lda_report3.run(self.store)
