@@ -203,29 +203,26 @@ class TestTextMetadataFunctions(unittest.TestCase):
                                            'luuqadaha', 'aduunku', 'ku', 'bilaabmeem']
 
         self.empty_dict = {}
-        self.many_entries_dict = {'a': 2, 'b': 5, 'c': 3, 'f': 5, 'd': 1, 'e': 5}
+        self.many_entries_dict = {'a': 2, 'b': 5, 'c': 3, 'f': 5, 'd': 1, 'e': 9}
         self.one_entry_dict = {'a': 100}
 
-    def test_dictionary_to_sorted_string_frequency(self):
-        self.assertEqual(TmUtils.dictionary_to_sorted_string_frequency(self.many_entries_dict), "b, e, f, c, a, d")
-        self.assertEqual(TmUtils.dictionary_to_sorted_string_frequency(self.one_entry_dict), "a")
-        self.assertEqual(TmUtils.dictionary_to_sorted_string_frequency(self.empty_dict), "")
-        self.assertIsNaN(TmUtils.dictionary_to_sorted_string_frequency(self.nan))
+    def test_most_common_n_to_string_alphabetically(self):
+        self.assertEqual(TmUtils.most_common_n_to_string_alphabetically(self.many_entries_dict, 3), "b, e, f")
+        self.assertEqual(TmUtils.most_common_n_to_string_alphabetically(self.many_entries_dict, 1), "e")
+        self.assertEqual(TmUtils.most_common_n_to_string_alphabetically(self.many_entries_dict, 0), "")
+        self.assertEqual(TmUtils.most_common_n_to_string_alphabetically(self.one_entry_dict, 3), "a")
+        self.assertEqual(TmUtils.most_common_n_to_string_alphabetically(self.one_entry_dict, 1), "a")
+        self.assertEqual(TmUtils.most_common_n_to_string_alphabetically(self.empty_dict, 3), "")
+        self.assertIsNaN(TmUtils.most_common_n_to_string_alphabetically(self.nan, 3))
 
-    def test_dictionary_to_sorted_string_alphabetically(self):
-        self.assertEqual(TmUtils.dictionary_to_sorted_string_alphabetically(self.many_entries_dict), "a, b, c, d, e, f")
-        self.assertEqual(TmUtils.dictionary_to_sorted_string_alphabetically(self.one_entry_dict), "a")
-        self.assertEqual(TmUtils.dictionary_to_sorted_string_alphabetically(self.empty_dict), "")
-        self.assertIsNaN(TmUtils.dictionary_to_sorted_string_alphabetically(self.nan))
-
-    def test_most_common_n_to_string(self):
-        self.assertEqual(TmUtils.most_common_n_to_string(self.many_entries_dict, 3), "b, e, f")
-        self.assertEqual(TmUtils.most_common_n_to_string(self.many_entries_dict, 1), "b")
-        self.assertEqual(TmUtils.most_common_n_to_string(self.many_entries_dict, 0), "")
-        self.assertEqual(TmUtils.most_common_n_to_string(self.one_entry_dict, 3), "a")
-        self.assertEqual(TmUtils.most_common_n_to_string(self.one_entry_dict, 1), "a")
-        self.assertEqual(TmUtils.most_common_n_to_string(self.empty_dict, 3), "")
-        self.assertIsNaN(TmUtils.most_common_n_to_string(self.nan, 3))
+    def test_most_common_n_to_string_frequency(self):
+        self.assertEqual(TmUtils.most_common_n_to_string_frequency(self.many_entries_dict, 3), "e, b, f")
+        self.assertEqual(TmUtils.most_common_n_to_string_frequency(self.many_entries_dict, 1), "e")
+        self.assertEqual(TmUtils.most_common_n_to_string_frequency(self.many_entries_dict, 0), "")
+        self.assertEqual(TmUtils.most_common_n_to_string_frequency(self.one_entry_dict, 3), "a")
+        self.assertEqual(TmUtils.most_common_n_to_string_frequency(self.one_entry_dict, 1), "a")
+        self.assertEqual(TmUtils.most_common_n_to_string_frequency(self.empty_dict, 3), "")
+        self.assertIsNaN(TmUtils.most_common_n_to_string_frequency(self.nan, 3))
 
     def test_num_chars(self):
         num_chars = NumCharsMetadata().metadata_function
