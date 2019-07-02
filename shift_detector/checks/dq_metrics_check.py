@@ -153,7 +153,7 @@ class DQMetricsReport(Report):
             grid_cols = 5
             grid_rows = int(np.ceil(num_columns / grid_cols))
             f = plt.figure(figsize=(PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT * grid_rows))
-            grid = gridspec.GridSpec(grid_rows, grid_cols)
+            grid = gridspec.GridSpec(grid_rows, grid_cols, wspace=0.3)
             for column, tile in zip(df1.columns, grid):
                 a, b = df1[column], df2[column]
                 ax = plt.Subplot(f, tile)
