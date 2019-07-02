@@ -39,3 +39,11 @@ def is_in_jupyter():
 def lprint(string, log_print):
     if log_print:
         print(string)
+
+
+def diagram_title(name):
+    return "Column '{}'".format(name)
+
+
+def dataset_names():
+    return 'DS1', 'DS2'

@@ -8,7 +8,7 @@ import pandas as pd
 from shift_detector.checks.check import Check, Report
 from shift_detector.precalculations.dq_metrics_precalculation import DQMetricsPrecalculation
 from shift_detector.utils.column_management import ColumnType
-from shift_detector.utils.custom_print import nprint
+from shift_detector.utils.custom_print import nprint, diagram_title, dataset_names
 
 ReportRow = namedtuple('ReportRow', 'metric_name val1 val2 threshold diff')
 
@@ -80,11 +80,10 @@ class DQMetricsCheck(Check):
 
         for comparison, comparison_name in [(numerical_comparison, 'numerical_comparison'), (categorical_comparison,
                                                                                              'categorical_comparison')]:
-            for column_name, metrics in comparison.items():
+            for column_name, metrics in sorted(comparison.items()):
                 examined_columns.add(column_name)
 
                 for metric_name in metrics:
-                    print('DEBUGGING', column_name, metric_name)
                     val1, val2, diff = self.relative_metric_difference(column_name, metric_name,
                                                                        comparison=comparison_name)
                     if abs(diff) > self.metrics_thresholds_percentage[metric_name]:
@@ -103,7 +102,7 @@ class DQMetricsCheck(Check):
         explanation = defaultdict(list)
         plot_infos = []
 
-        for column_name, attribute in attribute_val_comparison.items():
+        for column_name, attribute in sorted(attribute_val_comparison.items()):
             examined_columns.add(column_name)
 
             bar_df1 = []
@@ -179,18 +178,19 @@ class DQMetricsReport(Report):
     @staticmethod
     def numerical_plot(df1, df2):
         def custom_plot():
+            num_figures = len(list(df1.columns))
+            num_cols = 5
+
             f = plt.figure()
-            num_columns = len(list(df1.columns))
-            # f.tight_layout()
-            f.set_figheight(25)
+            f.set_figheight(6 * (num_figures/num_cols))
             f.set_figwidth(20)
 
             for num, column in enumerate(list(df1.columns)):
                 a, b = df1[column], df2[column]
-                ax = f.add_subplot(4, 5, num + 1)
+                ax = f.add_subplot(num_figures/num_cols + 1, num_cols, num + 1)
 
-                ax.boxplot([a, b])
-                ax.set_title(column)
+                ax.boxplot([a, b], labels=[dataset_names()[0], dataset_names()[1]])
+                ax.set_title(diagram_title(column))
 
             plt.show()
 
@@ -199,25 +199,27 @@ class DQMetricsReport(Report):
     @staticmethod
     def attribute_val_plot(plot_infos):
         def custom_plot():
-            f = plt.figure(figsize=(20, 7))
-            f.set_figheight(50)
+            num_figures = len(list(plot_infos))
+            num_cols = 3
+
+            f = plt.figure()
+            f.set_figheight(8 * (num_figures/num_cols))
             f.set_figwidth(18)
-            num_columns = len(list(plot_infos))
 
             for i, plot_info in enumerate(list(plot_infos)):
                 bars1, bars2, attribute_names, column_name = plot_info[0], plot_info[1], plot_info[2], plot_info[3]
 
-                subplot = f.add_subplot(num_columns, 3, i + 1)
+                subplot = f.add_subplot(len(list(plot_infos))/3 + 1, 3, i + 1)
                 bar_width = 0.25
 
                 ind = np.arange(len(bars1))
-                subplot.barh(ind + bar_width, bars1, bar_width, label='DS1')
-                subplot.barh(ind, bars2, bar_width, label='DS2')
+                subplot.barh(ind + bar_width, bars1, bar_width, label=dataset_names()[0])
+                subplot.barh(ind, bars2, bar_width, label=dataset_names()[1])
 
                 subplot.set_yticklabels(attribute_names)
                 subplot.set_yticks(np.arange(len(attribute_names)) + bar_width / 2)
 
-                subplot.title.set_text("Col '{}'".format(column_name))
+                subplot.title.set_text(diagram_title(column_name))
                 subplot.legend()
 
             plt.show()
