@@ -3,11 +3,13 @@ from collections import defaultdict
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib import gridspec
 
 from shift_detector.checks.check import Check, Report
 from shift_detector.precalculations.dq_metrics_precalculation import DQMetricsPrecalculation
 from shift_detector.utils.column_management import ColumnType
 from shift_detector.utils.custom_print import nprint
+from shift_detector.utils.visualization import plot_title, LEGEND_1, LEGEND_2, PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT
 
 
 class DQMetricsCheck(Check):
@@ -147,14 +149,19 @@ class DQMetricsReport(Report):
     @staticmethod
     def numerical_plot(df1, df2):
         def custom_plot():
-            f = plt.figure(figsize=(20, 7))
             num_columns = len(list(df1.columns))
-            for num, column in enumerate(list(df1.columns)):
+            grid_cols = 5
+            grid_rows = int(np.ceil(num_columns / grid_cols))
+            f = plt.figure(figsize=(PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT * grid_rows))
+            grid = gridspec.GridSpec(grid_rows, grid_cols)
+            for column, tile in zip(df1.columns, grid):
                 a, b = df1[column], df2[column]
-                ax = f.add_subplot(1, num_columns, num + 1)
+                ax = plt.Subplot(f, tile)
 
                 ax.boxplot([a, b])
-                ax.set_title(column)
+                ax.set_title(plot_title(column))
+                ax.set_xticklabels([LEGEND_1, LEGEND_2])
+                f.add_subplot(ax)
 
             plt.show()
 
@@ -174,13 +181,13 @@ class DQMetricsReport(Report):
                 bar_width = 0.25
 
                 ind = np.arange(len(bars1))
-                subplot.barh(ind, bars1, bar_width, label='DS1')
-                subplot.barh(ind + bar_width, bars2, bar_width, label='DS2')
+                subplot.barh(ind, bars1, bar_width, label=LEGEND_1)
+                subplot.barh(ind + bar_width, bars2, bar_width, label=LEGEND_2)
 
                 subplot.set_yticklabels(attribute_names)
                 subplot.set_yticks(np.arange(len(attribute_names)) + bar_width / 2)
 
-                subplot.title.set_text("Col '{}'".format(column_name))
+                subplot.title.set_text(plot_title(column_name))
                 subplot.legend()
 
             plt.show()

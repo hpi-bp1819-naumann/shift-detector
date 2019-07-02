@@ -4,6 +4,9 @@ import pandas as pd
 COLOR_1 = 'cornflowerblue'
 COLOR_2 = 'seagreen'
 
+LEGEND_1 = 'DS 1'
+LEGEND_2 = 'DS 2'
+
 PLOT_ROW_HEIGHT = 5.0
 PLOT_GRID_WIDTH = 12.0
 
@@ -62,3 +65,7 @@ def calculate_value_ratios(columns, top_k):
 def plot_categorical_horizontal_ratio_histogram(axes, columns, top_k):
     value_ratios = calculate_value_ratios(columns, top_k)
     return value_ratios.plot(kind='barh', fontsize='medium', ax=axes)
+
+
+def plot_title(column):
+    return "Column: '{}'".format(column)

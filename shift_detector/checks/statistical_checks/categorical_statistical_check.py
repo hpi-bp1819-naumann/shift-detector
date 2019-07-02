@@ -5,6 +5,7 @@ from scipy import stats
 from shift_detector.checks.statistical_checks.statistical_check import SimpleStatisticalCheck
 from shift_detector.precalculations.low_cardinality_precalculation import LowCardinalityPrecalculation
 from shift_detector.utils import visualization as vis
+from shift_detector.utils.visualization import plot_title
 
 
 def chi2_test(part1: pd.Series, part2: pd.Series):
@@ -35,7 +36,7 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
         axes = vis.plot_categorical_horizontal_ratio_histogram(axes, (df1[column], df2[column]), top_k)
         axes.invert_yaxis()  # to match order of legend
         column_name = str(column)
-        axes.set_title('Column: {}'.format(column_name), fontsize='x-large')
+        axes.set_title(plot_title(column_name), fontsize='x-large')
         axes.set_xlabel('value ratio', fontsize='medium')
         axes.set_ylabel('column value', fontsize='medium')
         figure.add_subplot(axes)
