@@ -19,7 +19,8 @@ from shift_detector.utils.column_management import ColumnType
 class WordPredictionPrecalculation(Precalculation):
 
     def __init__(self, column, ft_window_size=5, ft_size=100, ft_workers=4, seed=None,
-                 lstm_window=5, num_epochs_predictor=100, verbose=0):
+                 lstm_window=5, num_epochs_predictor=100, verbose=0,
+                 output_path="wordPredictionCheck_model_checkpoints"):
         self.column = column
         self.ft_window_size = ft_window_size
         self.ft_size = ft_size
@@ -28,6 +29,9 @@ class WordPredictionPrecalculation(Precalculation):
         self.lstm_window = lstm_window
         self.num_epochs_predictor = num_epochs_predictor
         self.verbose = verbose
+
+        self.output_path = output_path
+        self.create_output_path(self.output_path)
 
         if not isinstance(self.column, str):
             raise ValueError('Column argument {} should be of type string. '
@@ -129,17 +133,18 @@ class WordPredictionPrecalculation(Precalculation):
 
         return features, labels
 
+    def create_output_path(self, output_path):
+
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
+
     def create_callbacks(self):
         callbacks = []
-        dir = 'wordPredictionCheck_model_checkpoints'
 
-        callbacks += [ModelCheckpoint(dir + '/model.h5', verbose=self.verbose,
+        callbacks += [ModelCheckpoint(self.output_path + '/model.h5', verbose=self.verbose,
                                       monitor='loss', save_best_only=True, mode='auto')]
         callbacks += [EarlyStopping(monitor='loss', patience=3, verbose=self.verbose,
                                     mode='auto', restore_best_weights=True)]
-
-        if not os.path.exists(dir):
-            os.mkdir(dir)
 
         return callbacks
 
