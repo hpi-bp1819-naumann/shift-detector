@@ -20,7 +20,8 @@ from shift_detector.precalculations.precalculation import Precalculation
 from shift_detector.precalculations.text_precalculation import TokenizeIntoLowerWordsPrecalculation
 from shift_detector.utils import ucb_list
 from shift_detector.utils.column_management import ColumnType
-from shift_detector.utils.text_metadata_utils import dictionary_to_sorted_string, delimiters
+from shift_detector.utils.text_metadata_utils import most_common_n_to_string_frequency, \
+    most_common_n_to_string_alphabetically, delimiters
 
 
 class GenericTextMetadata(Precalculation):
@@ -234,7 +235,7 @@ class UnicodeCategoriesMetadata(GenericTextMetadata):
         return characters
 
     def metadata_function(self, text):
-        return dictionary_to_sorted_string(self.unicode_category_histogram(text))
+        return most_common_n_to_string_frequency(self.unicode_category_histogram(text), 5)
 
 
 class UnicodeBlocksMetadata(GenericTextMetadata):
@@ -257,7 +258,7 @@ class UnicodeBlocksMetadata(GenericTextMetadata):
         return characters
 
     def metadata_function(self, text):
-        return dictionary_to_sorted_string(self.unicode_block_histogram(text))
+        return most_common_n_to_string_frequency(self.unicode_block_histogram(text), 5)
 
 
 class NumWordsMetadata(GenericTextMetadataWithTokenizing):
@@ -449,7 +450,7 @@ class LanguagePerParagraph(GenericTextMetadata):
 
     def metadata_function(self, text, seed=0):
         DetectorFactory.seed = self.seed
-        return dictionary_to_sorted_string(self.detect_languages(text))
+        return most_common_n_to_string_alphabetically(self.detect_languages(text), 3)
 
 
 class LanguageMetadata(GenericTextMetadata):
@@ -508,7 +509,7 @@ class PartOfSpeechMetadata(GenericTextMetadataWithLanguage):
     def metadata_function(self, language, text):
         if not isinstance(text, str) or language != 'en':
             return float('nan')
-        return dictionary_to_sorted_string(self.tag_histogram(text))
+        return most_common_n_to_string_frequency(self.tag_histogram(text), 5)
 
 
 class TextMetadata(Precalculation):
