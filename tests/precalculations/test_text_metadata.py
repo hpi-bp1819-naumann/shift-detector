@@ -48,8 +48,6 @@ class TestTextMetadataPrecalculations(unittest.TestCase):
 
     def test_unicode_blocks(self):
         md1, md2 = UnicodeBlocksMetadata().process(self.store)
-        solution1 = pd.DataFrame([23, 22], columns=['text'])
-        solution2 = pd.DataFrame([5, 4], columns=['text'])
         solution1 = pd.DataFrame(['Basic Latin', 'Basic Latin', 'Basic Latin', 'Basic Latin', 'Basic Latin',
                                   'Basic Latin, General Punctuation', 'Basic Latin', 'Basic Latin', 'Basic Latin',
                                   'Basic Latin'], columns=['text'])
