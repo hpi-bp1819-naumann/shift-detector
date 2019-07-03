@@ -1,11 +1,12 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 from scipy import stats
 
 from shift_detector.checks.statistical_checks.statistical_check import SimpleStatisticalCheck
 from shift_detector.precalculations.low_cardinality_precalculation import LowCardinalityPrecalculation
 from shift_detector.utils import visualization as vis
-from shift_detector.utils.visualization import plot_title
+from shift_detector.utils.visualization import PLOT_ROW_HEIGHT, PlotData, plot_title
 
 
 def chi2_test(part1: pd.Series, part2: pd.Series):
@@ -43,6 +44,17 @@ class CategoricalStatisticalCheck(SimpleStatisticalCheck):
 
     def number_of_columns_of_plots(self) -> int:
         return 1
+
+    def plot_data(self, significant_columns, df1, df2):
+        plot_data = []
+        for column in sorted(significant_columns):
+            distinct_count = len(set(df1[column].unique()).union(set(df2[column].unique())))
+            required_height = 1.5 + 0.3 * distinct_count
+            required_rows = int(np.ceil(required_height / PLOT_ROW_HEIGHT))
+            plot_data.append(
+                PlotData(lambda figure, tile, col=column: self.column_plot(figure, tile, col, df1, df2), required_rows)
+            )
+        return plot_data
 
     @staticmethod
     def column_plot(figure, tile, column, df1, df2):
