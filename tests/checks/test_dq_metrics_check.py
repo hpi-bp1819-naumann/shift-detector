@@ -8,7 +8,7 @@ from shift_detector.checks.dq_metrics_check import DQMetricsCheck
 from shift_detector.precalculations.store import Store
 
 
-class TestSimpleCheck(TestCase):
+class TestDQMetricsCheck(TestCase):
 
     def setUp(self):
         sales1 = {'shift': ['A'] * 100, 'no_shift': ['C'] * 100}
