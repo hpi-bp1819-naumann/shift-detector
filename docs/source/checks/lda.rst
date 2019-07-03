@@ -79,24 +79,37 @@ Result
     Column 'Entry has a diff in topic 20 of ':
         -0.015
 
- Plot of differences
- Wordcloud for each topic
- Interactive topic visualization
+.. image:: ../images/lda_barplots.png
+  :width: 1200
+   .. image:: ../images/wordclouds.png
+  :width: 1200
+ .. image:: ../images/pyldavis.png
+  :width: 1200
 
 Interpretation
 ++++++++++++++
 
 The above result can be interpreted as follows:
 
-1. First, a listing of all columns considered by the check is displayed.
-2. Then all columns that are detected as shifted are displayed with their
-   according relative difference as value.
-3. After that a 3 plots are displayed for every shifted column.
-4. The first shows the relative frequency of each topic for both datasets
-   for the same column the plot is titled as.
-5. The second shows a word cloud of the most frequent words per topic for
-   the column.
-6. The third shows an interactive visualization that
+1.  First, a listing of all columns considered by the check is displayed.
+2.  Then all columns that are detected as shifted are displayed with their
+    according relative difference as value.
+3.  After that a 3 plots are displayed for every shifted column.
+4.  The first shows the relative frequency of each topic for both datasets
+    for the same column the plot is titled as.
+5.  The second shows a word cloud of the most frequent words per topic for
+    the column.
+6.  The third shows an interactive visualization that shows all topics of the
+    column as clusters on a two-dimensional grid. Each cluster is clickable
+    and on click it shows on right next to the clusters a bar chart of the
+    30 most relevant terms for the selected topic. Per default the relevance
+    metric lambda is set to 1. This means that the terms are sorted descending
+    by their term frequency inside the topic.
+    However in the paper [Sievert2014]_ that introduced this relevance metric,
+    it is advised to set the relevance slider to around 0.6 to make the terms
+    the most descriptive of the topic for a human reader.
+
+
 Parameters
 ----------
 
@@ -219,3 +232,6 @@ References
 
 .. [Blei2001] Blei, David M., Andrew Y. Ng, and Michael I. Jordan.
     "Latent dirichlet allocation." Journal of machine Learning research 3.Jan (2003): 993-1022.
+.. [Sievert2014] Sievert, Carson, and Kenneth Shirley.
+    "LDAvis: A method for visualizing and interpreting topics."
+    Proceedings of the workshop on interactive language learning, visualization, and interfaces. 2014.
