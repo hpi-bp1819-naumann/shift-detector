@@ -7,15 +7,15 @@ Description
 -----------
 
 This check uses Latent Dirichlet Allocation [Blei2001]_ or LDA to compare the textual
-columns of two datasets. Given a number of topics it compares how often
-each topic occurs in either dataset and if the percentual difference in
-topic occurrences exceeds a significance threshold.
+columns of two datasets. Given a number of topics it compares how often each topic
+occurs in either dataset and alerts the user if the percentual difference in topic
+occurrences exceeds a significance threshold.
 
 This check is only applicable on textual data.
 
 If there are one or more significant shifts in the topics of the two dataset,
-the user can conclude that certain themes/topics seem to have grown or reduced
-in number and therefore could have a negative impact if used as training data
+the user can conclude that certain themes/topics seem to have increased or
+decreased in number and therefore could have a negative impact if used as training data
 for the same machine learning model.
 
 
