@@ -58,8 +58,7 @@ def calculate_value_ratios(columns, top_k):
     return value_counts.fillna(0).apply(axis='columns',
                                         func=lambda row: pd.Series([row.iloc[0] / len(columns[0]),
                                                                     row.iloc[1] / len(columns[1])],
-                                                                   index=[str(columns[0].name) + ' 1',
-                                                                          str(columns[1].name) + ' 2']))
+                                                                   index=[LEGEND_1, LEGEND_2]))
 
 
 def plot_categorical_horizontal_ratio_histogram(axes, columns, top_k):
