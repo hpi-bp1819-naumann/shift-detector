@@ -198,9 +198,15 @@ class LdaCheck(Check):
     @staticmethod
     def py_lda_vis(column, lib, lda_models, dtm=None, vectorizer=None, corpus=None, dictionary=None):
         if lib == 'sklearn':
-            vis_data = pyLDAvis.sklearn.prepare(lda_models[column], np.asmatrix(dtm[column]), vectorizer[column])
+            vis_data = pyLDAvis.sklearn.prepare(lda_models[column],
+                                                np.asmatrix(dtm[column]),
+                                                vectorizer[column],
+                                                sort_topics=False)
         else:
-            vis_data = pyLDAvis.gensim.prepare(lda_models[column], corpus[column], dictionary[column])
+            vis_data = pyLDAvis.gensim.prepare(lda_models[column],
+                                               corpus[column],
+                                               dictionary[column],
+                                               sort_topics=False)
         display(pyLDAvis.display(vis_data))
 
 
