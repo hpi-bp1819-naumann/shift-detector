@@ -9,11 +9,11 @@ Description
 This check uses Latent Dirichlet Allocation [Blei2001]_ or LDA to compare the textual
 columns of two datasets. Given a number of topics it compares how often each topic
 occurs in either dataset and alerts the user if the percentual difference in topic
-occurrences exceeds a significance threshold.
+occurrences exceeds a shift_threshold.
 
 This check is only applicable on textual data.
 
-If there are one or more significant shifts in the topics of the two dataset,
+If there are one or more detected shifts in the topics of the two dataset,
 the user can conclude that certain themes/topics seem to have increased or
 decreased enough to impact performance if used as training data for the same
 machine learning model.
@@ -36,7 +36,7 @@ Code
     df2 = 'data/pokedex2.csv'
 
     detector = Detector(df1, df2)
-    detector.run(LdaCheck(cols=['Entry'], significance=0.01))
+    detector.run(LdaCheck(cols=['Entry'], shift_threshold=0.01))
     detector.evaluate()
 
 
@@ -224,7 +224,7 @@ The :ref:`LdaCheck` works as follows:
 
 1.  First, calculate the LDA embeddings for all specified text columns of the two datasets df1 and df2.
 2.  Then, take the percentual difference between each topic for each column, so *diff_topic = topic(df1) - topic(df2)*
-3.  Finally, compare those differences with the significance. If it is is exceeded, the column s reported as
+3.  Finally, compare those differences with the shift_threshold. If it is is exceeded, the column s reported as
     potentially shifted
 
 
