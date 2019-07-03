@@ -41,6 +41,11 @@ class TestWordPredictionCheck(TestCase):
             self.assertRaises(TypeError, lambda: WordPredictionCheck(relative_thresh='wrong'))
             self.assertRaises(ValueError, lambda: WordPredictionCheck(relative_thresh=-1))
 
+        with self.subTest("Test correct relative_thresh"):
+            WordPredictionCheck(relative_thresh=0)
+            WordPredictionCheck(relative_thresh=.1)
+            WordPredictionCheck(relative_thresh=5)
+
         with self.subTest("Test wrong lstm_window"):
             self.assertRaises(TypeError, lambda: WordPredictionCheck(lstm_window='wrong'))
             self.assertRaises(TypeError, lambda: WordPredictionCheck(lstm_window=.9))
@@ -61,5 +66,6 @@ class TestWordPredictionCheck(TestCase):
                                   report_automatic_col_detection.examined_columns)
 
         with self.subTest("Test failure columns"):
-            self.assertIsInstance(report_automatic_col_detection.explanation['too_short'],
+            self.assertTrue('too_short' in report_automatic_col_detection.information.keys())
+            self.assertIsInstance(report_automatic_col_detection.information['too_short'],
                                   ValueError)
