@@ -15,8 +15,8 @@ This check is only applicable on textual data.
 
 If there are one or more significant shifts in the topics of the two dataset,
 the user can conclude that certain themes/topics seem to have increased or
-decreased in number and therefore could have a negative impact if used as training data
-for the same machine learning model.
+decreased enough to impact performance if used as training data for the same
+machine learning model.
 
 
 Example
@@ -92,22 +92,22 @@ Interpretation
 The above result can be interpreted as follows:
 
 1.  First, a listing of all columns considered by the check is displayed.
-2.  Then all columns that are detected as shifted are displayed with their
+2.  Then all columns detected as shifted are displayed with their
     according relative difference as value.
-3.  After that a 3 plots are displayed for every shifted column.
-4.  The first shows the relative frequency of each topic for both datasets
-    for the same column the plot is titled as.
-5.  The second shows a word cloud of the most frequent words per topic for
-    the column.
-6.  The third shows an interactive visualization that shows all topics of the
-    column as clusters on a two-dimensional grid. Each cluster is clickable
-    and on click it shows on right next to the clusters a bar chart of the
-    30 most relevant terms for the selected topic. Per default the relevance
-    metric lambda is set to 1. This means that the terms are sorted descending
-    by their term frequency inside the topic.
-    However in the paper [Sievert2014]_ that introduced this relevance metric,
-    it is advised to set the relevance slider to around 0.6 to make the terms
-    the most descriptive of the topic for a human reader.
+3.  After that 3 plots are displayed for every shifted column.
+    *   The first shows the relative frequency of each topic for both datasets.
+    *   The second shows a word cloud of the most frequent words per topic.
+        Words with a higher frequency are displayed bigger than words with a lower
+        frequency.
+    *   The third is an interactive visualization that shows all topics
+        as clusters on a two-dimensional grid. Each cluster is clickable
+        and on click it shows a bar chart of the 30 most relevant terms for the
+        selected topic right next to the clusters. Per default the relevance
+        metric lambda is set to 1. This means that the terms are sorted descending
+        by their term frequency inside the topic.
+        However in the paper [Sievert2014]_ that introduced this relevance metric,
+        it is advised to set the relevance slider to around 0.6 to make the terms
+        the most descriptive of the topic for a human reader.
 
 
 Parameters
@@ -115,10 +115,10 @@ Parameters
 
 :ref:`LdaCheck` provides the following parameters:
 
-``significance``:
+``shift_threshold``:
     This parameter expects a float between 0 and 1 and impacts if a column is
     detected as shifted or not.
-    The lower you choose ``significance`` the higher is the probability that
+    The lower you choose ``shift_threshold`` the higher is the probability that
     the difference in the topic distributions of the two datasets exceeds the siginficance.
 
     The default value is 0.1. This means that the percentage of documents of any topic
@@ -139,10 +139,10 @@ Parameters
     how many topics the LDA model is trying to find. To find an optimal number of
     topics for a column of text can be a difficult task as it is not only dependent
     on the number of documents in the column but also on the heterogenity between
-    documents. Therefore I provided the possibility to also enter 'auto' for this
-    parameter which calculates some LDA models with different numbers of topics
-    and then takes the number of topics woth the best coherence score. This may
-    take some time but is advised to do if the user doesn't know a lot about
+    documents. Therefore the possibility to also enter 'auto' for this parameter
+    was provided. This calculates some LDA models with different numbers of topics
+    and then takes the number of topics with the best coherence score.
+    That may take some time but is advised if the user doesn't know a lot about
     the datasets.
 
     The default is 20.
@@ -160,8 +160,8 @@ Parameters
     This parameter is only passed to the pre-processing :ref:`lda_embedding`.
 
     This parameter expects either the string 'sklearn' or 'gensim', as these
-    currently are the only two supported LDA libraries. In some cases one may
-    perform better than the other, so at best both are executed together.
+    currently are the two currently supported LDA libraries. In some cases one
+    may perform better than the other, so at best both are executed together.
 
     However for the sake of simplicity and because it is the more known library,
     the default value is 'sklearn'.
@@ -188,7 +188,7 @@ Parameters
     This parameter expects a string of a languages or a list with multiple strings
     that represent languages. The given language(s) is/are used to determine a list
     stop words that should be filtered out before the text is processed.
-    The default value is 'english.
+    The default value is English.
 
 ``max_features``:
     This parameter is only passed to the pre-processing :ref:`lda_embedding`.
@@ -207,9 +207,9 @@ Parameters
 
     The default value is True.
 
-``ldavis``:
+``display_interactive``:
     This parameter expects a boolean. It indicates whether an interactive pyLDAvis
-    plot should be provided as it is relatively ressource-intensive to compute.
+    plot should be provided as it is relatively ressource-intensive to generate.
 
     The default value is True.
 
@@ -224,7 +224,8 @@ The :ref:`LdaCheck` works as follows:
 
 1.  First, calculate the LDA embeddings for all specified text columns of the two datasets df1 and df2.
 2.  Then, take the percentual difference between each topic for each column, so *diff_topic = topic(df1) - topic(df2)*
-3.  Finally, compare those differences with the significance. If it is is exceeded, the column may have  a shift
+3.  Finally, compare those differences with the significance. If it is is exceeded, the column s reported as
+    potentially shifted
 
 
 References
