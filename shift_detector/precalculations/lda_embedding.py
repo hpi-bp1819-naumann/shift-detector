@@ -166,11 +166,6 @@ class LdaEmbedding(Precalculation):
                     model = self.trained_model
 
                 topic_words_all_cols[col] = self.get_topic_word_distribution_gensim(model, self.n_topics, 200)
-                #vocab = list(all_dicts[col].token2id.keys())
-                #fnames_argsort = np.asarray(list(all_dicts[col].token2id.values()), dtype=np.int_)
-                #term_freqs = gensim.matutils.corpus2csc(all_corpora[col], num_terms=len(all_dicts[col])).sum(axis=1).A.ravel()[fnames_argsort]
-                #term_freqs[term_freqs == 0] = 0.01
-                #topic_words_all_cols[col] = list(zip(vocab, term_freqs))
 
                 transformed1[topic_labels[i]] = self.topic_probabilities_to_topics(model, corpus1)
                 transformed2[topic_labels[i]] = self.topic_probabilities_to_topics(model, corpus2)
