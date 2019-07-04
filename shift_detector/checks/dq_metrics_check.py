@@ -185,8 +185,8 @@ class DQMetricsReport(Report):
             f.set_figheight(6 * (num_figures/num_cols))
             f.set_figwidth(20)
 
-            for num, column in enumerate(list(df1.columns)):
-                a, b = df1[column], df2[column]
+            for num, column in enumerate(sorted(list(df1.columns))):
+                a, b = df1[column].dropna(), df2[column].dropna()
                 ax = f.add_subplot(num_figures/num_cols + 1, num_cols, num + 1)
 
                 ax.boxplot([a, b], labels=[dataset_names()[0], dataset_names()[1]])

@@ -65,16 +65,16 @@ class Detector:
         check_reports = []
         for check in checks:
             lprint("Executing {}".format(check.__class__.__name__), self.log_print)
-            # try:
-            report = check.run(self.store)
-            check_reports.append(report)
-            # except Exception as e:
-            #     error_msg = {e.__class__.__name__: str(e)}
-            #     error_report = Report(check.__class__.__name__,
-            #                           examined_columns=[],
-            #                           shifted_columns=[],
-            #                           information=error_msg)
-            #     check_reports.append(error_report)
+            try:
+                report = check.run(self.store)
+                check_reports.append(report)
+            except Exception as e:
+                error_msg = {e.__class__.__name__: str(e)}
+                error_report = Report(check.__class__.__name__,
+                                      examined_columns=[],
+                                      shifted_columns=[],
+                                      information=error_msg)
+                check_reports.append(error_report)
         self.check_reports = check_reports
 
     def evaluate(self):
