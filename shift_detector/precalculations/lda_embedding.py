@@ -5,6 +5,7 @@ from sklearn.decomposition import LatentDirichletAllocation as LDA_skl
 from sklearn.feature_extraction.text import *
 from gensim.sklearn_api import LdaTransformer
 from gensim.corpora import Dictionary
+import gensim
 import warnings
 from shift_detector.precalculations.precalculation import Precalculation
 from shift_detector.precalculations.count_vectorizer import CountVectorizer
@@ -100,7 +101,7 @@ class LdaEmbedding(Precalculation):
     @staticmethod
     def topic_probabilities_to_topics(lda_model, dtm):
         # Always takes the topic with the highest probability as the dominant topic
-        return [arr.argmax() for arr in lda_model.transform(dtm)]
+        return [arr.argmax()+1 for arr in lda_model.transform(dtm)]
 
     @staticmethod
     def get_topic_word_distribution_gensim(lda_model, n_topics, n_top_words):
@@ -110,12 +111,16 @@ class LdaEmbedding(Precalculation):
         return topic_words
 
     @staticmethod
-    def get_topic_word_distribution_sklearn(lda_model, dtm, vocab, n_top_words):
-        topic_words = {}
-        term_frequencies = dict(zip(vocab, dtm/np.sum(dtm)))
-        for topic, comp in enumerate(lda_model.components_):
-            word_idx = np.argsort(comp)[::-1][:n_top_words]
-            topic_words[topic] = [vocab[i] for i in word_idx]
+    def get_topic_word_distribution_sklearn(lda_model, vocab, n_top_words):
+        # copied implementation from gensim show_topics
+        topic_words = []
+        for topic_n, comp in enumerate(lda_model.components_):
+            topic_ = comp
+            topic_ = topic_ / topic_.sum()
+            most_extreme = np.argpartition(-topic_, n_top_words)[:n_top_words]
+            word_idx = most_extreme.take(np.argsort(-topic_.take(most_extreme)))
+            topic_ = [(vocab[id], topic_[id]) for id in word_idx]
+            topic_words.append((topic_n, topic_))
         return topic_words
 
     def process(self, store):
@@ -182,7 +187,6 @@ class LdaEmbedding(Precalculation):
                     model = self.trained_model
 
                 topic_words_all_cols[col] = self.get_topic_word_distribution_sklearn(model,
-                                                                                     all_dtms[col],
                                                                                      feature_names[col],
                                                                                      200)
 
