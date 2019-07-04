@@ -4,6 +4,8 @@ from numbers import Number
 from sklearn.decomposition import LatentDirichletAllocation as LDA_skl
 from sklearn.feature_extraction.text import *
 from gensim.sklearn_api import LdaTransformer
+from gensim.models.ldamodel import LdaModel
+from gensim.models.coherencemodel import CoherenceModel
 from gensim.corpora import Dictionary
 import warnings
 from shift_detector.precalculations.precalculation import Precalculation
@@ -15,7 +17,7 @@ from shift_detector.utils.column_management import ColumnType
 class LdaEmbedding(Precalculation):
 
     def __init__(self, columns, n_topics=20, n_iter=10, random_state=0, lib='sklearn', trained_model=None,
-                 stop_words='english', max_features=None):
+                 start=2, stop=21, step=1, stop_words='english', max_features=None):
         self.model = None
         self.trained_model = None
         self.lib = None
@@ -23,26 +25,7 @@ class LdaEmbedding(Precalculation):
         self.stop_words = stop_words
         self.max_features = max_features
 
-        if n_topics != 'auto':
-            # TODO implement feature to calculate optimal number of topics
-            self.n_topics = n_topics
-        if not isinstance(n_topics, int):
-            raise TypeError("Number of topic has to be an integer. Received: {}".format(type(n_topics)))
-        if n_topics < 2:
-            raise ValueError("Number of topics has to be at least 2. Received: {}".format(n_topics))
-        self.n_topics = n_topics
 
-        if not isinstance(n_iter, int):
-            raise TypeError("Random_state has to be a integer. Received: {}".format(type(n_iter)))
-        if n_iter < 1:
-            raise ValueError("Random_state has to be at least 1. Received: {}".format(n_iter))
-        self.n_iter = n_iter
-
-        if not isinstance(random_state, int):
-            raise TypeError("Random_state has to be a integer. Received: {}".format(type(random_state)))
-        if random_state < 0:
-            raise ValueError("Random_state has to be positive or zero. Received: {}".format(random_state))
-        self.random_state = random_state
 
         if columns:
             if isinstance(columns, list) and all(isinstance(col, str) for col in columns):
@@ -57,7 +40,38 @@ class LdaEmbedding(Precalculation):
             warnings.warn("Trained models are not trained again. Please make sure to only input the column(s) "
                           "that the model was trained on", UserWarning)
             self.trained_model = trained_model
+            self.random_state = self.trained_model.random_state
+            if isinstance(self.trained_model, type(LDA_skl())):
+                self.n_topics = self.trained_model.n_components
+                self.n_iter = self.trained_model.max_iter
+            else:
+                self.n_topics = self.trained_model.num_topics
+                self.n_iter = self.trained_model.iterations
         else:
+            if n_topics == 'auto':
+                self.n_topics = n_topics
+                self.start = start
+                self.stop = stop
+                self.step = step
+            else:
+                if not isinstance(n_topics, int):
+                    raise TypeError("Number of topic has to be an integer. Received: {}".format(type(n_topics)))
+                if n_topics < 2:
+                    raise ValueError("Number of topics has to be at least 2. Received: {}".format(n_topics))
+                self.n_topics = n_topics
+
+            if not isinstance(n_iter, int):
+                raise TypeError("Random_state has to be a integer. Received: {}".format(type(n_iter)))
+            if n_iter < 1:
+                raise ValueError("Random_state has to be at least 1. Received: {}".format(n_iter))
+            self.n_iter = n_iter
+
+            if not isinstance(random_state, int):
+                raise TypeError("Random_state has to be a integer. Received: {}".format(type(random_state)))
+            if random_state < 0:
+                raise ValueError("Random_state has to be positive or zero. Received: {}".format(random_state))
+            self.random_state = random_state
+
             if not isinstance(lib, str):
                 raise TypeError("Lib has to be a string. Received: {}".format(type(lib)))
             if lib == 'sklearn':
@@ -159,6 +173,19 @@ class LdaEmbedding(Precalculation):
                 corpus2 = [gensim_dict2.doc2bow(line) for line in tokenized2[col]]
 
                 if not self.trained_model:
+                    if self.n_topics == 'auto':
+                        coherence_scores = {}
+                        for n in range(self.start, self.stop, self.step):
+                            model = LdaModel(all_corpora[col], n, all_dicts[col], random_state=0)
+                            cm = CoherenceModel(model=model, corpus=all_corpora[col], coherence='u_mass')
+                            coherence = cm.get_coherence()  # get coherence value
+                            coherence_scores[n] = coherence
+                        print(coherence_scores)
+                        n_topics = min(coherence_scores, key=lambda k: coherence_scores[k])
+                        self.model.num_topics = n_topics
+                    else:
+                        n_topics = self.n_topics
+
                     model = self.model
                     model.id2word = all_dicts[col]
                     model = model.fit(all_corpora[col])
@@ -166,7 +193,8 @@ class LdaEmbedding(Precalculation):
                 else:
                     model = self.trained_model
 
-                topic_words_all_columns[col] = self.get_topic_word_distribution_gensim(model, self.n_topics, 200)
+
+                topic_words_all_columns[col] = self.get_topic_word_distribution_gensim(model, n_topics, 200)
 
                 transformed1[topic_labels[i]] = self.topic_probabilities_to_topics(model, corpus1)
                 transformed2[topic_labels[i]] = self.topic_probabilities_to_topics(model, corpus2)
@@ -179,17 +207,34 @@ class LdaEmbedding(Precalculation):
                                                                                       columns=self.columns)]
             all_dtms = dict(vectorized1, **vectorized2)
 
+            if self.n_topics == 'auto':
+                tokenized1, tokenized2 = store[LdaGensimTokenizer(stop_words=self.stop_words, columns=self.columns)]
+                tokenized_merged = pd.concat([tokenized1, tokenized2], ignore_index=True)
+
+                all_corpora = {}
+                all_dicts = {}
+
             for i, col in enumerate(col_names):
                 if not self.trained_model:
+                    if self.n_topics == 'auto':
+                        all_dicts[col] = Dictionary(tokenized_merged[col])
+                        all_corpora[col] = [all_dicts[col].doc2bow(line) for line in tokenized_merged[col]]
+
+                        coherence_scores = {}
+                        for n in range(self.start, self.stop, self.step):
+                            model = LdaModel(all_corpora[col], n, all_dicts[col], random_state=0)
+                            cm = CoherenceModel(model=model, corpus=all_corpora[col], coherence='u_mass')
+                            coherence = cm.get_coherence()  # get coherence value
+                            coherence_scores[n] = coherence
+                        n_topics = min(coherence_scores, key=lambda k: coherence_scores[k])
+                        self.model.n_components = n_topics
                     model = self.model
                     model = model.fit(all_dtms[col])
                     all_models[col] = model
                 else:
                     model = self.trained_model
 
-                topic_words_all_columns[col] = self.get_topic_word_distribution_sklearn(model,
-                                                                                     feature_names[col],
-                                                                                     200)
+                topic_words_all_columns[col] = self.get_topic_word_distribution_sklearn(model, feature_names[col], 200)
 
                 transformed1[topic_labels[i]] = \
                     self.topic_probabilities_to_topics(model, vectorized1[col])

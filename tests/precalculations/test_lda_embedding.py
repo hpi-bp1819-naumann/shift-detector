@@ -11,6 +11,8 @@ class TestLdaEmbedding(unittest.TestCase):
         self.lda2 = LdaEmbedding(columns=['text'], n_topics=2, n_iter=1, random_state=0, lib='sklearn')
         self.lda3 = LdaEmbedding(columns=['text'], n_topics=2, n_iter=1, random_state=0, lib='gensim')
         self.lda4 = LdaEmbedding(columns=['text', 'abc'], n_topics=2, n_iter=1, random_state=0, lib='sklearn')
+        self.lda5 = LdaEmbedding(columns=['text'], n_topics='auto', step=2, n_iter=1, random_state=0, lib='sklearn')
+        self.lda6 = LdaEmbedding(columns=['text'], n_topics='auto', step=2, n_iter=1, random_state=0, lib='gensim')
 
         self.poems = [
             'Tell me not, in mournful numbers,\nLife is but an empty dream!\nFor the soul is dead that slumbers,\nAnd things are not what they seem.',
@@ -206,5 +208,35 @@ class TestLdaEmbedding(unittest.TestCase):
                                                               2, 2, 2, 1, 2, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 2, 1,
                                                               2, 2, 1, 1, 1, 2, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 2])))
 
-    def test_column_exception_in_process(self):
-        self.assertRaises(ValueError, lambda: self.lda4.process(self.store))
+        with self.subTest("Test unsuccessful run with specifying a wrong 'columns' parameter"):
+            self.assertRaises(ValueError, lambda: self.lda4.process(self.store))
+
+        with self.subTest("Test when n_topics == 'auto'"):
+            res5, res6, topic_words_all_columns, all_models, all_dtms, all_vecs = self.lda5.process(self.store)
+            res7, res8, topic_words_all_columns, all_models, all_corpora, all_dicts = self.lda6.process(self.store)
+
+            self.assertTrue(res5['topics text'].equals(pd.Series(
+                                                            [2, 4, 2, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+                                                             2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+                                                             2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 2, 2, 2,
+                                                             2, 4, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 4, 2, 2, 2])))
+
+            self.assertTrue(res6['topics text'].equals(pd.Series(
+                                                            [2, 2, 3, 4, 3, 2, 4, 1, 1, 3, 3, 1, 3, 1, 2, 1, 2, 3, 4,
+                                                             3, 4, 3, 3, 3, 2, 4, 3, 3, 4, 2, 4, 3, 4, 2, 1, 3, 1, 3,
+                                                             2, 1, 1, 3, 3, 4, 3, 3, 3, 1, 3, 4, 1, 2, 3, 3, 3, 3, 4,
+                                                             3, 1, 4, 1, 4, 1, 2, 4, 3, 1, 3, 2, 3, 1, 4, 2, 3])))
+
+            self.assertTrue(res7['topics text'].equals(pd.Series(
+                                                             [4, 4, 4, 4, 4, 1, 4, 4, 4, 2, 4, 2, 4, 1, 4, 3, 2, 2, 2,
+                                                              2, 3, 2, 1, 2, 1, 4, 3, 2, 3, 2, 1, 4, 2, 3, 3, 1, 2, 4,
+                                                              4, 3, 3, 1, 4, 3, 3, 4, 2, 1, 3, 3, 4, 2, 2, 3, 1, 4, 1,
+                                                              3, 1, 4, 4, 4, 1, 3, 4, 1, 3, 2, 3, 3, 4, 3, 2, 3])))
+
+            self.assertTrue(res8['topics text'].equals(pd.Series(
+                                                             [1, 1, 1, 2, 1, 4, 2, 4, 1, 4, 3, 3, 1, 4, 4, 4, 4, 3, 1,
+                                                              2, 4, 2, 2, 2, 1, 1, 1, 4, 4, 1, 4, 4, 3, 4, 1, 1, 3, 1,
+                                                              2, 3, 2, 1, 3, 4, 2, 2, 4, 2, 1, 3, 1, 3, 1, 4, 2, 4, 4,
+                                                              4, 2, 1, 3, 4, 1, 1, 2, 3, 4, 1, 1, 3, 4, 2, 2, 4])))
+
+
