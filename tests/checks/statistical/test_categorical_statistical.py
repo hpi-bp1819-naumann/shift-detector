@@ -63,7 +63,7 @@ class TestCategoricalStatisticalCheck(unittest.TestCase):
         df1 = pd.DataFrame.from_dict({'col1': ['value'] * 100, 'col2': ['value'] * 100})
         df2 = pd.DataFrame.from_dict({'col1': ['value'] * 200, 'col2': ['value'] * 200})
         check = CategoricalStatisticalCheck()
-        for solution, sig_cols in [(1, ['col1, col2']), (1, ['col1']), (0, [])]:
+        for solution, sig_cols in [(1, ['col1', 'col2']), (1, ['col1']), (0, [])]:
             with self.subTest(solution=solution, sig_cols=sig_cols):
                 result = check.column_figure(significant_columns=sig_cols, df1=df1, df2=df2)
                 self.assertEqual(solution, len(result))

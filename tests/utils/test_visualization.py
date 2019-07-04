@@ -35,7 +35,7 @@ class TestVisualizationUtils(unittest.TestCase):
 
     def test_value_ratios(self):
         result = calculate_value_ratios(columns=(self.cat_column1, self.cat_column2), top_k=2)
-        solution = pd.DataFrame([[0.5, 0.3], [0.4, 0.7]], index=['blue', 'red'], columns=['color 1', 'color 2'])
+        solution = pd.DataFrame([[0.5, 0.3], [0.4, 0.7]], index=['blue', 'red'], columns=['DS 1', 'DS 2'])
         assert_frame_equal(solution, result)
 
     @mock.patch('shift_detector.utils.visualization.pd.DataFrame.plot')

@@ -12,6 +12,8 @@ import pandas as pd
 import numpy as np
 import warnings
 
+from shift_detector.utils.visualization import LEGEND_1, LEGEND_2, plot_title
+
 
 class LdaCheck(Check):
 
@@ -150,11 +152,11 @@ class LdaCheck(Check):
                                                                                 len(df1['topics ' + column]),
                                                                                 row.iloc[1] /
                                                                                 len(df2['topics ' + column])],
-                                                                               index=['DS1',
+                                                                                index=['DS1',
                                                                                       'DS2']))
         axes = value_ratios.plot(kind='barh', fontsize='medium', figsize=(10, 2+np.ceil(n_topics/2)))
         axes.invert_yaxis()  # to match order of legend
-        axes.set_title(str(column), fontsize='x-large')
+        axes.set_title(plot_title(column), fontsize='x-large')
         axes.set_xlabel('ratio', fontsize='medium')
         axes.set_ylabel('topics', fontsize='medium')
         plt.show()
