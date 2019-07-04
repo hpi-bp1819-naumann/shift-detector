@@ -47,8 +47,8 @@ class DQMetricsCheck(Check):
 
         both_explanations = numerical_report.explanation.copy()
         both_explanations.update(attribute_val_report.explanation)
-        both_reports = DQMetricsReport(numerical_report.examined_columns + attribute_val_report.examined_columns,
-                                       numerical_report.shifted_columns + attribute_val_report.shifted_columns,
+        both_reports = DQMetricsReport(set(numerical_report.examined_columns + attribute_val_report.examined_columns),
+                                       set(numerical_report.shifted_columns + attribute_val_report.shifted_columns),
                                        both_explanations, {},
                                        numerical_report.figures + attribute_val_report.figures)
 
