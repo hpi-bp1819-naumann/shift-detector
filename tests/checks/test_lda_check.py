@@ -7,10 +7,28 @@ import pandas as pd
 class TestLdaCheck(unittest.TestCase):
 
     def setUp(self):
-        self.lda_report1 = LdaCheck(significance=0.1, n_topics=2, n_iter=1, random_state=2)
-        self.lda_report2 = LdaCheck(significance=0.1, n_topics=2, n_iter=1, random_state=2)
-        self.lda_report3 = LdaCheck(cols=['text'], significance=0.1, n_topics=2, n_iter=1, random_state=2)
-        self.lda_report4 = LdaCheck(cols=['abcd'], significance=0.1, n_topics=2, n_iter=1, random_state=2)
+        self.lda_report1 = LdaCheck(shift_threshold=0.1,
+                                    n_topics=2,
+                                    n_iter=1,
+                                    random_state=0,
+                                    lib='sklearn')
+        self.lda_report2 = LdaCheck(shift_threshold=0.1,
+                                    n_topics=2,
+                                    n_iter=1,
+                                    random_state=0,
+                                    lib='sklearn')
+        self.lda_report3 = LdaCheck(shift_threshold=0.1,
+                                    n_topics=2,
+                                    n_iter=8,
+                                    random_state=0,
+                                    lib='gensim',
+                                    columns=['text'])
+        self.lda_report4 = LdaCheck(shift_threshold=0.1,
+                                    n_topics=2,
+                                    n_iter=8,
+                                    random_state=0,
+                                    lib='gensim',
+                                    columns=['abcd'])
 
         self.poems = [
             'Tell me not, in mournful numbers,\nLife is but an empty dream!\nFor the soul is dead that slumbers,\nAnd things are not what they seem.',
@@ -166,25 +184,26 @@ class TestLdaCheck(unittest.TestCase):
         self.df2 = pd.DataFrame(self.phrases, columns=['text'])
         self.store = Store(self.df1, self.df2)
 
-    def test_exception_on_small_n(self):
-        self.assertRaises(ValueError, lambda: LdaCheck(significance=0.0))
+    def test_exception_on_shift_threshold(self):
+        self.assertRaises(ValueError, lambda: LdaCheck(shift_threshold=0.0))
+        self.assertRaises(TypeError, lambda: LdaCheck(shift_threshold=42))
+        self.assertRaises(TypeError, lambda: LdaCheck(shift_threshold='abcd'))
 
-    def test_exception_on_non_float(self):
-        self.assertRaises(TypeError, lambda: LdaCheck(significance=42))
-        self.assertRaises(TypeError, lambda: LdaCheck(significance='abcd'))
+    def test_exception_on_cols(self):
+        self.assertRaises(TypeError, lambda: LdaCheck(columns=42))
 
     def test_run(self):
-        with self.subTest("Test successful run without specifying the 'cols' parameter"):
+        with self.subTest("Test successful run without specifying the 'columns' parameter"):
             report = self.lda_report1.run(self.store)
-            print(report.explanation)
-            self.assertAlmostEqual(report.explanation['Topic 1 diff in column text'], 0.405)
-            self.assertAlmostEqual(report.explanation['Topic 2 diff in column text'], -0.405)
 
-        with self.subTest("Test successful run with specifying the 'cols' parameter"):
-            report = self.lda_report3.run(self.store)
+            self.assertAlmostEqual(report.explanation['text has a diff in topic 1 of '], -0.419)
+            self.assertAlmostEqual(report.explanation['text has a diff in topic 2 of '], 0.419)
 
-            self.assertAlmostEqual(report.explanation['Topic 1 diff in column text'], 0.405)
-            self.assertAlmostEqual(report.explanation['Topic 2 diff in column text'], -0.405)
+        with self.subTest("Test successful run with specifying the 'columns' parameter with gensim"):
+            report2 = self.lda_report3.run(self.store)
 
-        with self.subTest("Test unsuccessful run with specifying a wrong 'cols' parameter"):
+            self.assertAlmostEqual(report2.explanation['text has a diff in topic 1 of '], -0.122)
+            self.assertAlmostEqual(report2.explanation['text has a diff in topic 2 of '], 0.122)
+
+        with self.subTest("Test unsuccessful run with specifying a wrong 'columns' parameter"):
             self.assertRaises(ValueError, lambda: self.lda_report4.run(self.store))
