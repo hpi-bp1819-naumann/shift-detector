@@ -17,8 +17,8 @@ from shift_detector.utils.visualization import LEGEND_1, LEGEND_2, plot_title
 
 class LdaCheck(Check):
 
-    def __init__(self, shift_threshold=0.1, n_topics=20, n_iter=10, lib='sklearn', random_state=0,
-                 cols=None, trained_model=None, stop_words='english', max_features=None,
+    def __init__(self, shift_threshold=0.1, n_topics=20, n_iter=10, random_state=0, lib='sklearn',
+                 columns=None, trained_model=None, stop_words='english', max_features=None,
                  word_clouds=True, display_interactive=True):
         """
         shift_threshold is the difference between the percentages of each topic between both datasets,
@@ -29,14 +29,15 @@ class LdaCheck(Check):
         if not 0 < shift_threshold < 1:
             raise ValueError("Shift_threshold has to be between 0 and 1. Received: {}".format(shift_threshold))
 
-        if cols:
-            if isinstance(cols, list) and all(isinstance(col, str) for col in cols):
-                self.cols = cols
+        if columns:
+            if isinstance(columns, list) and all(isinstance(col, str) for col in columns):
+                self.columns = columns
             else:
-                raise TypeError("Cols has to be list of strings . Column {} is of type {}".format(cols, type(cols)))
+                raise TypeError("Columns has to be list of strings . Received: {} of type {}".
+                                format(columns, type(columns)))
         else:
-            # setting cols to None is equal to setting it to a list with all text columns
-            self.cols = cols
+            # setting columns to None is equal to setting it to a list with all text columns
+            self.columns = columns
 
         if trained_model:
             warnings.warn("Trained models are not trained again. Please make sure to only input the column(s) "
@@ -57,16 +58,16 @@ class LdaCheck(Check):
         shifted_columns = set()
         explanation = {}
 
-        if self.cols:
-            for col in self.cols:
+        if self.columns:
+            for col in self.columns:
                 if col not in store.column_names(ColumnType.text):
                     raise ValueError("Given column is not contained in detected text columns of the datasets: {}"
                                      .format(col))
-            col_names = self.cols
+            col_names = self.columns
         else:
             col_names = store.column_names(ColumnType.text)
-            self.cols = list(col_names)
-            col_names = self.cols
+            self.columns = list(col_names)
+            col_names = self.columns
 
         if self.lib == 'sklearn':
             df1_embedded, df2_embedded, topic_words, all_models, all_dtms, all_vecs = store[LdaEmbedding(
@@ -74,7 +75,7 @@ class LdaCheck(Check):
                                                                                      n_iter=self.n_iter,
                                                                                      lib='sklearn',
                                                                                      random_state=self.random_state,
-                                                                                     cols=self.cols,
+                                                                                     columns=self.columns,
                                                                                      trained_model=self.trained_model,
                                                                                      stop_words=self.stop_words,
                                                                                      max_features=self.max_features)]
@@ -86,7 +87,7 @@ class LdaCheck(Check):
                                                                                      n_iter=self.n_iter,
                                                                                      lib='gensim',
                                                                                      random_state=self.random_state,
-                                                                                     cols=self.cols,
+                                                                                     columns=self.columns,
                                                                                      trained_model=self.trained_model,
                                                                                      stop_words=self.stop_words,
                                                                                      max_features=self.max_features)]
@@ -167,14 +168,14 @@ class LdaCheck(Check):
         custom_XKCD_COLORS.pop('xkcd:yellowish tan', None)
         custom_XKCD_COLORS.pop('xkcd:really light blue', None)
 
-        cols = [color for name, color in custom_XKCD_COLORS.items()]
+        columns = [color for name, color in custom_XKCD_COLORS.items()]
 
         cloud = WordCloud(background_color='white',
                           width=2500,
                           height=1800,
                           max_words=10,
                           collocations=False,
-                          color_func=lambda *args, **kwargs: cols[i],
+                          color_func=lambda *args, **kwargs: columns[i],
                           prefer_horizontal=1.0)
         j = int(np.ceil(n_topics / 2))
         fig, axes = plt.subplots(j, 2, figsize=(10, 10+n_topics))

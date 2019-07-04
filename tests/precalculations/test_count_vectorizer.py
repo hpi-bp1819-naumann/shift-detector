@@ -8,9 +8,9 @@ import numpy as np
 class TestCountVectorizer(unittest.TestCase):
 
     def setUp(self):
-        self.count1 = CountVectorizer(cols=['col1'], stop_words='english', max_features=2)
-        self.count2 = CountVectorizer(cols=['col1'], stop_words='english', max_features=2)
-        self.count3 = CountVectorizer(cols=['col1'], stop_words='english', max_features=3)
+        self.count1 = CountVectorizer(columns=['col1'], stop_words='english', max_features=2)
+        self.count2 = CountVectorizer(columns=['col1'], stop_words='english', max_features=2)
+        self.count3 = CountVectorizer(columns=['col1'], stop_words='english', max_features=3)
 
         self.df1 = pd.DataFrame({'col1':
                                 ['duck', 'duck', 'duck', 'duck', 'duck',
@@ -25,13 +25,13 @@ class TestCountVectorizer(unittest.TestCase):
         self.assertNotEqual(self.count1, self.count3)
 
     def test_exception_for_max_features(self):
-        self.assertRaises(ValueError, lambda: CountVectorizer(cols=[''], max_features=0))
-        self.assertRaises(TypeError, lambda: CountVectorizer(cols=[''], max_features=3.5))
+        self.assertRaises(ValueError, lambda: CountVectorizer(columns=[''], max_features=0))
+        self.assertRaises(TypeError, lambda: CountVectorizer(columns=[''], max_features=3.5))
 
     def test_exception_for_stop_words(self):
-        self.assertRaises(Exception, lambda: CountVectorizer(cols=[''], stop_words='abcd'))
-        self.assertRaises(Exception, lambda: CountVectorizer(cols=[''], stop_words=['english', ' abcd']))
-        self.assertRaises(TypeError, lambda: CountVectorizer(cols=[''], stop_words=['english', 42]))
+        self.assertRaises(Exception, lambda: CountVectorizer(columns=[''], stop_words='abcd'))
+        self.assertRaises(Exception, lambda: CountVectorizer(columns=[''], stop_words=['english', ' abcd']))
+        self.assertRaises(TypeError, lambda: CountVectorizer(columns=[''], stop_words=['english', 42]))
 
     def test_hash(self):
         self.assertEqual(hash(self.count1), hash(self.count2))

@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 
 class CountVectorizer(Precalculation):
 
-    def __init__(self, cols, stop_words='english', max_features=None):
+    def __init__(self, columns, stop_words='english', max_features=None):
         # potentially make min_df and max_df available
         self.max_features = None
 
@@ -33,12 +33,12 @@ class CountVectorizer(Precalculation):
                 raise ValueError("Max_features has to be at least 1. Received: {}".format(max_features))
             self.max_features = max_features
 
-        if not cols:
+        if not columns:
             raise TypeError("You have to specify which columns you want to tokenize")
-        if isinstance(cols, list) and all(isinstance(col, str) for col in cols):
-            self.cols = cols
+        if isinstance(columns, list) and all(isinstance(col, str) for col in columns):
+            self.columns = columns
         else:
-            raise TypeError("Cols has to be list of strings or a single string. Received: {}".format(type(cols)))
+            raise TypeError("Columns has to be list of strings or a single string. Received: {}".format(type(columns)))
 
         self.vectorizer = CountVectorizer_sklearn(stop_words=self.stop_words,
                                                   max_features=self.max_features)
@@ -46,13 +46,13 @@ class CountVectorizer(Precalculation):
     def __eq__(self, other):
         """Overrides the default implementation"""
         return isinstance(other, self.__class__) and self.stop_words == other.stop_words \
-            and self.max_features == other.max_features and self.cols == other.cols
+            and self.max_features == other.max_features and self.columns == other.columns
 
     def __hash__(self):
         """Overrides the default implementation"""
         hash_list = [self.__class__, self.max_features]
         hash_list.extend(sorted(self.stop_words))
-        hash_list.extend(self.cols)
+        hash_list.extend(self.columns)
         return hash(tuple(hash_list))
 
     def process(self, store):
@@ -61,11 +61,11 @@ class CountVectorizer(Precalculation):
         # Remove HTML tags
         cleaned_texts = merged_texts.applymap(lambda text: BeautifulSoup(text, features="lxml").get_text())
 
-        for col in self.cols:
+        for col in self.columns:
             if col not in store.column_names(ColumnType.text):
                 raise ValueError("Given column is not contained in detected text columns of the datasets: {}"
                                  .format(col))
-        col_names = self.cols
+        col_names = self.columns
 
         dict_of_arrays1 = {}
         dict_of_arrays2 = {}

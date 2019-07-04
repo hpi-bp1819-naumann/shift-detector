@@ -5,7 +5,6 @@ from sklearn.decomposition import LatentDirichletAllocation as LDA_skl
 from sklearn.feature_extraction.text import *
 from gensim.sklearn_api import LdaTransformer
 from gensim.corpora import Dictionary
-import gensim
 import warnings
 from shift_detector.precalculations.precalculation import Precalculation
 from shift_detector.precalculations.count_vectorizer import CountVectorizer
@@ -15,11 +14,12 @@ from shift_detector.utils.column_management import ColumnType
 
 class LdaEmbedding(Precalculation):
 
-    def __init__(self, cols, n_topics=20, n_iter=10, lib='sklearn', random_state=0, trained_model=None,
+    def __init__(self, columns, n_topics=20, n_iter=10, random_state=0, lib='sklearn', trained_model=None,
                  stop_words='english', max_features=None):
         self.model = None
         self.trained_model = None
-        self.cols = None
+        self.lib = None
+        self.columns = None
         self.stop_words = stop_words
         self.max_features = max_features
 
@@ -44,6 +44,15 @@ class LdaEmbedding(Precalculation):
             raise ValueError("Random_state has to be positive or zero. Received: {}".format(random_state))
         self.random_state = random_state
 
+        if columns:
+            if isinstance(columns, list) and all(isinstance(col, str) for col in columns):
+                self.columns = columns
+            else:
+                raise TypeError("Columns has to be list of strings . Column {} is of type {}"
+                                .format(columns, type(columns)))
+        else:
+            raise ValueError("You have to specify which columns you want to vectorize")
+
         if trained_model:
             warnings.warn("Trained models are not trained again. Please make sure to only input the column(s) "
                           "that the model was trained on", UserWarning)
@@ -61,14 +70,6 @@ class LdaEmbedding(Precalculation):
                 raise ValueError("The supported libraries are sklearn and gensim. Received: {}".format(lib))
         self.lib = lib
 
-        if cols:
-            if isinstance(cols, list) and all(isinstance(col, str) for col in cols):
-                self.cols = cols
-            else:
-                raise TypeError("Cols has to be list of strings . Column {} is of type {}".format(cols, type(cols)))
-        else:
-            raise ValueError("You have to specify which columns you want to vectorize")
-
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             model_attributes = sorted([(k, v) for k, v in self.model.__dict__.items()
@@ -76,7 +77,7 @@ class LdaEmbedding(Precalculation):
             other_model_attributes = sorted([(k, v) for k, v in other.model.__dict__.items()
                                              if isinstance(v, Number) or isinstance(v, str) or isinstance(v, list)])
             return isinstance(other.model, self.model.__class__) \
-                and model_attributes == other_model_attributes and self.cols == other.cols \
+                and model_attributes == other_model_attributes and self.columns == other.columns \
                 and self.stop_words == other.stop_words and self.max_features == other.max_features
         return False
 
@@ -88,10 +89,10 @@ class LdaEmbedding(Precalculation):
                     # dirty fix I know, ndarrays are not hashable
                     trained_hash_list.extend(item)
             return hash(tuple(trained_hash_list))
-        elif self.cols:
+        elif self.columns:
             hash_list = [self.__class__, self.model.__class__, self.n_topics,
                          self.n_iter, self.random_state, self.max_features]
-            hash_list.extend(self.cols)
+            hash_list.extend(self.columns)
             hash_list.extend(self.stop_words)
             return hash(tuple(hash_list))
         else:
@@ -124,25 +125,25 @@ class LdaEmbedding(Precalculation):
         return topic_words
 
     def process(self, store):
-        if isinstance(self.cols, str):
-            if self.cols in store.column_names(ColumnType.text):
-                col_names = self.cols
+        if isinstance(self.columns, str):
+            if self.columns in store.column_names(ColumnType.text):
+                col_names = self.columns
         else:
-            for col in self.cols:
+            for col in self.columns:
                 if col not in store.column_names(ColumnType.text):
                     raise ValueError("Given column is not contained in detected text columns of the datasets: {}"
                                      .format(col))
-            col_names = self.cols
+            col_names = self.columns
 
         topic_labels = ['topics ' + col for col in col_names]
 
         transformed1 = pd.DataFrame()
         transformed2 = pd.DataFrame()
-        topic_words_all_cols = {}
+        topic_words_all_columns = {}
         all_models = {}
 
         if self.lib == 'gensim':
-            tokenized1, tokenized2 = store[LdaGensimTokenizer(stop_words=self.stop_words, cols=self.cols)]
+            tokenized1, tokenized2 = store[LdaGensimTokenizer(stop_words=self.stop_words, columns=self.columns)]
             tokenized_merged = pd.concat([tokenized1, tokenized2], ignore_index=True)
 
             all_corpora = {}
@@ -165,17 +166,17 @@ class LdaEmbedding(Precalculation):
                 else:
                     model = self.trained_model
 
-                topic_words_all_cols[col] = self.get_topic_word_distribution_gensim(model, self.n_topics, 200)
+                topic_words_all_columns[col] = self.get_topic_word_distribution_gensim(model, self.n_topics, 200)
 
                 transformed1[topic_labels[i]] = self.topic_probabilities_to_topics(model, corpus1)
                 transformed2[topic_labels[i]] = self.topic_probabilities_to_topics(model, corpus2)
 
-            return transformed1, transformed2, topic_words_all_cols, all_models, all_corpora, all_dicts
+            return transformed1, transformed2, topic_words_all_columns, all_models, all_corpora, all_dicts
 
         else:
             vectorized1, vectorized2, feature_names, all_vecs = store[CountVectorizer(stop_words=self.stop_words,
                                                                                       max_features=self.max_features,
-                                                                                      cols=self.cols)]
+                                                                                      columns=self.columns)]
             all_dtms = dict(vectorized1, **vectorized2)
 
             for i, col in enumerate(col_names):
@@ -186,7 +187,7 @@ class LdaEmbedding(Precalculation):
                 else:
                     model = self.trained_model
 
-                topic_words_all_cols[col] = self.get_topic_word_distribution_sklearn(model,
+                topic_words_all_columns[col] = self.get_topic_word_distribution_sklearn(model,
                                                                                      feature_names[col],
                                                                                      200)
 
@@ -195,4 +196,4 @@ class LdaEmbedding(Precalculation):
                 transformed2[topic_labels[i]] = \
                     self.topic_probabilities_to_topics(model, vectorized2[col])
 
-            return transformed1, transformed2, topic_words_all_cols, all_models, all_dtms, all_vecs
+            return transformed1, transformed2, topic_words_all_columns, all_models, all_dtms, all_vecs

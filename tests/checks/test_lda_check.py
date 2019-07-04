@@ -7,27 +7,28 @@ import pandas as pd
 class TestLdaCheck(unittest.TestCase):
 
     def setUp(self):
-        self.lda_report1 = LdaCheck(lib='sklearn',
-                                    shift_threshold=0.1,
+        self.lda_report1 = LdaCheck(shift_threshold=0.1,
                                     n_topics=2,
                                     n_iter=1,
-                                    random_state=0)
-        self.lda_report2 = LdaCheck(lib='sklearn',
-                                    shift_threshold=0.1,
+                                    random_state=0,
+                                    lib='sklearn')
+        self.lda_report2 = LdaCheck(shift_threshold=0.1,
                                     n_topics=2,
                                     n_iter=1,
-                                    random_state=0)
-        self.lda_report3 = LdaCheck(lib='gensim',
-                                    cols=['text'],
-                                    shift_threshold=0.1,
-                                    n_topics=2, n_iter=8,
-                                    random_state=0)
-        self.lda_report4 = LdaCheck(lib='gensim',
-                                    cols=['abcd'],
-                                    shift_threshold=0.1,
+                                    random_state=0,
+                                    lib='sklearn')
+        self.lda_report3 = LdaCheck(shift_threshold=0.1,
                                     n_topics=2,
                                     n_iter=8,
-                                    random_state=0)
+                                    random_state=0,
+                                    lib='gensim',
+                                    columns=['text'])
+        self.lda_report4 = LdaCheck(shift_threshold=0.1,
+                                    n_topics=2,
+                                    n_iter=8,
+                                    random_state=0,
+                                    lib='gensim',
+                                    columns=['abcd'])
 
         self.poems = [
             'Tell me not, in mournful numbers,\nLife is but an empty dream!\nFor the soul is dead that slumbers,\nAnd things are not what they seem.',
@@ -189,20 +190,20 @@ class TestLdaCheck(unittest.TestCase):
         self.assertRaises(TypeError, lambda: LdaCheck(shift_threshold='abcd'))
 
     def test_exception_on_cols(self):
-        self.assertRaises(TypeError, lambda: LdaCheck(cols=42))
+        self.assertRaises(TypeError, lambda: LdaCheck(columns=42))
 
     def test_run(self):
-        with self.subTest("Test successful run without specifying the 'cols' parameter"):
+        with self.subTest("Test successful run without specifying the 'columns' parameter"):
             report = self.lda_report1.run(self.store)
 
             self.assertAlmostEqual(report.explanation['text has a diff in topic 1 of '], -0.419)
             self.assertAlmostEqual(report.explanation['text has a diff in topic 2 of '], 0.419)
 
-        with self.subTest("Test successful run with specifying the 'cols' parameter with gensim"):
+        with self.subTest("Test successful run with specifying the 'columns' parameter with gensim"):
             report2 = self.lda_report3.run(self.store)
 
             self.assertAlmostEqual(report2.explanation['text has a diff in topic 1 of '], -0.122)
             self.assertAlmostEqual(report2.explanation['text has a diff in topic 2 of '], 0.122)
 
-        with self.subTest("Test unsuccessful run with specifying a wrong 'cols' parameter"):
+        with self.subTest("Test unsuccessful run with specifying a wrong 'columns' parameter"):
             self.assertRaises(ValueError, lambda: self.lda_report4.run(self.store))
