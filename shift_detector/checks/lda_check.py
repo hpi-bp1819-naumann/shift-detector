@@ -13,11 +13,14 @@ import numpy as np
 import warnings
 import nltk
 
+from shift_detector.utils.visualization import LEGEND_1, LEGEND_2, plot_title
+
 
 class LdaCheck(Check):
 
     def __init__(self, significance=0.1, n_topics=20, n_iter=10, lib='sklearn', random_state=0,
-                 cols=None, trained_model=None, stop_words='english', max_features=None):
+                 cols=None, trained_model=None, stop_words='english', max_features=None,
+                 word_clouds=True, ldavis=True):
         """
         significance here is the difference between the percentages of each topic between both datasets,
         meaning a difference above 10% is significant
@@ -49,6 +52,8 @@ class LdaCheck(Check):
         self.random_state = random_state
         self.stop_words = stop_words
         self.max_features = max_features
+        self.word_clouds = word_clouds
+        self.ldavis = ldavis
 
     def run(self, store) -> Report:
         shifted_columns = set()
@@ -90,8 +95,12 @@ class LdaCheck(Check):
             all_dtms, all_vecs = (None, None)
 
         for col in col_names:
-            count_topics1 = df1_embedded['topics ' + col].value_counts().sort_index()
-            count_topics2 = df2_embedded['topics ' + col].value_counts().sort_index()
+            count_topics1 = df1_embedded['topics ' + col].value_counts()\
+                            .reindex(np.arange(1, self.n_topics + 1))\
+                            .sort_index()
+            count_topics2 = df2_embedded['topics ' + col].value_counts()\
+                            .reindex(np.arange(1, self.n_topics + 1))\
+                            .sort_index()
 
             values1_ratio = [x / len(df1_embedded['topics ' + col]) for x in count_topics1.values]
             values2_ratio = [x / len(df2_embedded['topics ' + col]) for x in count_topics2.values]
@@ -106,47 +115,61 @@ class LdaCheck(Check):
                       examined_columns=col_names,
                       shifted_columns=shifted_columns,
                       explanation=explanation,
-                      figures=self.column_figures(col_names, df1_embedded, df2_embedded, topic_words,
-                                                  all_models, all_dtms, all_vecs, all_corpora, all_dicts))
+                      figures=self.column_figures(shifted_columns, df1_embedded, df2_embedded, topic_words,
+                                                  all_models, all_dtms, all_vecs, all_corpora, all_dicts,
+                                                  self.word_clouds, self.ldavis))
 
     def column_figure(self, column, df1, df2, topic_words,
-                      all_models, all_dtms, all_vecs, all_corpora, all_dicts):
-        self.paired_total_ratios_figure(column, df1, df2)
-        self.word_cloud(column, topic_words, self.n_topics, self.lib)
-        self.py_lda_vis(column, self.lib, all_models, all_dtms, all_vecs, all_corpora, all_dicts)
+                      all_models, all_dtms, all_vecs, all_corpora, all_dicts,
+                      word_clouds, ldavis):
+        self.paired_total_ratios_figure(column, df1, df2, self.n_topics)
+        if word_clouds:
+            self.word_cloud(column, topic_words, self.n_topics)
+        if ldavis:
+            self.py_lda_vis(column, self.lib, all_models, all_dtms, all_vecs, all_corpora, all_dicts)
 
-    def column_figures(self, significant_columns, df1, df2, topic_words,
-                       all_models, all_dtms, all_vecs, all_corpora, all_dicts):
+    def column_figures(self, shifted_columns, df1, df2, topic_words,
+                       all_models, all_dtms, all_vecs, all_corpora, all_dicts,
+                       word_clouds, ldavis):
         plot_functions = []
-        for column in significant_columns:
+        for column in shifted_columns:
             plot_functions.append(lambda col=column: self.column_figure(col, df1, df2, topic_words,
                                                                         all_models, all_dtms, all_vecs,
-                                                                        all_corpora, all_dicts))
+                                                                        all_corpora, all_dicts,
+                                                                        word_clouds, ldavis))
         return plot_functions
 
     @staticmethod
-    def paired_total_ratios_figure(column, df1, df2):
-        value_counts = pd.concat([df1['topics ' + column].value_counts(), df2['topics ' + column].value_counts()],
-                                 axis=1).sort_index()
+    def paired_total_ratios_figure(column, df1, df2, n_topics):
+        count_topics1 = df1['topics ' + column].value_counts() \
+            .reindex(np.arange(1, n_topics + 1)) \
+            .sort_index()
+        count_topics2 = df2['topics ' + column].value_counts() \
+            .reindex(np.arange(1, n_topics + 1)) \
+            .sort_index()
+        value_counts = pd.concat([count_topics1, count_topics2], axis=1)
+
         value_ratios = value_counts.fillna(0).apply(axis='columns',
                                                     func=lambda row: pd.Series([row.iloc[0] /
                                                                                 len(df1['topics ' + column]),
                                                                                 row.iloc[1] /
                                                                                 len(df2['topics ' + column])],
-                                                                               index=[str(column) + ' 1',
-                                                                                      str(column) + ' 2']))
-        axes = value_ratios.plot(kind='barh', fontsize='medium')
+                                                                                index=['DS1',
+                                                                                      'DS2']))
+        axes = value_ratios.plot(kind='barh', fontsize='medium', figsize=(10, 2+np.ceil(n_topics/2)))
         axes.invert_yaxis()  # to match order of legend
-        axes.set_title(str(column), fontsize='x-large')
+        axes.set_title(plot_title(column), fontsize='x-large')
         axes.set_xlabel('ratio', fontsize='medium')
         axes.set_ylabel('topics', fontsize='medium')
         plt.show()
 
-    def word_cloud(self, column, topic_words, n_topics, lib):
+    @staticmethod
+    def word_cloud(column, topic_words, n_topics):
         custom_XKCD_COLORS = mcolors.XKCD_COLORS
         # remove very light colors that are hard to see on white background
         custom_XKCD_COLORS.pop('xkcd:yellowish tan', None)
         custom_XKCD_COLORS.pop('xkcd:really light blue', None)
+
         cols = [color for name, color in custom_XKCD_COLORS.items()]
 
         cloud = WordCloud(background_color='white',
@@ -157,7 +180,6 @@ class LdaCheck(Check):
                           color_func=lambda *args, **kwargs: cols[i],
                           prefer_horizontal=1.0)
         j = int(np.ceil(n_topics / 2))
-
         fig, axes = plt.subplots(j, 2, figsize=(10, 10+n_topics))
 
         for i, ax in enumerate(axes.flatten()):
@@ -166,12 +188,8 @@ class LdaCheck(Check):
                 ax.axis('off')
                 break
             fig.add_subplot(ax)
-            if lib == 'gensim':
-                topics = dict(topic_words[column][i][1])
-                cloud.generate_from_frequencies(topics, max_font_size=300)
-            else:
-                topics = ' '.join(set(topic_words[column][i]))
-                cloud.generate_from_text(topics)
+            topics = dict(topic_words[column][i][1])
+            cloud.generate_from_frequencies(topics, max_font_size=300)
 
             ax.imshow(cloud)
             ax.set_title('Topic ' + str(i+1), fontdict=dict(size=16))
@@ -183,10 +201,14 @@ class LdaCheck(Check):
 
     @staticmethod
     def py_lda_vis(column, lib, lda_models, dtm=None, vectorizer=None, corpus=None, dictionary=None):
-        # print('prepare')
         if lib == 'sklearn':
-            vis_data = pyLDAvis.sklearn.prepare(lda_models[column], np.asmatrix(dtm[column]), vectorizer[column])
+            vis_data = pyLDAvis.sklearn.prepare(lda_models[column],
+                                                np.asmatrix(dtm[column]),
+                                                vectorizer[column],
+                                                sort_topics=False)
         else:
-            vis_data = pyLDAvis.gensim.prepare(lda_models[column], corpus[column], dictionary[column])
-        # print('display')
+            vis_data = pyLDAvis.gensim.prepare(lda_models[column],
+                                               corpus[column],
+                                               dictionary[column],
+                                               sort_topics=False)
         display(pyLDAvis.display(vis_data))

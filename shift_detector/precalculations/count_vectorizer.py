@@ -3,6 +3,7 @@ from shift_detector.precalculations.precalculation import Precalculation
 from nltk.corpus import stopwords as nltk_stopwords
 from sklearn.feature_extraction.text import CountVectorizer as CountVectorizer_sklearn
 from shift_detector.utils.column_management import ColumnType
+from bs4 import BeautifulSoup
 
 
 class CountVectorizer(Precalculation):
@@ -41,7 +42,6 @@ class CountVectorizer(Precalculation):
 
         self.vectorizer = CountVectorizer_sklearn(stop_words=self.stop_words,
                                                   max_features=self.max_features)
-                                                  #token_pattern=r'[^\w+\s]|\b[a-zA-Z]\b')
 
     def __eq__(self, other):
         """Overrides the default implementation"""
@@ -58,6 +58,8 @@ class CountVectorizer(Precalculation):
     def process(self, store):
         df1_texts, df2_texts = store[ColumnType.text]
         merged_texts = pd.concat([df1_texts, df2_texts], ignore_index=True)
+        # Remove HTML tags
+        cleaned_texts = merged_texts.applymap(lambda text: BeautifulSoup(text, features="lxml").get_text())
 
         for col in self.cols:
             if col not in store.column_names(ColumnType.text):
@@ -72,9 +74,9 @@ class CountVectorizer(Precalculation):
 
         for col in col_names:
             all_vecs[col] = self.vectorizer
-            all_vecs[col] = all_vecs[col].fit(merged_texts[col])
+            all_vecs[col] = all_vecs[col].fit(cleaned_texts[col])
             feature_names[col] = all_vecs[col].get_feature_names()
-            dict_of_arrays1[col] = all_vecs[col].transform(df1_texts[col]).A.astype(int)
-            dict_of_arrays2[col] = all_vecs[col].transform(df2_texts[col]).A.astype(int)
+            dict_of_arrays1[col] = all_vecs[col].transform(df1_texts[col]).toarray().astype(int)
+            dict_of_arrays2[col] = all_vecs[col].transform(df2_texts[col]).toarray().astype(int)
 
         return dict_of_arrays1, dict_of_arrays2, feature_names, all_vecs
