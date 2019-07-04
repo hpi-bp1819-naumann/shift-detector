@@ -9,9 +9,9 @@ from bs4 import BeautifulSoup
 
 class LdaGensimTokenizer(Precalculation):
 
-    def __init__(self, cols, stop_words='english'):
+    def __init__(self, columns, stop_words='english'):
+        self.columns = None
         self.stop_words = set()
-        self.cols = None
 
         if isinstance(stop_words, str):
             if stop_words not in nltk_stopwords.fileids():
@@ -26,27 +26,29 @@ class LdaGensimTokenizer(Precalculation):
             raise TypeError("Please enter the language for your stop_words as a string or list of strings. Received: {}"
                             .format(type(stop_words)))
 
-        if not cols:
+        if not columns:
             raise TypeError("You have to specify which columns you want to tokenize")
-        if isinstance(cols, list) and all(isinstance(col, str) for col in cols):
-            self.cols = cols
+        if isinstance(columns, list) and all(isinstance(col, str) for col in columns):
+            self.columns = columns
         else:
-            raise TypeError("Cols has to be list of strings or a single string. Received: {}".format(type(cols)))
+            raise TypeError("Columns has to be list of strings or a single string. Received: {}".format(type(columns)))
 
     def __eq__(self, other):
         """Overrides the default implementation"""
-        return isinstance(other, self.__class__) and self.stop_words == other.stop_words and self.cols == other.cols
+        return isinstance(other, self.__class__) \
+            and self.stop_words == other.stop_words \
+            and self.columns == other.columns
 
     def __hash__(self):
         """Overrides the default implementation"""
         hash_list = [self.__class__]
         hash_list.extend(sorted(self.stop_words))
-        hash_list.extend(self.cols)
+        hash_list.extend(self.columns)
         return hash(tuple(hash_list))
 
     def make_usable_list(self, texts):
         """
-        Make all words lowercase, remove stopwords, remove accents,
+        Remove HTML tags, make all words lowercase, remove stopwords, remove accents,
         remove words that are shorter than 2 chars or longer than 20 chars or that start with '_',
         convert words to unicode
         """
@@ -55,6 +57,7 @@ class LdaGensimTokenizer(Precalculation):
             wordlist = []
             # Remove HTML tags
             entry = BeautifulSoup(entry, features="lxml").get_text(separator="")
+
             for word in re.sub(r"[^\w+\s]|\b[a-zA-Z]\b", ' ', entry).split():
                 if word == '' or word.lower() in self.stop_words:
                     continue
@@ -66,11 +69,11 @@ class LdaGensimTokenizer(Precalculation):
     def process(self, store):
         df1_texts, df2_texts = store[ColumnType.text]
 
-        for col in self.cols:
+        for col in self.columns:
             if col not in store.column_names(ColumnType.text):
                 raise ValueError("Given column is not contained in detected text columns of the datasets: {}"
                                  .format(col))
-        col_names = self.cols
+        col_names = self.columns
 
         processed1 = pd.DataFrame()
         processed2 = pd.DataFrame()
