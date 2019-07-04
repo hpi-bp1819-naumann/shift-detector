@@ -7,10 +7,27 @@ import pandas as pd
 class TestLdaCheck(unittest.TestCase):
 
     def setUp(self):
-        self.lda_report1 = LdaCheck(lib='sklearn', significance=0.1, n_topics=2, n_iter=1, random_state=0)
-        self.lda_report2 = LdaCheck(lib='sklearn', significance=0.1, n_topics=2, n_iter=1, random_state=0)
-        self.lda_report3 = LdaCheck(lib='gensim', cols=['text'], significance=0.1, n_topics=2, n_iter=8, random_state=0)
-        self.lda_report4 = LdaCheck(lib='gensim', cols=['abcd'], significance=0.1, n_topics=2, n_iter=8, random_state=0)
+        self.lda_report1 = LdaCheck(lib='sklearn',
+                                    shift_threshold=0.1,
+                                    n_topics=2,
+                                    n_iter=1,
+                                    random_state=0)
+        self.lda_report2 = LdaCheck(lib='sklearn',
+                                    shift_threshold=0.1,
+                                    n_topics=2,
+                                    n_iter=1,
+                                    random_state=0)
+        self.lda_report3 = LdaCheck(lib='gensim',
+                                    cols=['text'],
+                                    shift_threshold=0.1,
+                                    n_topics=2, n_iter=8,
+                                    random_state=0)
+        self.lda_report4 = LdaCheck(lib='gensim',
+                                    cols=['abcd'],
+                                    shift_threshold=0.1,
+                                    n_topics=2,
+                                    n_iter=8,
+                                    random_state=0)
 
         self.poems = [
             'Tell me not, in mournful numbers,\nLife is but an empty dream!\nFor the soul is dead that slumbers,\nAnd things are not what they seem.',
@@ -166,10 +183,10 @@ class TestLdaCheck(unittest.TestCase):
         self.df2 = pd.DataFrame(self.phrases, columns=['text'])
         self.store = Store(self.df1, self.df2)
 
-    def test_exception_on_significance(self):
-        self.assertRaises(ValueError, lambda: LdaCheck(significance=0.0))
-        self.assertRaises(TypeError, lambda: LdaCheck(significance=42))
-        self.assertRaises(TypeError, lambda: LdaCheck(significance='abcd'))
+    def test_exception_on_shift_threshold(self):
+        self.assertRaises(ValueError, lambda: LdaCheck(shift_threshold=0.0))
+        self.assertRaises(TypeError, lambda: LdaCheck(shift_threshold=42))
+        self.assertRaises(TypeError, lambda: LdaCheck(shift_threshold='abcd'))
 
     def test_exception_on_cols(self):
         self.assertRaises(TypeError, lambda: LdaCheck(cols=42))
@@ -177,7 +194,7 @@ class TestLdaCheck(unittest.TestCase):
     def test_run(self):
         with self.subTest("Test successful run without specifying the 'cols' parameter"):
             report = self.lda_report1.run(self.store)
-            
+
             self.assertAlmostEqual(report.explanation['text has a diff in topic 1 of '], -0.419)
             self.assertAlmostEqual(report.explanation['text has a diff in topic 2 of '], 0.419)
 
