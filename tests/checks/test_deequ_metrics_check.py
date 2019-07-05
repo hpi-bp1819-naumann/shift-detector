@@ -30,10 +30,19 @@ class TestSimpleCheck(TestCase):
             self.check = DQMetricsCheck()
             report = self.check.run(self.store_num)
 
-            explanation_string = report.explanation['cool_numbers'].split('\n\n')[0]
-            formatted = re.sub('Metric: (.*), Diff: (.*) %, threshold: (.*)%', r"\1 \2", explanation_string)
-            formatted_list = re.split(' |\n', formatted)
-            self.assertCountEqual(formatted_list, ['mean', '+20.0', 'value_range', '+67.33', 'std', '+66.67'])
+            explanations = report.explanation['numerical_categorical']['cool_numbers']
+
+            self.assertEqual(explanations[0].val1, 2.5)
+            self.assertEqual(explanations[0].val2, 3.0)
+            self.assertEqual(round(explanations[0].diff, 2), 0.2)
+
+            self.assertEqual(explanations[1].val1, 3.0)
+            self.assertEqual(explanations[1].val2, 5.0)
+            self.assertEqual(round(explanations[1].diff, 2), 0.67)
+
+            self.assertEqual(round(explanations[2].val1, 2), 1.13)
+            self.assertEqual(round(explanations[2].val2, 2), 1.89)
+            self.assertEqual(round(explanations[2].diff, 2), 0.67)
 
         with self.subTest('no analyzer should detect shift'):
             self.check = DQMetricsCheck(mean_threshold=.3, value_range_threshold=.68, std_threshold=.7,
@@ -44,12 +53,13 @@ class TestSimpleCheck(TestCase):
         with self.subTest('only std should detect shift'):
             self.check = DQMetricsCheck(mean_threshold=.3, value_range_threshold=.68, std_threshold=.5,
                                         categorical_threshold=.25)
-            report = self.check.run(self.store_num)
 
-            explanation_string = report.explanation['cool_numbers']
-            formatted = re.sub('Metric: (.*), Diff: (.*) %, threshold: (.*)%', r"\1 \2", explanation_string)
-            formatted_list = re.split(' |\n', formatted)
-            self.assertCountEqual(formatted_list, ['std', '+67.33', ''])
+            report = self.check.run(self.store_num)
+            explanations = report.explanation['numerical_categorical']['cool_numbers']
+            self.assertEqual(len(explanations), 1)
+            self.assertEqual(round(explanations[0].val1, 2), 1.13)
+            self.assertEqual(round(explanations[0].val2, 2), 1.89)
+            self.assertEqual(round(explanations[0].diff, 2), 0.67)
 
     def test_run_categorical(self):
         with self.subTest("Test precalculation"):
@@ -58,46 +68,27 @@ class TestSimpleCheck(TestCase):
         with self.subTest("Test shifted categorical columns"):
             self.assertEqual(report.shifted_columns, ['shift'])
             self.assertCountEqual(report.examined_columns, ['shift', 'no_shift'])
-            self.assertEqual(report.explanation['shift'], "Attribute: 'A' with Diff: +100.0 %, "
-                                                          "categorical threshold: +/- 5.0 %\n")
 
-    def test_run_numerical(self):
-        with self.subTest("Test precalculation"):
-            report = self.check.run(self.store_num)
-
-        with self.subTest('Test shifted numerical columns'):
-            self.assertEqual(report.shifted_columns, ['cool_numbers'])
-            self.assertCountEqual(report.examined_columns, ['cool_numbers'])
-
-        explanation_string = report.explanation['cool_numbers']
-        explanation_string_numerical = explanation_string.split('\n\n')[0]
-        explanation_string_catergorical_numerical = explanation_string.split('\n\n')[1]
-
-        with self.subTest('Test purely categorical'):
-            formatted = re.sub('Metric: (.*), Diff: (.*) %, threshold: (.*)%', r"\1 \2", explanation_string_numerical)
-            formatted_list = re.split(' |\n', formatted)
-            self.assertCountEqual(formatted_list, ['mean', '+20.0', 'value_range', '+66.67', 'std',
-                                                   '+67.33'])
-
-        with self.subTest('Test test numerical categorical'):
-            self.assertEqual('Attribute: \'4.0\' with Diff: +25.0 %, categorical threshold: +/- 5.0 %\n',
-                             explanation_string_catergorical_numerical)
+            shift_explanation = report.explanation['attribute_val']['shift'][0]
+            self.assertEqual(shift_explanation.val1, 1.0)
+            self.assertEqual(shift_explanation.val2, 0)
+            self.assertEqual(shift_explanation.diff, 1.0)
 
     def test_relative_metric_difference(self):
         with self.subTest('Normal case'):
             self.check.data = {'numerical_comparison': {'column': {'metric_name': {'df1': 10.0, 'df2': 5.0}}}}
-            self.assertEqual(self.check.relative_metric_difference('column', 'metric_name'), -.5)
+            self.assertEqual(self.check.relative_metric_difference('column', 'metric_name')[2], -.5)
 
             self.check.data = {'numerical_comparison': {'column': {'metric_name': {'df1': 1.2, 'df2': 12.0}}}}
-            self.assertEqual(self.check.relative_metric_difference('column', 'metric_name'), 9.0)
+            self.assertEqual(self.check.relative_metric_difference('column', 'metric_name')[2], 9.0)
 
         with self.subTest('Both values zero'):
             self.check.data = {'numerical_comparison': {'column': {'metric_name': {'df1': 0, 'df2': 0}}}}
-            self.assertEqual(self.check.relative_metric_difference('column', 'metric_name'), 0)
+            self.assertEqual(self.check.relative_metric_difference('column', 'metric_name')[2], 0)
 
         with self.subTest('Value in df1 zero'):
             self.check.data = {'numerical_comparison': {'column': {'metric_name': {'df1': 0, 'df2': 12.4}}}}
-            self.assertEqual(self.check.relative_metric_difference('column', 'metric_name'), 0)
+            self.assertEqual(self.check.relative_metric_difference('column', 'metric_name')[2], 0)
 
     @mock.patch('shift_detector.checks.dq_metrics_check.plt')
     def test_numerical_plots_work(self, mock_plt):
@@ -123,8 +114,3 @@ class TestSimpleCheck(TestCase):
         self.assertTrue(mock_plt.figure.called)
         self.assertTrue(mock_plt.figure().add_subplot.called)
         self.assertTrue(mock_plt.show.called)
-
-
-
-
-
