@@ -17,7 +17,8 @@ class DQMetricsCheck(Check):
 
     def __init__(self, categorical_threshold=0.05, mean_threshold=0.15, median_threshold=0.15,
                  value_range_threshold=0.5, quartile_1_threshold=0.2, quartile_3_threshold=0.2,
-                 uniqueness_threshold=0.1, num_distinct_threshold=0.2, completeness_threshold=0.1, std_threshold=0.25):
+                 uniqueness_threshold=0.1, num_distinct_threshold=0.2, completeness_threshold=0.1, std_threshold=0.25,
+                 check_language_metadata=False):
 
         threshold_names_values = {'mean': mean_threshold, 'median': median_threshold,
                                   'value_range': value_range_threshold, 'quartile_1': quartile_1_threshold,
@@ -33,26 +34,38 @@ class DQMetricsCheck(Check):
             if t_value < 0:
                 raise ValueError("The {}_threshold of {} is not correct. It has to be larger than 0.0"
                                  .format(t_name, t_value))
-
-        self.data = None
         self.categorical_threshold = categorical_threshold
         self.metrics_thresholds_percentage = threshold_names_values
 
+        self.data = None
+        self.text_metadata = None
+        self.check_language_metadata = check_language_metadata
+
     def run(self, store):
         df1_numerical, df2_numerical = store[ColumnType.numerical]
-        self.data = store[DQMetricsPrecalculation()]
+        self.data = store[DQMetricsPrecalculation(text_metadata=self.check_language_metadata)]
 
         numerical_report = self.numerical_categorical_report(df1_numerical, df2_numerical)
         attribute_val_report = self.attribute_val_report()
 
-        both_explanations = numerical_report.explanation.copy()
-        both_explanations.update(attribute_val_report.explanation)
-        both_reports = DQMetricsReport(set(numerical_report.examined_columns + attribute_val_report.examined_columns),
-                                       set(numerical_report.shifted_columns + attribute_val_report.shifted_columns),
-                                       both_explanations, {},
-                                       numerical_report.figures + attribute_val_report.figures)
+        if self.check_language_metadata:
+            metadata_report = self.text_metadata_report()
+        else:
+            metadata_report = DQMetricsReport()
 
-        return both_reports
+        agg_examined_columns = set(numerical_report.examined_columns + attribute_val_report.examined_columns +
+                                   metadata_report.examined_columns)
+        agg_shifted_columns = set(numerical_report.shifted_columns + attribute_val_report.shifted_columns +
+                                  metadata_report.shifted_columns)
+
+        agg_explanations = numerical_report.explanation.copy()
+        agg_explanations.update(attribute_val_report.explanation)
+        agg_explanations.update(metadata_report.explanation)
+
+        agg_figures = numerical_report.figures + attribute_val_report.figures
+
+        agg_reports = DQMetricsReport(agg_examined_columns, agg_shifted_columns, agg_explanations, {}, agg_figures)
+        return agg_reports
 
     def relative_metric_difference(self, column, metric_name, comparison='numerical_comparison'):
         metric_in_df1 = self.data[comparison][column][metric_name]['df1']
@@ -69,6 +82,27 @@ class DQMetricsCheck(Check):
             relative_difference = (metric_in_df2 / metric_in_df1 - 1)
 
         return metric_in_df1, metric_in_df2, relative_difference
+
+    def text_metadata_report(self):
+        metadata_comparison = self.data['metadata_comparison']
+        examined_columns = set()
+        shifted_columns = set()
+        explanation = defaultdict(list)
+
+        for column_tuple, metrics in sorted(metadata_comparison.items()):
+            examined_columns.add(column_tuple[0])
+
+            for metric_name in metrics:
+                val1, val2, diff = self.relative_metric_difference(column_tuple, metric_name,
+                                                                   comparison='metadata_comparison')
+                if abs(diff) > self.metrics_thresholds_percentage[metric_name]:
+                    shifted_columns.add(column_tuple[0])
+
+                    explanation[column_tuple[0]].append(
+                        ReportRow(metric_name + ', ' + column_tuple[1], val1, val2, self.metrics_thresholds_percentage[metric_name], diff))
+
+        return DQMetricsReport(examined_columns, shifted_columns, explanation={'text_metadata': explanation},
+                               figures=[])
 
     def numerical_categorical_report(self, df1, df2):
         numerical_comparison = self.data['numerical_comparison']
@@ -131,14 +165,15 @@ class DQMetricsCheck(Check):
 
 class DQMetricsReport(Report):
 
-    def __init__(self, examined_columns, shifted_columns, explanation=[], information={}, figures=[]):
+    def __init__(self, examined_columns=set(), shifted_columns=set(), explanation=[], information={}, figures=[]):
         super().__init__("DQ Metrics Check", examined_columns, shifted_columns, explanation, information, figures)
 
     def print_explanation(self):
 
         for metric_name, name, sub_name, heading in \
                 [('numerical_categorical', 'Metric', 'Column', 'Numerical Columns'),
-                 ('attribute_val', 'Attribute Value', 'Attribute', 'Categorical Columns')]:
+                 ('attribute_val', 'Attribute Value', 'Attribute', 'Categorical Columns'),
+                 ('text_metadata', 'Text Metadatum', 'Column', 'Text Metadata')]:
 
             nprint(heading, text_formatting='h3')
             for column_name, data in self.explanation[metric_name].items():

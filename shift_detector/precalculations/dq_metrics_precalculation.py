@@ -2,10 +2,14 @@ from copy import deepcopy
 
 from shift_detector.precalculations.low_cardinality_precalculation import LowCardinalityPrecalculation
 from shift_detector.precalculations.precalculation import Precalculation
+from shift_detector.precalculations.text_metadata import TextMetadata
 from shift_detector.utils.column_management import ColumnType
 
 
 class DQMetricsPrecalculation(Precalculation):
+
+    def __init__(self, text_metadata=False):
+        self.text_metadata = text_metadata
 
     def __eq__(self, other):
         return isinstance(other, self.__class__)
@@ -14,6 +18,12 @@ class DQMetricsPrecalculation(Precalculation):
         return hash(self.__class__)
 
     def process(self, store):
+        if self.text_metadata:
+            df1_metadata, df2_metadata = store[TextMetadata()]
+            metadata_comparison = self.compare_numerical_columns(df1_metadata, df2_metadata)
+        else:
+            metadata_comparison = None
+
         df1_numerical, df2_numerical = store[ColumnType.numerical]
         df1_categorical, df2_categorical, _ = store[LowCardinalityPrecalculation()]
 
@@ -22,7 +32,7 @@ class DQMetricsPrecalculation(Precalculation):
         attribute_val_comparison = self.compare_categorical_attribute_vals(df1_categorical, df2_categorical)
         combined_comparisons = {'attribute_val_comparison': attribute_val_comparison,
                                 'numerical_comparison': numerical_comparison, 'categorical_comparison':
-                                categorical_comparison}
+                                categorical_comparison, 'metadata_comparison': metadata_comparison}
         return combined_comparisons
 
     @staticmethod
@@ -48,9 +58,8 @@ class DQMetricsPrecalculation(Precalculation):
                 column_droppedna = df[column].dropna()
                 numerical_comparison[column]['std'][df_name] = column_droppedna.std()
                 numerical_comparison[column]['completeness'][df_name] = len(column_droppedna) / len(df[column])
-                numerical_comparison[column]['uniqueness'][df_name] = len(df.groupby(column)
-                                                                          .filter(lambda x: len(x) == 1)) / \
-                                                                          len(column_droppedna)
+                numerical_comparison[column]['uniqueness'][df_name] = \
+                    len(df.groupby(column).filter(lambda x: len(x) == 1)) / len(column_droppedna)
         return numerical_comparison
 
     @staticmethod
