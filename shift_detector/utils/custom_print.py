@@ -30,9 +30,7 @@ def nprint(input_str, num_tabs=0, text_formatting='normal'):
 def mdprint(input_str):
     if not is_in_jupyter():
         print(input_str)
-        print('not in jupyter')
     else:
-        print('in jupyter')
         display(Markdown(input_str))
 
 

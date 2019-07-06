@@ -8,7 +8,7 @@ from shift_detector.precalculations.dq_metrics_precalculation import DQMetricsPr
 from shift_detector.precalculations.store import Store
 
 
-class TestSimplePrecalculation(unittest.TestCase):
+class TestDQMetricsPrecalculation(unittest.TestCase):
 
     def setUp(self) -> None:
         self.precalculation = DQMetricsPrecalculation()
