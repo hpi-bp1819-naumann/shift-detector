@@ -47,6 +47,8 @@ def calculate_frequent_rules(df1, df2, min_support, min_confidence):
     Rule = namedtuple('Rule', ['left_side', 'right_side', 'supports_of_left_side', 'delta_supports_of_left_side',
                                'supports', 'delta_supports', 'confidences', 'delta_confidences'])
 
+    Rule.__repr__ = lambda self: to_string(self)
+
     result = []
     intersection = rules[0].keys() & rules[1].keys()
     # compare rules that exceed min support in both data sets
@@ -86,7 +88,7 @@ def calculate_frequent_rules(df1, df2, min_support, min_confidence):
             if support_of_left_side:
                 confidence = support / support_of_left_side
             else:
-                confidence = 0.0
+                confidence = 1.0
             result.append(Rule(
                 key.left_side, key.right_side, (rules[0][key].support_of_left_side,
                                                 support_of_left_side),
@@ -105,7 +107,7 @@ def calculate_frequent_rules(df1, df2, min_support, min_confidence):
             if support_of_left_side:
                 confidence = support / support_of_left_side
             else:
-                confidence = 0.0
+                confidence = 1.0
             result.append(Rule(
                 key.left_side, key.right_side, (support_of_left_side,
                                                 rules[1][key].support_of_left_side),

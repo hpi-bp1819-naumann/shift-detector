@@ -18,6 +18,10 @@ def nprint(input_str, num_tabs=0, text_formatting='normal'):
 
         elif text_formatting == 'h3':
             display(Markdown('### {}'.format(input_str)))
+
+        elif text_formatting == 'h4':
+            display(Markdown('#### {}'.format(input_str)))
+
         else:
             display(input_str)
 

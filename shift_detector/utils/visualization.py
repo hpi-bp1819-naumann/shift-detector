@@ -1,11 +1,18 @@
+from collections import namedtuple
+
 import numpy as np
 import pandas as pd
 
 COLOR_1 = 'cornflowerblue'
 COLOR_2 = 'seagreen'
 
+LEGEND_1 = 'DS 1'
+LEGEND_2 = 'DS 2'
+
 PLOT_ROW_HEIGHT = 5.0
 PLOT_GRID_WIDTH = 12.0
+
+PlotData = namedtuple('PlotData', ['plot_function', 'required_rows'])
 
 
 def calculate_bin_counts(bin_edges, columns):
@@ -46,15 +53,22 @@ def plot_binned_ratio_histogram(axes, columns, bin_edges):
 
 
 def calculate_value_ratios(columns, top_k):
-    value_counts = pd.concat([columns[0].value_counts().head(top_k), columns[1].value_counts().head(top_k)],
-                             axis=1).sort_index()
+    value_counts1 = columns[0].value_counts().sort_values(ascending=False)
+    value_counts1.index = [str(ix) for ix in value_counts1.index]
+    value_counts2 = columns[1].value_counts().sort_values(ascending=False)
+    value_counts2.index = [str(ix) for ix in value_counts2.index]
+    indices = set(value_counts1.head(top_k).index).union(set(value_counts2.head(top_k).index))
+    value_counts = pd.concat([value_counts1[indices], value_counts2[indices]], axis=1).sort_index().fillna(0.0)
     return value_counts.fillna(0).apply(axis='columns',
                                         func=lambda row: pd.Series([row.iloc[0] / len(columns[0]),
                                                                     row.iloc[1] / len(columns[1])],
-                                                                   index=[str(columns[0].name) + ' 1',
-                                                                          str(columns[1].name) + ' 2']))
+                                                                   index=[LEGEND_1, LEGEND_2]))
 
 
 def plot_categorical_horizontal_ratio_histogram(axes, columns, top_k):
     value_ratios = calculate_value_ratios(columns, top_k)
     return value_ratios.plot(kind='barh', fontsize='medium', ax=axes)
+
+
+def plot_title(column):
+    return "Column: '{}'".format(column)

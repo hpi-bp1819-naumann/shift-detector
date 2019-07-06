@@ -1,7 +1,9 @@
+import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from matplotlib import gridspec
+import warnings
+import nltk
 
 from shift_detector.checks.check import Report
 from shift_detector.checks.statistical_checks.categorical_statistical_check import CategoricalStatisticalCheck
@@ -10,14 +12,18 @@ from shift_detector.checks.statistical_checks.statistical_check import Statistic
 from shift_detector.precalculations.text_metadata import TextMetadata
 from shift_detector.utils.column_management import ColumnType
 from shift_detector.utils.errors import UnknownMetadataReturnColumnTypeError
-from shift_detector.utils.visualization import PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT
+from shift_detector.utils.visualization import PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT, PlotData
 
 
 class TextMetadataStatisticalCheck(StatisticalCheck):
 
     def __init__(self, text_metadata_types=None, language='en', infer_language=False, significance=0.01,
-                 use_sampling=False, sampling_seed=None):
-        super().__init__(significance, use_sampling, sampling_seed)
+                 sample_size=None, use_equal_dataset_sizes=False, sampling_seed=0):
+        nltk.download('stopwords')
+        nltk.download('universal_tagset')
+        nltk.download('punkt')
+        nltk.download('averaged_perceptron_tagger')
+        super().__init__(significance, sample_size, use_equal_dataset_sizes, sampling_seed)
         self.metadata_precalculation = TextMetadata(text_metadata_types, language=language,
                                                     infer_language=infer_language)
 
@@ -30,7 +36,7 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
                    if mdtype.metadata_name() in super(type(self), self).significant_columns(mdtype_pvalues))
 
     def significant_metadata_names(self, mdtype_pvalues):
-        return [mdtype.metadata_name() for mdtype in self.significant_metadata(mdtype_pvalues)]
+        return sorted([mdtype.metadata_name() for mdtype in self.significant_metadata(mdtype_pvalues)])
 
     def explanation_header(self, numerical_test_name, categorical_test_name, any_significant):
         header = 'Statistical tests performed:\n' + \
@@ -43,7 +49,7 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
 
     def explain(self, pvalues):
         explanation = {}
-        for column in self.significant_columns(pvalues):
+        for column in sorted(self.significant_columns(pvalues)):
             explanation[column] = 'Significant metadata:\n\t\t- {significant_metadata}'.format(
                 significant_metadata='\n\t\t- '.join(self.significant_metadata_names(pvalues[column]))
             )
@@ -60,35 +66,44 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
             raise UnknownMetadataReturnColumnTypeError(mdtype)
 
     @staticmethod
-    def plot_all_metadata(plot_functions):
-        rows = len(plot_functions)
+    def plot_all_metadata(plot_data):
+        rows = sum([plot.required_rows for plot in plot_data])
         cols = 1
         fig = plt.figure(figsize=(PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT * rows), tight_layout=True)
         grid = gridspec.GridSpec(rows, cols)
-        for plot_function, tile in zip(plot_functions, grid):
-            plot_function(fig, tile)
+        occupied_rows = 0
+        for i, plot in enumerate(plot_data):
+            plot.plot_function(fig, tile=grid[occupied_rows:(occupied_rows + plot.required_rows), i % cols])
+            occupied_rows += plot.required_rows
         plt.show()
 
-    def plot_functions(self, significant_columns, pvalues, df1, df2):
-        plot_functions = []
+    def plot_data(self, significant_columns, pvalues, df1, df2):
+        plot_data = []
         for column in sorted(significant_columns):
             for mdtype in sorted(self.significant_metadata(pvalues[column])):
-                plot_functions.append(lambda figure, tile, col=column, meta=mdtype:
-                                      self.metadata_plot(figure, tile, col, meta, df1, df2))
-        return plot_functions
+                if mdtype.metadata_return_type == ColumnType.categorical:
+                    distinct_count = len(set(df1[(column, mdtype)].unique()).union(set(df2[(column, mdtype)].unique())))
+                    required_height = 1.5 + 0.3 * distinct_count
+                    required_rows = int(np.ceil(required_height / PLOT_ROW_HEIGHT))
+                else:
+                    required_rows = 1
+                plot_data.append(
+                    PlotData(lambda figure, tile, col=column, meta=mdtype:
+                             self.metadata_plot(figure, tile, col, meta, df1, df2),
+                             required_rows)
+                )
+        return plot_data
 
     def metadata_figure(self, pvalues, df1, df2):
         significant_columns = self.significant_columns(pvalues)
         if not significant_columns:
             return []
-        return [lambda plots=tuple(self.plot_functions(significant_columns, pvalues, df1, df2)):
+        return [lambda plots=tuple(self.plot_data(significant_columns, pvalues, df1, df2)):
                 self.plot_all_metadata(plots)]
 
     def run(self, store) -> Report:
         df1, df2 = store[self.metadata_precalculation]
-        sample_size = min(len(df1), len(df2))
-        part1 = df1.sample(sample_size, random_state=self.seed) if self.use_sampling else df1
-        part2 = df2.sample(sample_size, random_state=self.seed) if self.use_sampling else df2
+        part1, part2 = self.adjust_dataset_sizes(df1, df2)
         categorical_check = CategoricalStatisticalCheck()
         numerical_check = NumericalStatisticalCheck()
         pvalues = pd.DataFrame(columns=df1.columns, index=['pvalue'])
@@ -105,8 +120,8 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
                 pvalues[(column, mdtype.metadata_name())] = [p]
         significant_columns = self.significant_columns(pvalues)
         return StatisticalReport("Text Metadata Check",
-                                 examined_columns=list(df1.columns.levels[0]),
-                                 shifted_columns=significant_columns,
+                                 examined_columns=sorted(df1.columns.levels[0]),
+                                 shifted_columns=sorted(significant_columns),
                                  explanation=self.explain(pvalues),
                                  explanation_header=self.explanation_header(numerical_check.statistical_test_name(),
                                                                             categorical_check.statistical_test_name(),

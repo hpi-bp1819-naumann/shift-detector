@@ -9,8 +9,7 @@ from matplotlib.figure import Figure
 from pandas.util.testing import assert_frame_equal
 
 import tests.test_data as td
-from shift_detector.checks.statistical_checks import numerical_statistical_check, categorical_statistical_check, \
-    text_metadata_statistical_check
+from shift_detector.checks.statistical_checks import numerical_statistical_check, categorical_statistical_check
 from shift_detector.checks.statistical_checks.categorical_statistical_check import CategoricalStatisticalCheck
 from shift_detector.checks.statistical_checks.numerical_statistical_check import NumericalStatisticalCheck
 from shift_detector.checks.statistical_checks.text_metadata_statistical_check import TextMetadataStatisticalCheck
@@ -18,6 +17,7 @@ from shift_detector.detector import Detector
 from shift_detector.precalculations.store import Store
 from shift_detector.precalculations.text_metadata import NumCharsMetadata, NumWordsMetadata, \
     DistinctWordsRatioMetadata, LanguagePerParagraph, UnknownWordRatioMetadata, StopwordRatioMetadata, LanguageMetadata
+from shift_detector.utils.visualization import PlotData
 
 
 class TestTextMetadataStatisticalCheck(unittest.TestCase):
@@ -106,10 +106,10 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
 
     @mock.patch('shift_detector.checks.statistical_checks.text_metadata_statistical_check.plt')
     def test_all_plot_functions_are_called_and_plot_is_shown(self, mock_plt):
-        plot_functions = [MagicMock(), MagicMock(), MagicMock()]
-        TextMetadataStatisticalCheck.plot_all_metadata(plot_functions)
-        mock_plt.figure.assert_called_with(figsize=(12.0, 15.0), tight_layout=True)
-        for func in plot_functions:
+        plot_data = [PlotData(MagicMock(), 1), PlotData(MagicMock(), 2), PlotData(MagicMock(), 3)]
+        TextMetadataStatisticalCheck.plot_all_metadata(plot_data)
+        mock_plt.figure.assert_called_with(figsize=(12.0, 30.0), tight_layout=True)
+        for func, rows in plot_data:
             self.assertTrue(func.called)
         mock_plt.show.assert_called_with()
 
@@ -125,14 +125,14 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
         mock_axes = MagicMock(autospec=Axes)
         with mock.patch.object(numerical_statistical_check.vis, 'plot_binned_ratio_histogram'):
             NumericalStatisticalCheck.overlayed_hist_plot(mock_figure, mock_axes, ('text', 'num_chars'), df1, df2)
-        mock_axes.legend.assert_called_with(["('text', 'num_chars') 1", "('text', 'num_chars') 2"], fontsize='x-small')
-        mock_axes.set_title.assert_called_with("Column: ('text', 'num_chars') (Histogram)")
+        mock_axes.legend.assert_called_with(["DS 1", "DS 2"], fontsize='x-small')
+        mock_axes.set_title.assert_called_with("Column: '('text', 'num_chars')' (Histogram)")
         with mock.patch.object(numerical_statistical_check.vis, 'plot_cumulative_step_ratio_histogram',
                                return_value=(np.array([0]), np.array([0]))):
             NumericalStatisticalCheck.cumulative_hist_plot(mock_figure, mock_axes, ('text', 'num_chars'), df1, df2)
-        mock_axes.legend.assert_called_with(["('text', 'num_chars') 1", "('text', 'num_chars') 2", 'maximal distance = 0'],
+        mock_axes.legend.assert_called_with(["DS 1", "DS 2", 'maximal distance = 0'],
                                            fontsize='x-small')
-        mock_axes.set_title.assert_called_with("Column: ('text', 'num_chars') (Cumulative Distribution)")
+        mock_axes.set_title.assert_called_with("Column: '('text', 'num_chars')' (Cumulative Distribution)")
 
     def test_column_tuples_are_handled_by_categorical_visualization(self):
         columns = ['text']
@@ -147,7 +147,7 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
         with mock.patch.object(categorical_statistical_check.vis, 'plot_categorical_horizontal_ratio_histogram',
                                return_value=mock_axes):
             CategoricalStatisticalCheck.paired_total_ratios_plot(mock_figure, mock_axes, ('text', 'category'), df1, df2)
-        mock_axes.set_title.assert_called_once_with("Column: ('text', 'category')", fontsize='x-large')
+        mock_axes.set_title.assert_called_once_with("Column: '('text', 'category')'", fontsize='x-large')
 
     def test_correct_visualization_is_chosen_categorical(self):
         with mock.patch.object(CategoricalStatisticalCheck, 'column_plot') as mock_plot:
@@ -163,7 +163,7 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
             TextMetadataStatisticalCheck.metadata_plot(figure, tile, 'text', NumCharsMetadata(), None, None)
         self.assertTrue(mock_plot.called)
 
-    def test_correct_number_of_plot_functions(self):
+    def test_correct_number_of_plot_data(self):
         df1 = pd.DataFrame.from_dict({'text': ['blub'] * 10})
         df2 = pd.DataFrame.from_dict({'text': ['blub'] * 10})
         metadata_names = ['num_chars', 'num_words']
@@ -175,5 +175,14 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
             pvalues[('text', 'num_chars')] = p[0]
             pvalues[('text', 'num_words')] = p[1]
             with self.subTest(num_sig_metadata=num_sig_metadata, pvalues=pvalues):
-                result = check.plot_functions(['text'], pvalues, df1, df2)
+                result = check.plot_data(['text'], pvalues, df1, df2)
                 self.assertEqual(num_sig_metadata, len(result))
+
+    def test_column_order_in_report(self):
+        df1 = pd.DataFrame.from_dict({'text': self.poems, 'abc': self.poems})
+        df2 = pd.DataFrame.from_dict({'text': self.phrases, 'abc': self.phrases})
+        store = Store(df1, df2)
+        result = TextMetadataStatisticalCheck([NumCharsMetadata()]).run(store)
+        self.assertEqual('abc', result.examined_columns[0])
+        self.assertEqual('abc', result.shifted_columns[0])
+        self.assertEqual(result.examined_columns, result.shifted_columns)

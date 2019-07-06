@@ -14,13 +14,15 @@ class StatisticalCheck(Check):
     """
     Blueprint for a statistical test check.
     :param significance: columns which are equally distributed with a probability lower than this are marked as shifted
-    :param sampling: whether or not to use sampling for the larger set if compared data sets have unequal sizes
+    :param sample_size: size of samples to compare, if None don't sample
+    :param use_equal_dataset_sizes: samples the larger set if compared data sets have unequal sizes
     :param sampling_seed: seed to use for sampling, if sampling is enabled
     """
 
-    def __init__(self, significance=0.01, use_sampling=False, sampling_seed=0):
+    def __init__(self, significance=0.01, sample_size=None, use_equal_dataset_sizes=False, sampling_seed=0):
         self.significance = significance
-        self.use_sampling = use_sampling
+        self.sample_size = sample_size
+        self.equal_sizes = use_equal_dataset_sizes
         self.seed = sampling_seed
 
     def is_significant(self, p: float) -> bool:
@@ -39,9 +41,23 @@ class StatisticalCheck(Check):
         """
         return set(column for column in pvalues.columns if self.is_significant(pvalues.loc['pvalue', column]))
 
+    def adjust_dataset_sizes(self, df1, df2):
+        if self.sample_size and self.equal_sizes:
+            sample_size = min([len(df1), len(df2), self.sample_size])
+            df1 = df1.sample(sample_size, random_state=self.seed)
+            df2 = df2.sample(sample_size, random_state=self.seed)
+        elif self.equal_sizes:
+            sample_size = min(len(df1), len(df2))
+            df1 = df1.sample(sample_size, random_state=self.seed)
+            df2 = df2.sample(sample_size, random_state=self.seed)
+        elif self.sample_size:
+            df1 = df1.sample(self.sample_size, random_state=self.seed) if len(df1) >= self.sample_size else df1
+            df2 = df2.sample(self.sample_size, random_state=self.seed) if len(df2) >= self.sample_size else df2
+        return df1, df2
+
     @abstractmethod
     def run(self, store) -> Report:
-        pass
+        raise NotImplementedError
 
 
 class SimpleStatisticalCheck(StatisticalCheck):
@@ -58,7 +74,7 @@ class SimpleStatisticalCheck(StatisticalCheck):
         :param part2: second sample
         :return: p-value of statistical test
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def check_name(self) -> str:
@@ -66,7 +82,7 @@ class SimpleStatisticalCheck(StatisticalCheck):
         Returns the name of the check as String.
         :return: name of the check
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def statistical_test_name(self) -> str:
@@ -74,7 +90,7 @@ class SimpleStatisticalCheck(StatisticalCheck):
         Returns the name of the statistical test performed in statistical_test as String.
         :return: name of the statistical test
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def data_to_process(self, store):
@@ -82,7 +98,7 @@ class SimpleStatisticalCheck(StatisticalCheck):
         Receive the data to run on.
         :return: Processed df1, df2 and the columns
         """
-        return pd.DataFrame(), pd.DataFrame(), []
+        raise NotImplementedError
 
     def explain(self, pvalues):
         """
@@ -91,61 +107,65 @@ class SimpleStatisticalCheck(StatisticalCheck):
         :return: dictionary of column-explanation-pairs
         """
         explanations = {}
-        for column in self.significant_columns(pvalues):
+        for column in sorted(self.significant_columns(pvalues)):
             explanations[column] = 'p = {pvalue}\n'.format(
                                         pvalue=str(pvalues.loc['pvalue', column])
                                     )
         return explanations
 
+    def explanation_header(self):
+        """
+        Returns general information about the check to display before the per column explanations.
+        :return: string with general explanation
+        """
+        return 'Performed statistical test: {test_name}\n'.format(test_name=self.statistical_test_name()) + \
+               'Significance level: {significance}\n'.format(significance=str(self.significance))
+
     @staticmethod
     @abstractmethod
     def column_plot(figure, tile, column, df1, df2):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def number_of_columns_of_plots(self) -> int:
-        pass
+        raise NotImplementedError
 
-    def plot_all_columns(self, plot_functions):
+    @abstractmethod
+    def plot_data(self, significant_columns, df1, df2):
+        raise NotImplementedError
+
+    def plot_all_columns(self, plot_data):
         cols = self.number_of_columns_of_plots()
-        rows = int(np.ceil(len(plot_functions) / cols))
+        rows = int(np.ceil(sum([plot.required_rows for plot in plot_data]) / cols))
         fig = plt.figure(figsize=(PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT * rows), tight_layout=True)
         grid = gridspec.GridSpec(rows, cols)
-        for plot_function, tile in zip(plot_functions, grid):
-            plot_function(fig, tile)
+        occupied_rows = 0
+        for i, plot in enumerate(plot_data):
+            plot.plot_function(fig, tile=grid[occupied_rows:(occupied_rows+plot.required_rows), i % cols])
+            occupied_rows += plot.required_rows
         plt.show()
-
-    def plot_functions(self, significant_columns, df1, df2):
-        plot_functions = []
-        for column in sorted(significant_columns):
-            plot_functions.append(lambda figure, tile, col=column: self.column_plot(figure, tile, col, df1, df2))
-        return plot_functions
 
     def column_figure(self, significant_columns, df1, df2):
         if not significant_columns:
             return []
-        return [lambda plots=tuple(self.plot_functions(significant_columns, df1, df2)): self.plot_all_columns(plots)]
+        return [lambda plots=tuple(self.plot_data(significant_columns, df1, df2)): self.plot_all_columns(plots)]
 
     def run(self, store) -> Report:
         pvalues = pd.DataFrame(index=['pvalue'])
 
         df1, df2, columns = self.data_to_process(store)
 
-        sample_size = min(len(df1), len(df2))
-        part1 = df1.sample(sample_size, random_state=self.seed) if self.use_sampling else df1
-        part2 = df2.sample(sample_size, random_state=self.seed) if self.use_sampling else df2
+        part1, part2 = self.adjust_dataset_sizes(df1, df2)
 
         for column in columns:
             p = self.statistical_test(part1[column], part2[column])
             pvalues[column] = [p]
         significant_columns = self.significant_columns(pvalues)
-        header = 'Performed statistical test: {test_name}\n'.format(test_name=self.statistical_test_name()) + \
-                 'Significance level: {significance}\n'.format(significance=str(self.significance))
         return StatisticalReport(self.check_name(),
-                                 examined_columns=columns,
-                                 shifted_columns=significant_columns,
+                                 examined_columns=sorted(columns),
+                                 shifted_columns=sorted(significant_columns),
                                  explanation=self.explain(pvalues),
-                                 explanation_header=header,
+                                 explanation_header=self.explanation_header(),
                                  information={'test_results': pvalues},
                                  figures=self.column_figure(significant_columns, part1, part2))
 

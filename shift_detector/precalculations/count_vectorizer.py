@@ -3,11 +3,12 @@ from shift_detector.precalculations.precalculation import Precalculation
 from nltk.corpus import stopwords as nltk_stopwords
 from sklearn.feature_extraction.text import CountVectorizer as CountVectorizer_sklearn
 from shift_detector.utils.column_management import ColumnType
+from bs4 import BeautifulSoup
 
 
 class CountVectorizer(Precalculation):
 
-    def __init__(self, cols, stop_words='english', max_features=None):
+    def __init__(self, columns, stop_words='english', max_features=None):
         # potentially make min_df and max_df available
         self.max_features = None
 
@@ -32,38 +33,39 @@ class CountVectorizer(Precalculation):
                 raise ValueError("Max_features has to be at least 1. Received: {}".format(max_features))
             self.max_features = max_features
 
-        if not cols:
+        if not columns:
             raise TypeError("You have to specify which columns you want to tokenize")
-        if isinstance(cols, list) and all(isinstance(col, str) for col in cols):
-            self.cols = cols
+        if isinstance(columns, list) and all(isinstance(col, str) for col in columns):
+            self.columns = columns
         else:
-            raise TypeError("Cols has to be list of strings or a single string. Received: {}".format(type(cols)))
+            raise TypeError("Columns has to be list of strings or a single string. Received: {}".format(type(columns)))
 
         self.vectorizer = CountVectorizer_sklearn(stop_words=self.stop_words,
                                                   max_features=self.max_features)
-                                                  #token_pattern=r'[^\w+\s]|\b[a-zA-Z]\b')
 
     def __eq__(self, other):
         """Overrides the default implementation"""
         return isinstance(other, self.__class__) and self.stop_words == other.stop_words \
-            and self.max_features == other.max_features and self.cols == other.cols
+            and self.max_features == other.max_features and self.columns == other.columns
 
     def __hash__(self):
         """Overrides the default implementation"""
         hash_list = [self.__class__, self.max_features]
         hash_list.extend(sorted(self.stop_words))
-        hash_list.extend(self.cols)
+        hash_list.extend(self.columns)
         return hash(tuple(hash_list))
 
     def process(self, store):
         df1_texts, df2_texts = store[ColumnType.text]
         merged_texts = pd.concat([df1_texts, df2_texts], ignore_index=True)
+        # Remove HTML tags
+        cleaned_texts = merged_texts.applymap(lambda text: BeautifulSoup(text, features="lxml").get_text())
 
-        for col in self.cols:
+        for col in self.columns:
             if col not in store.column_names(ColumnType.text):
                 raise ValueError("Given column is not contained in detected text columns of the datasets: {}"
                                  .format(col))
-        col_names = self.cols
+        col_names = self.columns
 
         dict_of_arrays1 = {}
         dict_of_arrays2 = {}
@@ -72,9 +74,9 @@ class CountVectorizer(Precalculation):
 
         for col in col_names:
             all_vecs[col] = self.vectorizer
-            all_vecs[col] = all_vecs[col].fit(merged_texts[col])
+            all_vecs[col] = all_vecs[col].fit(cleaned_texts[col])
             feature_names[col] = all_vecs[col].get_feature_names()
-            dict_of_arrays1[col] = all_vecs[col].transform(df1_texts[col]).A.astype(int)
-            dict_of_arrays2[col] = all_vecs[col].transform(df2_texts[col]).A.astype(int)
+            dict_of_arrays1[col] = all_vecs[col].transform(df1_texts[col]).toarray().astype(int)
+            dict_of_arrays2[col] = all_vecs[col].transform(df2_texts[col]).toarray().astype(int)
 
         return dict_of_arrays1, dict_of_arrays2, feature_names, all_vecs
