@@ -7,9 +7,9 @@ import pandas as pd
 class TestLdaGensimTokenizer(unittest.TestCase):
 
     def setUp(self):
-        self.token1 = LdaGensimTokenizer(cols=['col1'], stop_words='english')
-        self.token2 = LdaGensimTokenizer(cols=['col1'], stop_words='english')
-        self.token3 = LdaGensimTokenizer(cols=['col1'], stop_words='french')
+        self.token1 = LdaGensimTokenizer(columns=['col1'], stop_words='english')
+        self.token2 = LdaGensimTokenizer(columns=['col1'], stop_words='english')
+        self.token3 = LdaGensimTokenizer(columns=['col1'], stop_words='french')
 
         self.df1 = pd.DataFrame({'col1':
                                 ['duck, duck, duck, duck, duck, \
@@ -26,16 +26,16 @@ class TestLdaGensimTokenizer(unittest.TestCase):
 
         self.store = Store(self.df1, self.df2)
 
-    def test_exception_for_cols(self):
+    def test_exception_for_columns(self):
         self.assertRaises(TypeError, lambda: LdaGensimTokenizer())
-        self.assertRaises(TypeError, lambda: LdaGensimTokenizer(cols=None))
-        self.assertRaises(TypeError, lambda: LdaGensimTokenizer(cols=42))
+        self.assertRaises(TypeError, lambda: LdaGensimTokenizer(columns=None))
+        self.assertRaises(TypeError, lambda: LdaGensimTokenizer(columns=42))
 
     def test_exception_for_stop_words(self):
-        self.assertRaises(ValueError, lambda: LdaGensimTokenizer(cols=['col1'], stop_words=['english', 'abcd']))
-        self.assertRaises(ValueError, lambda: LdaGensimTokenizer(cols=[''], stop_words='abcd'))
-        self.assertRaises(ValueError, lambda: LdaGensimTokenizer(cols=[''], stop_words=['english', ' abcd']))
-        self.assertRaises(TypeError, lambda: LdaGensimTokenizer(cols=[''], stop_words=['english', 42]))
+        self.assertRaises(ValueError, lambda: LdaGensimTokenizer(columns=['col1'], stop_words=['english', 'abcd']))
+        self.assertRaises(ValueError, lambda: LdaGensimTokenizer(columns=[''], stop_words='abcd'))
+        self.assertRaises(ValueError, lambda: LdaGensimTokenizer(columns=[''], stop_words=['english', ' abcd']))
+        self.assertRaises(TypeError, lambda: LdaGensimTokenizer(columns=[''], stop_words=['english', 42]))
 
     def test_eq(self):
         self.assertEqual(self.token1, self.token2)

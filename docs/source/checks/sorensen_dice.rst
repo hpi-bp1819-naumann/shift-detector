@@ -54,14 +54,12 @@ Result
 ::
 
     Sorensen Dice Check
-    Examined Columns: ['Type 2', 'Type 1', 'Name', 'Entry']
-    Shifted Columns: ['Type 1', 'Name', 'Type 2']
+    Examined Columns: ['Entry', 'Type 2', 'Type 1', 'Name']
+    Shifted Columns: ['Type 2', 'Type 1']
 
-            Baseline in Dataset 1  Baseline in Dataset 2  Distance between Datasets
-    Type 1               0.778443               0.510345                   0.839186
-    Entry                0.260510               0.209295                   0.506504
-    Name                 0.007456               0.030494                   0.022639
-    Type 2               0.689764               0.561594                   0.701052
+            Similarity within Dataset 1  Similarity within Dataset 2  Similarity between Datasets  Threshold
+    Type 2	               0.689764	                    0.561594	                 0.701052	 0.1
+    Type 1	               0.778443	                    0.510345	                 0.839186	 0.1
 
 Interpretation
 ++++++++++++++
@@ -73,7 +71,7 @@ The above report can be read as follows:
 3. The similarity of the column ``Type 1`` within Dataset1 is at 0.778
 4. The similarity of the column ``Type 1`` within Dataset2 is at 0.510
 5. The similarity of Dataset1 and Dataset2 in the column ``Type 1`` is at 0.839
-6. Since the similarity within the Datasets differs strong enough, there is probably a shift in column ``Type 1``
+6. Since the difference of the similarities within the Datasets exceeds ``Threshold``, there is probably a shift in column ``Type 1``
 
 
 Parameters
@@ -87,6 +85,14 @@ Parameters
 
 ``n``:
     This parameter expects an integer, that determines the number of characters/words a tuple in the ngram is containing.
+
+``threshold``:
+    This parameter expects a float, that determines the threshold for the check. The test calls shift in the following cases:
+
+    1. the absolute difference between the similarities within the datasets exceeds ``threshold``
+    2. the similarity between the datasets is more than ``threshold`` smaller than the similarities within the datasets
+
+    The default value is 0.1.
 
 Implementation
 --------------

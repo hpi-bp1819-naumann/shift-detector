@@ -57,7 +57,7 @@ class StatisticalCheck(Check):
 
     @abstractmethod
     def run(self, store) -> Report:
-        pass
+        raise NotImplementedError
 
 
 class SimpleStatisticalCheck(StatisticalCheck):
@@ -74,7 +74,7 @@ class SimpleStatisticalCheck(StatisticalCheck):
         :param part2: second sample
         :return: p-value of statistical test
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def check_name(self) -> str:
@@ -82,7 +82,7 @@ class SimpleStatisticalCheck(StatisticalCheck):
         Returns the name of the check as String.
         :return: name of the check
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def statistical_test_name(self) -> str:
@@ -90,7 +90,7 @@ class SimpleStatisticalCheck(StatisticalCheck):
         Returns the name of the statistical test performed in statistical_test as String.
         :return: name of the statistical test
         """
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def data_to_process(self, store):
@@ -98,7 +98,7 @@ class SimpleStatisticalCheck(StatisticalCheck):
         Receive the data to run on.
         :return: Processed df1, df2 and the columns
         """
-        return pd.DataFrame(), pd.DataFrame(), []
+        raise NotImplementedError
 
     def explain(self, pvalues):
         """
@@ -107,7 +107,7 @@ class SimpleStatisticalCheck(StatisticalCheck):
         :return: dictionary of column-explanation-pairs
         """
         explanations = {}
-        for column in self.significant_columns(pvalues):
+        for column in sorted(self.significant_columns(pvalues)):
             explanations[column] = 'p = {pvalue}\n'.format(
                                         pvalue=str(pvalues.loc['pvalue', column])
                                     )
@@ -124,31 +124,31 @@ class SimpleStatisticalCheck(StatisticalCheck):
     @staticmethod
     @abstractmethod
     def column_plot(figure, tile, column, df1, df2):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def number_of_columns_of_plots(self) -> int:
-        pass
+        raise NotImplementedError
 
-    def plot_all_columns(self, plot_functions):
+    @abstractmethod
+    def plot_data(self, significant_columns, df1, df2):
+        raise NotImplementedError
+
+    def plot_all_columns(self, plot_data):
         cols = self.number_of_columns_of_plots()
-        rows = int(np.ceil(len(plot_functions) / cols))
+        rows = int(np.ceil(sum([plot.required_rows for plot in plot_data]) / cols))
         fig = plt.figure(figsize=(PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT * rows), tight_layout=True)
         grid = gridspec.GridSpec(rows, cols)
-        for plot_function, tile in zip(plot_functions, grid):
-            plot_function(fig, tile)
+        occupied_rows = 0
+        for i, plot in enumerate(plot_data):
+            plot.plot_function(fig, tile=grid[occupied_rows:(occupied_rows+plot.required_rows), i % cols])
+            occupied_rows += plot.required_rows
         plt.show()
-
-    def plot_functions(self, significant_columns, df1, df2):
-        plot_functions = []
-        for column in sorted(significant_columns):
-            plot_functions.append(lambda figure, tile, col=column: self.column_plot(figure, tile, col, df1, df2))
-        return plot_functions
 
     def column_figure(self, significant_columns, df1, df2):
         if not significant_columns:
             return []
-        return [lambda plots=tuple(self.plot_functions(significant_columns, df1, df2)): self.plot_all_columns(plots)]
+        return [lambda plots=tuple(self.plot_data(significant_columns, df1, df2)): self.plot_all_columns(plots)]
 
     def run(self, store) -> Report:
         pvalues = pd.DataFrame(index=['pvalue'])
@@ -162,8 +162,8 @@ class SimpleStatisticalCheck(StatisticalCheck):
             pvalues[column] = [p]
         significant_columns = self.significant_columns(pvalues)
         return StatisticalReport(self.check_name(),
-                                 examined_columns=columns,
-                                 shifted_columns=significant_columns,
+                                 examined_columns=sorted(columns),
+                                 shifted_columns=sorted(significant_columns),
                                  explanation=self.explain(pvalues),
                                  explanation_header=self.explanation_header(),
                                  information={'test_results': pvalues},
