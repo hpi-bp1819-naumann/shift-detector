@@ -13,8 +13,8 @@ For more information on Deequ see [SLSCB18]_.
 Some data shifts result in the change of basic metrics, that are commonly used for the analysis and exploration of
 datasets. This check calculates those metrics and statistics on both datasets and compares them.
 
-The :ref:`dq_metrics` works directly on categorical and numerical data and, with additional Precalculations, also on
-text data.
+The :ref:`dq_metrics` works directly on categorical and numerical data and also optionally on
+text metadata.
 
 
 Example
@@ -54,21 +54,26 @@ The :ref:`dq_metrics` produces this report:
 
 ::
 
-    Numerical Columns:
+    Numerical Columns
 
-    Column 'payment':
-    Metric: mean with Diff: -29.4 %, threshold: 20%
-    Metric: std with Diff: +80.2 %, threshold: 50%
+    Column 'amount':
+        Metric  Val in DS1  Val in DS2   Threshold     Relative Diff
+    0   mean    1000.0      706.0        +/- 20.0 %    -29.4 %
+    1   std     20          36.04        +/- 50.0 %    +80.02 %
 
+    Column 'coord_x':
     (...)
+
 
 
     Categorical Columns
 
-    Column 'payment_option':
-    Attribute: 'debit' with Diff: +6.0 %, categorical threshold: 5%
-    Attribute: 'cash' with Diff: -6.5 %, categorical threshold: 5%
+    Attribute 'payment_option':
+        Attribute Value   Val in DS1    Val in DS2    Threshold   Relative Diff
+    0   'debit'           3.0           9.0           +6.0 %      +/- 5.0 %
+    1   'cash'            13.0          6.5           -6.5 %      +/- 5.0 %
 
+    Attribute 'customer_status':
     (...)
 
 
@@ -76,23 +81,24 @@ The :ref:`dq_metrics` produces this report:
 Interpretation
 ++++++++++++++
 
-The results show column-wise wich shifts appear in your dataset. First the reports of your numerical columns are shown,
-after that the reports of your categorical columns.
+The results show column-wise wich shifts appear in your dataset. First, the reports of all shifted numerical columns
+are shown, after that follow the reports of all shifted categorical columns.
 
 Numerical
 ~~~~~~~~~
 
-In the example, below the heading 'numerical columns', you see that the column with the name 'payment' is detected
-as shifted. Below the columnname, you can see that two numerical metrics detected a shift, *mean* and *std*
+In the example, below the headline 'numerical columns', you see that the column with the name 'amount' is detected
+as shifted. Below the column name, you can see that two numerical metrics detected a shift, *mean* and *std*
 (standard deviation).
 
-*Diff* describes the relative value-distance of the metrics that are calculated on your two datasets. If the Diff
+*Relative Diff* describes the relative value-distance of the metrics that are calculated on your two datasets, so the
+relative difference between the value of dataset1 minus the value of the dataset2. If this Relative Diff
 exceeds a metric-specific threshold, the dataset differ that much, that the check calls shift on this column.
 
-In this case, the mean-value of 'payment' could be 1000.0 in your first, but 706.0 in your second dataset. This difference is
-results in an difference of -294 and an relative difference of -29.4%. The threshold set here is 20% which is exceeded
-by the absolute value of -29.4%. All thresholds are customizable through the API of the
-:class:`~Morpheus.checks.dq_metrics_check.DQMetricsCheck`. All the metrics are listed in the section
+In this case, the mean-value of 'amount' is 1000.0 in your first and 706.0 in the second dataset. This
+results in a difference of -294 and an relative difference of -29.4%. The threshold set here is 20% which is exceeded
+by the absolute amount of -29.4%. All thresholds are customizable through the API of the
+:class:`~Morpheus.checks.dq_metrics_check.DQMetricsCheck`. The used metrics are listed in the section
 :ref:`dq_metrics_check_parameters`.
 
 Categorical
@@ -106,12 +112,20 @@ values exceeds the *categorical_threshold* the check calls shift on this
 column.
 
 The example above shows a shift in the categorical column 'payment_option'. There are different
-attribute-values in this column, i.e. 'debit and 'cash'. In those, the differences between the dataset are 6% and
+attribute-values in this column, 'debit and 'cash'. In those, the differences between the dataset are 6% and
 -6.5% which both exceed the threshold of 5%. This indicates that in dataset2 more people use
-cash as a payment-option and fewer use debit, the check calls shift on the column.
+debit as a payment option and fewer use cash, the check calls shift on the column.
 
 In addition, the metric *num_distinct*, which counts the number of distinct values in a column, is applied on
 categorical columns.
+
+
+Text Metadata
+~~~~~~~~~~~~~
+
+With the optional parameter *check_text_metadata=True*, the :ref:`dq_metrics` also uses the text metadata from the
+:ref:`text_metadata` as input parameters.
+Those metadata are then handled like other numerical or  categorical attributes in the dataset.
 
 .. _dq_metrics_check_parameters:
 
@@ -146,7 +160,8 @@ All parameters expect float values larger than 0.0. The smallest value of 0.0 me
 100% difference is recommended.
 
 The 9 threshold parameters for numerical metrics are accessable through their name *'metric_name'_threshold*,
-the threshold parameter for the categorical columns is called *categorical_threshold*.
+the threshold parameter for the categorical columns is called *categorical_threshold*. As explained above, the parameter
+*check_text_metadata* expects a boolean value. If it is set to True, the check also uses text metadata as input columns.
 
 Example
 ::

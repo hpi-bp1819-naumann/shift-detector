@@ -18,7 +18,7 @@ class DQMetricsCheck(Check):
     def __init__(self, categorical_threshold=0.05, mean_threshold=0.15, median_threshold=0.15,
                  value_range_threshold=0.5, quartile_1_threshold=0.2, quartile_3_threshold=0.2,
                  uniqueness_threshold=0.1, num_distinct_threshold=0.2, completeness_threshold=0.1, std_threshold=0.25,
-                 check_language_metadata=False):
+                 check_text_metadata=False):
 
         threshold_names_values = {'mean': mean_threshold, 'median': median_threshold,
                                   'value_range': value_range_threshold, 'quartile_1': quartile_1_threshold,
@@ -39,7 +39,7 @@ class DQMetricsCheck(Check):
 
         self.data = None
         self.text_metadata = None
-        self.check_language_metadata = check_language_metadata
+        self.check_language_metadata = check_text_metadata
 
     def run(self, store):
         df1_numerical, df2_numerical = store[ColumnType.numerical]
