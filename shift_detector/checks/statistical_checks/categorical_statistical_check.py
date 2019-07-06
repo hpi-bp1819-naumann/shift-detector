@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-from matplotlib import gridspec
 from scipy import stats
 
 from shift_detector.checks.statistical_checks.statistical_check import SimpleStatisticalCheck
