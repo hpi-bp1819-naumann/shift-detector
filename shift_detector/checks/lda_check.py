@@ -19,7 +19,7 @@ class LdaCheck(Check):
 
     def __init__(self, shift_threshold=0.1, n_topics=20, n_iter=10, random_state=0, lib='sklearn',
                  columns=None, trained_model=None, stop_words='english', max_features=None,
-                 start=2, stop=21, step=1, word_clouds=True, display_interactive=True):
+                 start=2, stop=21, step=2, word_clouds=True, display_interactive=True):
         """
         shift_threshold is the difference between the percentages of each topic between both datasets,
         meaning a difference above 10% is detected as shift

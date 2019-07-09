@@ -199,6 +199,27 @@ Parameters
 
     The default value is None.
 
+``start``
+    This parameter is only used if ``n_topics`` is set to 'auto'.
+    It expects a positive integer that is at least 2 and sets the minimum of the topic
+    interval for the automatic estimation of an optimal number of topics.
+
+    The default value is 2.
+
+``stop``
+    This parameter is only used if ``n_topics`` is set to 'auto'.
+    It expects a positive integer that is greater than ``start`` and sets the supremum
+    of the topic interval for the automatic estimation of an optimal number of topics.
+
+    The default value is 21.
+
+``step``
+    This parameter is only used if ``n_topics`` is set to 'auto'.
+    It expects a positive integer and sets the step length that is used for the
+    automatic estimation of an optimal number of topics.
+
+    The default value is 2.
+
 ``word_clouds``:
     This parameter expects a boolean. It indicates whether word clouds should be
     displayed in the visualization as they can lead to problems in some environments

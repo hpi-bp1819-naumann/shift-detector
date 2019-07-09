@@ -25,8 +25,6 @@ class LdaEmbedding(Precalculation):
         self.stop_words = stop_words
         self.max_features = max_features
 
-
-
         if columns:
             if isinstance(columns, list) and all(isinstance(col, str) for col in columns):
                 self.columns = columns
@@ -50,6 +48,17 @@ class LdaEmbedding(Precalculation):
         else:
             if n_topics == 'auto':
                 self.n_topics = n_topics
+                params = [start, stop, step]
+                for number in params:
+                    try:
+                        val = int(number)
+                        if val < 2:
+                            raise ValueError("Number of topic has to be a positive. Received: {}".format(number))
+                        break
+                    except TypeError:
+                        raise TypeError("That's not an int! Received: {}".format(type(number)))
+                if stop < start:
+                    raise ValueError("Stop value has to be higher than the start value. Received: {}".format(n_topics))
                 self.start = start
                 self.stop = stop
                 self.step = step
@@ -178,9 +187,8 @@ class LdaEmbedding(Precalculation):
                         for n in range(self.start, self.stop, self.step):
                             model = LdaModel(all_corpora[col], n, all_dicts[col], random_state=0)
                             cm = CoherenceModel(model=model, corpus=all_corpora[col], coherence='u_mass')
-                            coherence = cm.get_coherence()  # get coherence value
+                            coherence = cm.get_coherence()
                             coherence_scores[n] = coherence
-                        print(coherence_scores)
                         n_topics = min(coherence_scores, key=lambda k: coherence_scores[k])
                         self.model.num_topics = n_topics
                     else:
@@ -192,7 +200,6 @@ class LdaEmbedding(Precalculation):
                     all_models[col] = model.gensim_model
                 else:
                     model = self.trained_model
-
 
                 topic_words_all_columns[col] = self.get_topic_word_distribution_gensim(model, n_topics, 200)
 
