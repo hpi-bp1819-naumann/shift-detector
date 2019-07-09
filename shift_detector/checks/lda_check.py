@@ -11,6 +11,7 @@ from IPython.display import display
 import pandas as pd
 import numpy as np
 import warnings
+import nltk
 
 from shift_detector.utils.visualization import LEGEND_1, LEGEND_2, plot_title
 
@@ -24,6 +25,8 @@ class LdaCheck(Check):
         shift_threshold is the difference between the percentages of each topic between both datasets,
         meaning a difference above 10% is detected as shift
         """
+        nltk.download('stopwords')
+        
         if not isinstance(shift_threshold, float):
             raise TypeError("Shift_threshold has to be a float. Received: {}".format(type(shift_threshold)))
         if not 0 < shift_threshold < 1:
@@ -234,5 +237,3 @@ class LdaCheck(Check):
                                                dictionary[column],
                                                sort_topics=False)
         display(pyLDAvis.display(vis_data))
-
-
