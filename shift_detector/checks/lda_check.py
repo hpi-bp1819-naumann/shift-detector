@@ -111,12 +111,8 @@ class LdaCheck(Check):
             else:
                 n_topics = all_models[col].num_topics
 
-            count_topics1 = df1_embedded['topics ' + col].value_counts()\
-                            .reindex(np.arange(1, n_topics + 1))\
-                            .sort_index()
-            count_topics2 = df2_embedded['topics ' + col].value_counts()\
-                            .reindex(np.arange(1, n_topics + 1))\
-                            .sort_index()
+            count_topics1 = df1_embedded['topics ' + col].value_counts().reindex(np.arange(1, n_topics+1)).sort_index()
+            count_topics2 = df2_embedded['topics ' + col].value_counts().reindex(np.arange(1, n_topics+1)).sort_index()
 
             values1_ratio = [x / len(df1_embedded['topics ' + col]) for x in count_topics1.values]
             values2_ratio = [x / len(df2_embedded['topics ' + col]) for x in count_topics2.values]
