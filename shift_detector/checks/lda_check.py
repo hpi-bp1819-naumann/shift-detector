@@ -20,7 +20,7 @@ class LdaCheck(Check):
 
     def __init__(self, shift_threshold=0.1, n_topics=20, n_iter=10, random_state=0, lib='sklearn',
                  columns=None, trained_model=None, stop_words='english', max_features=None,
-                 word_clouds=True, display_interactive=True):
+                 start=2, stop=21, step=2, word_clouds=True, display_interactive=True):
         """
         shift_threshold is the difference between the percentages of each topic between both datasets,
         meaning a difference above 10% is detected as shift
@@ -54,6 +54,9 @@ class LdaCheck(Check):
         self.random_state = random_state
         self.stop_words = stop_words
         self.max_features = max_features
+        self.start = start
+        self.stop = stop
+        self.step = step
         self.word_clouds = word_clouds
         self.display_interactive = display_interactive
 
@@ -81,7 +84,10 @@ class LdaCheck(Check):
                                                                                      columns=self.columns,
                                                                                      trained_model=self.trained_model,
                                                                                      stop_words=self.stop_words,
-                                                                                     max_features=self.max_features)]
+                                                                                     max_features=self.max_features,
+                                                                                     start=self.start,
+                                                                                     stop=self.stop,
+                                                                                     step=self.step)]
             all_corpora, all_dicts = (None, None)
 
         else:
@@ -93,16 +99,20 @@ class LdaCheck(Check):
                                                                                      columns=self.columns,
                                                                                      trained_model=self.trained_model,
                                                                                      stop_words=self.stop_words,
-                                                                                     max_features=self.max_features)]
+                                                                                     max_features=self.max_features,
+                                                                                     start=self.start,
+                                                                                     stop=self.stop,
+                                                                                     step=self.step)]
             all_dtms, all_vecs = (None, None)
 
         for col in col_names:
-            count_topics1 = df1_embedded['topics ' + col].value_counts()\
-                            .reindex(np.arange(1, self.n_topics + 1))\
-                            .sort_index()
-            count_topics2 = df2_embedded['topics ' + col].value_counts()\
-                            .reindex(np.arange(1, self.n_topics + 1))\
-                            .sort_index()
+            if self.lib == 'sklearn':
+                n_topics = all_models[col].n_components
+            else:
+                n_topics = all_models[col].num_topics
+
+            count_topics1 = df1_embedded['topics ' + col].value_counts().reindex(np.arange(1, n_topics+1)).sort_index()
+            count_topics2 = df2_embedded['topics ' + col].value_counts().reindex(np.arange(1, n_topics+1)).sort_index()
 
             values1_ratio = [x / len(df1_embedded['topics ' + col]) for x in count_topics1.values]
             values2_ratio = [x / len(df2_embedded['topics ' + col]) for x in count_topics2.values]
@@ -124,9 +134,9 @@ class LdaCheck(Check):
     def column_figure(self, column, df1, df2, topic_words,
                       all_models, all_dtms, all_vecs, all_corpora, all_dicts,
                       word_clouds, display_interactive):
-        self.paired_total_ratios_figure(column, df1, df2, self.n_topics)
+        self.paired_total_ratios_figure(column, df1, df2, self.lib, all_models)
         if word_clouds:
-            self.word_cloud(column, topic_words, self.n_topics)
+            self.word_cloud(column, topic_words, self.lib, all_models)
         if display_interactive:
             self.py_lda_vis(column, self.lib, all_models, all_dtms, all_vecs, all_corpora, all_dicts)
 
@@ -142,7 +152,12 @@ class LdaCheck(Check):
         return plot_functions
 
     @staticmethod
-    def paired_total_ratios_figure(column, df1, df2, n_topics):
+    def paired_total_ratios_figure(column, df1, df2, lib, all_models):
+        if lib == 'sklearn':
+            n_topics = all_models[column].n_components
+        else:
+            n_topics = all_models[column].num_topics
+
         count_topics1 = df1['topics ' + column].value_counts() \
             .reindex(np.arange(1, n_topics + 1)) \
             .sort_index()
@@ -165,7 +180,12 @@ class LdaCheck(Check):
         plt.show()
 
     @staticmethod
-    def word_cloud(column, topic_words, n_topics):
+    def word_cloud(column, topic_words, lib, all_models):
+        if lib == 'sklearn':
+            n_topics = all_models[column].n_components
+        else:
+            n_topics = all_models[column].num_topics
+
         custom_XKCD_COLORS = mcolors.XKCD_COLORS
         # remove very light colors that are hard to see on white background
         custom_XKCD_COLORS.pop('xkcd:yellowish tan', None)
