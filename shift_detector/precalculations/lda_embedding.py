@@ -147,6 +147,15 @@ class LdaEmbedding(Precalculation):
             topic_words.append((topic_n, topic_))
         return topic_words
 
+    def get_number_of_topics_with_best_coherence_score(self, col, all_corpora, all_dicts):
+        coherence_scores = {}
+        for n in range(self.start, self.stop, self.step):
+            model = LdaModel(all_corpora[col], n, all_dicts[col], random_state=0)
+            cm = CoherenceModel(model=model, corpus=all_corpora[col], coherence='u_mass')
+            coherence = cm.get_coherence()
+            coherence_scores[n] = coherence
+        return min(coherence_scores, key=lambda k: coherence_scores[k])
+
     def process(self, store):
         if isinstance(self.columns, str):
             if self.columns in store.column_names(ColumnType.text):
@@ -183,13 +192,7 @@ class LdaEmbedding(Precalculation):
 
                 if not self.trained_model:
                     if self.n_topics == 'auto':
-                        coherence_scores = {}
-                        for n in range(self.start, self.stop, self.step):
-                            model = LdaModel(all_corpora[col], n, all_dicts[col], random_state=0)
-                            cm = CoherenceModel(model=model, corpus=all_corpora[col], coherence='u_mass')
-                            coherence = cm.get_coherence()
-                            coherence_scores[n] = coherence
-                        n_topics = min(coherence_scores, key=lambda k: coherence_scores[k])
+                        n_topics = self.get_number_of_topics_with_best_coherence_score(col, all_corpora, all_dicts)
                         self.model.num_topics = n_topics
                     else:
                         n_topics = self.n_topics
@@ -226,14 +229,7 @@ class LdaEmbedding(Precalculation):
                     if self.n_topics == 'auto':
                         all_dicts[col] = Dictionary(tokenized_merged[col])
                         all_corpora[col] = [all_dicts[col].doc2bow(line) for line in tokenized_merged[col]]
-
-                        coherence_scores = {}
-                        for n in range(self.start, self.stop, self.step):
-                            model = LdaModel(all_corpora[col], n, all_dicts[col], random_state=0)
-                            cm = CoherenceModel(model=model, corpus=all_corpora[col], coherence='u_mass')
-                            coherence = cm.get_coherence()  # get coherence value
-                            coherence_scores[n] = coherence
-                        n_topics = min(coherence_scores, key=lambda k: coherence_scores[k])
+                        n_topics = self.get_number_of_topics_with_best_coherence_score(col, all_corpora, all_dicts)
                         self.model.n_components = n_topics
                     model = self.model
                     model = model.fit(all_dtms[col])
