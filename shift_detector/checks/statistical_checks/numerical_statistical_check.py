@@ -32,7 +32,7 @@ class NumericalStatisticalCheck(SimpleStatisticalCheck):
 
     @staticmethod
     def cumulative_hist_plot(figure, axes, column, df1, df2, bins=40):
-        _, bin_edges = np.histogram(pd.concat([df1[column], df2[column]]), bins=bins)
+        _, bin_edges = np.histogram(pd.concat([df1[column].dropna(), df2[column].dropna()]), bins=bins)
         cumsum1, cumsum2 = vis.plot_cumulative_step_ratio_histogram(axes, (df1[column], df2[column]), bin_edges)
         distances = abs(cumsum1 - cumsum2)
         max_idx = list(distances).index(max(distances))
@@ -48,7 +48,7 @@ class NumericalStatisticalCheck(SimpleStatisticalCheck):
 
     @staticmethod
     def overlayed_hist_plot(figure, axes, column, df1, df2, bins=40):
-        _, bin_edges = np.histogram(pd.concat([df1[column], df2[column]]), bins=bins)
+        _, bin_edges = np.histogram(pd.concat([df1[column].dropna(), df2[column].dropna()]), bins=bins)
         vis.plot_binned_ratio_histogram(axes, (df1[column], df2[column]), bin_edges)
         column_name = str(column)
         axes.legend([vis.LEGEND_1, vis.LEGEND_2], fontsize='x-small')
