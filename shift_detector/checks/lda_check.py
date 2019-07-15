@@ -119,9 +119,9 @@ class LdaCheck(Check):
 
             for i, (v1, v2) in enumerate(zip(values1_ratio, values2_ratio)):
                 # number of rounded digits is 3 per default
-                if abs(round(v1 - v2, 3)) >= self.shift_threshold:
+                if abs(round(v2 - v1, 3)) >= self.shift_threshold:
                     shifted_columns.add(col)
-                    explanation[col + ' has a diff in topic '+str(i+1)+' of '] = round(v1 - v2, 3)
+                    explanation[col + ' has a diff in topic '+str(i+1)+' of '] = round(v2 - v1, 3)
 
         return Report(check_name='LDA Check',
                       examined_columns=col_names,
