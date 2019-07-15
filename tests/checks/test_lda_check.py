@@ -208,14 +208,14 @@ class TestLdaCheck(unittest.TestCase):
         with self.subTest("Test successful run without specifying the 'columns' parameter"):
             report = self.lda_report1.run(self.store)
 
-            self.assertAlmostEqual(report.explanation['text has a diff in topic 1 of '], -0.419)
-            self.assertAlmostEqual(report.explanation['text has a diff in topic 2 of '], 0.419)
+            self.assertAlmostEqual(report.explanation['text has a diff in topic 1 of '], 0.419)
+            self.assertAlmostEqual(report.explanation['text has a diff in topic 2 of '], -0.419)
 
         with self.subTest("Test successful run with specifying the 'columns' parameter with gensim"):
             report3 = self.lda_report3.run(self.store)
 
-            self.assertAlmostEqual(report3.explanation['text has a diff in topic 1 of '], -0.122)
-            self.assertAlmostEqual(report3.explanation['text has a diff in topic 2 of '], 0.122)
+            self.assertAlmostEqual(report3.explanation['text has a diff in topic 1 of '], 0.122)
+            self.assertAlmostEqual(report3.explanation['text has a diff in topic 2 of '], -0.122)
 
         with self.subTest("Test unsuccessful run with specifying a wrong 'columns' parameter"):
             self.assertRaises(ValueError, lambda: self.lda_report4.run(self.store))
@@ -224,8 +224,8 @@ class TestLdaCheck(unittest.TestCase):
             report5 = self.lda_report5.run(self.store)
             report6 = self.lda_report6.run(self.store)
 
-            self.assertAlmostEqual(report5.explanation['text has a diff in topic 1 of '], -0.203)
-            self.assertAlmostEqual(report5.explanation['text has a diff in topic 2 of '], 0.703)
+            self.assertAlmostEqual(report5.explanation['text has a diff in topic 1 of '], 0.203)
+            self.assertAlmostEqual(report5.explanation['text has a diff in topic 2 of '], -0.703)
 
-            self.assertAlmostEqual(report6.explanation['text has a diff in topic 1 of '], -0.135)
-            self.assertAlmostEqual(report6.explanation['text has a diff in topic 3 of '], 0.108)
+            self.assertAlmostEqual(report6.explanation['text has a diff in topic 1 of '], 0.135)
+            self.assertAlmostEqual(report6.explanation['text has a diff in topic 3 of '], -0.108)
