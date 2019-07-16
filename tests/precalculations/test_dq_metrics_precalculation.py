@@ -8,7 +8,7 @@ from shift_detector.precalculations.dq_metrics_precalculation import DQMetricsPr
 from shift_detector.precalculations.store import Store
 
 
-class TestSimplePrecalculation(unittest.TestCase):
+class TestDQMetricsPrecalculation(unittest.TestCase):
 
     def setUp(self) -> None:
         self.precalculation = DQMetricsPrecalculation()
@@ -73,16 +73,6 @@ class TestSimplePrecalculation(unittest.TestCase):
         self.assertEqual(comparison_numeric['col_2']['uniqueness']['df2'], 1.0)
         self.assertEqual(comparison_numeric['col_3']['uniqueness']['df2'], 0)
 
-    def test_num_distinct(self):
-        comparison_numeric = self.precalculation.process(self.store_numerical)['numerical_comparison']
-
-        self.assertEqual(comparison_numeric['col_1']['num_distinct']['df1'], 100.0)
-        self.assertEqual(comparison_numeric['col_2']['num_distinct']['df1'], 50.0)
-        self.assertEqual(comparison_numeric['col_3']['num_distinct']['df1'], 100.0)
-        self.assertEqual(comparison_numeric['col_1']['num_distinct']['df2'], 100.0)
-        self.assertEqual(comparison_numeric['col_2']['num_distinct']['df2'], 1.0)
-        self.assertEqual(comparison_numeric['col_3']['num_distinct']['df2'], 50.0)
-
     def test_completeness(self):
         comparison_numeric = self.precalculation.process(self.store_numerical)['numerical_comparison']
 
@@ -94,10 +84,12 @@ class TestSimplePrecalculation(unittest.TestCase):
         self.assertEqual(comparison_numeric['col_3']['completeness']['df2'], 1.00)
 
     def test_categorical_values(self):
-        comparison_categorical = self.precalculation.process(self.store_categorical)['categorical_comparison']
+        comparison_categorical = self.precalculation.process(self.store_categorical)['categorical_comparison'][0]
 
-        self.assertEqual(comparison_categorical[0]['blue']['df1'], 1/3)
-        self.assertEqual(comparison_categorical[0]['green']['df1'], 0.5)
-        self.assertEqual(comparison_categorical[0]['green']['df2'], 5/6)
-        self.assertEqual(comparison_categorical[0]['red']['df1'], 1/6)
-        self.assertEqual(comparison_categorical[0]['red']['df2'], 1/6)
+        print(comparison_categorical)
+        self.assertEqual(comparison_categorical['num_distinct']['df1'], 3)
+        self.assertEqual(comparison_categorical['num_distinct']['df2'], 2)
+        self.assertEqual(comparison_categorical['completeness']['df1'], 1)
+        self.assertEqual(comparison_categorical['completeness']['df2'], 1)
+        self.assertEqual(comparison_categorical['uniqueness']['df1'], 0.0)
+        self.assertEqual(comparison_categorical['uniqueness']['df2'], 0.0)

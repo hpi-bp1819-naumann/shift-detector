@@ -7,20 +7,23 @@ def nprint(input_str, num_tabs=0, text_formatting='normal'):
     for i in range(num_tabs):
         input_str = '\t' + input_str
 
-    if not is_in_jupyter() or text_formatting == 'normal':
+    if not is_in_jupyter():
         print(input_str)
+    else:
+        if text_formatting == 'h1':
+            display(Markdown('# {}'.format(input_str)))
 
-    if text_formatting == 'h1':
-        display(Markdown('# {}'.format(input_str)))
+        elif text_formatting == 'h2':
+            display(Markdown('## {}'.format(input_str)))
 
-    elif text_formatting == 'h2':
-        display(Markdown('## {}'.format(input_str)))
+        elif text_formatting == 'h3':
+            display(Markdown('### {}'.format(input_str)))
 
-    elif text_formatting == 'h3':
-        display(Markdown('### {}'.format(input_str)))
+        elif text_formatting == 'h4':
+            display(Markdown('#### {}'.format(input_str)))
 
-    elif text_formatting == 'h4':
-        display(Markdown('#### {}'.format(input_str)))
+        else:
+            display(input_str)
 
 
 # prints inline markdown
@@ -38,3 +41,7 @@ def is_in_jupyter():
 def lprint(string, log_print):
     if log_print:
         print(string)
+
+
+def diagram_title(name):
+    return "Column '{}'".format(name)
