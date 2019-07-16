@@ -112,7 +112,7 @@ values exceeds the *categorical_threshold* the check calls shift on this
 column.
 
 The example above shows a shift in the categorical column 'payment_option'. There are different
-attribute-values in this column, 'debit and 'cash'. In those, the differences between the dataset are 6% and
+attribute-values in this column: 'debit and 'cash'. In those, the differences between the dataset are 6% and
 -6.5% which both exceed the threshold of 5%. This indicates that in dataset2 more people use
 debit as a payment option and fewer use cash, the check calls shift on the column.
 

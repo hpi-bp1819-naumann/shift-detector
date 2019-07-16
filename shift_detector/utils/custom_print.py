@@ -45,7 +45,3 @@ def lprint(string, log_print):
 
 def diagram_title(name):
     return "Column '{}'".format(name)
-
-
-def dataset_names():
-    return 'DS1', 'DS2'

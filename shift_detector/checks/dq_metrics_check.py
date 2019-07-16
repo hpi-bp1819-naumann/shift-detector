@@ -8,7 +8,8 @@ import pandas as pd
 from shift_detector.checks.check import Check, Report
 from shift_detector.precalculations.dq_metrics_precalculation import DQMetricsPrecalculation
 from shift_detector.utils.column_management import ColumnType
-from shift_detector.utils.custom_print import nprint, diagram_title, dataset_names
+from shift_detector.utils.custom_print import nprint, diagram_title
+from shift_detector.utils.visualization import LEGEND_1, LEGEND_2
 
 ReportRow = namedtuple('ReportRow', 'metric_name val1 val2 threshold diff')
 
@@ -17,7 +18,7 @@ class DQMetricsCheck(Check):
 
     def __init__(self, categorical_threshold=0.05, mean_threshold=0.15, median_threshold=0.15,
                  value_range_threshold=0.5, quartile_1_threshold=0.2, quartile_3_threshold=0.2,
-                 uniqueness_threshold=0.1, num_distinct_threshold=0.2, completeness_threshold=0.1, std_threshold=0.25,
+                 uniqueness_threshold=0.1, num_distinct_threshold=0.2,  std_threshold=0.25, completeness_threshold=0.1,
                  check_text_metadata=False):
 
         threshold_names_values = {'mean': mean_threshold, 'median': median_threshold,
@@ -26,12 +27,12 @@ class DQMetricsCheck(Check):
                                   'num_distinct': num_distinct_threshold, 'std': std_threshold, 'completeness':
                                   completeness_threshold}
 
-        if categorical_threshold < 0:
+        if categorical_threshold <= 0.0:
             raise ValueError("The categorical threshold of {} is not correct. It has to be larger than 0.0"
                              .format(categorical_threshold))
 
         for t_name, t_value in threshold_names_values.items():
-            if t_value < 0:
+            if t_value <= 0.0:
                 raise ValueError("The {}_threshold of {} is not correct. It has to be larger than 0.0"
                                  .format(t_name, t_value))
         self.categorical_threshold = categorical_threshold
@@ -79,7 +80,7 @@ class DQMetricsCheck(Check):
             logger.warning("Column {} \t \t {}: no comparison of distance possible, division by zero"
                            .format(column, metric_name))
         else:
-            relative_difference = (metric_in_df2 / metric_in_df1 - 1)
+            relative_difference = metric_in_df2 / metric_in_df1 - 1
 
         return metric_in_df1, metric_in_df2, relative_difference
 
@@ -99,7 +100,8 @@ class DQMetricsCheck(Check):
                     shifted_columns.add(column_tuple[0])
 
                     explanation[column_tuple[0]].append(
-                        ReportRow(metric_name + ', ' + column_tuple[1], val1, val2, self.metrics_thresholds_percentage[metric_name], diff))
+                        ReportRow(metric_name + ', ' + column_tuple[1], val1, val2,
+                                  self.metrics_thresholds_percentage[metric_name], diff))
 
         return DQMetricsReport(examined_columns, shifted_columns, explanation={'text_metadata': explanation},
                                figures=[])
@@ -173,7 +175,10 @@ class DQMetricsReport(Report):
         for metric_name, name, sub_name, heading in \
                 [('numerical_categorical', 'Metric', 'Column', 'Numerical Columns'),
                  ('attribute_val', 'Attribute Value', 'Attribute', 'Categorical Columns'),
-                 ('text_metadata', 'Text Metadatum', 'Column', 'Text Metadata')]:
+                 ('text_metadata', 'Text Metadata', 'Column', 'Text Metadata')]:
+
+            if metric_name not in self.explanation:
+                return
 
             nprint(heading, text_formatting='h3')
             for column_name, data in self.explanation[metric_name].items():
@@ -215,16 +220,13 @@ class DQMetricsReport(Report):
         def custom_plot():
             num_figures = len(list(df1.columns))
             num_cols = 5
-
-            f = plt.figure()
-            f.set_figheight(6 * (num_figures/num_cols))
-            f.set_figwidth(20)
+            f = plt.figure(figsize=(20, 6 * (num_figures/num_cols)))
 
             for num, column in enumerate(sorted(list(df1.columns))):
                 a, b = df1[column].dropna(), df2[column].dropna()
                 ax = f.add_subplot(num_figures/num_cols + 1, num_cols, num + 1)
 
-                ax.boxplot([a, b], labels=[dataset_names()[0], dataset_names()[1]])
+                ax.boxplot([a, b], labels=[LEGEND_1, LEGEND_2])
                 ax.set_title(diagram_title(column))
 
             plt.show()
@@ -237,19 +239,17 @@ class DQMetricsReport(Report):
             num_figures = len(list(plot_infos))
             num_cols = 3
 
-            f = plt.figure()
-            f.set_figheight(8 * (num_figures/num_cols))
-            f.set_figwidth(18)
+            f = plt.figure(figsize=(18, 8 * (num_figures/num_cols)))
 
             for i, plot_info in enumerate(list(plot_infos)):
                 bars1, bars2, attribute_names, column_name = plot_info[0], plot_info[1], plot_info[2], plot_info[3]
 
-                subplot = f.add_subplot(len(list(plot_infos))/3 + 1, 3, i + 1)
+                subplot = f.add_subplot(num_figures/3 + 1, 3, i + 1)
                 bar_width = 0.25
 
                 ind = np.arange(len(bars1))
-                subplot.barh(ind + bar_width, bars1, bar_width, label=dataset_names()[0])
-                subplot.barh(ind, bars2, bar_width, label=dataset_names()[1])
+                subplot.barh(ind + bar_width, bars1, bar_width, label=LEGEND_1)
+                subplot.barh(ind, bars2, bar_width, label=LEGEND_2)
 
                 subplot.set_yticklabels(attribute_names)
                 subplot.set_yticks(np.arange(len(attribute_names)) + bar_width / 2)
