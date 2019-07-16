@@ -516,7 +516,17 @@ class TextMetadata(Precalculation):
 
     def __init__(self, text_metadata_types=None, language='en', infer_language=False):
         if text_metadata_types is None:
-            self.text_metadata_types = frozenset([NumCharsMetadata(), NumWordsMetadata(), DistinctWordsRatioMetadata()])
+            self.text_metadata_types = frozenset([NumCharsMetadata(),
+                                                  RatioUppercaseLettersMetadata(),
+                                                  UnicodeCategoriesMetadata(),
+                                                  UnicodeBlocksMetadata(),
+                                                  NumWordsMetadata(),
+                                                  DistinctWordsRatioMetadata(),
+                                                  UniqueWordsRatioMetadata(),
+                                                  UnknownWordRatioMetadata(),
+                                                  StopwordRatioMetadata(),
+                                                  DelimiterTypeMetadata(),
+                                                  NumPartsMetadata()])
         else:
             self.text_metadata_types = frozenset(text_metadata_types)
         if infer_language or language != 'en':
