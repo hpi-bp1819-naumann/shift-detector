@@ -220,7 +220,7 @@ class DQMetricsReport(Report):
         def custom_plot():
             num_figures = len(list(df1.columns))
             num_cols = 5
-            f = plt.figure(figsize=(20, 6 * (num_figures/num_cols)))
+            f = plt.figure(figsize=(20, 20 * (num_figures/num_cols)))
 
             for num, column in enumerate(sorted(list(df1.columns))):
                 a, b = df1[column].dropna(), df2[column].dropna()
@@ -239,7 +239,7 @@ class DQMetricsReport(Report):
             num_figures = len(list(plot_infos))
             num_cols = 3
 
-            f = plt.figure(figsize=(18, 8 * (num_figures/num_cols)))
+            f = plt.figure(figsize=(18, 20 * (num_figures/num_cols)))
 
             for i, plot_info in enumerate(list(plot_infos)):
                 bars1, bars2, attribute_names, column_name = plot_info[0], plot_info[1], plot_info[2], plot_info[3]
