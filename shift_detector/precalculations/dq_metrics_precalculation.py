@@ -1,9 +1,15 @@
 from copy import deepcopy
+
+from shift_detector.precalculations.low_cardinality_precalculation import LowCardinalityPrecalculation
 from shift_detector.precalculations.precalculation import Precalculation
+from shift_detector.precalculations.text_metadata import TextMetadata
 from shift_detector.utils.column_management import ColumnType
 
 
 class DQMetricsPrecalculation(Precalculation):
+
+    def __init__(self, text_metadata=False):
+        self.text_metadata = text_metadata
 
     def __eq__(self, other):
         return isinstance(other, self.__class__)
@@ -12,20 +18,28 @@ class DQMetricsPrecalculation(Precalculation):
         return hash(self.__class__)
 
     def process(self, store):
+        if self.text_metadata:
+            df1_metadata, df2_metadata = store[TextMetadata()]
+            metadata_comparison = self.compare_numerical_columns(df1_metadata, df2_metadata)
+        else:
+            metadata_comparison = None
+
         df1_numerical, df2_numerical = store[ColumnType.numerical]
-        df1_categorical, df2_categorical = store[ColumnType.categorical]
+        df1_categorical, df2_categorical, _ = store[LowCardinalityPrecalculation()]
 
         numerical_comparison = self.compare_numerical_columns(df1_numerical, df2_numerical)
         categorical_comparison = self.compare_categorical_columns(df1_categorical, df2_categorical)
-        combined_comparisons = {'categorical_comparison': categorical_comparison,
-                                'numerical_comparison': numerical_comparison}
+        attribute_val_comparison = self.compare_categorical_attribute_vals(df1_categorical, df2_categorical)
+        combined_comparisons = {'attribute_val_comparison': attribute_val_comparison,
+                                'numerical_comparison': numerical_comparison, 'categorical_comparison':
+                                categorical_comparison, 'metadata_comparison': metadata_comparison}
         return combined_comparisons
 
     @staticmethod
     def compare_numerical_columns(df1, df2):
         numerical_comparison = dict()
         empty_metrics_dict = {'mean': {}, 'median': {}, 'value_range': {}, 'quartile_1': {}, 'quartile_3': {},
-                              'uniqueness': {}, 'num_distinct': {}, 'completeness': {}, 'std': {}}
+                              'uniqueness': {}, 'completeness': {}, 'std': {}}
 
         for df_name, df in [('df1', df1), ('df2', df2)]:
             for column in df.columns:
@@ -43,18 +57,32 @@ class DQMetricsPrecalculation(Precalculation):
 
                 column_droppedna = df[column].dropna()
                 numerical_comparison[column]['std'][df_name] = column_droppedna.std()
-
-                numerical_comparison[column]['num_distinct'][df_name] = column_droppedna.nunique()
-
                 numerical_comparison[column]['completeness'][df_name] = len(column_droppedna) / len(df[column])
-
-                numerical_comparison[column]['uniqueness'][df_name] = len(df.groupby(column)
-                                                                          .filter(lambda x: len(x) == 1)) / \
-                                                                          len(column_droppedna)
+                numerical_comparison[column]['uniqueness'][df_name] = \
+                    len(df.groupby(column).filter(lambda x: len(x) == 1)) / len(column_droppedna)
         return numerical_comparison
 
     @staticmethod
     def compare_categorical_columns(df1, df2):
+        categorical_comparison = dict()
+        empty_metrics_dict = {'num_distinct': {}, 'completeness': {}, 'uniqueness': {}}
+
+        for df_name, df in [('df1', df1), ('df2', df2)]:
+            for column in df.columns:
+                if df_name == 'df1':
+                    categorical_comparison[column] = deepcopy(empty_metrics_dict)
+                elif not categorical_comparison.get(column):
+                    categorical_comparison[column] = deepcopy(empty_metrics_dict)
+
+                column_droppedna = df[column].dropna()
+                categorical_comparison[column]['num_distinct'][df_name] = column_droppedna.nunique()
+                categorical_comparison[column]['completeness'][df_name] = len(column_droppedna) / len(df[column])
+                categorical_comparison[column]['uniqueness'][df_name] = \
+                    len(df.groupby(column).filter(lambda x: len(x) == 1)) / len(column_droppedna)
+        return categorical_comparison
+
+    @staticmethod
+    def compare_categorical_attribute_vals(df1, df2):
         category_comparison = {}
 
         for column in list(df1.columns):
