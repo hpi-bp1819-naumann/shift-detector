@@ -67,9 +67,12 @@ class TestTextMetadataStatisticalCheck(unittest.TestCase):
                                                'Be brave!']})
         detector = Detector(df1=df1, df2=df2, log_print=False)
         detector.run(TextMetadataStatisticalCheck())
-        column_index = pd.MultiIndex.from_product([['text'], ['distinct_words', 'num_chars', 'num_words']],
+        column_index = pd.MultiIndex.from_product([['text'], ['delimiter_type', 'distinct_words', 'num_chars',
+                                                              'num_parts', 'num_words', 'ratio_upper',
+                                                              'stopword_ratio', 'unicode_blocks', 'unicode_categories',
+                                                              'unique_words', 'unknown_word_ratio']],
                                                   names=['column', 'metadata'])
-        solution = pd.DataFrame([[1.0, 1.0, 1.0]], columns=column_index, index=['pvalue'])
+        solution = pd.DataFrame([[1.0] * 11], columns=column_index, index=['pvalue'])
         self.assertEqual(1, len(detector.check_reports[0].examined_columns))
         self.assertEqual(0, len(detector.check_reports[0].shifted_columns))
         self.assertEqual(0, len(detector.check_reports[0].explanation))
