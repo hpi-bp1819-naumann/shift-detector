@@ -19,7 +19,7 @@ class TokenizeIntoLowerWordsPrecalculation(Precalculation):
         text = re.sub(r"-", ' ', text)
         text = re.sub(r"[^\w\s']", '', text)
         text = re.sub(r"\s+", ' ', text)
-        if text == '' or text == ' ' :
+        if text == '' or text == ' ':
             return []
         if text[0] == ' ':
             text = text[1:]
