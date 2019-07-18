@@ -21,8 +21,8 @@ class TokenizeIntoLowerWordsPrecalculation(Precalculation):
         text = re.sub(r"\s+", ' ', text)
         if text[0] == ' ':
             text = text[1:]
-        if text[len(text)-1] == ' ':
-            text = text[:len(text)-1]
+        if text[-1] == ' ':
+            text = text[:-1]
         splitted = re.split(r'\W\s|\s', text)
         return splitted
 
