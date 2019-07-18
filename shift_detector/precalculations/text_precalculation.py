@@ -15,6 +15,8 @@ class TokenizeIntoLowerWordsPrecalculation(Precalculation):
 
     @staticmethod
     def tokenize_into_words(text):
+        if text == '':
+            return []
         text = text.lower()
         text = re.sub(r"-", ' ', text)
         text = re.sub(r"[^\w\s']", '', text)
