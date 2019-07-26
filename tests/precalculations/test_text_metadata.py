@@ -174,6 +174,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
         self.german_string = "Dies ist ein einfacher Satz."
         self.html_string = "the text is well written. <p> some other very good text < br/ > "\
                            "Aber es gibt auch deutschen Text"
+        self.slash_string = "some text // some more text / another piece of text"
         self.comma_string = "some text, some other text -- more text."
         self.whitespace_string = "some text some other text more text"
         self.html_sentence_string = "some text <p> some other text. more text."
@@ -316,6 +317,7 @@ class TestTextMetadataFunctions(unittest.TestCase):
         delimiter_type = DelimiterTypeMetadata().metadata_function
         self.assertEqual(delimiter_type(self.html_string), "HTML")
         self.assertEqual(delimiter_type(self.english_string), "sentence")
+        self.assertEqual(delimiter_type(self.slash_string), "slash")
         self.assertEqual(delimiter_type(self.comma_string), "comma")
         self.assertEqual(delimiter_type(self.whitespace_string), "whitespace")
         self.assertEqual(delimiter_type(self.html_sentence_string), "HTML")
