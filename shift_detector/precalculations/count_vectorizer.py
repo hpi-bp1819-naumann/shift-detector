@@ -41,7 +41,8 @@ class CountVectorizer(Precalculation):
             raise TypeError("Columns has to be list of strings or a single string. Received: {}".format(type(columns)))
 
         self.vectorizer = CountVectorizer_sklearn(stop_words=self.stop_words,
-                                                  max_features=self.max_features)
+                                                  max_features=self.max_features,
+                                                  max_df=0.5)
 
     def __eq__(self, other):
         """Overrides the default implementation"""

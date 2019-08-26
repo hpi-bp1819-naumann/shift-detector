@@ -147,14 +147,14 @@ class LdaEmbedding(Precalculation):
             topic_words.append((topic_n, topic_))
         return topic_words
 
-    def get_number_of_topics_with_best_coherence_score(self, col, all_corpora, all_dicts):
+    def get_number_of_topics_with_best_coherence_score(self, col, tokenized_merged, all_corpora, all_dicts):
         coherence_scores = {}
         for n in range(self.start, self.stop, self.step):
             model = LdaModel(all_corpora[col], n, all_dicts[col], random_state=0)
-            cm = CoherenceModel(model=model, corpus=all_corpora[col], coherence='u_mass')
+            cm = CoherenceModel(model=model, texts=tokenized_merged[col], coherence='c_v')
             coherence = cm.get_coherence()
             coherence_scores[n] = coherence
-        return min(coherence_scores, key=lambda k: coherence_scores[k])
+        return max(coherence_scores, key=lambda k: coherence_scores[k])
 
     def process(self, store):
         if isinstance(self.columns, str):
@@ -192,7 +192,8 @@ class LdaEmbedding(Precalculation):
 
                 if not self.trained_model:
                     if self.n_topics == 'auto':
-                        n_topics = self.get_number_of_topics_with_best_coherence_score(col, all_corpora, all_dicts)
+                        n_topics = self.get_number_of_topics_with_best_coherence_score(col, tokenized_merged,
+                                                                                       all_corpora, all_dicts)
                         self.model.num_topics = n_topics
                     else:
                         n_topics = self.n_topics
@@ -216,7 +217,6 @@ class LdaEmbedding(Precalculation):
                                                                                       max_features=self.max_features,
                                                                                       columns=self.columns)]
             all_dtms = dict(vectorized1, **vectorized2)
-
             if self.n_topics == 'auto':
                 tokenized1, tokenized2 = store[LdaGensimTokenizer(stop_words=self.stop_words, columns=self.columns)]
                 tokenized_merged = pd.concat([tokenized1, tokenized2], ignore_index=True)
@@ -229,7 +229,8 @@ class LdaEmbedding(Precalculation):
                     if self.n_topics == 'auto':
                         all_dicts[col] = Dictionary(tokenized_merged[col])
                         all_corpora[col] = [all_dicts[col].doc2bow(line) for line in tokenized_merged[col]]
-                        n_topics = self.get_number_of_topics_with_best_coherence_score(col, all_corpora, all_dicts)
+                        n_topics = self.get_number_of_topics_with_best_coherence_score(col, tokenized_merged,
+                                                                                       all_corpora, all_dicts)
                         self.model.n_components = n_topics
                     model = self.model
                     model = model.fit(all_dtms[col])
@@ -238,7 +239,6 @@ class LdaEmbedding(Precalculation):
                     model = self.trained_model
 
                 topic_words_all_columns[col] = self.get_topic_word_distribution_sklearn(model, feature_names[col], 200)
-
                 transformed1[topic_labels[i]] = \
                     self.topic_probabilities_to_topics(model, vectorized1[col])
                 transformed2[topic_labels[i]] = \
