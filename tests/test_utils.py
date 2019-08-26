@@ -83,6 +83,6 @@ class TestUtils(unittest.TestCase):
         self.assertEqual('CJK Unified Ideographs', block('中'))
 
     def test_ucblist_blocks_dict(self):
-        self.assertEqual(300, len(blocks))
+        self.assertEqual(301, len(blocks))
         self.assertEqual((0, 127, 'Basic Latin'), blocks[0])
         self.assertEqual((1048576, 1114111, 'Supplementary Private Use Area-B'), blocks[-1])

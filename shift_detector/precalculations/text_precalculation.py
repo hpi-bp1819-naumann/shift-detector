@@ -18,9 +18,14 @@ class TokenizeIntoLowerWordsPrecalculation(Precalculation):
         text = text.lower()
         text = re.sub(r"-", ' ', text)
         text = re.sub(r"[^\w\s']", '', text)
+        text = re.sub(r"\s+", ' ', text)
+        if text == '' or text == ' ':
+            return []
+        if text[0] == ' ':
+            text = text[1:]
+        if text[-1] == ' ':
+            text = text[:-1]
         splitted = re.split(r'\W\s|\s', text)
-        while '' in splitted:
-            splitted.remove('')
         return splitted
 
     def process(self, store):
