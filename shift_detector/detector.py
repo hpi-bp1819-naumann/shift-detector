@@ -4,6 +4,10 @@ from typing import Union
 
 import pandas as pd
 from IPython.display import display
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import colors
+
 
 from shift_detector.checks.check import Check, Report
 from shift_detector.precalculations.store import Store
@@ -86,10 +90,13 @@ class Detector:
 
         detected = defaultdict(int)
         examined = defaultdict(int)
+        check_names = {}
 
         for report in self.check_reports:
+            check_names[report.check_name] = []
             for shifted_column in report.shifted_columns:
                 detected[shifted_column] += 1
+                check_names[report.check_name].append(shifted_column)
             for examined_column in report.examined_columns:
                 examined[examined_column] += 1
 
@@ -103,10 +110,41 @@ class Detector:
 
             return -num_detected, num_examined
 
-        sorted_summary = sorted(((col, detected[col], examined[col]) for col in examined), key=sort_key)
+        #sorted_summary = sorted(((col, detected[col], examined[col]) for col in examined), key=sort_key)
 
-        df_summary = pd.DataFrame(sorted_summary, columns=['Column', '# Shifts detected', '# Checks Executed'])
-        display(df_summary)
+        #df_summary = pd.DataFrame(sorted_summary, columns=['Column', '# Shifts detected', '# Checks Executed'])
+
+        check_matrix = [None]*len(check_names.keys())
+        for i, check in enumerate(check_names.keys()):
+            check_list = [None]*len(examined)
+            for j, col in enumerate(examined):
+                if col in check_names[check]:
+                    check_list[j] = 1
+                else:
+                    check_list[j] = 0
+            check_matrix[i] = check_list
+
+        custom_cmap = colors.ListedColormap(['green', 'red'])
+
+        fig, ax = plt.subplots()
+        im = ax.imshow(check_matrix, cmap=custom_cmap, interpolation='none', vmin=0, vmax=1)
+
+        # We want to show all ticks...
+        ax.set_xticks(np.arange(len(examined)))
+        ax.set_yticks(np.arange(len(check_names.keys())))
+        # ... and label them with the respective list entries
+        ax.set_xticklabels(examined)
+        ax.set_yticklabels(check_names.keys())
+
+        plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
+                 rotation_mode="anchor")
+
+        # Minor ticks
+        ax.set_xticks(np.arange(-.5, len(examined), 1), minor=True)
+        ax.set_yticks(np.arange(-.5, len(check_names.keys()), 1), minor=True)
+        ax.grid(which='minor', color='k', linestyle='-', linewidth=2)
+
+        display(plt.show())
 
         nprint("DETAILS", text_formatting='h1')
         for report in self.check_reports:
