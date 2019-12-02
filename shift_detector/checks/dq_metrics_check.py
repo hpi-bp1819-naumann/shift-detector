@@ -19,7 +19,7 @@ class DQMetricsCheck(Check):
     def __init__(self, categorical_threshold=0.05, mean_threshold=0.15, median_threshold=0.15,
                  value_range_threshold=0.5, quartile_1_threshold=0.2, quartile_3_threshold=0.2,
                  uniqueness_threshold=0.1, num_distinct_threshold=0.2,  std_threshold=0.25, completeness_threshold=0.1,
-                 check_text_metadata=False):
+                 check_text_metadata=False, plots=False):
 
         threshold_names_values = {'mean': mean_threshold, 'median': median_threshold,
                                   'value_range': value_range_threshold, 'quartile_1': quartile_1_threshold,
@@ -41,6 +41,7 @@ class DQMetricsCheck(Check):
         self.data = None
         self.text_metadata = None
         self.check_language_metadata = check_text_metadata
+        self.plots = plots
 
     def run(self, store):
         df1_numerical, df2_numerical = store[ColumnType.numerical]
@@ -127,9 +128,12 @@ class DQMetricsCheck(Check):
 
                         explanation[column_name].append(
                             ReportRow(metric_name, val1, val2, self.metrics_thresholds_percentage[metric_name], diff))
-
+        if self.plots:
+            resulting_figures = [DQMetricsReport.numerical_plot(df1, df2)]
+        else:
+            resulting_figures = []
         return DQMetricsReport(examined_columns, shifted_columns, explanation={'numerical_categorical': explanation},
-                               figures=[DQMetricsReport.numerical_plot(df1, df2)])
+                               figures=resulting_figures)
 
     def attribute_val_report(self):
         attribute_val_comparison = self.data['attribute_val_comparison']
@@ -161,8 +165,12 @@ class DQMetricsCheck(Check):
 
             plot_infos.append((bar_df1, bar_df2, attribute_names, column_name))
 
+        if self.plots:
+            resulting_figures = [DQMetricsReport.attribute_val_plot(plot_infos)]
+        else:
+            resulting_figures = []
         return DQMetricsReport(examined_columns, shifted_columns, explanation={'attribute_val': explanation},
-                               information={}, figures=[DQMetricsReport.attribute_val_plot(plot_infos)])
+                               information={}, figures=resulting_figures)
 
 
 class DQMetricsReport(Report):

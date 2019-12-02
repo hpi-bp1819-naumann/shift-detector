@@ -1,11 +1,18 @@
 import logging as logger
 from collections import defaultdict
 from typing import Union
-
+'''
+import os
+import matplotlib as mpl
+if 'DISPLAY' not in os.environ:
+    print('no display found. Using non-interactive Agg backend')
+    mpl.use('Agg')
+'''
 import pandas as pd
 from IPython.display import display
 import numpy as np
 import matplotlib.pyplot as plt
+plt.switch_backend('agg')
 from matplotlib import colors
 
 
@@ -88,60 +95,40 @@ class Detector:
         nprint("OVERVIEW", text_formatting='h1')
         nprint("Executed {} check{}".format(len(self.check_reports), 's' if len(self.check_reports) > 1 else ''))
 
-        detected = defaultdict(int)
-        examined = defaultdict(int)
-        check_names = {}
-
-        for report in self.check_reports:
-            check_names[report.check_name] = []
-            for shifted_column in report.shifted_columns:
-                detected[shifted_column] += 1
-                check_names[report.check_name].append(shifted_column)
-            for examined_column in report.examined_columns:
-                examined[examined_column] += 1
-
-        def sort_key(t):
-            """
-            Sort descending with respect to number of failed checks.
-            If two checks have the same number of failed, sort ascending
-            with respect to the number of number of executed checks.
-            """
-            _, num_detected, num_examined = t
-
-            return -num_detected, num_examined
-
-        #sorted_summary = sorted(((col, detected[col], examined[col]) for col in examined), key=sort_key)
-
-        #df_summary = pd.DataFrame(sorted_summary, columns=['Column', '# Shifts detected', '# Checks Executed'])
-
-        check_matrix = [None]*len(check_names.keys())
-        for i, check in enumerate(check_names.keys()):
-            check_list = [None]*len(examined)
-            for j, col in enumerate(examined):
-                if col in check_names[check]:
-                    check_list[j] = 1
+        all_columns = column_names(self.store.column_names())
+        check_name_list = []
+        check_matrix = [None]*len(self.check_reports)
+        for i, report in enumerate(self.check_reports):
+            check_name_list.append(report.check_name)
+            col_list = [None]*len(all_columns)
+            for j, col in enumerate(all_columns):
+                if col in report.examined_columns:
+                    if col in report.shifted_columns:
+                        col_list[j] = 1
+                    else:
+                        col_list[j] = 0
                 else:
-                    check_list[j] = 0
-            check_matrix[i] = check_list
+                    col_list[j] = 2
+            check_matrix[i] = col_list
 
-        custom_cmap = colors.ListedColormap(['green', 'red'])
+        custom_cmap = colors.ListedColormap(['green', 'red', 'gray'])
 
         fig, ax = plt.subplots()
-        im = ax.imshow(check_matrix, cmap=custom_cmap, interpolation='none', vmin=0, vmax=1)
+        im = ax.imshow(check_matrix, cmap=custom_cmap, interpolation='none', vmin=0, vmax=2)
 
         # We want to show all ticks...
-        ax.set_xticks(np.arange(len(examined)))
-        ax.set_yticks(np.arange(len(check_names.keys())))
+        ax.set_xticks(np.arange(len(all_columns)))
+        ax.set_yticks(np.arange(len(check_name_list)))
         # ... and label them with the respective list entries
-        ax.set_xticklabels(examined)
-        ax.set_yticklabels(check_names.keys())
+        ax.set_xticklabels(all_columns)
+        ax.set_yticklabels(check_name_list)
 
         plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
                  rotation_mode="anchor")
 
         # Minor ticks
-        ax.set_xticks(np.arange(-.5, len(examined), 1), minor=True)
-        ax.set_yticks(np.arange(-.5, len(check_names.keys()), 1), minor=True)
+        ax.set_xticks(np.arange(-.5, len(all_columns), 1), minor=True)
+        ax.set_yticks(np.arange(-.5, len(check_name_list), 1), minor=True)
         ax.grid(which='minor', color='k', linestyle='-', linewidth=2)
 
         display(plt.show())

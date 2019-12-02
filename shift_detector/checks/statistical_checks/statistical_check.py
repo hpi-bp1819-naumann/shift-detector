@@ -19,11 +19,12 @@ class StatisticalCheck(Check):
     :param sampling_seed: seed to use for sampling, if sampling is enabled
     """
 
-    def __init__(self, significance=0.01, sample_size=None, use_equal_dataset_sizes=False, sampling_seed=0):
+    def __init__(self, significance=0.01, sample_size=None, use_equal_dataset_sizes=False, sampling_seed=0, plots=False):
         self.significance = significance
         self.sample_size = sample_size
         self.equal_sizes = use_equal_dataset_sizes
         self.seed = sampling_seed
+        self.plots = plots
 
     def is_significant(self, p: float) -> bool:
         """
@@ -161,13 +162,17 @@ class SimpleStatisticalCheck(StatisticalCheck):
             p = self.statistical_test(part1[column], part2[column])
             pvalues[column] = [p]
         significant_columns = self.significant_columns(pvalues)
+        if self.plots:
+            resulting_figures = self.column_figure(significant_columns, part1, part2)
+        else:
+            resulting_figures = []
         return StatisticalReport(self.check_name(),
                                  examined_columns=sorted(columns),
                                  shifted_columns=sorted(significant_columns),
                                  explanation=self.explain(pvalues),
                                  explanation_header=self.explanation_header(),
                                  information={'test_results': pvalues},
-                                 figures=self.column_figure(significant_columns, part1, part2))
+                                 figures=resulting_figures)
 
 
 class StatisticalReport(Report):
