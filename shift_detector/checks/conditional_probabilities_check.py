@@ -12,7 +12,7 @@ from shift_detector.utils.custom_print import nprint, mdprint
 class ConditionalProbabilitiesReport(Report):
     def __init__(self, check_name, examined_columns, figure, number_of_red_rules, number_of_orange_rules,
                  total_number_of_rules, explanation={}, information={}, figures=[]):
-        super().__init__(check_name, examined_columns=[], shifted_columns=[], explanation=explanation,
+        super().__init__(check_name, examined_columns=examined_columns, shifted_columns=[], explanation=explanation,
                          information=information, figures=figures)
         self.__examined_columns = examined_columns
         self.figure = figure
@@ -46,7 +46,6 @@ class ConditionalProbabilitiesReport(Report):
             if 'significant_rules_of_second' in self.explanation:
                 nprint('Exclusive attribute-value combinations of second data set', text_formatting='h4')
                 print('\n'.join(to_str(rule, 1) for rule in self.explanation['significant_rules_of_second']))
-        nprint('Mutual Rules', text_formatting='h3')
         self.figure()
         if 'sorted_filtered_mutual_rules' in self.explanation:
             nprint('Red Rules', text_formatting='h4')
@@ -119,7 +118,7 @@ class ConditionalProbabilitiesCheck(Check):
     """
 
     def __init__(self, min_support=0.01, min_confidence=0.15, rule_limit=5, min_delta_supports=0.05,
-                 min_delta_confidences=0.05, number_of_bins=50, number_of_topics=20):
+                 min_delta_confidences=0.05, number_of_bins=50, number_of_topics=20, explanations=False, plots=False):
         assert 0 <= min_support <= 1, 'min_support expects a float between 0 and 1'
         assert 0 <= min_confidence <= 1, 'min_confidence expects a float between 0 and 1'
         assert 0 <= rule_limit, 'rule_limit expects an int greater than or equal to 0'
@@ -134,6 +133,8 @@ class ConditionalProbabilitiesCheck(Check):
         self.min_delta_confidences = float(min_delta_confidences)
         self.number_of_bins = int(number_of_bins)
         self.number_of_topics = int(number_of_topics)
+        self.explanations = explanations
+        self.plots = plots
 
     def run(self, store):
         pre_calculation_result = store[
@@ -141,63 +142,76 @@ class ConditionalProbabilitiesCheck(Check):
                                                    self.number_of_bins, self.number_of_topics,
                                                    self.min_delta_supports, self.min_delta_confidences)
         ]
+
         explanation = defaultdict(list)
+        def dummy():
+            pass
+        resulting_figure = dummy
 
-        def add_to_explanation(rules, identifier):
-            for i, rule in enumerate(rules):
-                if i == self.rule_limit:
-                    break
-                explanation[identifier].append(rule)
+        if self.explanations:
+            def add_to_explanation(rules, identifier):
+                for i, rule in enumerate(rules):
+                    if i == self.rule_limit:
+                        break
+                    explanation[identifier].append(rule)
 
-        add_to_explanation(pre_calculation_result.significant_rules_of_first, 'significant_rules_of_first')
-        add_to_explanation(pre_calculation_result.significant_rules_of_second, 'significant_rules_of_second')
-        add_to_explanation(pre_calculation_result.sorted_filtered_mutual_rules, 'sorted_filtered_mutual_rules')
+            add_to_explanation(pre_calculation_result.significant_rules_of_first, 'significant_rules_of_first')
+            add_to_explanation(pre_calculation_result.significant_rules_of_second, 'significant_rules_of_second')
+            add_to_explanation(pre_calculation_result.sorted_filtered_mutual_rules, 'sorted_filtered_mutual_rules')
 
-        orange_rules_falling_below_min_delta_supports = sorted(
-            (rule for rule in pre_calculation_result.mutual_rules if abs(rule.delta_supports) < self.min_delta_supports
-             and abs(rule.delta_confidences) >= self.min_delta_confidences),
-            key=lambda r: (min(r.supports) != 0, abs(r.delta_confidences) * abs(r.delta_supports)),
-            reverse=True
-        )
-        add_to_explanation(orange_rules_falling_below_min_delta_supports,
-                           'orange_rules_falling_below_min_delta_supports')
-        orange_rules_falling_below_min_delta_confidences = sorted(
-            (rule for rule in pre_calculation_result.mutual_rules if
-             abs(rule.delta_confidences) < self.min_delta_confidences
-             and abs(rule.delta_supports) >= self.min_delta_supports),
-            key=lambda r: (min(r.supports) != 0, abs(r.delta_confidences) * abs(r.delta_supports)),
-            reverse=True
-        )
-        add_to_explanation(orange_rules_falling_below_min_delta_confidences,
-                           'orange_rules_falling_below_min_delta_confidences')
+            orange_rules_falling_below_min_delta_supports = sorted(
+                (rule for rule in pre_calculation_result.mutual_rules if abs(rule.delta_supports) < self.min_delta_supports
+                 and abs(rule.delta_confidences) >= self.min_delta_confidences),
+                key=lambda r: (min(r.supports) != 0, abs(r.delta_confidences) * abs(r.delta_supports)),
+                reverse=True
+            )
+            add_to_explanation(orange_rules_falling_below_min_delta_supports,
+                               'orange_rules_falling_below_min_delta_supports')
+            orange_rules_falling_below_min_delta_confidences = sorted(
+                (rule for rule in pre_calculation_result.mutual_rules if
+                 abs(rule.delta_confidences) < self.min_delta_confidences
+                 and abs(rule.delta_supports) >= self.min_delta_supports),
+                key=lambda r: (min(r.supports) != 0, abs(r.delta_confidences) * abs(r.delta_supports)),
+                reverse=True
+            )
+            add_to_explanation(orange_rules_falling_below_min_delta_confidences,
+                               'orange_rules_falling_below_min_delta_confidences')
 
         coordinates = [(abs(rule.delta_supports), abs(rule.delta_confidences)) for rule in
                        pre_calculation_result.mutual_rules]
-        green_x = [x for x, y in coordinates if x <= self.min_delta_supports and y <= self.min_delta_confidences]
-        green_y = [y for x, y in coordinates if x <= self.min_delta_supports and y <= self.min_delta_confidences]
+        red_x = [x for x, y in coordinates if x > self.min_delta_supports and y > self.min_delta_confidences]
         orange_x = [x for x, y in coordinates if x > self.min_delta_supports
                     and y <= self.min_delta_confidences or x <= self.min_delta_supports
                     and y > self.min_delta_confidences]
-        orange_y = [y for x, y in coordinates if x > self.min_delta_supports
-                    and y <= self.min_delta_confidences or x <= self.min_delta_supports
-                    and y > self.min_delta_confidences]
-        red_x = [x for x, y in coordinates if x > self.min_delta_supports and y > self.min_delta_confidences]
-        red_y = [y for x, y in coordinates if x > self.min_delta_supports and y > self.min_delta_confidences]
+        if self.plots:
+            orange_y = [y for x, y in coordinates if x > self.min_delta_supports
+                        and y <= self.min_delta_confidences or x <= self.min_delta_supports
+                        and y > self.min_delta_confidences]
 
-        def plot_result():
-            plt.rcParams['figure.figsize'] = (10, 8)
-            plt.scatter(green_x, green_y, color='green')
-            plt.scatter(orange_x, orange_y, color='orange')
-            plt.scatter(red_x, red_y, color='red')
-            plt.title('Mutual conditional probabilities')
-            plt.xlabel('Absolute delta supports')
-            plt.ylabel('Absolute delta confidences')
-            plt.xticks([i / 10 for i in range(0, 11)])
-            plt.yticks([i / 10 for i in range(0, 11)])
-            plt.axhline(y=self.min_delta_confidences, linestyle='--', linewidth=2, color='black')
-            plt.axvline(x=self.min_delta_supports, linestyle='--', linewidth=2, color='black')
-            plt.show()
+            red_y = [y for x, y in coordinates if x > self.min_delta_supports and y > self.min_delta_confidences]
+            green_x = [x for x, y in coordinates if x <= self.min_delta_supports and y <= self.min_delta_confidences]
+            green_y = [y for x, y in coordinates if x <= self.min_delta_supports and y <= self.min_delta_confidences]
+            def plot_result():
+                nprint('Mutual Rules', text_formatting='h3')
+                plt.rcParams['figure.figsize'] = (10, 8)
+                plt.scatter(green_x, green_y, color='green')
+                plt.scatter(orange_x, orange_y, color='orange')
+                plt.scatter(red_x, red_y, color='red')
+                plt.title('Mutual conditional probabilities')
+                plt.xlabel('Absolute delta supports')
+                plt.ylabel('Absolute delta confidences')
+                plt.xticks([i / 10 for i in range(0, 11)])
+                plt.yticks([i / 10 for i in range(0, 11)])
+                plt.axhline(y=self.min_delta_confidences, linestyle='--', linewidth=2, color='black')
+                plt.axvline(x=self.min_delta_supports, linestyle='--', linewidth=2, color='black')
+                plt.show()
 
-        return ConditionalProbabilitiesReport('Conditional Probabilities', pre_calculation_result.examined_columns,
-                                              plot_result, len(red_x), len(orange_x),
-                                              pre_calculation_result.total_number_of_rules, explanation)
+            resulting_figure = plot_result
+
+        return ConditionalProbabilitiesReport(check_name='Conditional Probabilities',
+                                              examined_columns=pre_calculation_result.examined_columns,
+                                              total_number_of_rules=pre_calculation_result.total_number_of_rules,
+                                              figure=resulting_figure,
+                                              number_of_red_rules=len(red_x),
+                                              number_of_orange_rules=len(orange_x),
+                                              explanation=explanation)

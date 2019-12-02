@@ -20,7 +20,7 @@ class LdaCheck(Check):
 
     def __init__(self, shift_threshold=0.1, n_topics=20, n_iter=10, random_state=0, lib='sklearn',
                  columns=None, trained_model=None, stop_words='english', max_features=None,
-                 start=2, stop=21, step=2, word_clouds=True, display_interactive=True):
+                 start=2, stop=21, step=2, plots=False, word_clouds=False, display_interactive=False):
         """
         shift_threshold is the difference between the percentages of each topic between both datasets,
         meaning a difference above 10% is detected as shift
@@ -57,6 +57,7 @@ class LdaCheck(Check):
         self.start = start
         self.stop = stop
         self.step = step
+        self.plots = plots
         self.word_clouds = word_clouds
         self.display_interactive = display_interactive
 
@@ -122,14 +123,18 @@ class LdaCheck(Check):
                 if abs(round(v2 - v1, 3)) >= self.shift_threshold:
                     shifted_columns.add(col)
                     explanation[col + ' has a diff in topic '+str(i+1)+' of '] = round(v2 - v1, 3)
+        if self.plots:
+            resulting_figures = self.column_figures(shifted_columns, df1_embedded, df2_embedded, topic_words,
+                                                  all_models, all_dtms, all_vecs, all_corpora, all_dicts,
+                                                  self.word_clouds, self.display_interactive)
+        else:
+            resulting_figures = []
 
         return Report(check_name='LDA Check',
                       examined_columns=col_names,
                       shifted_columns=shifted_columns,
                       explanation=explanation,
-                      figures=self.column_figures(shifted_columns, df1_embedded, df2_embedded, topic_words,
-                                                  all_models, all_dtms, all_vecs, all_corpora, all_dicts,
-                                                  self.word_clouds, self.display_interactive))
+                      figures=resulting_figures)
 
     def column_figure(self, column, df1, df2, topic_words,
                       all_models, all_dtms, all_vecs, all_corpora, all_dicts,

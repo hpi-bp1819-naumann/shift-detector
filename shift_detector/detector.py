@@ -1,17 +1,18 @@
 import logging as logger
 from collections import defaultdict
 from typing import Union
-
+'''
 import os
 import matplotlib as mpl
-if os.environ.get('DISPLAY','') == '':
+if 'DISPLAY' not in os.environ:
     print('no display found. Using non-interactive Agg backend')
     mpl.use('Agg')
-
+'''
 import pandas as pd
 from IPython.display import display
 import numpy as np
 import matplotlib.pyplot as plt
+plt.switch_backend('agg')
 from matplotlib import colors
 
 
@@ -110,7 +111,7 @@ class Detector:
                     col_list[j] = 2
             check_matrix[i] = col_list
 
-        custom_cmap = colors.ListedColormap(['red', 'green', 'gray'])
+        custom_cmap = colors.ListedColormap(['green', 'red', 'gray'])
 
         fig, ax = plt.subplots()
         im = ax.imshow(check_matrix, cmap=custom_cmap, interpolation='none', vmin=0, vmax=2)
@@ -131,7 +132,6 @@ class Detector:
         ax.grid(which='minor', color='k', linestyle='-', linewidth=2)
 
         display(plt.show())
-
 
         nprint("DETAILS", text_formatting='h1')
         for report in self.check_reports:

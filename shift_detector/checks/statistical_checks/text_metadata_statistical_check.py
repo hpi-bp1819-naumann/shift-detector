@@ -18,7 +18,7 @@ from shift_detector.utils.visualization import PLOT_GRID_WIDTH, PLOT_ROW_HEIGHT,
 class TextMetadataStatisticalCheck(StatisticalCheck):
 
     def __init__(self, text_metadata_types=None, language='en', infer_language=False, significance=0.01,
-                 sample_size=None, use_equal_dataset_sizes=False, sampling_seed=0):
+                 sample_size=None, use_equal_dataset_sizes=False, sampling_seed=0, plots=False):
         nltk.download('stopwords')
         nltk.download('universal_tagset')
         nltk.download('punkt')
@@ -26,6 +26,7 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
         super().__init__(significance, sample_size, use_equal_dataset_sizes, sampling_seed)
         self.metadata_precalculation = TextMetadata(text_metadata_types, language=language,
                                                     infer_language=infer_language)
+        self.plots = plots
 
     def significant_columns(self, pvalues):
         return set(column for column in pvalues.columns.levels[0]
@@ -119,6 +120,10 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
                     raise UnknownMetadataReturnColumnTypeError(mdtype)
                 pvalues[(column, mdtype.metadata_name())] = [p]
         significant_columns = self.significant_columns(pvalues)
+        if self.plots:
+            resulting_figures = self.metadata_figure(pvalues, part1, part2)
+        else:
+            resulting_figures = []
         return StatisticalReport("Text Metadata Check",
                                  examined_columns=sorted(df1.columns.levels[0]),
                                  shifted_columns=sorted(significant_columns),
@@ -128,4 +133,4 @@ class TextMetadataStatisticalCheck(StatisticalCheck):
                                                                             any_significant=len(significant_columns) > 0
                                                                             ),
                                  information={'test_results': pvalues},
-                                 figures=self.metadata_figure(pvalues, part1, part2))
+                                 figures=resulting_figures)
