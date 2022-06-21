@@ -9,7 +9,7 @@ lxml==4.3.2
 matplotlib==2.2.4
 mock==2.0.0
 nltk==3.4.5
-numpy==1.16.2
+numpy==1.22.0
 pandas==0.22.0
 pyldavis==2.1.2
 pyspellchecker==0.4.0
